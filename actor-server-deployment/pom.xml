@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>ci.gouv.dgbf.system.actor.server</groupId>
+		<artifactId>actor-server-_pom</artifactId>
+		<version>0.1.0</version>
+	</parent>
+
+	<name>Deployment</name>
+	
+	<groupId>ci.gouv.dgbf.system.actor.server.deployment</groupId>
+	<artifactId>actor-server-deployment</artifactId>
+	<packaging>war</packaging>
+	
+	<properties>
+		<cyk.variable.system.identifier>actor</cyk.variable.system.identifier>
+		<cyk.variable.system.name>actor</cyk.variable.system.name>
+		<cyk.variable.system.version>0.1</cyk.variable.system.version>
+		
+		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
+		<!-- This is set here because of google replarer plugin -->
+		<jboss-web.context-root>${cyk.variable.system.identifier}/server</jboss-web.context-root>
+		<web.context>/${jboss-web.context-root}</web.context>
+		
+		<!-- Development -->
+		<data.source.oracle.dev.user>DEV.USER</data.source.oracle.dev.user>
+		<data.source.oracle.dev.password>DEV.PASSWORD</data.source.oracle.dev.password>
+		<!-- Test -->
+		
+		<!-- Production -->
+		<data.base.management.system.oracle.prod.hostname>xx.xx.xx.xx</data.base.management.system.oracle.prod.hostname>
+		<data.base.management.system.oracle.prod.sid>xx</data.base.management.system.oracle.prod.sid>
+		<data.source.oracle.prod.user>actor</data.source.oracle.prod.user>
+		
+		<deployment.server.standalone.thorntail.prod.host>xx.xx.xx.xx</deployment.server.standalone.thorntail.prod.host>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>ci.gouv.dgbf.system.actor.server.representation</groupId>
+			<artifactId>actor-server-representation-impl</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.server.deployment</groupId>
+			<artifactId>jee-utility-server-deployment</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>		
+	
+	<profiles>
+		<profile>
+			<id>thorntail</id>
+			<properties>
+				<jboss-web.context-root></jboss-web.context-root>
+				<swagger.json>/api/swagger.json</swagger.json>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.thorntail</groupId>
+						<artifactId>thorntail-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>package</goal>
+								</goals>
+								<configuration>
+									<hollow>false</hollow>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>docker</id>
+			<properties>
+				
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.dev</id>
+			<properties>
+				<cyk.variable.system.host>xx.xx.xx.xx</cyk.variable.system.host>
+				<data.base.management.system.host>${cyk.variable.system.host}</data.base.management.system.host>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.prod</id>
+			<properties>
+				<deployment.standalone.port.offset>0</deployment.standalone.port.offset>
+			</properties>
+		</profile>
+	</profiles>
+</project>
