@@ -18,19 +18,19 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ProfileFunction.TABLE_NAME)
-public class ProfileFunction extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+@Entity @Table(name=ActorProfile.TABLE_NAME)
+public class ActorProfile extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_ACTOR) @NotNull private Actor actor;
 	@ManyToOne @JoinColumn(name = COLUMN_PROFILE) @NotNull private Profile profile;
-	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	
 	@Override
-	public ProfileFunction setIdentifier(String identifier) {
-		return (ProfileFunction) super.setIdentifier(identifier);
+	public ActorProfile setIdentifier(String identifier) {
+		return (ActorProfile) super.setIdentifier(identifier);
 	}
 	
-	public ProfileFunction setProfileFromIdentifier(String identifier) {
+	public ActorProfile setProfileFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setProfile(null);
 		else
@@ -38,19 +38,19 @@ public class ProfileFunction extends AbstractIdentifiableSystemScalarStringImpl 
 		return this;
 	}
 	
-	public ProfileFunction setFunctionFromIdentifier(String identifier) {
+	public ActorProfile setActorFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
-			setFunction(null);
+			setActor(null);
 		else
-			setFunction(EntityFinder.getInstance().find(Function.class, identifier));
+			setActor(EntityFinder.getInstance().find(Actor.class, identifier));
 		return this;
 	}
 	
 	public static final String FIELD_PROFILE = "profile";
-	public static final String FIELD_FUNCTION = "function";
+	public static final String FIELD_ACTOR = "actor";
 	
 	public static final String COLUMN_PROFILE = "profile";
-	public static final String COLUMN_FUNCTION = "fonction";
+	public static final String COLUMN_ACTOR = "acteur";
 	
-	public static final String TABLE_NAME = "PROFILE_FONCTION";	
+	public static final String TABLE_NAME = "ACTEUR_PROFILE";	
 }

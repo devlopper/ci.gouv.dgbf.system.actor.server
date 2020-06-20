@@ -1,15 +1,8 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest {

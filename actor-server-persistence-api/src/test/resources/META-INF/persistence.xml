@@ -4,26 +4,28 @@
 	version="2.0">
 
 	<persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>		
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
-		
+		<!-- Read -->
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
-    	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
+
+    	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccountProfile</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccount</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.User</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Account</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorDomain</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
@@ -41,26 +43,28 @@
 	</persistence-unit>
 	
 	<persistence-unit name="dev" transaction-type="RESOURCE_LOCAL">
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>		
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
-		
+		<!-- Read -->
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
-    	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
+
+    	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccountProfile</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccount</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.User</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Account</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorDomain</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
@@ -78,26 +82,28 @@
 	</persistence-unit>
 	
 	<persistence-unit name="prod" transaction-type="RESOURCE_LOCAL">
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>		
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
-		
+		<!-- Read -->
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
-    	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
+
+    	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccountProfile</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.UserAccount</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.User</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Account</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorDomain</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		

@@ -10,9 +10,10 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.UserQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -28,8 +29,11 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	public static void initialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.entities.ApplicationScopeLifeCycleListener.initialize();
-		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class);
+		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class/*,QueryResultMapper.class*/, EntityReader.class,EntityCounter.class);
 		
-		QueryHelper.scan(List.of(UserQuerier.class.getPackage()));	
+		ActorQuerier.initialize();
+		ProfileQuerier.initialize();
+		PrivilegeQuerier.initialize();
+		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 	}
 }

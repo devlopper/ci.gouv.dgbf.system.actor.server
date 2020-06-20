@@ -3,9 +3,14 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +21,8 @@ import lombok.experimental.Accessors;
 @Entity @Table(name=Function.TABLE_NAME)
 public class Function extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private FunctionType type;
 	
 	@Override
 	public Function setIdentifier(String identifier) {
@@ -31,6 +38,18 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public Function setName(String name) {
 		return (Function) super.setName(name);
 	}
+	
+	public Function setTypeFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setType(null);
+		else
+			setType(EntityFinder.getInstance().find(FunctionType.class, identifier));
+		return this;
+	}
+	
+	public static final String FIELD_TYPE = "type";
+	
+	public static final String COLUMN_TYPE = "type";
 	
 	public static final String TABLE_NAME = "FONCTION";	
 }

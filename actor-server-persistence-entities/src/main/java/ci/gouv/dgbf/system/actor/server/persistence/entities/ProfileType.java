@@ -32,5 +32,8 @@ public class ProfileType extends AbstractIdentifiableSystemScalarStringIdentifia
 		return (ProfileType) super.setName(name);
 	}
 	
-	public static final String TABLE_NAME = "TYPE_PROFILE";	
+	public static final String TABLE_NAME = "TYPE_PROFILE";
+	
+	public static final String CODE_SYSTEM = "SYSTEME";
+	public static final String CODE_UTILISATEUR = "UTILISATEUR";
 }
