@@ -2,15 +2,19 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -35,6 +39,12 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "default";
+	}
+	
+	@Test
+	public void actorQuerier_readAll01(){
+		Collection<Actor> actors = EntityReader.getInstance().readMany(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_ALL_01);
+		assertThat(actors.iterator().next().getNames()).isEqualTo("konan marc");
 	}
 	
 	@Test
@@ -72,5 +82,7 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		
 		EntityCreator.getInstance().createManyInTransaction(new ProfilePrivilege().setProfileFromIdentifier("1").setPrivilegeFromIdentifier("1")
 				,new ProfilePrivilege().setProfileFromIdentifier("1").setPrivilegeFromIdentifier("3"),new ProfilePrivilege().setProfileFromIdentifier("2").setPrivilegeFromIdentifier("2"));
+	
+		EntityCreator.getInstance().createManyInTransaction(new Actor().setCode("1").setFirstName("konan").setLastNames("marc"));
 	}
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -23,6 +25,9 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Actor.TABLE_NAME)
+@AttributeOverrides(value= {
+		@AttributeOverride(name = Actor.FIELD_CODE,column = @Column(name="NOM_UTILISATEUR"))
+})
 public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -30,6 +35,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Column(name = COLUMN_LAST_NAMES) @NotNull private String lastNames;
 	@Column(name = COLUMN_ELECTRONIC_MAIL_ADDRESS) @NotNull private String electronicMailAddress;
 	
+	@Transient private String names;
 	@Transient private Collection<Function> functions;
 	@Transient private String username;
 	@Transient private String password;
@@ -72,6 +78,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	public static final String FIELD_NAMES = "names";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	
