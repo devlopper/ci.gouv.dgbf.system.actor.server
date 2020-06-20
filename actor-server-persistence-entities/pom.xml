@@ -20,13 +20,33 @@
 			<artifactId>jee-utility-server-persistence</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.4.12.Final</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.4</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.server.persistence.impl</groupId>
+			<artifactId>jee-utility-server-persistence-impl</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-	
-	<repositories>
-	    <repository>
-	        <id>cyk</id>
-	        <url>https://rawgit.com/devlopper/artifact.maven/master</url>
-	    </repository>
-	</repositories>
-	
 </project>

@@ -16,7 +16,7 @@
 	
 	<properties>
 		<cyk.variable.system.identifier>actor</cyk.variable.system.identifier>
-		<cyk.variable.system.name>actor</cyk.variable.system.name>
+		<cyk.variable.system.name>Gestion des Acteurs</cyk.variable.system.name>
 		<cyk.variable.system.version>0.1</cyk.variable.system.version>
 		
 		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
@@ -25,16 +25,16 @@
 		<web.context>/${jboss-web.context-root}</web.context>
 		
 		<!-- Development -->
-		<data.source.oracle.dev.user>DEV.USER</data.source.oracle.dev.user>
-		<data.source.oracle.dev.password>DEV.PASSWORD</data.source.oracle.dev.password>
+		<data.source.oracle.dev.user>SIIBC_Actor</data.source.oracle.dev.user>
+		<data.source.oracle.dev.password>actor</data.source.oracle.dev.password>
 		<!-- Test -->
 		
 		<!-- Production -->
-		<data.base.management.system.oracle.prod.hostname>xx.xx.xx.xx</data.base.management.system.oracle.prod.hostname>
-		<data.base.management.system.oracle.prod.sid>xx</data.base.management.system.oracle.prod.sid>
-		<data.source.oracle.prod.user>actor</data.source.oracle.prod.user>
+		<data.base.management.system.oracle.prod.hostname>10.3.4.21</data.base.management.system.oracle.prod.hostname>
+		<data.base.management.system.oracle.prod.sid>sib</data.base.management.system.oracle.prod.sid>
+		<data.source.oracle.prod.user>acteur</data.source.oracle.prod.user>
 		
-		<deployment.server.standalone.thorntail.prod.host>xx.xx.xx.xx</deployment.server.standalone.thorntail.prod.host>
+		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
 	</properties>
 	
 	<dependencies>
@@ -88,7 +88,7 @@
 		<profile>
 			<id>docker.dev</id>
 			<properties>
-				<cyk.variable.system.host>xx.xx.xx.xx</cyk.variable.system.host>
+				<cyk.variable.system.host>192.168.1.101</cyk.variable.system.host>
 				<data.base.management.system.host>${cyk.variable.system.host}</data.base.management.system.host>
 			</properties>
 		</profile>
