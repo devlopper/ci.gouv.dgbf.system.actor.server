@@ -15,6 +15,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -56,11 +57,40 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void profileQuerier_readByActorsCodesOrderByCodeAscending(){
+		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("1")).stream().map(Profile::getCode)
+				.collect(Collectors.toList())).containsExactly("1");
+		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("2")).stream().map(Profile::getCode)
+				.collect(Collectors.toList())).containsExactly("2");
+		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("3")).stream().map(Profile::getCode)
+				.collect(Collectors.toList())).containsExactly("3");
+	}
+	
+	@Test
 	public void privilegeQuerier_readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(){
 		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("1")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","3");
 		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("2")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
+	}
+	
+	@Test
+	public void privilegeQuerier_readByActorsCodesOrderByCodeAscending(){
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("1")).stream().map(Privilege::getCode)
+				.collect(Collectors.toList())).containsExactly("1","3");
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("2")).stream().map(Privilege::getCode)
+				.collect(Collectors.toList())).containsExactly("2");
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("3"))).isNull();
+	}
+	
+	@Test
+	public void privilegeQuerier_readByProfilesCodesNotAssociatedOrderByCodeAscending(){
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("1")).stream().map(Privilege::getCode)
+				.collect(Collectors.toList())).containsExactly("2");
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("2")).stream().map(Privilege::getCode)
+				.collect(Collectors.toList())).containsExactly("1","3");
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("3")).stream().map(Privilege::getCode)
+				.collect(Collectors.toList())).containsExactly("1","2","3");
 	}
 	
 	@Override
@@ -82,7 +112,11 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		
 		EntityCreator.getInstance().createManyInTransaction(new ProfilePrivilege().setProfileFromIdentifier("1").setPrivilegeFromIdentifier("1")
 				,new ProfilePrivilege().setProfileFromIdentifier("1").setPrivilegeFromIdentifier("3"),new ProfilePrivilege().setProfileFromIdentifier("2").setPrivilegeFromIdentifier("2"));
-	
-		EntityCreator.getInstance().createManyInTransaction(new Actor().setCode("1").setFirstName("konan").setLastNames("marc"));
+		
+		EntityCreator.getInstance().createManyInTransaction(new Actor().setCode("1").setFirstName("konan").setLastNames("marc")
+				,new Actor().setCode("2").setFirstName("yao").setLastNames("jules"),new Actor().setCode("3").setFirstName("yao").setLastNames("jules"));
+		
+		EntityCreator.getInstance().createManyInTransaction(new ActorProfile().setActorFromIdentifier("1").setProfileFromIdentifier("1")
+				,new ActorProfile().setActorFromIdentifier("2").setProfileFromIdentifier("2"),new ActorProfile().setActorFromIdentifier("3").setProfileFromIdentifier("3"));
 	}
 }

@@ -37,6 +37,8 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@Transient private String names;
 	@Transient private Collection<Function> functions;
+	@Transient private Collection<Privilege> privileges;
+	@Transient private Collection<Scope> scopes;
 	@Transient private String username;
 	@Transient private String password;
 	

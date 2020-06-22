@@ -13,9 +13,11 @@ import lombok.experimental.Accessors;
 public class ProfilePrivilegeDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Override
-	public ProfilePrivilegeDto setIdentifier(String identifier) {
-		return (ProfilePrivilegeDto) super.setIdentifier(identifier);
-	}
+	private ProfileDto profile;
+	private PrivilegeDto privilege;
 
+	@Override
+	public ProfilePrivilegeDto set__deletable__(Boolean __deletable__) {
+		return (ProfilePrivilegeDto) super.set__deletable__(__deletable__);
+	}
 }
