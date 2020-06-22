@@ -34,6 +34,8 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		super.__listenExecuteCreateBefore__(actor, properties, function);
 		if(StringHelper.isBlank(actor.getCode()))
 			actor.setCode(actor.getElectronicMailAddress());
+		if(StringHelper.isBlank(actor.getIdentifier()))
+			actor.setIdentifier("ACT_"+actor.getCode());
 	}
 	
 	@Override
@@ -41,8 +43,9 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		super.__listenExecuteCreateAfter__(actor, properties, function);
 		//we instantiate user profile
 		Profile profile = new Profile().setType(__inject__(ProfileTypePersistence.class).readByBusinessIdentifier(ProfileType.CODE_UTILISATEUR));
-		profile.setCode("profile_"+actor.getCode());
-		profile.setName("Profile de "+actor.getFirstName());
+		profile.setIdentifier("PF_"+actor.getCode());
+		profile.setCode(profile.getIdentifier());
+		profile.setName("Profile de "+actor.getElectronicMailAddress());
 		//we collect predefined privileges from system profiles based on given functions
 		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {			
 			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of(ProfileType.CODE_SYSTEM)

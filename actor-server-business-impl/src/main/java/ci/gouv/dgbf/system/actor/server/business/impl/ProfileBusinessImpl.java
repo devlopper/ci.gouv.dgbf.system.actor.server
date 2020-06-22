@@ -5,16 +5,16 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
+import org.cyk.utility.server.business.BusinessFunctionCreator;
+
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
-
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
-import org.cyk.utility.server.business.BusinessFunctionCreator;
 
 @ApplicationScoped
 public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, ProfilePersistence> implements ProfileBusiness,Serializable {
@@ -26,6 +26,5 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		if(CollectionHelper.isNotEmpty(profile.getPrivileges()))
 			__inject__(ProfilePrivilegeBusiness.class).createMany(profile.getPrivileges().stream().map(x -> new ProfilePrivilege().setProfile(profile).setPrivilege(x))
 					.collect(Collectors.toList()));
-	}
-	
+	}	
 }

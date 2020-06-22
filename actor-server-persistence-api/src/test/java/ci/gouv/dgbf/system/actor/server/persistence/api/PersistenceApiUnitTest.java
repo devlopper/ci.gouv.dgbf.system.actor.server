@@ -14,8 +14,10 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -24,6 +26,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	private static final long serialVersionUID = 1L;
@@ -93,8 +97,45 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				.collect(Collectors.toList())).containsExactly("1","2","3");
 	}
 	
+	@Test
+	public void scopeQuerier_readByActorsCodesByTypesCodesOrderByCodeAscending(){
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("1"),List.of("1")).stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("1","3");
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("2"),List.of("1")).stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("1","2","3");
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("3"),List.of("1")).stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("2");
+	}
+	
+	@Test
+	public void scopeQuerier_countByActorsCodesByTypesCodes(){
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesByTypesCodes(List.of("1"),List.of("1"))).isEqualTo(2l);
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesByTypesCodes(List.of("2"),List.of("1"))).isEqualTo(3l);
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesByTypesCodes(List.of("3"),List.of("1"))).isEqualTo(1l);
+	}
+	
+	@Test
+	public void scopeQuerier_readByActorsCodesNotAssociatedByTypesCodesOrderByCodeAscending(){
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesNotAssociatedByTypesCodes(List.of("1"),List.of("1")).stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("2");
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesNotAssociatedByTypesCodes(List.of("2"),List.of("1"))).isNull();
+		assertThat(ScopeQuerier.getInstance().readByActorsCodesNotAssociatedByTypesCodes(List.of("3"),List.of("1")).stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("1","3");
+	}
+	
+	@Test
+	public void scopeQuerier_countByActorsCodesNotAssociatedByTypesCodes(){
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesNotAssociatedByTypesCodes(List.of("1"),List.of("1"))).isEqualTo(1l);
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesNotAssociatedByTypesCodes(List.of("2"),List.of("1"))).isEqualTo(0l);
+		assertThat(ScopeQuerier.getInstance().countByActorsCodesNotAssociatedByTypesCodes(List.of("3"),List.of("1"))).isEqualTo(2l);
+	}
+	
 	@Override
 	protected void createData() {
+		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode("1").setName("1"));
+		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("1").setName("1").setTypeFromIdentifier("1")
+				,new Scope().setCode("2").setName("2").setTypeFromIdentifier("1"),new Scope().setCode("3").setName("3").setTypeFromIdentifier("1"));
+		
 		EntityCreator.getInstance().createManyInTransaction(new PrivilegeType().setCode("1").setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Privilege().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Privilege().setCode("2").setName("2").setTypeFromIdentifier("1"),new Privilege().setCode("3").setName("3").setTypeFromIdentifier("1"));
@@ -118,5 +159,13 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		
 		EntityCreator.getInstance().createManyInTransaction(new ActorProfile().setActorFromIdentifier("1").setProfileFromIdentifier("1")
 				,new ActorProfile().setActorFromIdentifier("2").setProfileFromIdentifier("2"),new ActorProfile().setActorFromIdentifier("3").setProfileFromIdentifier("3"));
+		
+		EntityCreator.getInstance().createManyInTransaction(
+				new ActorScope().setActorFromIdentifier("1").setScopeFromIdentifier("1")
+				,new ActorScope().setActorFromIdentifier("1").setScopeFromIdentifier("3")
+				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("1")
+				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("2")
+				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("3")
+				,new ActorScope().setActorFromIdentifier("3").setScopeFromIdentifier("2"));
 	}
 }

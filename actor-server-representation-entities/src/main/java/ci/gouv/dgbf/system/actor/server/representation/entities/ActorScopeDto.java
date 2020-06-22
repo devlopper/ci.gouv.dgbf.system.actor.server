@@ -13,9 +13,10 @@ import lombok.experimental.Accessors;
 public class ActorScopeDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Override
-	public ActorScopeDto setIdentifier(String identifier) {
-		return (ActorScopeDto) super.setIdentifier(identifier);
-	}
+	private ActorDto actor;
+	private ScopeDto scope;
+	private Boolean visible;
+	private String actorAsString;
+	private String scopeAsString;
 
 }
