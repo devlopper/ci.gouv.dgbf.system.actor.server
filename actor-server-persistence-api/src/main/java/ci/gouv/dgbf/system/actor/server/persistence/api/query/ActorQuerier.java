@@ -65,7 +65,7 @@ public interface ActorQuerier extends Querier {
 			Actor actor = EntityFinder.getInstance().find(Actor.class, identifier);
 			if(actor == null)
 				return null;
-			actor.setPrivileges(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of(actor.getCode())));
+			actor.setPrivileges(PrivilegeQuerier.getInstance().readByActorsCodes(List.of(actor.getCode())));
 			return actor;
 		}
 	}

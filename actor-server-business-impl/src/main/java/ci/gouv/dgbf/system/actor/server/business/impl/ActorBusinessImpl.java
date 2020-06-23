@@ -48,7 +48,7 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		profile.setName("Profile de "+actor.getElectronicMailAddress());
 		//we collect predefined privileges from system profiles based on given functions
 		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {			
-			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of(ProfileType.CODE_SYSTEM)
+			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of(ProfileType.CODE_SYSTEM)
 					, actor.getFunctions().stream().map(x -> x.getCode()).collect(Collectors.toSet()));			
 			if(CollectionHelper.isNotEmpty(privileges))								
 				profile.getPrivileges(Boolean.TRUE).addAll(privileges);

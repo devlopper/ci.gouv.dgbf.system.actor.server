@@ -53,52 +53,52 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
-	public void profileQuerier_readByTypesCodesByFunctionsCodesOrderByCodeAscending(){
-		assertThat(ProfileQuerier.getInstance().readByTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("1")).stream().map(Profile::getCode)
+	public void profileQuerier_readByTypesCodesByFunctionsCodes(){
+		assertThat(ProfileQuerier.getInstance().readByTypesCodesByFunctionsCodes(List.of("1"), List.of("1")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("1");
-		assertThat(ProfileQuerier.getInstance().readByTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("2")).stream().map(Profile::getCode)
+		assertThat(ProfileQuerier.getInstance().readByTypesCodesByFunctionsCodes(List.of("1"), List.of("2")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("2","3");
 	}
 	
 	@Test
-	public void profileQuerier_readByActorsCodesOrderByCodeAscending(){
-		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("1")).stream().map(Profile::getCode)
+	public void profileQuerier_readByActorsCodes(){
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("1")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("1");
-		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("2")).stream().map(Profile::getCode)
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("2")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
-		assertThat(ProfileQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("3")).stream().map(Profile::getCode)
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("3")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("3");
 	}
 	
 	@Test
-	public void privilegeQuerier_readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(){
-		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("1")).stream().map(Privilege::getCode)
+	public void privilegeQuerier_readByProfilesTypesCodesByFunctionsCodes(){
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of("1"), List.of("1")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","3");
-		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodesOrderByCodeAscending(List.of("1"), List.of("2")).stream().map(Privilege::getCode)
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of("1"), List.of("2")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
 	}
 	
 	@Test
-	public void privilegeQuerier_readByActorsCodesOrderByCodeAscending(){
-		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("1")).stream().map(Privilege::getCode)
+	public void privilegeQuerier_readByActorsCodes(){
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodes(List.of("1")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","3");
-		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("2")).stream().map(Privilege::getCode)
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodes(List.of("2")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
-		assertThat(PrivilegeQuerier.getInstance().readByActorsCodesOrderByCodeAscending(List.of("3"))).isNull();
+		assertThat(PrivilegeQuerier.getInstance().readByActorsCodes(List.of("3"))).isNull();
 	}
 	
 	@Test
-	public void privilegeQuerier_readByProfilesCodesNotAssociatedOrderByCodeAscending(){
-		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("1")).stream().map(Privilege::getCode)
+	public void privilegeQuerier_readByProfilesCodesNotAssociated(){
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociated(List.of("1")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
-		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("2")).stream().map(Privilege::getCode)
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociated(List.of("2")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","3");
-		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociatedOrderByCodeAscending(List.of("3")).stream().map(Privilege::getCode)
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociated(List.of("3")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","2","3");
 	}
 	
 	@Test
-	public void scopeQuerier_readByActorsCodesByTypesCodesOrderByCodeAscending(){
+	public void scopeQuerier_readByActorsCodesByTypesCodes(){
 		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("1"),List.of("1")).stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("1","3");
 		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("2"),List.of("1")).stream().map(Scope::getCode)
@@ -115,7 +115,7 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
-	public void scopeQuerier_readByActorsCodesNotAssociatedByTypesCodesOrderByCodeAscending(){
+	public void scopeQuerier_readByActorsCodesNotAssociatedByTypesCodes(){
 		assertThat(ScopeQuerier.getInstance().readByActorsCodesNotAssociatedByTypesCodes(List.of("1"),List.of("1")).stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
 		assertThat(ScopeQuerier.getInstance().readByActorsCodesNotAssociatedByTypesCodes(List.of("2"),List.of("1"))).isNull();

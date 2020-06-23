@@ -15,6 +15,7 @@ public class ProfilePrivilegeDto extends AbstractIdentifiableSystemScalarStringI
 	
 	private ProfileDto profile;
 	private PrivilegeDto privilege;
+	private Boolean visible;
 
 	@Override
 	public ProfilePrivilegeDto set__deletable__(Boolean __deletable__) {

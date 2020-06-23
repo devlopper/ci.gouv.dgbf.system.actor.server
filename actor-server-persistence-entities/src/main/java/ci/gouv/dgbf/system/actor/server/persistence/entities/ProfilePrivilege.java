@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,6 +25,7 @@ public class ProfilePrivilege extends AbstractIdentifiableSystemScalarStringImpl
 	
 	@ManyToOne @JoinColumn(name = COLUMN_PROFILE) @NotNull private Profile profile;
 	@ManyToOne @JoinColumn(name = COLUMN_PRIVILEGE) @NotNull private Privilege privilege;
+	@Column(name = COLUMN_VISIBLE) private Boolean visible;
 	
 	@Override
 	public ProfilePrivilege setIdentifier(String identifier) {
@@ -48,9 +50,11 @@ public class ProfilePrivilege extends AbstractIdentifiableSystemScalarStringImpl
 	
 	public static final String FIELD_PROFILE = "profile";
 	public static final String FIELD_PRIVILEGE = "privilege";
+	public static final String FIELD_VISIBLE = "visible";
 	
 	public static final String COLUMN_PROFILE = "profile";
 	public static final String COLUMN_PRIVILEGE = "privilege";
+	public static final String COLUMN_VISIBLE = "visible";
 	
 	public static final String TABLE_NAME = "PROFILE_PRIVILEGE";	
 }

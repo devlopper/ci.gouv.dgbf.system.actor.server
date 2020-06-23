@@ -22,37 +22,37 @@ public interface ProfileQuerier extends Querier {
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
 	
 	/* read by types codes by functions codes order by code ascending */
-	String QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING = "readByTypesCodesByFunctionsCodesOrderByCodeAscending";
-	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING);
-	String QUERY_VALUE_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING = Language.of(Language.Select.of("t")
+	String QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES = "readByTypesCodesByFunctionsCodes";
+	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES);
+	String QUERY_VALUE_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("t")
 			,Language.From.of("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			
 			,Language.Where.of("profileFunction.profile.type.code IN :"+PARAMETER_NAME_TYPES_CODES+" AND profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
 			,Language.Order.of("t.code ASC"))
 			;
-	Collection<Profile> readByTypesCodesByFunctionsCodesOrderByCodeAscending(Collection<String> typesCodes,Collection<String> functionsCodes);
+	Collection<Profile> readByTypesCodesByFunctionsCodes(Collection<String> typesCodes,Collection<String> functionsCodes);
 	
 	/* read by actors codes order by code ascending */
-	String QUERY_NAME_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING = "readByActorsCodesOrderByCodeAscending";
-	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING);
-	String QUERY_VALUE_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING = Language.of(Language.Select.of("t")
+	String QUERY_NAME_READ_BY_ACTORS_CODES = "readByActorsCodes";
+	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_ACTORS_CODES);
+	String QUERY_VALUE_READ_BY_ACTORS_CODES = Language.of(Language.Select.of("t")
 			,Language.From.of("Profile t JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = t.identifier")			
 			,Language.Where.of("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
 			,Language.Order.of("t.code ASC"))
 			;
-	Collection<Profile> readByActorsCodesOrderByCodeAscending(Collection<String> actorsCodes);
+	Collection<Profile> readByActorsCodes(Collection<String> actorsCodes);
 	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements ProfileQuerier,Serializable {
 		@Override
-		public Collection<Profile> readByTypesCodesByFunctionsCodesOrderByCodeAscending(Collection<String> typesCodes,Collection<String> functionsCodes) {
-			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING
+		public Collection<Profile> readByTypesCodesByFunctionsCodes(Collection<String> typesCodes,Collection<String> functionsCodes) {
+			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 					, PARAMETER_NAME_TYPES_CODES,typesCodes,PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 		
 		@Override
-		public Collection<Profile> readByActorsCodesOrderByCodeAscending(Collection<String> actorsCodes) {
-			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
+		public Collection<Profile> readByActorsCodes(Collection<String> actorsCodes) {
+			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
 		}
 	}
 	
@@ -65,15 +65,15 @@ public interface ProfileQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES_ORDER_BY_CODE_ASCENDING
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES_ORDER_BY_CODE_ASCENDING
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES
 				)
 			);
 	}
