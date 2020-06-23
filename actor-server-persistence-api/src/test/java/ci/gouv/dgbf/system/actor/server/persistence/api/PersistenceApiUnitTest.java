@@ -40,7 +40,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
-	
 	@Override
 	protected String getPersistenceUnitName() {
 		return "default";

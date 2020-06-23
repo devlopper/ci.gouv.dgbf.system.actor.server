@@ -14,21 +14,6 @@
 	</context-param>
 	
 	<context-param>
-		<param-name>cyk.variable.system.version</param-name>
-		<param-value>${cyk.variable.system.version}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.system.timestamp</param-name>
-		<param-value>${cyk.variable.system.timestamp}</param-value>
-	</context-param>
-	
-	<context-param>
-		<param-name>cyk.variable.system.timestamp.as.string</param-name>
-		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
-	</context-param>
-	
-	<context-param>
 		<param-name>cyk.variable.system.name</param-name>
 		<param-value>${cyk.variable.system.name}</param-value>
 	</context-param>
@@ -62,6 +47,6 @@
 	
 	<context-param>
 		<param-name>cyk.variable.swagger.bean.config.resource.package</param-name>
-		<param-value>org.cyk.utility.server.representation,org.cyk.utility.server.representation.impl</param-value>
+		<param-value>org.cyk.utility.server.representation,org.cyk.utility.server.representation.impl,ci.gouv.dgbf.system.actor.server.representation.api</param-value>
 	</context-param>		
 </web-app>

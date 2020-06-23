@@ -22,7 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 
 public interface ActorQuerier extends Querier {
 
-	//String PARAMETER_NAME_IDENTIFIER = "identifier";
+	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
@@ -91,7 +91,7 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_STRING = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_BY_STRING);
 	Map<String,Integer> QUERY_VALUE_READ_BY_STRING_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER,Actor.FIELD_CODE
 			,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
-	String QUERY_VALUE_READ_BY_STRING_WHERE = " WHERE LOWER(t.code) LIKE LOWER(:"+PARAMETER_NAME_STRING+")";
+	String QUERY_VALUE_READ_BY_STRING_WHERE = " WHERE LOWER(t.code) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+")";
 	String QUERY_VALUE_READ_BY_STRING = Language.of(Language.Select.of("t.identifier,t.code,"+Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES)+",t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS)
 			,Language.From.of("Actor t")
 			,QUERY_VALUE_READ_BY_STRING_WHERE
@@ -113,6 +113,16 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_ONE_WITH_ALL_PRIVILEGES_ALL_SCOPES_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ONE_WITH_ALL_PRIVILEGES_ALL_SCOPES_BY_IDENTIFIER);
 	Actor readOneWithAllPrivilegesAllScopesByIdentifier(String identifier);
 	*/
+	
+	/* Read by string */
+	String QUERY_NAME_READ_BY_ELECTRONIC_MAIL_ADDRESS = "readByElectronicMailAddress";
+	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_BY_ELECTRONIC_MAIL_ADDRESS);
+	String QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS = Language.of(Language.Select.of("t")
+			,Language.From.of("Actor t")
+			,"WHERE t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS+" = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
+			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES)))
+			);
+	
 	/**/
 	
 	static ActorQuerier getInstance() {
@@ -139,10 +149,15 @@ public interface ActorQuerier extends Querier {
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_STRING
 				).setTupleFieldsNamesIndexes(QUERY_VALUE_READ_BY_STRING_TUPLE_FIELDS_NAMES_INDEXES)
 			);
-		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_STRING
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_STRING
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS
+				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS
 				)
 			);
 	}
