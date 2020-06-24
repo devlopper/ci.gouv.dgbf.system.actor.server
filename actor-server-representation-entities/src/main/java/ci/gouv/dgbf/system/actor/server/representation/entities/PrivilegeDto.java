@@ -14,4 +14,5 @@ public class PrivilegeDto extends AbstractIdentifiableSystemScalarStringIdentifi
 	private static final long serialVersionUID = 1L;
 	
 	private PrivilegeTypeDto type;
+	private String parentIdentifier;
 }
