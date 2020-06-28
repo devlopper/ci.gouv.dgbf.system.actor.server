@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
@@ -26,6 +27,7 @@ public interface PrivilegeQuerier extends Querier {
 	String PARAMETER_NAME_PROFILES_CODES = "profilesCodes";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	String PARAMETER_NAME_CHILDREN_CODES = "childrenCodes";
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
@@ -88,6 +90,39 @@ public interface PrivilegeQuerier extends Querier {
 			);
 	Long countByProfilesCodesNotAssociated(Collection<String> profilesCodes);
 	
+	/* read parents by children codes order by code ascending */
+	String QUERY_NAME_READ_PARENTS_BY_CHILDREN_CODES = "readParentsByChildrenCodes";
+	String QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_READ_PARENTS_BY_CHILDREN_CODES);
+	String QUERY_VALUE_READ_PARENTS_BY_CHILDREN_CODES = Language.of(Language.Select.of("DISTINCT(t.identifier),t.code,t.name,t.type,t.parentIdentifier")
+			,Language.From.of("Privilege t"
+					,Language.From.leftJoin("Privilege", "l1", Privilege.FIELD_PARENT_IDENTIFIER, "t", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l2", Privilege.FIELD_PARENT_IDENTIFIER, "l1", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					)
+			,Language.Where.of(Language.Where.or("l1.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l2.code IN :"+PARAMETER_NAME_CHILDREN_CODES
+					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Privilege> readParentsByChildrenCodes(Collection<String> childrenCodes);
+	
+	/* count parents by children codes */
+	String QUERY_NAME_COUNT_PARENTS_BY_CHILDREN_CODES = "countParentsByChildrenCodes";
+	String QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_COUNT_PARENTS_BY_CHILDREN_CODES);
+	String QUERY_VALUE_COUNT_PARENTS_BY_CHILDREN_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,Language.From.of("Privilege t"
+					,Language.From.leftJoin("Privilege", "l1", Privilege.FIELD_PARENT_IDENTIFIER, "t", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l2", Privilege.FIELD_PARENT_IDENTIFIER, "l1", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					)
+			,Language.Where.of(Language.Where.or("l1.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l2.code IN :"+PARAMETER_NAME_CHILDREN_CODES
+					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
+			);
+	Long countParentsByChildrenCodes(Collection<String> childrenCodes);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements PrivilegeQuerier,Serializable {
@@ -115,6 +150,16 @@ public interface PrivilegeQuerier extends Querier {
 		@Override
 		public Long countByProfilesCodesNotAssociated(Collection<String> profilesCodes) {
 			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES_NOT_ASSOCIATED, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
+		}
+		
+		@Override
+		public Collection<Privilege> readParentsByChildrenCodes(Collection<String> childrenCodes) {
+			return EntityReader.getInstance().readMany(Privilege.class, QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES, PARAMETER_NAME_CHILDREN_CODES,childrenCodes);
+		}
+		
+		@Override
+		public Long countParentsByChildrenCodes(Collection<String> childrenCodes) {
+			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES, PARAMETER_NAME_CHILDREN_CODES,childrenCodes);
 		}
 	}
 	
@@ -152,6 +197,18 @@ public interface PrivilegeQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES_NOT_ASSOCIATED
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_PROFILES_CODES_NOT_ASSOCIATED
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_PARENTS_BY_CHILDREN_CODES
+				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(Privilege.FIELD_IDENTIFIER,Privilege.FIELD_CODE
+						,Privilege.FIELD_NAME,Privilege.FIELD_TYPE,Privilege.FIELD_PARENT_IDENTIFIER))
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_PARENTS_BY_CHILDREN_CODES
 				)
 			);
 	}
