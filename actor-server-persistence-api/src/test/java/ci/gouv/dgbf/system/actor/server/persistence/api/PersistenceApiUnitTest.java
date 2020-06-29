@@ -18,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -28,6 +29,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	private static final long serialVersionUID = 1L;
@@ -107,6 +109,13 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void scopeQuerier_readVisibleSessionsByActorCode(){
+		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
+		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("3").stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("4");
+	}
+	
+	@Test
 	public void scopeQuerier_countByActorsCodesByTypesCodes(){
 		assertThat(ScopeQuerier.getInstance().countByActorsCodesByTypesCodes(List.of("1"),List.of("1"))).isEqualTo(2l);
 		assertThat(ScopeQuerier.getInstance().countByActorsCodesByTypesCodes(List.of("2"),List.of("1"))).isEqualTo(3l);
@@ -131,9 +140,16 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Override
 	protected void createData() {
-		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode("1").setName("1"));
+		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode("1").setName("1"),new ScopeType().setCode(ScopeType.CODE_SECTION).setName("Session")
+				,new ScopeType().setCode(ScopeType.CODE_UA).setName("ua"));
 		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("1").setName("1").setTypeFromIdentifier("1")
-				,new Scope().setCode("2").setName("2").setTypeFromIdentifier("1"),new Scope().setCode("3").setName("3").setTypeFromIdentifier("1"));
+				,new Scope().setCode("2").setName("2").setTypeFromIdentifier("1"),new Scope().setCode("3").setName("3").setTypeFromIdentifier("1")
+				,new Scope().setCode("4").setName("4").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("ua01").setName("5").setTypeFromIdentifier(ScopeType.CODE_UA));
+		
+		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("1"),new Section().setIdentifier("2"),new Section().setIdentifier("3"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("ua01").setSectionFromIdentifier("1")
+				,new AdministrativeUnit().setIdentifier("ua02").setSectionFromIdentifier("3"));
 		
 		EntityCreator.getInstance().createManyInTransaction(new PrivilegeType().setCode("1").setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Privilege().setCode("1").setName("1").setTypeFromIdentifier("1")
@@ -165,6 +181,9 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("1")
 				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("2")
 				,new ActorScope().setActorFromIdentifier("2").setScopeFromIdentifier("3")
-				,new ActorScope().setActorFromIdentifier("3").setScopeFromIdentifier("2"));
+				,new ActorScope().setActorFromIdentifier("3").setScopeFromIdentifier("2")
+				,new ActorScope().setActorFromIdentifier("3").setScopeFromIdentifier("4")
+				,new ActorScope().setActorFromIdentifier("3").setScopeFromIdentifier("ua01")
+				);
 	}
 }

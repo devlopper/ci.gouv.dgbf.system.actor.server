@@ -16,11 +16,13 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public interface ScopeQuerier extends Querier {
 
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	
 	/* read all order by type code asscending by code ascending */
 	String QUERY_NAME_READ_ALL_01 = "read.all.01";
@@ -53,6 +55,36 @@ public interface ScopeQuerier extends Querier {
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,"actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)))
 			;
 	Long countByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
+	
+	/* read visible sessions by actors codes order by code ascending */
+	String QUERY_NAME_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = "readVisibleSessionsByActorCode";
+	String QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE);
+	String QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE = 
+			"WHERE scope.type.code = '"+ScopeType.CODE_SECTION+"' AND ("+
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier " + 
+			"        FROM ActorScope actorScope " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND actorScope.scope.identifier = scope.identifier "+ 
+			"    ) " + 
+			"    OR " + 
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier " + 
+			"        FROM ActorScope actorScope " + 
+			"        JOIN Scope scopeUa ON actorScope.scope = scopeUa " + 
+			"        JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND administrativeUnit.section = scope" + 
+			"    )" + 
+			")";
+	String QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = 
+			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
+	Collection<Scope> readVisibleSessionsByActorCode(String actorCode);
+	
+	/* count sessions by actors codes */
+	String QUERY_NAME_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = "countVisibleSessionsByActorCode";
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE);
+	String QUERY_VALUE_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = 
+			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE;
+	Long countVisibleSessionsByActorCode(String actorCode);
 	
 	/* read by actors codes not associated by types codes order by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = "readByActorsCodesNotAssociatedByTypesCodes";
@@ -118,6 +150,16 @@ public interface ScopeQuerier extends Querier {
 		public Long countByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes) {
 			return EntityCounter.getInstance().count(Scope.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES)
 					.addFilterFieldsValues(PARAMETER_NAME_ACTORS_CODES,actorsCodes,PARAMETER_NAME_TYPES_CODES,typesCodes));
+		}
+		
+		@Override
+		public Collection<Scope> readVisibleSessionsByActorCode(String actorCode) {
+			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		}
+		
+		@Override
+		public Long countVisibleSessionsByActorCode(String actorCode) {
+			return EntityCounter.getInstance().count(Scope.class, QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
 		}
 		
 		@Override
@@ -188,6 +230,17 @@ public interface ScopeQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_TYPES_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE
 				)
 			);
 	}

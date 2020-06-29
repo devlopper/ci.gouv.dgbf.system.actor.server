@@ -8,7 +8,9 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
-
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>

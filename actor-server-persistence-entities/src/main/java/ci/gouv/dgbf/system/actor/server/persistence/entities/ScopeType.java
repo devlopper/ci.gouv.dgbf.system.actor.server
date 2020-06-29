@@ -32,5 +32,10 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 		return (ScopeType) super.setName(name);
 	}
 	
-	public static final String TABLE_NAME = "TYPE_DOMAINE";	
+	public static final String TABLE_NAME = "TYPE_DOMAINE";
+	
+	public static final String CODE_AB = "AB";
+	public static final String CODE_SECTION = "SECTION";
+	public static final String CODE_UA = "UA";
+	public static final String CODE_UGP = "UGP";
 }
