@@ -25,4 +25,8 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private ArrayList<PrivilegeDto> privileges;
 	private ArrayList<ScopeDto> scopes;
 
+	@Override
+	public ActorDto setIdentifier(String identifier) {
+		return (ActorDto) super.setIdentifier(identifier);
+	}
 }

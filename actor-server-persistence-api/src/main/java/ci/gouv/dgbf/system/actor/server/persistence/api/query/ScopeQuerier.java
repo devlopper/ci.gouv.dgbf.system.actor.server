@@ -37,13 +37,23 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_VALUE_COUNT_ALL_01 = Language.of(Language.Select.of("COUNT(t.identifier)"),"From Scope t");
 	Long countAll01();
 	
-	/* read by actors codes by scopes types codes order by code ascending */
+	/* read by codes by types codes order by code ascending */
+	String QUERY_NAME_READ_BY_CODES_BY_TYPES_CODES = "readByCodesByTypesCodes";
+	String QUERY_IDENTIFIER_READ_BY_CODES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_BY_CODES_BY_TYPES_CODES);
+	String QUERY_VALUE_READ_BY_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("Scope t")			
+			,Language.Where.of(Language.Where.and("t.code IN :"+PARAMETER_NAME_CODES,"t.type.code IN :"+PARAMETER_NAME_TYPES_CODES))			
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Scope> readByCodesByTypesCodes(Collection<String> codes,Collection<String> typesCodes);
+	
+	/* read by actors codes by scopes types codes order by type code by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_BY_TYPES_CODES = "readByActorsCodesByTypesCodes";
 	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_BY_ACTORS_CODES_BY_TYPES_CODES);
 	String QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("t")
 			,Language.From.of("Scope t JOIN ActorScope actorScope ON actorScope.scope.identifier = t.identifier")			
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,"actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES))			
-			,Language.Order.of("t.code ASC"))
+			,Language.Order.of("t.type.code ASC,t.code ASC"))
 			;
 	Collection<Scope> readByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
@@ -141,6 +151,12 @@ public interface ScopeQuerier extends Querier {
 		}
 		
 		@Override
+		public Collection<Scope> readByCodesByTypesCodes(Collection<String> codes,Collection<String> typesCodes) {
+			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_BY_CODES_BY_TYPES_CODES
+					, PARAMETER_NAME_CODES,codes,PARAMETER_NAME_TYPES_CODES,typesCodes);
+		}
+		
+		@Override
 		public Collection<Scope> readByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes) {
 			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES
 					, PARAMETER_NAME_ACTORS_CODES,actorsCodes,PARAMETER_NAME_TYPES_CODES,typesCodes);
@@ -200,6 +216,11 @@ public interface ScopeQuerier extends Querier {
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_ALL_01));		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_ALL_01
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class,Query.FIELD_VALUE,QUERY_VALUE_COUNT_ALL_01));
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_CODES_BY_TYPES_CODES,Query.FIELD_TUPLE_CLASS,Scope.class
+				,Query.FIELD_RESULT_CLASS,Scope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_CODES_BY_TYPES_CODES
+				)
+			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES,Query.FIELD_TUPLE_CLASS,Scope.class
 				,Query.FIELD_RESULT_CLASS,Scope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES

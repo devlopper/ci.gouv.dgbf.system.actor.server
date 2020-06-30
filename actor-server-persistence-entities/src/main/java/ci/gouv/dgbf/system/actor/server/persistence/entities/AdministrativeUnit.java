@@ -22,7 +22,7 @@ import lombok.experimental.Accessors;
 public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION,nullable = false) @NotNull private Section section;
 	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {

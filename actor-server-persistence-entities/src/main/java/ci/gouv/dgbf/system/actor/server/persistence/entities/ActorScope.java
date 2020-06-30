@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -20,12 +22,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ActorScope.TABLE_NAME)
+@Entity @Table(name=ActorScope.TABLE_NAME) @Access(AccessType.FIELD)
 public class ActorScope extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_ACTOR) @NotNull private Actor actor;
-	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
+	@ManyToOne @JoinColumn(name = COLUMN_ACTOR,nullable = false) @NotNull private Actor actor;
+	@ManyToOne @JoinColumn(name = COLUMN_SCOPE,nullable = false) @NotNull private Scope scope;
 	@Column(name = COLUMN_VISIBLE) private Boolean visible;
 	
 	@Transient private String actorAsString;
@@ -50,6 +52,11 @@ public class ActorScope extends AbstractIdentifiableSystemScalarStringImpl imple
 		else
 			setActor(EntityFinder.getInstance().find(Actor.class, identifier));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return actor+"|"+scope+"|"+visible;
 	}
 	
 	public static final String FIELD_ACTOR = "actor";

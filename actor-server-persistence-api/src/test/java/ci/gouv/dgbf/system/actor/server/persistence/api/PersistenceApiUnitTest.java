@@ -112,7 +112,7 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	public void scopeQuerier_readVisibleSessionsByActorCode(){
 		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
 		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("3").stream().map(Scope::getCode)
-				.collect(Collectors.toList())).containsExactly("4");
+				.collect(Collectors.toList())).containsExactly("4","5");
 	}
 	
 	@Test
@@ -145,10 +145,12 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Scope().setCode("2").setName("2").setTypeFromIdentifier("1"),new Scope().setCode("3").setName("3").setTypeFromIdentifier("1")
 				,new Scope().setCode("4").setName("4").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("5").setName("4").setTypeFromIdentifier(ScopeType.CODE_SECTION)
 				,new Scope().setCode("ua01").setName("5").setTypeFromIdentifier(ScopeType.CODE_UA));
 		
-		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("1"),new Section().setIdentifier("2"),new Section().setIdentifier("3"));
-		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("ua01").setSectionFromIdentifier("1")
+		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("1"),new Section().setIdentifier("2"),new Section().setIdentifier("3")
+				,new Section().setIdentifier("4"),new Section().setIdentifier("5"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("ua01").setSectionFromIdentifier("5")
 				,new AdministrativeUnit().setIdentifier("ua02").setSectionFromIdentifier("3"));
 		
 		EntityCreator.getInstance().createManyInTransaction(new PrivilegeType().setCode("1").setName("1"));
