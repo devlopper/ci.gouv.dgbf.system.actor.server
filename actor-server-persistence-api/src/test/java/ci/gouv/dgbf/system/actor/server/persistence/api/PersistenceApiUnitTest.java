@@ -109,10 +109,17 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
-	public void scopeQuerier_readVisibleSessionsByActorCode(){
-		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
-		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("3").stream().map(Scope::getCode)
+	public void scopeQuerier_readVisibleSectionsByActorCode(){
+		assertThat(ScopeQuerier.getInstance().readVisibleSectionsByActorCode("1")).isNull();
+		assertThat(ScopeQuerier.getInstance().readVisibleSectionsByActorCode("3").stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("4","5");
+	}
+	
+	@Test
+	public void scopeQuerier_readVisibleAdministrativeUnitsByActorCode(){
+		assertThat(ScopeQuerier.getInstance().readVisibleAdministrativeUnitsByActorCode("1")).isNull();
+		assertThat(ScopeQuerier.getInstance().readVisibleAdministrativeUnitsByActorCode("3").stream().map(Scope::getCode)
+				.collect(Collectors.toList())).containsExactly("ua01");
 	}
 	
 	@Test

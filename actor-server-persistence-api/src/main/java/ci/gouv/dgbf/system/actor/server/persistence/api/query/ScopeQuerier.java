@@ -66,10 +66,10 @@ public interface ScopeQuerier extends Querier {
 			;
 	Long countByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
-	/* read visible sessions by actors codes order by code ascending */
-	String QUERY_NAME_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = "readVisibleSessionsByActorCode";
-	String QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE);
-	String QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE = 
+	/* read visible sections by actors codes order by code ascending */
+	String QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = "readVisibleSectionsByActorCode";
+	String QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE = 
 			"WHERE scope.type.code = '"+ScopeType.CODE_SECTION+"' AND ("+
 			"    EXISTS (" + 
 			"        SELECT actorScope.identifier " + 
@@ -85,16 +85,51 @@ public interface ScopeQuerier extends Querier {
 			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND administrativeUnit.section = scope" + 
 			"    )" + 
 			")";
-	String QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE = 
-			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
-	Collection<Scope> readVisibleSessionsByActorCode(String actorCode);
+	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = 
+			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
+	Collection<Scope> readVisibleSectionsByActorCode(String actorCode);
 	
-	/* count sessions by actors codes */
-	String QUERY_NAME_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = "countVisibleSessionsByActorCode";
-	String QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE);
-	String QUERY_VALUE_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE = 
-			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE_WHERE;
-	Long countVisibleSessionsByActorCode(String actorCode);
+	/* count visible sections by actors codes */
+	String QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = "countVisibleSectionsByActorCode";
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+	String QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = 
+			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE;
+	Long countVisibleSectionsByActorCode(String actorCode);
+	
+	/* read visible administrative units by actors codes order by code ascending */
+	String QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "readVisibleAdministrativeUnitsByActorCode";
+	String QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
+	String QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE = 
+			"WHERE scope.type.code = '"+ScopeType.CODE_UA+"' AND ("+
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier " + 
+			"        FROM ActorScope actorScope " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND actorScope.scope.identifier = scope.identifier AND (actorScope.visible IS NULL OR actorScope.visible = true) "+ 
+			"    ) " + 
+			"    OR " + 
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier " + 
+			"        FROM ActorScope actorScope " + 
+			"        JOIN Scope scopeSection ON actorScope.scope = scopeSection " + 
+			"        JOIN Section section ON section = scopeSection " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND EXISTS("
+					+ "SELECT administrativeUnit "
+					+ "FROM AdministrativeUnit administrativeUnit "
+					+ "WHERE administrativeUnit = scope AND administrativeUnit.section = section AND NOT EXISTS(SELECT actorScopeAdministrativeUnit FROM ActorScope actorScopeAdministrativeUnit "
+					+ "WHERE actorScopeAdministrativeUnit.scope = scope AND actorScopeAdministrativeUnit.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND (actorScopeAdministrativeUnit.visible IS NOT NULL AND actorScopeAdministrativeUnit.visible = false))"
+					+ ")" + 
+			"    )" + 
+			")";
+	String QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = 
+			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
+	Collection<Scope> readVisibleAdministrativeUnitsByActorCode(String actorCode);
+	
+	/* count visible administrative units by actors codes */
+	String QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "countVisibleAdministrativeUnitsByActorCode";
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
+	String QUERY_VALUE_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = 
+			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE;
+	Long countVisibleAdministrativeUnitsByActorCode(String actorCode);
 	
 	/* read by actors codes not associated by types codes order by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = "readByActorsCodesNotAssociatedByTypesCodes";
@@ -169,13 +204,23 @@ public interface ScopeQuerier extends Querier {
 		}
 		
 		@Override
-		public Collection<Scope> readVisibleSessionsByActorCode(String actorCode) {
-			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		public Collection<Scope> readVisibleSectionsByActorCode(String actorCode) {
+			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
 		}
 		
 		@Override
-		public Long countVisibleSessionsByActorCode(String actorCode) {
-			return EntityCounter.getInstance().count(Scope.class, QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		public Long countVisibleSectionsByActorCode(String actorCode) {
+			return EntityCounter.getInstance().count(Scope.class, QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		}
+		
+		@Override
+		public Collection<Scope> readVisibleAdministrativeUnitsByActorCode(String actorCode) {
+			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		}
+		
+		@Override
+		public Long countVisibleAdministrativeUnitsByActorCode(String actorCode) {
+			return EntityCounter.getInstance().count(Scope.class, QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
 		}
 		
 		@Override
@@ -254,14 +299,25 @@ public interface ScopeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_SESSIONS_BY_ACTOR_CODE
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE
 				)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_SESSIONS_BY_ACTOR_CODE
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE
 				)
 			);
 	}

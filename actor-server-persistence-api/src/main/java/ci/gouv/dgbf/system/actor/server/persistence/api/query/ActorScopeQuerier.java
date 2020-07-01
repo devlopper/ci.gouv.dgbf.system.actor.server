@@ -20,7 +20,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 public interface ActorScopeQuerier extends Querier {
 
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_SCOPES_CODES = "scopesCodes";
+	String PARAMETER_NAME_SCOPE_CODE = "scopeCode";
 	String PARAMETER_NAME_SCOPE_TYPES_CODES = "scopeTypesCodes";
 	
 	/* read by actors codes order by scope code ascending */
@@ -43,7 +45,17 @@ public interface ActorScopeQuerier extends Querier {
 			;
 	Collection<ActorScope> readByScopesCodes(Collection<String> scopesCodes);
 	
-	/* read by actors codes bu scopes codes */
+	/* read by actor code by scopes codes */
+	String QUERY_NAME_READ_BY_ACTOR_CODE_BY_SCOPE_CODE = "readByActorCodeByScopeCode";
+	String QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_BY_SCOPE_CODE = QueryIdentifierBuilder.getInstance().build(ActorScope.class, QUERY_NAME_READ_BY_ACTOR_CODE_BY_SCOPE_CODE);
+	String QUERY_VALUE_READ_BY_ACTOR_CODE_BY_SCOPE_CODE = Language.of(Language.Select.of("t")
+			,Language.From.of("ActorScope t")			
+			,Language.Where.of(Language.Where.and("t.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"t.scope.code = :"+PARAMETER_NAME_SCOPE_CODE))			
+			)
+			;
+	ActorScope readByActorCodeByScopeCode(String actorCode,String scopeCode);
+	
+	/* read by actors codes by scopes codes */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_BY_SCOPES_CODES = "readByActorsCodesByScopesCodes";
 	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPES_CODES = QueryIdentifierBuilder.getInstance().build(ActorScope.class, QUERY_NAME_READ_BY_ACTORS_CODES_BY_SCOPES_CODES);
 	String QUERY_VALUE_READ_BY_ACTORS_CODES_BY_SCOPES_CODES = Language.of(Language.Select.of("t")
@@ -94,6 +106,12 @@ public interface ActorScopeQuerier extends Querier {
 		}
 		
 		@Override
+		public ActorScope readByActorCodeByScopeCode(String actorCode,String scopeCode) {
+			return EntityReader.getInstance().readOne(ActorScope.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_BY_SCOPE_CODE)
+					.addFilterFieldsValues(PARAMETER_NAME_ACTOR_CODE,actorCode, PARAMETER_NAME_SCOPE_CODE,scopeCode));
+		}
+		
+		@Override
 		public Collection<ActorScope> readByActorsCodesByScopesCodes(Collection<String> actorsCodes,Collection<String> scopesCodes) {
 			return EntityReader.getInstance().readMany(ActorScope.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPES_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes
 					, PARAMETER_NAME_SCOPES_CODES,scopesCodes);
@@ -127,6 +145,9 @@ public interface ActorScopeQuerier extends Querier {
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_SCOPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_SCOPES_CODES));
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_BY_SCOPE_CODE
+				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTOR_CODE_BY_SCOPE_CODE));
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES_BY_SCOPES_CODES));

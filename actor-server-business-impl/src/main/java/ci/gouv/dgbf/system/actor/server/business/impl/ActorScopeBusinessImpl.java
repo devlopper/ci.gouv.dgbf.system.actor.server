@@ -17,7 +17,7 @@ import org.cyk.utility.server.business.BusinessFunctionCreator;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorScopePersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.SectionPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -47,7 +47,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		
 		Collection<Scope> administrativeUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_UA)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(administrativeUnits))
-			deleteAdministrativeUnits(actor.getCode(),administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 	}
 	
 	private void deleteSections(String actorCode,Collection<String> sectionsCodes) {
@@ -72,12 +72,20 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		}
 	}
 	
-	private void deleteAdministrativeUnits(String actorCode,Collection<String> administrativeUnitsCodes) {
+	private void deleteAdministrativeUnits(Actor actor,Collection<String> administrativeUnitsCodes) {
 		if(CollectionHelper.isEmpty(administrativeUnitsCodes))
 			return;
-		Collection<ActorScope> actorScopesAdministrativeUnits = ActorScopeQuerier.getInstance().readByActorsCodesByScopesCodes(List.of(actorCode),administrativeUnitsCodes);
-		if(CollectionHelper.isEmpty(actorScopesAdministrativeUnits))
-			return;
-		deleteMany(actorScopesAdministrativeUnits);
+		for(String administrativeUnitsCode : administrativeUnitsCodes) {
+			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),administrativeUnitsCode);
+			if(actorScope == null) {
+				create(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(administrativeUnitsCode)).setVisible(Boolean.FALSE));
+			}else {
+				delete(actorScope);
+			}
+		}
+		//Collection<ActorScope> actorScopesAdministrativeUnits = ActorScopeQuerier.getInstance().readByActorsCodesByScopesCodes(List.of(actor.getCode()),administrativeUnitsCodes);
+		//if(CollectionHelper.isEmpty(actorScopesAdministrativeUnits))
+		//	return;
+		//deleteMany(actorScopesAdministrativeUnits);
 	}
 }

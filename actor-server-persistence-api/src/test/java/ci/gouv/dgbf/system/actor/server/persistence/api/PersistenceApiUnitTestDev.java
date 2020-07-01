@@ -20,13 +20,13 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void scopeQuerier_readVisibleSessionsByActorCode(){
 		//assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
-		assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("komenanyc@yahoo.fr").stream().map(Scope::getCode)
+		assertThat(ScopeQuerier.getInstance().readVisibleSectionsByActorCode("komenanyc@yahoo.fr").stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("102","321","327");
 	}
 	
 	@Test
 	public void scopeQuerier_countVisibleSessionsByActorCode(){
 		//assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
-		assertThat(ScopeQuerier.getInstance().countVisibleSessionsByActorCode("komenanyc@yahoo.fr")).isEqualTo(3l);
+		assertThat(ScopeQuerier.getInstance().countVisibleSectionsByActorCode("komenanyc@yahoo.fr")).isEqualTo(3l);
 	}
 }
