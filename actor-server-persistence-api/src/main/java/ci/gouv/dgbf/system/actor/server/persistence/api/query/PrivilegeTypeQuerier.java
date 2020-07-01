@@ -44,4 +44,10 @@ public interface PrivilegeTypeQuerier extends Querier {
 	}
 	
 	Value INSTANCE = new Value();
+	
+	/**/
+	
+	static void initialize() {
+		
+	}
 }

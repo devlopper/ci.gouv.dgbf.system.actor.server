@@ -39,4 +39,10 @@ public interface ScopeTypeQuerier extends Querier {
 	}
 	
 	Value INSTANCE = new Value();
+	
+	/**/
+	
+	static void initialize() {
+		
+	}
 }

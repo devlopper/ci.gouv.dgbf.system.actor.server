@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
+import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -31,6 +32,25 @@ public interface ProfileQuerier extends Querier {
 			;
 	Collection<Profile> readByTypesCodesByFunctionsCodes(Collection<String> typesCodes,Collection<String> functionsCodes);
 	
+	/* read by types codes order by code ascending */
+	String QUERY_NAME_READ_BY_TYPES_CODES = "readByTypesCodes";
+	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_TYPES_CODES);
+	String QUERY_VALUE_READ_BY_TYPES_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("Profile t")			
+			,Language.Where.of("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES)
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Profile> readByTypesCodes(Collection<String> typesCodes);
+	
+	/* count by types codes */
+	String QUERY_NAME_COUNT_BY_TYPES_CODES = "countByTypesCodes";
+	String QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_COUNT_BY_TYPES_CODES);
+	String QUERY_VALUE_COUNT_BY_TYPES_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,Language.From.of("Profile t")			
+			,Language.Where.of("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES))
+			;
+	Long countByTypesCodes(Collection<String> typesCodes);
+	
 	/* read by actors codes order by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES = "readByActorsCodes";
 	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_ACTORS_CODES);
@@ -51,6 +71,16 @@ public interface ProfileQuerier extends Querier {
 		}
 		
 		@Override
+		public Collection<Profile> readByTypesCodes(Collection<String> typesCodes) {
+			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_TYPES_CODES, PARAMETER_NAME_TYPES_CODES,typesCodes);
+		}
+		
+		@Override
+		public Long countByTypesCodes(Collection<String> typesCodes) {
+			return EntityCounter.getInstance().count(Profile.class, QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES,PARAMETER_NAME_TYPES_CODES,typesCodes);
+		}
+		
+		@Override
 		public Collection<Profile> readByActorsCodes(Collection<String> actorsCodes) {
 			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
 		}
@@ -68,6 +98,17 @@ public interface ProfileQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
+				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
+				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_TYPES_CODES
 				)
 			);
 		

@@ -35,10 +35,10 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		EntityCreator.getInstance().createMany(new Function().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Function().setCode("2").setName("2").setTypeFromIdentifier("1"));
 		
-		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_SYSTEM).setName("1"),new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
-		EntityCreator.getInstance().createMany(new Profile().setCode("1").setName("1").setTypeFromIdentifier(ProfileType.CODE_SYSTEM)
-				,new Profile().setCode("2").setName("2").setTypeFromIdentifier(ProfileType.CODE_SYSTEM)
-				,new Profile().setCode("3").setName("3").setTypeFromIdentifier(ProfileType.CODE_SYSTEM));
+		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_SYSTEME).setName("1"),new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
+		EntityCreator.getInstance().createMany(new Profile().setCode("1").setName("1").setTypeFromIdentifier(ProfileType.CODE_SYSTEME)
+				,new Profile().setCode("2").setName("2").setTypeFromIdentifier(ProfileType.CODE_SYSTEME)
+				,new Profile().setCode("3").setName("3").setTypeFromIdentifier(ProfileType.CODE_SYSTEME));
 		
 		EntityCreator.getInstance().createMany(new ProfileFunction().setProfileFromIdentifier("1").setFunctionFromIdentifier("1")
 				,new ProfileFunction().setProfileFromIdentifier("2").setFunctionFromIdentifier("2"),new ProfileFunction().setProfileFromIdentifier("3").setFunctionFromIdentifier("2"));
