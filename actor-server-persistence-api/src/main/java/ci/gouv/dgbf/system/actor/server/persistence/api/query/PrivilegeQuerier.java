@@ -2,9 +2,14 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
@@ -14,6 +19,7 @@ import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -27,6 +33,7 @@ public interface PrivilegeQuerier extends Querier {
 	String PARAMETER_NAME_PROFILES_CODES = "profilesCodes";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_CHILDREN_CODES = "childrenCodes";
 	String PARAMETER_NAME_CHILDREN_IDENTIFIERS = "childrenIdentifiers";
 	
@@ -157,6 +164,16 @@ public interface PrivilegeQuerier extends Querier {
 			);
 	Long countParentsByChildrenCodes(Collection<String> childrenCodes);
 	
+	/* read visible by actor code order by code ascending */
+	String QUERY_NAME_READ_VISIBLE_BY_ACTOR_CODE = "readVisibleByActorCode";
+	String QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_READ_VISIBLE_BY_ACTOR_CODE);
+	Collection<Privilege> readVisibleByActorCode(String actorCode);
+	
+	/* count visible by actor code */
+	String QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = "countVisibleSectionsByActorCode";
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+	Long countVisibleByActorCode(String actorCode);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements PrivilegeQuerier,Serializable {
@@ -204,6 +221,29 @@ public interface PrivilegeQuerier extends Querier {
 		@Override
 		public Long countParentsByChildrenIdentifiers(Collection<String> childrenIdentifiers) {
 			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES, PARAMETER_NAME_CHILDREN_CODES,childrenIdentifiers);
+		}
+		
+		@Override
+		public Collection<Privilege> readVisibleByActorCode(String actorCode) {
+			Collection<Privilege> privileges = null;
+			Collection<Privilege> children = StringHelper.isBlank(actorCode) ? null : readByActorsCodes(List.of(actorCode));
+			if(CollectionHelper.isNotEmpty(children)) {
+				if(privileges == null)
+					privileges = new HashSet<>();
+				privileges.addAll(children);
+			}
+			Collection<Privilege> parents = CollectionHelper.isEmpty(children) ? null : readParentsByChildrenCodes(children.stream().map(child -> child.getCode()).collect(Collectors.toSet()));
+			if(CollectionHelper.isNotEmpty(parents)) {
+				if(privileges == null)
+					privileges = new HashSet<>();
+				privileges.addAll(parents);
+			}
+			return privileges;
+		}
+		
+		@Override
+		public Long countVisibleByActorCode(String actorCode) {
+			return NumberHelper.getLong(CollectionHelper.getSize(readVisibleByActorCode(actorCode)));
 		}
 	}
 	

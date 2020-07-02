@@ -1,9 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
@@ -66,7 +69,7 @@ public interface ScopeQuerier extends Querier {
 			;
 	Long countByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
-	/* read visible sections by actors codes order by code ascending */
+	/* read visible sections by actor code order by code ascending */
 	String QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = "readVisibleSectionsByActorCode";
 	String QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
 	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE = 
@@ -89,14 +92,14 @@ public interface ScopeQuerier extends Querier {
 			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
 	Collection<Scope> readVisibleSectionsByActorCode(String actorCode);
 	
-	/* count visible sections by actors codes */
+	/* count visible sections by actor code */
 	String QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = "countVisibleSectionsByActorCode";
 	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE);
 	String QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = 
 			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE;
 	Long countVisibleSectionsByActorCode(String actorCode);
 	
-	/* read visible administrative units by actors codes order by code ascending */
+	/* read visible administrative units by actor code order by code ascending */
 	String QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "readVisibleAdministrativeUnitsByActorCode";
 	String QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
 	String QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE = 
@@ -124,7 +127,7 @@ public interface ScopeQuerier extends Querier {
 			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
 	Collection<Scope> readVisibleAdministrativeUnitsByActorCode(String actorCode);
 	
-	/* count visible administrative units by actors codes */
+	/* count visible administrative units by actor code */
 	String QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "countVisibleAdministrativeUnitsByActorCode";
 	String QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
 	String QUERY_VALUE_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = 
@@ -170,6 +173,9 @@ public interface ScopeQuerier extends Querier {
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES))
 			);
 	Long countByTypesCodes(Collection<String> typesCodes);
+	
+	Collection<Scope> readVisibleByActorCode(String actorCode);
+	Long countVisibleByActorCode(String actorCode);
 	
 	/**/
 	
@@ -245,6 +251,29 @@ public interface ScopeQuerier extends Querier {
 		public Long countByTypesCodes(Collection<String> typesCodes) {
 			return EntityCounter.getInstance().count(Scope.class, new QueryExecutorArguments().setQueryFromIdentifier(
 					QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES).addFilterFieldsValues(PARAMETER_NAME_TYPES_CODES,typesCodes));
+		}
+		
+		@Override
+		public Collection<Scope> readVisibleByActorCode(String actorCode) {
+			Collection<Scope> scopes = null;
+			Collection<Scope> sections = readVisibleSectionsByActorCode(actorCode);
+			if(CollectionHelper.isNotEmpty(sections)) {
+				if(scopes == null)
+					scopes = new ArrayList<>();
+				scopes.addAll(sections);
+			}
+			Collection<Scope> administrativeUnits = readVisibleAdministrativeUnitsByActorCode(actorCode);
+			if(CollectionHelper.isNotEmpty(administrativeUnits)) {
+				if(scopes == null)
+					scopes = new ArrayList<>();
+				scopes.addAll(administrativeUnits);
+			}
+			return scopes;
+		}
+		
+		@Override
+		public Long countVisibleByActorCode(String actorCode) {
+			return NumberHelper.getLong(NumberHelper.add(countVisibleSectionsByActorCode(actorCode),countVisibleAdministrativeUnitsByActorCode(actorCode)));
 		}
 	}
 	

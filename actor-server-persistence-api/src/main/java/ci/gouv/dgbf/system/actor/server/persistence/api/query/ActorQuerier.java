@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 
 public interface ActorQuerier extends Querier {
@@ -66,6 +67,16 @@ public interface ActorQuerier extends Querier {
 			if(actor == null)
 				return null;
 			actor.setPrivileges(PrivilegeQuerier.getInstance().readByActorsCodes(List.of(actor.getCode())));
+			return actor;
+		}
+		
+		@Override
+		public Actor readAllInformationsForExternalByCode(String code) {
+			if(StringHelper.isBlank(code))
+				return null;
+			Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(code);
+			actor.setPrivileges(PrivilegeQuerier.getInstance().readVisibleByActorCode(code));
+			actor.setScopes(ScopeQuerier.getInstance().readVisibleByActorCode(code));
 			return actor;
 		}
 	}
@@ -122,6 +133,11 @@ public interface ActorQuerier extends Querier {
 			,"WHERE t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS+" = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
 			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES)))
 			);
+	
+	/* Read all informations for external by code */
+	String QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = "readAllInformationsForExternalByCode";
+	String QUERY_IDENTIFIER_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE);
+	Actor readAllInformationsForExternalByCode(String code);
 	
 	/**/
 	
