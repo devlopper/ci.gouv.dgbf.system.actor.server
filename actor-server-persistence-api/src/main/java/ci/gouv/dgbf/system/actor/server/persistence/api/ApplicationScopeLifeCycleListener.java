@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
@@ -51,7 +52,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		ProfileQuerier.initialize();
 		ProfileTypeQuerier.initialize();
 		ProfilePrivilegeQuerier.initialize();
-
+		ProfileFunctionQuerier.initialize();
+		
 		ActorQuerier.initialize();
 		ActorScopeQuerier.initialize();
 		

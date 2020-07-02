@@ -13,9 +13,11 @@ import lombok.experimental.Accessors;
 public class ProfileFunctionDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Override
-	public ProfileFunctionDto setIdentifier(String identifier) {
-		return (ProfileFunctionDto) super.setIdentifier(identifier);
-	}
+	private ProfileDto profile;
+	private FunctionDto function;
 
+	@Override
+	public ProfileFunctionDto set__deletable__(Boolean __deletable__) {
+		return (ProfileFunctionDto) super.set__deletable__(__deletable__);
+	}
 }

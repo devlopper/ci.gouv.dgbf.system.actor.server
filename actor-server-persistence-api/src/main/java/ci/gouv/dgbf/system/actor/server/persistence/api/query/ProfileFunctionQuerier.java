@@ -1,0 +1,120 @@
+package ci.gouv.dgbf.system.actor.server.persistence.api.query;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.object.AbstractObject;
+import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Querier;
+import org.cyk.utility.__kernel__.persistence.query.Query;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.value.Value;
+
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
+
+public interface ProfileFunctionQuerier extends Querier {
+
+	String PARAMETER_NAME_PROFILES_CODES = "profilesCodes";
+	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
+	
+	/* read by profiles codes order by function code ascending */
+	String QUERY_NAME_READ_BY_PROFILES_CODES = "readByProfilesCodes";
+	String QUERY_IDENTIFIER_READ_BY_PROFILES_CODES = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, QUERY_NAME_READ_BY_PROFILES_CODES);
+	String QUERY_VALUE_READ_BY_PROFILES_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("ProfileFunction t")			
+			,Language.Where.of("t.profile.code IN :"+PARAMETER_NAME_PROFILES_CODES)			
+			,Language.Order.of("t.profile.code ASC,t.function.code ASC"))
+			;
+	Collection<ProfileFunction> readByProfilesCodes(Collection<String> profilesCodes);
+	
+	/* count by profiles codes */
+	String QUERY_NAME_COUNT_BY_PROFILES_CODES = "countByProfilesCodes";
+	String QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, QUERY_NAME_COUNT_BY_PROFILES_CODES);
+	String QUERY_VALUE_COUNT_BY_PROFILES_CODES = Language.of(Language.Select.of("COUNT(t)")
+			,Language.From.of("ProfileFunction t")			
+			,Language.Where.of("t.profile.code IN :"+PARAMETER_NAME_PROFILES_CODES)			
+			);
+	Long countByProfilesCodes(Collection<String> profilesCodes);
+	
+	/* read by functions codes order by profile code ascending */
+	String QUERY_NAME_READ_BY_FUNCTIONS_CODES = "readByFunctionsCodes";
+	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, QUERY_NAME_READ_BY_FUNCTIONS_CODES);
+	String QUERY_VALUE_READ_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("ProfileFunction t")			
+			,Language.Where.of("t.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+			,Language.Order.of("t.profile.code ASC,t.function.code ASC"))
+			;
+	Collection<ProfileFunction> readByFunctionsCodes(Collection<String> functionsCodes);
+	
+	/* count by functions codes */
+	String QUERY_NAME_COUNT_BY_FUNCTIONS_CODES = "countByFunctionsCodes";
+	String QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, QUERY_NAME_COUNT_BY_FUNCTIONS_CODES);
+	String QUERY_VALUE_COUNT_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("COUNT(t)")
+			,Language.From.of("ProfileFunction t")			
+			,Language.Where.of("t.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+			);
+	Long countByFunctionsCodes(Collection<String> functionsCodes);
+	
+	/**/
+	
+	public static abstract class AbstractImpl extends AbstractObject implements ProfileFunctionQuerier,Serializable {
+		@Override
+		public Collection<ProfileFunction> readByProfilesCodes(Collection<String> profilesCodes) {
+			return EntityReader.getInstance().readMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
+		}
+		
+		@Override
+		public Long countByProfilesCodes(Collection<String> profilesCodes) {
+			return EntityCounter.getInstance().count(ProfileFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES)
+					.addFilterField(PARAMETER_NAME_PROFILES_CODES,profilesCodes));
+		}
+		
+		@Override
+		public Collection<ProfileFunction> readByFunctionsCodes(Collection<String> functionsCodes) {
+			return EntityReader.getInstance().readMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
+		}
+		
+		@Override
+		public Long countByFunctionsCodes(Collection<String> functionsCodes) {
+			return EntityCounter.getInstance().count(ProfileFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES)
+					.addFilterField(PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes));
+		}
+	}
+	
+	/**/
+	
+	static ProfileFunctionQuerier getInstance() {
+		return Helper.getInstance(ProfileFunctionQuerier.class, INSTANCE);
+	}
+	
+	Value INSTANCE = new Value();
+	
+	static void initialize() {
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,ProfileFunction.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_PROFILES_CODES
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_PROFILES_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,ProfileFunction.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_FUNCTIONS_CODES
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_FUNCTIONS_CODES
+				)
+			);
+	}
+}
