@@ -73,11 +73,54 @@ public interface PrivilegeQuerier extends Querier {
 	String QUERY_VALUE_COUNT_BY_ACTORS_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
 			,Language.From.of("Privilege t"
 					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
-					+ " JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = profilePrivilege.profile.identifier"
-					)			
+					+ " JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = profilePrivilege.profile.identifier")			
 			,Language.Where.of("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
 			);
 	Long countByActorsCodes(Collection<String> actorsCodes);
+	
+	/* read by profiles codes order by code ascending */
+	String QUERY_NAME_READ_BY_PROFILES_CODES = "readByProfilesCodes";
+	String QUERY_IDENTIFIER_READ_BY_PROFILES_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_READ_BY_PROFILES_CODES);
+	String QUERY_VALUE_READ_BY_PROFILES_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("Privilege t"
+					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier")			
+			,Language.Where.of("profilePrivilege.profile.code IN :"+PARAMETER_NAME_PROFILES_CODES)			
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Privilege> readByProfilesCodes(Collection<String> profilesCodes);
+	
+	/* count by profiles codes order by code ascending */
+	String QUERY_NAME_COUNT_BY_PROFILES_CODES = "countByProfilesCodes";
+	String QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_COUNT_BY_PROFILES_CODES);
+	String QUERY_VALUE_COUNT_BY_PROFILES_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,Language.From.of("Privilege t"
+					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier")			
+			,Language.Where.of("profilePrivilege.profile.code IN :"+PARAMETER_NAME_PROFILES_CODES)			
+			);
+	Long countByProfilesCodes(Collection<String> profilesCodes);
+	
+	/* read by functions codes order by code ascending */
+	String QUERY_NAME_READ_BY_FUNCTIONS_CODES = "readByFunctionsCodes";
+	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_READ_BY_FUNCTIONS_CODES);
+	String QUERY_VALUE_READ_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("Privilege t"
+					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
+					+ " JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = profilePrivilege.profile.identifier")			
+			,Language.Where.of("profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Privilege> readByFunctionsCodes(Collection<String> functionsCodes);
+	
+	/* count by functions codes order by code ascending */
+	String QUERY_NAME_COUNT_BY_FUNCTIONS_CODES = "countByFunctionsCodes";
+	String QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_COUNT_BY_PROFILES_CODES);
+	String QUERY_VALUE_COUNT_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,Language.From.of("Privilege t"
+					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
+					+ " JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = profilePrivilege.profile.identifier")			
+			,Language.Where.of("profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+			);
+	Long countByFunctionsCodes(Collection<String> functionsCodes);
 	
 	/* read by profiles codes not associated order by code ascending */
 	String QUERY_NAME_READ_BY_PROFILES_CODES_NOT_ASSOCIATED = "readByProfilesCodesNotAssociated";
@@ -190,7 +233,27 @@ public interface PrivilegeQuerier extends Querier {
 		
 		@Override
 		public Long countByActorsCodes(Collection<String> actorsCodes) {
-			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
+			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
+		}
+		
+		@Override
+		public Collection<Privilege> readByProfilesCodes(Collection<String> profilesCodes) {
+			return EntityReader.getInstance().readMany(Privilege.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
+		}
+		
+		@Override
+		public Long countByProfilesCodes(Collection<String> profilesCodes) {
+			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
+		}
+		
+		@Override
+		public Collection<Privilege> readByFunctionsCodes(Collection<String> functionsCodes) {
+			return EntityReader.getInstance().readMany(Privilege.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
+		}
+		
+		@Override
+		public Long countByFunctionsCodes(Collection<String> functionsCodes) {
+			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 		
 		@Override
@@ -200,7 +263,7 @@ public interface PrivilegeQuerier extends Querier {
 		
 		@Override
 		public Long countByProfilesCodesNotAssociated(Collection<String> profilesCodes) {
-			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES_NOT_ASSOCIATED, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
+			return EntityCounter.getInstance().count(Privilege.class, QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES_NOT_ASSOCIATED, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
 		}
 		
 		@Override
@@ -270,6 +333,28 @@ public interface PrivilegeQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_ACTORS_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_PROFILES_CODES
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_PROFILES_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_FUNCTIONS_CODES
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_FUNCTIONS_CODES
 				)
 			);
 		

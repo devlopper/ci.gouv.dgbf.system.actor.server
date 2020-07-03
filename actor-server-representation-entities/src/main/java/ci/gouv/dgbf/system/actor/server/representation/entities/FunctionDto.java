@@ -15,6 +15,7 @@ public class FunctionDto extends AbstractIdentifiableSystemScalarStringIdentifia
 	private static final long serialVersionUID = 1L;
 	
 	private FunctionTypeDto type;
+	private String profileIdentifier;
 	private ArrayList<String> profilesAsStrings;
 	
 	@Override

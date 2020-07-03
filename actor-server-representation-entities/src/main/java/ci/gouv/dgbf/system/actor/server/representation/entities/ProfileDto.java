@@ -14,5 +14,5 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private static final long serialVersionUID = 1L;
 	
 	private ProfileTypeDto type;
-
+	private String profileIdentifier;
 }

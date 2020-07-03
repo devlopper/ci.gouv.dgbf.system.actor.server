@@ -12,12 +12,21 @@ import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 
+@Queries(value = {
+		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM Function t ORDER BY t.code ASC")
+})
 public interface FunctionQuerier extends Querier {
 
+	/* read order by code ascending */
+	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
+	String QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING);
+	//Collection<FunctionType> readOrderByCodeAscending();
+	
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	
 	/* read by types codes order by code ascending */

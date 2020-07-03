@@ -61,6 +61,16 @@ public interface ProfileQuerier extends Querier {
 			;
 	Collection<Profile> readByActorsCodes(Collection<String> actorsCodes);
 	
+	/* read by functions codes order by code ascending */
+	String QUERY_NAME_READ_BY_FUNCTIONS_CODES = "readByFunctionsCodes";
+	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_FUNCTIONS_CODES);
+	String QUERY_VALUE_READ_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("t")
+			,Language.From.of("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			
+			,Language.Where.of("profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+			,Language.Order.of("t.code ASC"))
+			;
+	Collection<Profile> readByFunctionsCodes(Collection<String> functionsCodes);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements ProfileQuerier,Serializable {
@@ -83,6 +93,11 @@ public interface ProfileQuerier extends Querier {
 		@Override
 		public Collection<Profile> readByActorsCodes(Collection<String> actorsCodes) {
 			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);
+		}
+		
+		@Override
+		public Collection<Profile> readByFunctionsCodes(Collection<String> functionsCodes) {
+			return EntityReader.getInstance().readMany(Profile.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 	}
 	
@@ -115,6 +130,12 @@ public interface ProfileQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_FUNCTIONS_CODES
 				)
 			);
 	}

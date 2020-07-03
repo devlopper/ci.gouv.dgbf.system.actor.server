@@ -18,11 +18,12 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	
 	public static void initialize() {
 		PersistableClassesGetter.COLLECTION.set(List.of(
-				ProfileFunction.class,ProfilePrivilege.class,Profile.class,ProfileType.class
+				ProfileFunction.class,ProfilePrivilege.class
 				,Privilege.class,PrivilegeType.class
-				,ScopeFunction.class,Scope.class,ScopeTypeFunction.class,ScopeType.class
+				,ScopeFunction.class,Scope.class,ScopeTypeFunction.class
 				,Function.class,FunctionType.class
 				,ActorProfile.class,Actor.class
+				,Profile.class,ProfileType.class,ScopeType.class
 				));	
 	}
 }

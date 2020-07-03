@@ -41,10 +41,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 					return null;
 				Collection<ProfileFunction> profileFunctions = ProfileFunctionQuerier.getInstance().readByFunctionsCodes(functions.stream().map(x -> x.getCode())
 						.collect(Collectors.toList()));
-				functions.forEach(function -> {
-					function.setProfilesAsStrings(profileFunctions.stream().filter(profileFunction -> profileFunction.getFunction().equals(function))
-							.map(profileFunction -> profileFunction.getProfile().getName()).collect(Collectors.toList()));
-				});
+				if(CollectionHelper.isNotEmpty(profileFunctions))
+					functions.forEach(function -> {
+						Collection<ProfileFunction> __profileFunctions__ = profileFunctions.stream().filter(profileFunction -> profileFunction.getFunction().equals(function)).collect(Collectors.toList());
+						if(CollectionHelper.isNotEmpty(__profileFunctions__))
+							function.setProfilesAsStrings(__profileFunctions__.stream().map(profileFunction -> profileFunction.getProfile().getName()).collect(Collectors.toList()));
+					});
 				return (Collection<T>) functions;
 			}
 		}
