@@ -76,12 +76,12 @@ public interface ProfileFunctionQuerier extends Querier {
 		
 		@Override
 		public Collection<ProfileFunction> readByFunctionsCodes(Collection<String> functionsCodes) {
-			return EntityReader.getInstance().readMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
+			return EntityReader.getInstance().readMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 		
 		@Override
 		public Long countByFunctionsCodes(Collection<String> functionsCodes) {
-			return EntityCounter.getInstance().count(ProfileFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES)
+			return EntityCounter.getInstance().count(ProfileFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES)
 					.addFilterField(PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes));
 		}
 	}

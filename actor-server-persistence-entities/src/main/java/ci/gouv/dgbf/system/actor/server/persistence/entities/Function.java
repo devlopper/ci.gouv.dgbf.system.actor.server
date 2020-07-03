@@ -1,12 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
@@ -25,6 +27,7 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private FunctionType type;
+	@Transient private Collection<String> profilesAsStrings;
 	
 	@Override
 	public Function setIdentifier(String identifier) {
@@ -50,6 +53,7 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
 	
 	public static final String COLUMN_TYPE = "type";
 	

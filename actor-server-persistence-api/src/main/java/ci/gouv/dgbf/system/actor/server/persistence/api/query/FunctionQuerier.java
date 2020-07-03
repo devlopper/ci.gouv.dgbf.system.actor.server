@@ -39,6 +39,14 @@ public interface FunctionQuerier extends Querier {
 			;
 	Long countByTypesCodes(Collection<String> typesCodes);
 	
+	/* read with profiles by types codes order by code ascending */
+	String QUERY_NAME_READ_WITH_PROFILES_BY_TYPES_CODES = "readWithProfilesByTypesCodes";
+	String QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ_WITH_PROFILES_BY_TYPES_CODES);
+	
+	/* read with profiles by types codes order by code ascending */
+	String QUERY_NAME_COUNT_WITH_PROFILES_BY_TYPES_CODES = "countWithProfilesByTypesCodes";
+	String QUERY_IDENTIFIER_COUNT_WITH_PROFILES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_COUNT_WITH_PROFILES_BY_TYPES_CODES);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements FunctionQuerier,Serializable {
@@ -52,7 +60,6 @@ public interface FunctionQuerier extends Querier {
 		public Long countByTypesCodes(Collection<String> typesCodes) {
 			return EntityCounter.getInstance().count(Function.class, QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES,PARAMETER_NAME_TYPES_CODES,typesCodes);
 		}
-		
 	}
 	
 	/**/
