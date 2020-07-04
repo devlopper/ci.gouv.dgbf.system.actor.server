@@ -18,13 +18,13 @@ import org.cyk.utility.__kernel__.value.Value;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 
 @Queries(value = {
-		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM Function t ORDER BY t.code ASC")
+		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
 })
 public interface FunctionQuerier extends Querier {
 
 	/* read order by code ascending */
-	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
-	String QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING);
+	String QUERY_NAME_READ = "readOrderByCodeAscending";
+	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ);
 	//Collection<FunctionType> readOrderByCodeAscending();
 	
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
@@ -52,9 +52,17 @@ public interface FunctionQuerier extends Querier {
 	String QUERY_NAME_READ_WITH_PROFILES_BY_TYPES_CODES = "readWithProfilesByTypesCodes";
 	String QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ_WITH_PROFILES_BY_TYPES_CODES);
 	
-	/* read with profiles by types codes order by code ascending */
+	/* count with profiles */
 	String QUERY_NAME_COUNT_WITH_PROFILES_BY_TYPES_CODES = "countWithProfilesByTypesCodes";
 	String QUERY_IDENTIFIER_COUNT_WITH_PROFILES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_COUNT_WITH_PROFILES_BY_TYPES_CODES);
+	
+	/* read with profiles order by code ascending */
+	String QUERY_NAME_READ_WITH_PROFILES = "readWithProfiles";
+	String QUERY_IDENTIFIER_READ_WITH_PROFILES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ_WITH_PROFILES);
+	
+	/* count with profiles */
+	String QUERY_NAME_COUNT_WITH_PROFILES = "countWithProfiles";
+	String QUERY_IDENTIFIER_COUNT_WITH_PROFILES = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_COUNT_WITH_PROFILES);
 	
 	/**/
 	

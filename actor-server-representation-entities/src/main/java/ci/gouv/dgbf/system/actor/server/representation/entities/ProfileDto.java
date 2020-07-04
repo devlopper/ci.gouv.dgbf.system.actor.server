@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 
@@ -14,5 +15,6 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private static final long serialVersionUID = 1L;
 	
 	private ProfileTypeDto type;
+	private ArrayList<String> privilegesAsStrings;
 	private String profileIdentifier;
 }

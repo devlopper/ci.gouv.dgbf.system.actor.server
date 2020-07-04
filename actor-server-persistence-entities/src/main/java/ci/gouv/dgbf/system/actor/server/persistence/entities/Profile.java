@@ -30,6 +30,7 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ProfileType type;
 	
 	@Transient private Collection<Privilege> privileges;
+	@Transient private Collection<String> privilegesAsStrings;
 	
 	@Override
 	public Profile setIdentifier(String identifier) {
@@ -80,6 +81,8 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_PRIVILEGES = "privileges";
+	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 	
 	public static final String COLUMN_TYPE = "type";
 	

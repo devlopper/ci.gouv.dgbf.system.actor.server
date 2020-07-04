@@ -12,15 +12,24 @@ import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
+@Queries(value = {
+		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME
+				,value = "SELECT t FROM Profile t WHERE t.type.code = 'SYSTEME' ORDER BY t.code ASC")
+})
 public interface ProfileQuerier extends Querier {
 
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	
+	/* read order by code ascending */
+	String QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME = "readWhereTypeIsSystemeOrderByCodeAscending";
+	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME);
 	
 	/* read by types codes by functions codes order by code ascending */
 	String QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES = "readByTypesCodesByFunctionsCodes";
