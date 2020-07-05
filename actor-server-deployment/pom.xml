@@ -19,6 +19,8 @@
 		<cyk.variable.system.name>Gestion des Acteurs</cyk.variable.system.name>
 		<cyk.variable.system.version>0.1</cyk.variable.system.version>
 		
+		<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+		
 		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
 		<!-- This is set here because of google replarer plugin -->
 		<jboss-web.context-root>${cyk.variable.system.identifier}/server</jboss-web.context-root>
@@ -27,12 +29,24 @@
 		<!-- Development -->
 		<data.source.oracle.dev.user>SIIBC_Actor</data.source.oracle.dev.user>
 		<data.source.oracle.dev.password>actor</data.source.oracle.dev.password>
+		<security.single.sign.on.system.keycloak.dev.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.dev.url>
+		<security.single.sign.on.system.keycloak.dev.realm.name>test01</security.single.sign.on.system.keycloak.dev.realm.name>
+		<security.single.sign.on.system.keycloak.dev.client.identifier>admin-cli</security.single.sign.on.system.keycloak.dev.client.identifier>
+		<security.single.sign.on.system.keycloak.dev.client.secret>a8576f2d-762c-47ad-a973-26fac75e40ab</security.single.sign.on.system.keycloak.dev.client.secret>
+		<security.single.sign.on.system.keycloak.dev.credential.username>admin</security.single.sign.on.system.keycloak.dev.credential.username>
+		<security.single.sign.on.system.keycloak.dev.credential.password>admin</security.single.sign.on.system.keycloak.dev.credential.password>
 		<!-- Test -->
 		
 		<!-- Production -->
 		<data.base.management.system.oracle.prod.hostname>10.3.4.21</data.base.management.system.oracle.prod.hostname>
 		<data.base.management.system.oracle.prod.sid>sib</data.base.management.system.oracle.prod.sid>
 		<data.source.oracle.prod.user>acteur</data.source.oracle.prod.user>
+		<security.single.sign.on.system.keycloak.prod.url>https://security.dgbf.ci:8443/auth</security.single.sign.on.system.keycloak.prod.url>
+		<security.single.sign.on.system.keycloak.prod.realm.name>test01</security.single.sign.on.system.keycloak.prod.realm.name>
+		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
+		<security.single.sign.on.system.keycloak.prod.client.secret>a8576f2d-762c-47ad-a973-26fac75e40ab</security.single.sign.on.system.keycloak.prod.client.secret>
+		<security.single.sign.on.system.keycloak.prod.credential.username>admin</security.single.sign.on.system.keycloak.prod.credential.username>
+		<security.single.sign.on.system.keycloak.prod.credential.password>admin</security.single.sign.on.system.keycloak.prod.credential.password>
 		
 		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
 	</properties>

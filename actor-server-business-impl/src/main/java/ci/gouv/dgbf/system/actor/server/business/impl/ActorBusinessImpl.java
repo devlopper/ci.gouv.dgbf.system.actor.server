@@ -8,8 +8,12 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.security.keycloak.User;
+import org.cyk.utility.__kernel__.security.keycloak.UserManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -43,11 +47,10 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		super.__listenExecuteCreateAfter__(actor, properties, function);
 		//we instantiate user profile
 		Profile profile = new Profile().setType(__inject__(ProfileTypePersistence.class).readByBusinessIdentifier(ProfileType.CODE_UTILISATEUR));
-		profile.setIdentifier("PF_"+actor.getCode());
-		profile.setCode(profile.getIdentifier());
+		profile.setCode(actor.getCode());
 		profile.setName("Profile de "+actor.getElectronicMailAddress());
 		//we collect predefined privileges from system profiles based on given functions
-		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {			
+		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {
 			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of(ProfileType.CODE_SYSTEME)
 					, actor.getFunctions().stream().map(x -> x.getCode()).collect(Collectors.toSet()));			
 			if(CollectionHelper.isNotEmpty(privileges))								
@@ -55,5 +58,33 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		}
 		__inject__(ProfileBusiness.class).create(profile);
 		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
+		
+		// Integration to keycloak
+		try {
+			createKeycloakUser(actor);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
 	}
+	
+	private void createKeycloakUser(Actor actor) {
+		//is actor has an keycloak account ?
+		User user = UserManager.getInstance().readByUserName(actor.getCode());
+		if(user != null) {
+			LogHelper.logInfo(String.format("user with name <<%s>> already exists in keycloak", actor.getCode()), getClass());
+			return;
+		}
+		//we create keyclock user
+		user = new User();
+		user.setElectronicMailAddress(actor.getElectronicMailAddress());
+		user.setFirstName(actor.getFirstName());
+		user.setLastNames(actor.getLastNames());
+		user.setName(actor.getCode());
+		user.setPass(ValueHelper.defaultToIfBlank(actor.getPassword(),DEFAULT_PASSWORD));
+		UserManager.getInstance().create(user);
+	}
+	
+	/**/
+	
+	private static final String DEFAULT_PASSWORD = "123";
 }
