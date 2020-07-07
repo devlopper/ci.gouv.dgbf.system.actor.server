@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebListener;
 
+import org.cyk.utility.__kernel__.security.keycloak.KeycloakClientGetter;
 import org.cyk.utility.server.deployment.AbstractServletContextListener;
 
 import ci.gouv.dgbf.system.actor.server.representation.impl.ApplicationScopeLifeCycleListener;
@@ -17,6 +18,8 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	public void __initialize__(ServletContext context) {
 		super.__initialize__(context);
 		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
+		//be sure we can work with keycloak client
+		KeycloakClientGetter.getInstance().get();
 	}
 
 }
