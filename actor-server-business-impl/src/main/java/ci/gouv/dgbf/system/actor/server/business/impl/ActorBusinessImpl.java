@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,54 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	private static final long serialVersionUID = 1L;
 	
 	@Override
+	public Integer importFromKeycloak() {
+		Collection<User> users = UserManager.getInstance().readAll();
+		if(CollectionHelper.isEmpty(users))
+			return null;
+		Collection<Actor> actors = null;
+		for(User user : users) {
+			if(StringHelper.isBlank(user.getName()) || StringHelper.isBlank(user.getElectronicMailAddress()))
+				continue;
+			Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(user.getElectronicMailAddress());
+			if(actor != null)
+				continue;
+			if(actors == null)
+				actors = new ArrayList<>();
+			actors.add(new Actor()
+					.setKeycloakUserCreatable(Boolean.FALSE)
+					.setFirstName(ValueHelper.defaultToIfBlank(user.getFirstName(), user.getName()))
+					.setLastNames(ValueHelper.defaultToIfBlank(user.getLastNames(), user.getName()))
+					.setElectronicMailAddress(user.getElectronicMailAddress())
+				);
+		}
+		LogHelper.logInfo("Number of users to import from keycloak is "+CollectionHelper.getSize(actors),getClass());
+		if(CollectionHelper.isNotEmpty(actors))
+			createMany(actors);
+		return CollectionHelper.getSize(actors);
+	}
+	
+	@Override
+	public Integer exportToKeycloak() {
+		Collection<Actor> actors = __inject__(ActorPersistence.class).read();
+		if(CollectionHelper.isEmpty(actors))
+			return null;
+		Collection<String> existingUsersNames = UserManager.getInstance().readAllNames();
+		Collection<User> users = null;
+		for(Actor actor : actors) {
+			if(CollectionHelper.contains(existingUsersNames, actor.getCode()))
+				continue;
+			if(users == null)
+				users = new ArrayList<>();
+			users.add(new User().setName(actor.getCode()).setFirstName(actor.getFirstName()).setLastNames(actor.getLastNames())
+					.setElectronicMailAddress(actor.getElectronicMailAddress()).setPass(ActorBusinessImpl.DEFAULT_PASSWORD));
+		}		
+		LogHelper.logInfo("Number of actors to export to keycloak is "+CollectionHelper.getSize(users),getClass());
+		if(CollectionHelper.isNotEmpty(users))
+			UserManager.getInstance().create(users);
+		return CollectionHelper.getSize(users);
+	}
+	
+	@Override
 	protected void __listenExecuteCreateBefore__(Actor actor, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(actor, properties, function);
 		if(StringHelper.isBlank(actor.getCode()))
@@ -60,11 +109,12 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
 		
 		// Integration to keycloak
-		try {
-			createKeycloakUser(actor);
-		} catch (Exception exception) {
-			LogHelper.log(exception, getClass());
-		}
+		if(actor.getKeycloakUserCreatable() || Boolean.TRUE.equals(actor.getKeycloakUserCreatable()))
+			try {
+				createKeycloakUser(actor);
+			} catch (Exception exception) {
+				LogHelper.log(exception, getClass());
+			}
 	}
 	
 	private void createKeycloakUser(Actor actor) {

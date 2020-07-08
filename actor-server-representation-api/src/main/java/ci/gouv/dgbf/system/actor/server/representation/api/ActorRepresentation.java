@@ -20,8 +20,22 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@ApiOperation(value = "Obtenir toutes les informations d'un compte utilisateur",tags = {"get"})
 	Response getAllInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
+	@GET
+	@Path(PATH_IMPORT_FROM_KEYCLOAK)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak",tags = {"import"})
+	Response importFromKeycloak();
+	
+	@GET
+	@Path(PATH_EXPORT_TO_KEYCLOAK)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Exporter les acteurs vers keycloak",tags = {"export"})
+	Response exportToKeycloak();
+	
 	String PATH = "actor";
 	String PATH_GET_ALL_INFORMATIONS_BY_CODE = "getAllInformationsByCode";
+	String PATH_IMPORT_FROM_KEYCLOAK = "importFromKeycloak";
+	String PATH_EXPORT_TO_KEYCLOAK = "exportToKeycloak";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 }

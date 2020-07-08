@@ -41,6 +41,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private Collection<Scope> scopes;
 	@Transient private String username;
 	@Transient private String password;
+	@Transient private Boolean keycloakUserCreatable;
 	
 	@Override
 	public Actor setIdentifier(String identifier) {

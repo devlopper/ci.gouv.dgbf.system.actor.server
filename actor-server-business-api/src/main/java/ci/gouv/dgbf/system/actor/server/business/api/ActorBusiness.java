@@ -5,4 +5,7 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 public interface ActorBusiness extends BusinessEntity<Actor> {
 
+	Integer importFromKeycloak();	
+	Integer exportToKeycloak();
+	
 }

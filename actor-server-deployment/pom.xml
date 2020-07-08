@@ -40,32 +40,7 @@
 		<!-- Production -->
 		<data.base.management.system.oracle.prod.hostname>10.3.4.21</data.base.management.system.oracle.prod.hostname>
 		<data.base.management.system.oracle.prod.sid>sib</data.base.management.system.oracle.prod.sid>
-		<data.source.oracle.prod.user>acteur</data.source.oracle.prod.user>
-		<!--
-		<security.single.sign.on.system.keycloak.prod.url>http://10.3.4.60:8080/auth</security.single.sign.on.system.keycloak.prod.url>
-		<security.single.sign.on.system.keycloak.prod.realm.name>SIIB</security.single.sign.on.system.keycloak.prod.realm.name>
-		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
-		<security.single.sign.on.system.keycloak.prod.client.secret>2cec22db-bfae-42ba-92d0-59713da5d246</security.single.sign.on.system.keycloak.prod.client.secret>
-		<security.single.sign.on.system.keycloak.prod.credential.username>admin</security.single.sign.on.system.keycloak.prod.credential.username>
-		<security.single.sign.on.system.keycloak.prod.credential.password>admin</security.single.sign.on.system.keycloak.prod.credential.password>
-		-->
-		
-		<!--
-		<security.single.sign.on.system.keycloak.prod.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.prod.url>
-		<security.single.sign.on.system.keycloak.prod.realm.name>test01</security.single.sign.on.system.keycloak.prod.realm.name>
-		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
-		<security.single.sign.on.system.keycloak.prod.client.secret>a8576f2d-762c-47ad-a973-26fac75e40ab</security.single.sign.on.system.keycloak.prod.client.secret>
-		<security.single.sign.on.system.keycloak.prod.credential.username>admin</security.single.sign.on.system.keycloak.prod.credential.username>
-		<security.single.sign.on.system.keycloak.prod.credential.password>admin</security.single.sign.on.system.keycloak.prod.credential.password>
-		-->
-		<!--
-		<security.single.sign.on.system.keycloak.prod.url>http://10.3.4.60:8080/auth</security.single.sign.on.system.keycloak.prod.url>
-		<security.single.sign.on.system.keycloak.prod.realm.name>SIIBCTEST</security.single.sign.on.system.keycloak.prod.realm.name>
-		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
-		<security.single.sign.on.system.keycloak.prod.client.secret>f0958918-4d5e-49fd-bba1-d0461e634941</security.single.sign.on.system.keycloak.prod.client.secret>
-		<security.single.sign.on.system.keycloak.prod.credential.username>admin</security.single.sign.on.system.keycloak.prod.credential.username>
-		<security.single.sign.on.system.keycloak.prod.credential.password>admin</security.single.sign.on.system.keycloak.prod.credential.password>
-		-->
+		<data.source.oracle.prod.user>acteur</data.source.oracle.prod.user>		
 		<security.single.sign.on.system.keycloak.prod.url>http://10.3.4.60:8080/auth</security.single.sign.on.system.keycloak.prod.url>
 		<security.single.sign.on.system.keycloak.prod.realm.name>SIIB</security.single.sign.on.system.keycloak.prod.realm.name>
 		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
@@ -87,12 +62,6 @@
 			<artifactId>jee-utility-server-deployment</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
-		</dependency>
-		-->
 	</dependencies>		
 	
 	<profiles>
@@ -134,6 +103,7 @@
 			<properties>
 				<cyk.variable.system.host>192.168.1.101</cyk.variable.system.host>
 				<data.base.management.system.host>${cyk.variable.system.host}</data.base.management.system.host>
+				<deployment.standalone.port.offset>1</deployment.standalone.port.offset>
 			</properties>
 		</profile>
 		
