@@ -3,9 +3,11 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
@@ -134,6 +136,24 @@ public interface ScopeQuerier extends Querier {
 			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE;
 	Long countVisibleAdministrativeUnitsByActorCode(String actorCode);
 	
+	/* read visible administrative units by actor code order by code ascending */
+	String QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = "readVisibleAdministrativeUnitsWithSectionByActorCode";
+	String QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE);
+	Map<String,Integer> QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE_TUPLE_FIELDS_NAMES_INDEXES = 
+			MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING);
+	String QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = 
+			"SELECT scope.identifier,scope.code,scope.name,"+Language.Select.concatCodeName("scopeOfSection")
+			+ " FROM Scope scope " 
+			+ " JOIN AdministrativeUnit administrativeUnitOfScope ON administrativeUnitOfScope.identifier = scope.identifier "
+			+ " JOIN Section sectionOfAdministrativeUnit ON sectionOfAdministrativeUnit.identifier = administrativeUnitOfScope.section "
+			+ " JOIN Scope scopeOfSection ON scopeOfSection.identifier = sectionOfAdministrativeUnit.identifier "
+			+ QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE_WHERE
+			+ " ORDER BY scope.code ASC";
+	
+	/* count visible administrative units by actor code */
+	String QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = "countVisibleAdministrativeUnitsWithSectionByActorCode";
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE);
+	
 	/* read by actors codes not associated by types codes order by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = "readByActorsCodesNotAssociatedByTypesCodes";
 	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES);
@@ -173,6 +193,27 @@ public interface ScopeQuerier extends Querier {
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES))
 			);
 	Long countByTypesCodes(Collection<String> typesCodes);
+	
+	/* read where type is ua order by code ascending */
+	String QUERY_NAME_READ_WHERE_TYPE_IS_UA = "readWhereTypeIsUA";
+	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_WHERE_TYPE_IS_UA);
+	Map<String,Integer> QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE
+			,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING);
+	String QUERY_VALUE_READ_WHERE_TYPE_IS_UA = "SELECT t.identifier,t.code,t.name,"+Language.Select.concatCodeName("sectionScope")
+			+ " FROM Scope t "
+			+ " JOIN AdministrativeUnit administrativeUnit ON administrativeUnit.identifier = t.identifier "
+			+ " JOIN Section section ON section.identifier = administrativeUnit.section "
+			+ " JOIN Scope sectionScope ON sectionScope.identifier = section.identifier "
+			+ " ORDER BY t.code ASC";
+	
+	/* count where type is ua */
+	String QUERY_NAME_COUNT_WHERE_TYPE_IS_UA = "countWhereTypeIsUA";
+	String QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_WHERE_TYPE_IS_UA);
+	String QUERY_VALUE_COUNT_WHERE_TYPE_IS_UA = "SELECT COUNT(t.identifier)"
+	+ " FROM Scope t "
+	+ " JOIN AdministrativeUnit administrativeUnit ON administrativeUnit.identifier = t.identifier "
+	+ " JOIN Section section ON section.identifier = administrativeUnit.section "
+	+ " JOIN Scope sectionScope ON sectionScope.identifier = section.identifier ";
 	
 	Collection<Scope> readVisibleByActorCode(String actorCode);
 	Long countVisibleByActorCode(String actorCode);
@@ -328,6 +369,17 @@ public interface ScopeQuerier extends Querier {
 				)
 			);
 		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_TYPE_IS_UA
+				).setTupleFieldsNamesIndexes(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_TUPLE_FIELDS_NAMES_INDEXES)
+			);		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_TYPE_IS_UA
+				)
+			);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE
@@ -348,6 +400,12 @@ public interface ScopeQuerier extends Querier {
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE
 				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE
+				).setTupleFieldsNamesIndexes(QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE_TUPLE_FIELDS_NAMES_INDEXES)
 			);
 	}
 }

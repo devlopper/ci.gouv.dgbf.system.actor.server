@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
@@ -25,6 +26,9 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ScopeType type;
+	
+	@Transient private Scope section;
+	@Transient private String sectionAsString;
 	
 	@Override
 	public Scope setIdentifier(String identifier) {
@@ -50,9 +54,10 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	
 	public static final String COLUMN_TYPE = "type";
 	
 	public static final String TABLE_NAME = "DOMAINE";
-	
 }

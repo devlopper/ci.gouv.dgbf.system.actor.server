@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
+import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
@@ -38,7 +39,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	public static void initialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.entities.ApplicationScopeLifeCycleListener.initialize();
-		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class/*,QueryResultMapper.class*/, EntityReader.class,EntityCounter.class);
+		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class/*,QueryResultMapper.class*/, EntityReader.class,EntityCounter.class
+				,CountQueryIdentifierGetter.class);
 		
 		FunctionQuerier.initialize();
 		FunctionTypeQuerier.initialize();
