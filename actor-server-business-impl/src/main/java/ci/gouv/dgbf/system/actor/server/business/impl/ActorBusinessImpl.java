@@ -109,7 +109,7 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
 		
 		// Integration to keycloak
-		if(actor.getKeycloakUserCreatable() || Boolean.TRUE.equals(actor.getKeycloakUserCreatable()))
+		if(actor.getKeycloakUserCreatable() == null || Boolean.TRUE.equals(actor.getKeycloakUserCreatable()))
 			try {
 				createKeycloakUser(actor);
 			} catch (Exception exception) {
