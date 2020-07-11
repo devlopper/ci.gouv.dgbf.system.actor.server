@@ -22,6 +22,8 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				arguments.getQuery().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
 				return super.count(tupleClass, arguments);
 			}
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return ScopeQuerier.getInstance().countWhereFilter(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

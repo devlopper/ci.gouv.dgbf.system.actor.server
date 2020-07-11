@@ -12,6 +12,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 
@@ -53,6 +54,8 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 					});
 				return (Collection<T>) functions;
 			}
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilter(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

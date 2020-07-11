@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -96,6 +99,25 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				.collect(Collectors.toList())).containsExactly("1","3");
 		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodesNotAssociated(List.of("3")).stream().map(Privilege::getCode)
 				.collect(Collectors.toList())).containsExactly("1","2","3");
+	}
+	
+	@Test
+	public void scopeQuerier_readWhereFilterByTypesCodes(){
+		assertThat(ScopeQuerier.QUERY_VALUE_READ_WHERE_FILTER)
+			.isEqualTo("SELECT t.identifier,CONCAT(t.code,' ',t.name) FROM Scope t WHERE"
+					// type (code ,name)
+					+ " LOWER(t.type.code) LIKE LOWER(:typeCode)"
+					+ " AND (LOWER(t.type.name) LIKE LOWER(:typeName) OR (LOWER(t.type.name) LIKE LOWER(:typeName0) AND LOWER(t.type.name) LIKE LOWER(:typeName1) AND LOWER(t.type.name) LIKE LOWER(:typeName2)))"
+					// (code,name)
+					+ " AND LOWER(t.code) LIKE LOWER(:code)"
+					+ " AND (LOWER(t.name) LIKE LOWER(:name) OR (LOWER(t.name) LIKE LOWER(:name0) AND LOWER(t.name) LIKE LOWER(:name1) AND LOWER(t.name) LIKE LOWER(:name2)))"
+					// ordering
+					+ " ORDER BY t.type.code ASC,t.code ASC");
+		
+		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).addFilterField(ScopeQuerier.PARAMETER_NAME_THIS, "a"));
+		System.out.println(scopes);
 	}
 	
 	@Test

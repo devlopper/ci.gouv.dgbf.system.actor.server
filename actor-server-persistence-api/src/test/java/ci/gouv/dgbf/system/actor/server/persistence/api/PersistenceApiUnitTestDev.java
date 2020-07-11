@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
-
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
@@ -17,14 +15,14 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		return "dev";
 	}
 	
-	@Test
+	//@Test
 	public void scopeQuerier_readVisibleSessionsByActorCode(){
 		//assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
 		assertThat(ScopeQuerier.getInstance().readVisibleSectionsByActorCode("komenanyc@yahoo.fr").stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("102","321","327");
 	}
 	
-	@Test
+	//@Test
 	public void scopeQuerier_countVisibleSessionsByActorCode(){
 		//assertThat(ScopeQuerier.getInstance().readVisibleSessionsByActorCode("1")).isNull();
 		assertThat(ScopeQuerier.getInstance().countVisibleSectionsByActorCode("komenanyc@yahoo.fr")).isEqualTo(3l);
