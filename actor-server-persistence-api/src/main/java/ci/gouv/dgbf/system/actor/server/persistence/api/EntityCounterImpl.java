@@ -24,6 +24,8 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			}
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return ScopeQuerier.getInstance().countWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return ScopeQuerier.getInstance().countWhereTypeIsUAAndFilter(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}
