@@ -33,18 +33,21 @@ public interface ScopeQuerier extends Querier {
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
 	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
+	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
+	
+	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME = 4;
+	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
 	/* read where filter order by type code ascending by code ascending */
 	String QUERY_NAME_READ_WHERE_FILTER = "readWhereFilter";
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_WHERE_FILTER);
-	Integer QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_TYPE_NAME_WORDS_COUNT = 4;
-	Integer QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_NAME_WORDS_COUNT = 4;
-	String QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE = Language.From.of("Scope t")+" "+Language.Where.of(
-			Language.Where.and(
-					Language.Where.like("t", "type.code", PARAMETER_NAME_TYPE_CODE),Language.Where.like("t", "type.name", PARAMETER_NAME_TYPE_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_TYPE_NAME_WORDS_COUNT)
-					,Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_NAME_WORDS_COUNT)
-					)
-		);
+	String QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE = Language.From.of("Scope t")+" "+Language.Where.of(Language.Where.and(
+		Language.Where.like("t", "type.code", PARAMETER_NAME_TYPE_CODE)
+		,Language.Where.like("t", "type.name", PARAMETER_NAME_TYPE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME)
+		,Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+		,Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+		,"(:"+PARAMETER_NAME_ACTOR_CODE_NULLABLE+" = true OR EXISTS(SELECT t0 FROM ActorScope t0 WHERE t0.scope = t AND "+Language.Where.like("t0", "actor.code", PARAMETER_NAME_ACTOR_CODE)+"))"
+		));
 	String QUERY_VALUE_READ_WHERE_FILTER = Language.of(Language.Select.of("t.identifier,t.code,t.name"),QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE,Language.Order.of("t.type.code ASC,t.code ASC"));
 	Collection<Scope> readWhereFilter(QueryExecutorArguments arguments);
 	
@@ -64,7 +67,7 @@ public interface ScopeQuerier extends Querier {
 			+ " JOIN Section section ON section.identifier = administrativeUnit.section "
 			+ " JOIN Scope sectionScope ON sectionScope.identifier = section.identifier "
 			+Language.Where.of(Language.Where.and(				
-					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_NAME_WORDS_COUNT)
+					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				));
 	String QUERY_VALUE_READ_WHERE_TYPE_IS_UA_AND_FILTER = "SELECT t.identifier,t.code,t.name,"+Language.Select.concatCodeName("sectionScope")+ QUERY_VALUE_READ_WHERE_TYPE_IS_UA_AND_FILTER_FROM_WHERE+ " ORDER BY t.code ASC";
 	Collection<Scope> readWhereTypeIsUAAndFilter(QueryExecutorArguments arguments);
@@ -103,25 +106,20 @@ public interface ScopeQuerier extends Querier {
 	/* read by actors codes by scopes types codes order by type code by code ascending */
 	String QUERY_NAME_READ_BY_ACTORS_CODES_BY_TYPES_CODES = "readByActorsCodesByTypesCodes";
 	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_BY_ACTORS_CODES_BY_TYPES_CODES);
-	String QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("t")
-			,Language.From.of("Scope t JOIN ActorScope actorScope ON actorScope.scope.identifier = t.identifier")			
-			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,"actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES))			
-			,Language.Order.of("t.type.code ASC,t.code ASC"))
-			;
+	String QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES_FROM_WHERE = Language.of(Language.From.of("Scope t JOIN ActorScope actorScope ON actorScope.scope = t")			
+			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,"actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)));
+	String QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("t"),QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES_FROM_WHERE
+			,Language.Order.of("t.type.code ASC,t.code ASC"));
 	Collection<Scope> readByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
 	/* count by actors codes by scopes types codes */
 	String QUERY_NAME_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES = "countByActorsCodesByTypesCodes";
 	String QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES);
-	String QUERY_VALUE_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("COUNT(t)")
-			,Language.From.of("Scope t JOIN ActorScope actorScope ON actorScope.scope.identifier = t.identifier")			
-			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,"actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)))
-			;
+	String QUERY_VALUE_COUNT_BY_ACTORS_CODES_BY_TYPES_CODES = Language.of(Language.Select.of("COUNT(t)"),QUERY_VALUE_READ_BY_ACTORS_CODES_BY_TYPES_CODES_FROM_WHERE);
 	Long countByActorsCodesByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
 	/* read visible sections by actor code order by code ascending */
-	String QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = "readVisibleSectionsByActorCode";
-	String QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+	String QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsByActorCode");
 	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE = 
 			"WHERE scope.type.code = '"+ScopeType.CODE_SECTION+"' AND ("+
 			"    EXISTS (" + 
@@ -138,16 +136,39 @@ public interface ScopeQuerier extends Querier {
 			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND administrativeUnit.section = scope" + 
 			"    )" + 
 			")";
-	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = 
-			"SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
+	String QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE = "SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
 	Collection<Scope> readVisibleSectionsByActorCode(String actorCode);
 	
 	/* count visible sections by actor code */
-	String QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = "countVisibleSectionsByActorCode";
-	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE);
-	String QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = 
-			"SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE;
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+	String QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE = "SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE_WHERE;
 	Long countVisibleSectionsByActorCode(String actorCode);
+	
+	/* read visible sections where filter order by code ascending */
+	String QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsWhereFilter");
+	String QUERY_VALUE_READ_VISIBLE_SECTIONS_WHERE_FILTER_WHERE = 
+			"WHERE scope.type.code = '"+ScopeType.CODE_SECTION+"' AND ("+
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier FROM ActorScope actorScope " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND actorScope.scope.identifier = scope.identifier "+ 
+			"    ) " + 
+			"    OR " + 
+			"    EXISTS (" + 
+			"        SELECT actorScope.identifier FROM ActorScope actorScope " + 
+			"        JOIN Scope scopeUa ON actorScope.scope = scopeUa JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa " + 
+			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND administrativeUnit.section = scope" + 
+			"    )" + 
+			") AND "+Language.Where.and(Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+			,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			);
+	
+	String QUERY_VALUE_READ_VISIBLE_SECTIONS_WHERE_FILTER = "SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_WHERE_FILTER_WHERE+ " ORDER BY scope.code ASC";
+	Collection<Scope> readVisibleSectionsWhereFilter(QueryExecutorArguments arguments);
+	
+	/* count visible sections where filter */
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER);
+	String QUERY_VALUE_COUNT_VISIBLE_SECTIONS_WHERE_FILTER = "SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_SECTIONS_WHERE_FILTER_WHERE;
+	Long countVisibleSectionsWhereFilter(QueryExecutorArguments arguments);
 	
 	/* read visible administrative units by actor code order by code ascending */
 	String QUERY_NAME_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "readVisibleAdministrativeUnitsByActorCode";
@@ -203,26 +224,56 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTION_BY_ACTOR_CODE);
 	
 	/* read by actors codes not associated by types codes order by code ascending */
-	String QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = "readByActorsCodesNotAssociatedByTypesCodes";
-	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES);
+	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, "readByActorsCodesNotAssociatedByTypesCodes");
 	String QUERY_VALUE_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = Language.of(Language.Select.of("t")
 			,Language.From.of("Scope t")			
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,
 					"NOT EXISTS(SELECT actorScope FROM ActorScope actorScope WHERE actorScope.scope.identifier = t.identifier AND actorScope.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES+")"))			
 			,Language.Order.of("t.code ASC"))
 			;
-	Collection<Scope> readByActorsCodesNotAssociatedByTypesCodes(Collection<String> profilesCodes,Collection<String> typesCodes);
+	Collection<Scope> readByActorsCodesNotAssociatedByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
 	
 	/* count by actors codes not associated by types codes */
-	String QUERY_NAME_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = "countByActorsCodesNotAssociatedByTypesCodes";
-	String QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES);
+	String QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES);
 	String QUERY_VALUE_COUNT_BY_ACTORS_CODES_NOT_ASSOCIATED_BY_TYPES_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
 			,Language.From.of("Scope t")			
 			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,
 					"NOT EXISTS(SELECT actorScope FROM ActorScope actorScope WHERE actorScope.scope.identifier = t.identifier AND actorScope.actor.code IN :"
 							+PARAMETER_NAME_ACTORS_CODES+")"))
 			);
-	Long countByActorsCodesNotAssociatedByTypesCodes(Collection<String> profilesCodes,Collection<String> typesCodes);
+	Long countByActorsCodesNotAssociatedByTypesCodes(Collection<String> actorsCodes,Collection<String> typesCodes);
+	
+	/* read by actor code not associated by types codes order by code ascending */
+	String QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Scope.class, "readByActorCodeNotAssociatedByTypesCodes");
+	String QUERY_VALUE_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES_FROM_WHERE = Language.of(Language.From.of("Scope t")
+			,Language.Where.of(Language.Where.and("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES,
+			"NOT EXISTS(SELECT actorScope FROM ActorScope actorScope WHERE actorScope.scope.identifier = t.identifier AND actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+")")));
+	String QUERY_VALUE_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES = Language.of(Language.Select.of("t")
+			,QUERY_VALUE_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES_FROM_WHERE,Language.Order.of("t.code ASC"));
+	
+	/* count by actors codes not associated by types codes */
+	String QUERY_IDENTIFIER_COUNT_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES);
+	String QUERY_VALUE_COUNT_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,QUERY_VALUE_READ_BY_ACTOR_CODE_NOT_ASSOCIATED_BY_TYPES_CODES_FROM_WHERE);
+	
+	/* read where filter not associated order by code ascending */
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED = QueryIdentifierBuilder.getInstance().build(Scope.class, "readWhereFilterNotAssociated");
+	String QUERY_VALUE_READ_WHERE_FILTER_NOT_ASSOCIATED_FROM_WHERE = Language.of(Language.From.of("Scope t")
+			,Language.Where.of(Language.Where.and(
+			"t.type.code = :"+PARAMETER_NAME_TYPE_CODE
+			,Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+			,Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,"NOT EXISTS(SELECT actorScope FROM ActorScope actorScope WHERE actorScope.scope.identifier = t.identifier AND actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+")")
+		));
+	String QUERY_VALUE_READ_WHERE_FILTER_NOT_ASSOCIATED = Language.of(Language.Select.of("t")
+			,QUERY_VALUE_READ_WHERE_FILTER_NOT_ASSOCIATED_FROM_WHERE,Language.Order.of("t.code ASC"));
+	Collection<Scope> readWhereFilterNotAssociated(QueryExecutorArguments arguments);
+	
+	/* count by actors codes not associated by types codes */
+	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_NOT_ASSOCIATED = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED);
+	String QUERY_VALUE_COUNT_WHERE_FILTER_NOT_ASSOCIATED = Language.of(Language.Select.of("COUNT(t.identifier)")
+			,QUERY_VALUE_READ_WHERE_FILTER_NOT_ASSOCIATED_FROM_WHERE);
+	Long countWhereFilterNotAssociated(QueryExecutorArguments arguments);
 	
 	/* read by types codes order by code ascending */
 	String QUERY_NAME_READ_BY_TYPES_CODES = "readByTypesCodes";
@@ -280,9 +331,11 @@ public interface ScopeQuerier extends Querier {
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldContains(PARAMETER_NAME_TYPE_CODE, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_TYPE_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_TYPE_NAME_WORDS_COUNT, arguments);	
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_TYPE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME, arguments);	
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_NAME_WORDS_COUNT, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContains(PARAMETER_NAME_ACTOR_CODE, arguments);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_ACTOR_CODE);
 			arguments.setFilter(filter);
 		}
 		
@@ -301,7 +354,48 @@ public interface ScopeQuerier extends Querier {
 		private static void prepareWhereTypeIsUAAndFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, QUERY_VALUE_READ_WHERE_FILTER_FROM_WHERE_PARAMETER_NAME_NAME_WORDS_COUNT, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		@Override
+		public Collection<Scope> readVisibleSectionsWhereFilter(QueryExecutorArguments arguments) {
+			prepareVisibleSectionsWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+		}
+		
+		@Override
+		public Long countVisibleSectionsWhereFilter(QueryExecutorArguments arguments) {
+			prepareVisibleSectionsWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private static void prepareVisibleSectionsWhereFilter(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
+			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		@Override
+		public Collection<Scope> readWhereFilterNotAssociated(QueryExecutorArguments arguments) {
+			prepareWhereFilterNotAssociated(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereFilterNotAssociated(QueryExecutorArguments arguments) {
+			prepareWhereFilterNotAssociated(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private static void prepareWhereFilterNotAssociated(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
+			filter.addFieldsEquals(arguments,PARAMETER_NAME_TYPE_CODE);
+			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -441,6 +535,17 @@ public interface ScopeQuerier extends Querier {
 				)
 			);
 		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_FILTER_NOT_ASSOCIATED
+				)
+			);		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER_NOT_ASSOCIATED
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_FILTER_NOT_ASSOCIATED
+				)
+			);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES
@@ -493,6 +598,17 @@ public interface ScopeQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_SECTIONS_BY_ACTOR_CODE
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_SECTIONS_WHERE_FILTER
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_SECTIONS_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_SECTIONS_WHERE_FILTER
 				)
 			);
 		

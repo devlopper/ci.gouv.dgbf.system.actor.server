@@ -1,10 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.util.Collection;
-import java.util.logging.Level;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
@@ -30,16 +31,11 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	
 	@Test
 	public void scopeQuerier_readWhereFilterByTypesCodes_SECTION(){
-		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
 				.setQueryFromIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER)
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, "SECTION")
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_NAME, "Constitutionnel Conseil"));
-		if(scopes == null)
-			System.out.println("NULL");
-		else
-			scopes.forEach(s -> {
-				System.out.println(s.getAsString());
-			});
+		assertThat(scopes).isNotNull();
+		assertThat(scopes.stream().map(Scope::getName).collect(Collectors.toList())).containsExactly("Conseil Constitutionnel");
 	}
 }
