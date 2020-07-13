@@ -125,14 +125,16 @@ public interface ActorQuerier extends Querier {
 	Actor readOneWithAllPrivilegesAllScopesByIdentifier(String identifier);
 	*/
 	
-	/* Read by string */
-	String QUERY_NAME_READ_BY_ELECTRONIC_MAIL_ADDRESS = "readByElectronicMailAddress";
-	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_BY_ELECTRONIC_MAIL_ADDRESS);
+	/* Read by electronic mail address */
+	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Actor.class, "readByElectronicMailAddress");
 	String QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS = Language.of(Language.Select.of("t")
 			,Language.From.of("Actor t")
 			,"WHERE t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS+" = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
-			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES)))
-			);
+			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES))));
+	
+	/* Read by code */
+	String QUERY_IDENTIFIER_READ_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, "readByCode");
+	String QUERY_VALUE_READ_BY_CODE = Language.of(Language.Select.of("t"),Language.From.of("Actor t"),Language.Where.of("t."+Actor.FIELD_CODE+" = :"+PARAMETER_NAME_CODE));
 	
 	/* Read all informations for external by code */
 	String QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = "readAllInformationsForExternalByCode";
@@ -174,6 +176,12 @@ public interface ActorQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_CODE
+				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_CODE
 				)
 			);
 	}
