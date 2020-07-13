@@ -60,6 +60,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereTypeIsUAAndFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readVisibleSectionsWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ScopeQuerier.getInstance().readInvisibleSectionsWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ScopeQuerier.getInstance().readVisibleAdministrativeUnitsWithSectionsWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ScopeQuerier.getInstance().readInvisibleAdministrativeUnitsWithSectionsWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilterNotAssociated(arguments);
 		}
