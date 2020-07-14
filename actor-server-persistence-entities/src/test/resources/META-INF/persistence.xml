@@ -29,6 +29,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -70,6 +73,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -110,6 +116,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		

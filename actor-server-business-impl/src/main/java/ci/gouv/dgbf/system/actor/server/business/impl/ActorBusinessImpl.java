@@ -9,23 +9,27 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.security.keycloak.UserManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfileTypePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
@@ -85,10 +89,12 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	@Override
 	protected void __listenExecuteCreateBefore__(Actor actor, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(actor, properties, function);
+		//we create identity first
+		actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
 		if(StringHelper.isBlank(actor.getCode()))
 			actor.setCode(actor.getElectronicMailAddress());
 		if(StringHelper.isBlank(actor.getIdentifier()))
-			actor.setIdentifier("ACT_"+actor.getCode());
+			actor.setIdentifier("ACT_"+actor.getCode());		
 	}
 	
 	@Override
@@ -109,7 +115,7 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
 		
 		// Integration to keycloak
-		if(actor.getKeycloakUserCreatable() == null || Boolean.TRUE.equals(actor.getKeycloakUserCreatable()))
+		if((actor.getKeycloakUserCreatable() == null || Boolean.TRUE.equals(actor.getKeycloakUserCreatable())) && Boolean.TRUE.equals(ConfigurationHelper.is(VariableName.KEYCLOAK_ENABLED)))
 			try {
 				createKeycloakUser(actor);
 			} catch (Exception exception) {

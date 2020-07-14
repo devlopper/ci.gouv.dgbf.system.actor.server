@@ -8,9 +8,10 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -28,13 +29,14 @@ import lombok.experimental.Accessors;
 @AttributeOverrides(value= {
 		@AttributeOverride(name = Actor.FIELD_CODE,column = @Column(name="NOM_UTILISATEUR"))
 })
-public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
+public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Identity.Interface,Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = COLUMN_FIRST_NAME) @NotNull private String firstName;
-	@Column(name = COLUMN_LAST_NAMES) @NotNull private String lastNames;
-	@Column(name = COLUMN_ELECTRONIC_MAIL_ADDRESS) @NotNull private String electronicMailAddress;
+	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) private Identity identity;
 	
+	@Transient private String firstName;
+	@Transient private String lastNames;
+	@Transient private String electronicMailAddress;	
 	@Transient private String names;
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
@@ -78,6 +80,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 		return addFunctionsByIdentifiers(CollectionHelper.listOf(identifiers));
 	}
 	
+	public static final String FIELD_IDENTITY = "identity";
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
@@ -85,7 +88,5 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	
-	public static final String COLUMN_FIRST_NAME = "NOM";
-	public static final String COLUMN_LAST_NAMES = "PRENOMS";
-	public static final String COLUMN_ELECTRONIC_MAIL_ADDRESS = "EMAIL";
+	public static final String COLUMN_IDENTITY = "IDENTITE";
 }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 
@@ -36,6 +37,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				return ScopeQuerier.getInstance().countInvisibleSectionsWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
 				return ScopeQuerier.getInstance().countWhereFilterNotAssociated(arguments);
+			
+			if(AccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

@@ -21,6 +21,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,Function.class,FunctionType.class
 				,ActorProfile.class,Actor.class
 				,Profile.class,ProfileType.class,ScopeType.class
+				,AccountRequest.class
+				,Identity.class
 				));	
 	}
 }

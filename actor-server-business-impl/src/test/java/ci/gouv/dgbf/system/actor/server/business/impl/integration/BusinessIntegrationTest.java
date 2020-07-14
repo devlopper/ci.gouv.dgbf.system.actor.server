@@ -42,7 +42,8 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		EntityCreator.getInstance().createMany(new Function().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Function().setCode("2").setName("2").setTypeFromIdentifier("1"));
 		
-		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_SYSTEME).setName("1"),new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
+		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_SYSTEME).setName("1")
+				,new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
 		EntityCreator.getInstance().createMany(new Profile().setCode("1").setName("1").setTypeFromIdentifier(ProfileType.CODE_SYSTEME)
 				,new Profile().setCode("2").setName("2").setTypeFromIdentifier(ProfileType.CODE_SYSTEME)
 				,new Profile().setCode("3").setName("3").setTypeFromIdentifier(ProfileType.CODE_SYSTEME));
@@ -56,8 +57,8 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		Long profileCount = __inject__(ProfilePersistence.class).count();
 		Long actorProfileCount = __inject__(ActorProfilePersistence.class).count();
 		Long profilePrivilegeCount = __inject__(ProfilePrivilegePersistence.class).count();
-		__inject__(ActorBusiness.class).create(new Actor().setCode("1").setFirstName("yao").setLastNames("yves").setElectronicMailAddress("a@m.com")
-				.addFunctionsByIdentifiers("1"));
+		__inject__(ActorBusiness.class).create(new Actor().setFirstName("yao").setLastNames("yves").setElectronicMailAddress("a@m.com")
+				.addFunctionsByIdentifiers("1").setKeycloakUserCreatable(Boolean.FALSE));
 		assertThat(__inject__(ProfilePersistence.class).count()).isEqualTo(profileCount+1);
 		assertThat(__inject__(ActorProfilePersistence.class).count()).isEqualTo(actorProfileCount+1);
 		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount+2);

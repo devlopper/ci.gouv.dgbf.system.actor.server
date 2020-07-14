@@ -50,7 +50,7 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		return "default";
 	}
 	
-	@Test
+	//@Test
 	public void actorQuerier_readAll01(){
 		Collection<Actor> actors = EntityReader.getInstance().readMany(Actor.class, ActorQuerier.QUERY_IDENTIFIER_READ_ALL_01);
 		assertThat(actors.iterator().next().getNames()).isEqualTo("konan marc");

@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
@@ -68,6 +69,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 				return (Collection<T>) ScopeQuerier.getInstance().readInvisibleAdministrativeUnitsWithSectionsWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilterNotAssociated(arguments);
+			
+			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AccountRequestQuerier.getInstance().readWhereFilter(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

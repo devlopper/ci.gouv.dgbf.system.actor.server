@@ -9,6 +9,9 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.From;
+import org.cyk.utility.__kernel__.persistence.query.Language.Order;
+import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -20,6 +23,7 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 
 public interface ActorQuerier extends Querier {
 
@@ -88,10 +92,9 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_ALL_01 = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ALL_01);
 	Map<String,Integer> QUERY_VALUE_READ_ALL_01_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER
 			,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
-	String QUERY_VALUE_READ_ALL_01 = Language.of(Language.Select.of("t.identifier,"+Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES)+",t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS)
-			,Language.From.of("Actor t")
-			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES)))
-			);
+	String QUERY_VALUE_READ_ALL_01 = Language.of(Select.of("t.identifier,"+Select.concat("t.identity", Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)+",t.identity."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS)
+			,From.ofTuple(Actor.class)
+			,Order.of(Order.join(Order.asc("t.identity", Identity.FIELD_FIRST_NAME),Order.asc("t.identity", Identity.FIELD_LAST_NAMES))));
 	
 	String QUERY_NAME_COUNT_ALL_01 = "count.all.01";
 	String QUERY_IDENTIFIER_COUNT_ALL_01 = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_COUNT_ALL_01);
@@ -102,12 +105,11 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_STRING = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_BY_STRING);
 	Map<String,Integer> QUERY_VALUE_READ_BY_STRING_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER,Actor.FIELD_CODE
 			,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
-	String QUERY_VALUE_READ_BY_STRING_WHERE = " WHERE LOWER(t.code) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+")";
-	String QUERY_VALUE_READ_BY_STRING = Language.of(Language.Select.of("t.identifier,t.code,"+Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES)+",t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS)
+	String QUERY_VALUE_READ_BY_STRING_WHERE = " WHERE LOWER(t.code) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.identity.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+") OR LOWER(t.identity.firstName) LIKE LOWER(:"+PARAMETER_NAME_STRING+")";
+	String QUERY_VALUE_READ_BY_STRING = Language.of(Language.Select.of("t.identifier,t.code,"+Language.Select.concat("t.identity", Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)+",t.identity."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS)
 			,Language.From.of("Actor t")
 			,QUERY_VALUE_READ_BY_STRING_WHERE
-			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES)))
-			);
+			,Language.Order.of(Language.Order.join(Language.Order.asc("t.identity", Identity.FIELD_FIRST_NAME),Language.Order.asc("t.identity", Identity.FIELD_LAST_NAMES))));
 	
 	String QUERY_NAME_COUNT_BY_STRING = "countByString";
 	String QUERY_IDENTIFIER_COUNT_BY_STRING = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_COUNT_BY_STRING);
@@ -129,8 +131,8 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Actor.class, "readByElectronicMailAddress");
 	String QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS = Language.of(Language.Select.of("t")
 			,Language.From.of("Actor t")
-			,"WHERE t."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS+" = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
-			,Language.Order.of(Language.Order.join(Language.Order.asc("t", Actor.FIELD_FIRST_NAME),Language.Order.asc("t", Actor.FIELD_LAST_NAMES))));
+			,"WHERE t.identity."+Actor.FIELD_ELECTRONIC_MAIL_ADDRESS+" = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
+			,Language.Order.of(Language.Order.join(Language.Order.asc("t.identity", Actor.FIELD_FIRST_NAME),Language.Order.asc("t.identity", Actor.FIELD_LAST_NAMES))));
 	
 	/* Read by code */
 	String QUERY_IDENTIFIER_READ_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, "readByCode");
