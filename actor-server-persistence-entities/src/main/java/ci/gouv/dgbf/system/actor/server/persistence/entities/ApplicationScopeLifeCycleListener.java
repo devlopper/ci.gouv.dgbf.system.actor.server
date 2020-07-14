@@ -1,10 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 import java.io.Serializable;
-import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
 import org.cyk.utility.server.persistence.AbstractApplicationScopeLifeCycleListenerEntities;
 
 @ApplicationScoped
@@ -17,7 +14,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	/**/
 	
 	public static void initialize() {
-		PersistableClassesGetter.COLLECTION.set(List.of(
+		org.cyk.utility.__kernel__.klass.PersistableClassesGetter.COLLECTION.set(java.util.List.of(
 				ProfileFunction.class,ProfilePrivilege.class
 				,Privilege.class,PrivilegeType.class
 				,ScopeFunction.class,Scope.class,ScopeTypeFunction.class
