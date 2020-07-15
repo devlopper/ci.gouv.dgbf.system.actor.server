@@ -13,7 +13,8 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	private IdentityDto identity;
 	private String firstName;
 	private String lastNames;
 	private String names;

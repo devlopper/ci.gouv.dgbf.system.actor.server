@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -12,12 +13,14 @@ import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Order;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
+import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -43,26 +46,6 @@ public interface ActorQuerier extends Querier {
 			return QueryExecutor.getInstance().executeReadOne(Actor.class, arguments);
 		}
 		
-		/*
-		@Override
-		public Collection<Actor> readMany(QueryExecutorArguments arguments) {
-			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_VIEW_01.equals(arguments.getQuery().getIdentifier()))
-				prepare(arguments);	
-			return QueryExecutor.getInstance().executeReadMany(Actor.class, arguments);
-		}
-		
-		@Override
-		public Long count(QueryExecutorArguments arguments) {
-			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_VIEW_01.equals(arguments.getQuery().getIdentifier()))
-				prepare(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private static void prepare(QueryExecutorArguments arguments) {
-			
-		}
-		*/
-		
 		@Override
 		public Actor readOneWithAllPrivilegesByIdentifier(String identifier) {
 			if(StringHelper.isBlank(identifier))
@@ -82,6 +65,24 @@ public interface ActorQuerier extends Querier {
 			actor.setPrivileges(PrivilegeQuerier.getInstance().readVisibleByActorCode(code));
 			actor.setScopes(ScopeQuerier.getInstance().readVisibleByActorCode(code));
 			return actor;
+		}
+		
+		@Override
+		public Collection<Actor> readWhereFilter(QueryExecutorArguments arguments) {
+			prepareWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Actor.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereFilter(QueryExecutorArguments arguments) {
+			prepareWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
+			Filter filter = IdentityQuerier.AbstractImpl.buildFilterOfWhereFilter(arguments);		
+			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+			arguments.setFilter(filter);
 		}
 	}
 	
@@ -143,6 +144,19 @@ public interface ActorQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE);
 	Actor readAllInformationsForExternalByCode(String code);
 	
+	/* read where filter */
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Actor.class, "readWhereFilter");
+	Map<String,Integer> QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER
+			,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE);
+	String QUERY_VALUE_READ_WHERE_FILTER = IdentityQuerier.getQueryValueReadWhereFilter(Actor.class,List.of(Actor.FIELD_CODE)
+			,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)));
+	Collection<Actor> readWhereFilter(QueryExecutorArguments arguments);
+	
+	/* count where filter */
+	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+	String QUERY_VALUE_COUNT_WHERE_FILTER = IdentityQuerier.getQueryValueCountWhereFilter(Actor.class,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)));
+	Long countWhereFilter(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	static ActorQuerier getInstance() {
@@ -172,6 +186,17 @@ public interface ActorQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_STRING
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_STRING
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_FILTER
+				).setTupleFieldsNamesIndexes(QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_FILTER
 				)
 			);
 		

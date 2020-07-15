@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,10 +12,12 @@ import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
+import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
@@ -39,5 +43,18 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 					.setIdentifier(profile.getIdentifier()+"_"+x.getIdentifier())
 					.setProfile(profile).setPrivilege(x))
 					.collect(Collectors.toList()));
-	}	
+	}
+	
+	@Override
+	protected void __listenExecuteDeleteBefore__(Profile profile, Properties properties,BusinessFunctionRemover function) {
+		super.__listenExecuteDeleteBefore__(profile, properties, function);
+		Collection<ProfilePrivilege> profilePrivileges = ProfilePrivilegeQuerier.getInstance().readByProfilesCodes(List.of(profile.getCode()));
+		if(CollectionHelper.isNotEmpty(profilePrivileges))
+			__inject__(ProfilePrivilegeBusiness.class).deleteMany(profilePrivileges);
+	}
+	
+	@Override
+	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
+		return Boolean.TRUE;
+	}
 }

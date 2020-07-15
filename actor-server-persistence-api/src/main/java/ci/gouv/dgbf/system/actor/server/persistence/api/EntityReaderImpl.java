@@ -72,6 +72,8 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AccountRequestQuerier.getInstance().readWhereFilter(arguments);
+			if(ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ActorQuerier.getInstance().readWhereFilter(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

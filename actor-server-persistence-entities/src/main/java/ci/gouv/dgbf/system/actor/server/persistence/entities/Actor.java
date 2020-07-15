@@ -80,6 +80,14 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 		return addFunctionsByIdentifiers(CollectionHelper.listOf(identifiers));
 	}
 	
+	public Actor setIdentityFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setIdentity(null);
+		else
+			setIdentity(EntityFinder.getInstance().find(Identity.class, identifier));
+		return this;
+	}
+	
 	public static final String FIELD_IDENTITY = "identity";
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";

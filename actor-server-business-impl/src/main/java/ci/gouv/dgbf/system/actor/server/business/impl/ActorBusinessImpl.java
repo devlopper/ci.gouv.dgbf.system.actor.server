@@ -19,16 +19,21 @@ import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
+import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfileTypePersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -138,6 +143,32 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		user.setName(actor.getCode());
 		user.setPass(ValueHelper.defaultToIfBlank(actor.getPassword(),DEFAULT_PASSWORD));
 		UserManager.getInstance().create(user);
+	}
+	
+	@Override
+	protected void __listenExecuteDeleteBefore__(Actor actor, Properties properties,BusinessFunctionRemover function) {
+		super.__listenExecuteDeleteBefore__(actor, properties, function);
+		Collection<String> actorsCodes = List.of(actor.getCode());
+		Collection<ActorScope> actorScopes = ActorScopeQuerier.getInstance().readByActorsCodes(actorsCodes);
+		if(CollectionHelper.isNotEmpty(actorScopes))
+			__inject__(ActorScopeBusiness.class).deleteMany(actorScopes);
+		Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actorsCodes);
+		if(CollectionHelper.isNotEmpty(actorProfiles)) {
+			Collection<Profile> profiles = actorProfiles.stream().map(ActorProfile::getProfile).collect(Collectors.toSet());
+			__inject__(ActorProfileBusiness.class).deleteMany(actorProfiles);
+			__inject__(ProfileBusiness.class).deleteMany(profiles);
+		}
+	}
+	
+	@Override
+	protected void __listenExecuteDeleteAfter__(Actor actor, Properties properties, BusinessFunctionRemover function) {
+		super.__listenExecuteDeleteAfter__(actor, properties, function);
+		__inject__(IdentityBusiness.class).delete(actor.getIdentity());
+	}
+	
+	@Override
+	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
+		return Boolean.TRUE;
 	}
 	
 	/**/

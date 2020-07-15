@@ -13,10 +13,12 @@ import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
@@ -43,6 +45,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class/*,QueryResultMapper.class*/, EntityReader.class,EntityCounter.class
 				,CountQueryIdentifierGetter.class);
 		
+		IdentityQuerier.initialize();
+		
 		FunctionQuerier.initialize();
 		FunctionTypeQuerier.initialize();
 		
@@ -59,6 +63,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		
 		ActorQuerier.initialize();
 		ActorScopeQuerier.initialize();
+		ActorProfileQuerier.initialize();
 		
 		AccountRequestQuerier.initialize();
 		
