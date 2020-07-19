@@ -10,17 +10,19 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class AccountRequestDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class RejectedAccountRequestDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String firstName;
 	private String lastNames;
 	private String electronicMailAddress;
+	private String reason;
+	private String requestDateAsString;
+	private String dateAsString;
 	private String names;
-	private String creationDateAsString;
 	
 	@Override
-	public AccountRequestDto setIdentifier(String identifier) {
-		return (AccountRequestDto) super.setIdentifier(identifier);
+	public RejectedAccountRequestDto setIdentifier(String identifier) {
+		return (RejectedAccountRequestDto) super.setIdentifier(identifier);
 	}
 }

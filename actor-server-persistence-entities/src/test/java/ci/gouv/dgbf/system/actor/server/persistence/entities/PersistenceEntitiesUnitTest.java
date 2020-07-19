@@ -16,4 +16,12 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 		
 	}
 	
+	@Test
+	public void rejectedAccountRequest_create(){
+		//System.out.println("PersistenceEntitiesUnitTest.rejectedAccountRequest_create()");
+		//assertThat(EntityCounter.getInstance().count(RejectedAccountRequest.class)).isEqualTo(0l);
+		//EntityCreator.getInstance().createOneInTransaction(new RejectedAccountRequest());
+		//assertThat(EntityCounter.getInstance().count(RejectedAccountRequest.class)).isEqualTo(1l);
+	}
+	
 }

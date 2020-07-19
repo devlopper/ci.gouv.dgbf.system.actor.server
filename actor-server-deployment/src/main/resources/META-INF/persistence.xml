@@ -29,6 +29,7 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>

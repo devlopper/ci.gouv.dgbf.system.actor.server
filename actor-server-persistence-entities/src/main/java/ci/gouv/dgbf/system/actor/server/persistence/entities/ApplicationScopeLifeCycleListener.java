@@ -23,6 +23,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,Profile.class,ProfileType.class,ScopeType.class
 				,AccountRequest.class
 				,Identity.class
+				,RejectedAccountRequest.class
 				));	
 	}
 }

@@ -52,13 +52,14 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		for(User user : users) {
 			if(StringHelper.isBlank(user.getName()) || StringHelper.isBlank(user.getElectronicMailAddress()))
 				continue;
-			Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(user.getElectronicMailAddress());
+			Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(user.getName());
 			if(actor != null)
 				continue;
 			if(actors == null)
 				actors = new ArrayList<>();
 			actors.add(new Actor()
 					.setKeycloakUserCreatable(Boolean.FALSE)
+					.setCode(user.getName())
 					.setFirstName(ValueHelper.defaultToIfBlank(user.getFirstName(), user.getName()))
 					.setLastNames(ValueHelper.defaultToIfBlank(user.getLastNames(), user.getName()))
 					.setElectronicMailAddress(user.getElectronicMailAddress())
@@ -95,11 +96,12 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	protected void __listenExecuteCreateBefore__(Actor actor, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(actor, properties, function);
 		//we create identity first
-		actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
+		if(actor.getIdentity() == null)
+			actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
 		if(StringHelper.isBlank(actor.getCode()))
-			actor.setCode(actor.getElectronicMailAddress());
+			actor.setCode(actor.getIdentity().getElectronicMailAddress());
 		if(StringHelper.isBlank(actor.getIdentifier()))
-			actor.setIdentifier("ACT_"+actor.getCode());		
+			actor.setIdentifier("ACT_"+actor.getCode());
 	}
 	
 	@Override
@@ -108,7 +110,7 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		//we instantiate user profile
 		Profile profile = new Profile().setType(__inject__(ProfileTypePersistence.class).readByBusinessIdentifier(ProfileType.CODE_UTILISATEUR));
 		profile.setCode(actor.getCode());
-		profile.setName("Profile de "+actor.getElectronicMailAddress());
+		profile.setName("Profile de "+actor.getIdentity().getElectronicMailAddress());
 		//we collect predefined privileges from system profiles based on given functions
 		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {
 			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of(ProfileType.CODE_SYSTEME)

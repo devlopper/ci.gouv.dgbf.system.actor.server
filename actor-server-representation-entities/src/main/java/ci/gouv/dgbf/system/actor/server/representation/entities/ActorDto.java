@@ -15,6 +15,7 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private static final long serialVersionUID = 1L;
 
 	private IdentityDto identity;
+	private String creationDateAsString;
 	private String firstName;
 	private String lastNames;
 	private String names;

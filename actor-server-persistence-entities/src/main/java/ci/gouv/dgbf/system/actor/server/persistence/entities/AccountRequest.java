@@ -1,7 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -21,6 +23,7 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) private Identity identity;
+	@Column(name = COLUMN_CREATION_DATE) private LocalDateTime creationDate;
 	
 	@Transient private String firstName;
 	@Transient private String lastNames;
@@ -37,8 +40,10 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_NAMES = "names";
+	public static final String FIELD_CREATION_DATE = "creationDate";
 	
 	public static final String TABLE_NAME = "DEMANDE_COMPTE";
 	
 	public static final String COLUMN_IDENTITY = "IDENTITE";
+	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 }
