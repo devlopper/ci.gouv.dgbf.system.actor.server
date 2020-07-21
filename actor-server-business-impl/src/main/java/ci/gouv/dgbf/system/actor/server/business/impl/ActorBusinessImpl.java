@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -102,6 +103,8 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 			actor.setCode(actor.getIdentity().getElectronicMailAddress());
 		if(StringHelper.isBlank(actor.getIdentifier()))
 			actor.setIdentifier("ACT_"+actor.getCode());
+		if(actor.getCreationDate() == null)
+			actor.setCreationDate(LocalDateTime.now());
 	}
 	
 	@Override
