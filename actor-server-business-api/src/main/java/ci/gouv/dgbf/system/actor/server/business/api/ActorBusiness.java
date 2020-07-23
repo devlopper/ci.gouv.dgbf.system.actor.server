@@ -8,5 +8,5 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 
 	Integer importFromKeycloak();	
 	Integer exportToKeycloak();
-	
+	void sendUpdatePasswordEmail(Actor actor);
 }

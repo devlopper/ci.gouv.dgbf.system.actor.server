@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.security.keycloak.KeycloakHelper;
 import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.security.keycloak.UserManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -91,6 +92,16 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		if(CollectionHelper.isNotEmpty(users))
 			UserManager.getInstance().create(users);
 		return CollectionHelper.getSize(users);
+	}
+	
+	@Override
+	public void sendUpdatePasswordEmail(Actor actor) {
+		if(actor == null)
+			return;
+		User user = UserManager.getInstance().readByUserName(actor.getCode());
+		if(user == null)
+			throw new RuntimeException("L'utilisateur <<"+actor.getCode()+">> n'existe pas");
+		KeycloakHelper.executeActionEmailUpdatePassword(user.getIdentifier());
 	}
 	
 	@Override

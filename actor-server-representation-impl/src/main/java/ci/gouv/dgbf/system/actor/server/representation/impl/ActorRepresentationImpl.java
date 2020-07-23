@@ -9,12 +9,14 @@ import javax.ws.rs.core.Response.Status;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
@@ -70,5 +72,25 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 		if(runnerArguments.getThrowable() == null)
 			return Response.ok(NumberHelper.getInteger(count[0], 0)+" actor(s) exported").build();
 		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
+	}
+	
+	@Override
+	public Response sendUpdatePasswordEmail(String code) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						if(StringHelper.isBlank(code))
+							throw new RuntimeException("Le code est obligatoire");
+						Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(code);
+						if(actor == null)
+							throw new RuntimeException("L'utilisateur <<"+code+">> n'existe pas");
+						__inject__(ActorBusiness.class).sendUpdatePasswordEmail(actor);
+					}
+				};
+			}
+		});
 	}
 }

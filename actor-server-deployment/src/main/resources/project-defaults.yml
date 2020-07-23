@@ -1,3 +1,20 @@
-swarm:
+thorntail:
   port:
     offset: ${swarm.port.offset}
+  datasources:
+    data-sources:
+       ActorDataSource:
+        jndi-name: ${data.source.jndi.name}
+        driver-name: oracle
+        connection-url: jdbc:oracle:thin:@${env.SIIB_DB_HOST}:${env.SIIB_DB_PORT}:${env.SIIB_DB_SID}
+        user-name: ${env.SIIB_DB_USER}
+        password: ${env.SIIB_DB_PASSWORD}
+        valid-connection-checker-class-name: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker
+        validate-on-match: true
+        background-validation: false
+        stale-connection-checker-class-name: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker
+        exception-sorter-class-name: org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter
+  logging:
+    loggers:
+      org:
+        level: INFO
