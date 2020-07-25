@@ -18,6 +18,20 @@ public class IdentityDto extends AbstractIdentifiableSystemScalarStringImpl impl
 	private String names;
 	private String electronicMailAddress;	
 	
+	private String registrationNumber;
+	private String postalBox;
+	private String mobilePhoneNumber;
+	private String officePhoneNumber;
+	private String officePhoneExtension;
+	private AdministrativeUnitDto administrativeUnit;
+	private String administrativeFunction;
+	private CivilityDto civility;
+	private IdentityGroupDto group;
+	private String actOfAppointmentReference;
+	private String actOfAppointmentSignatory;
+	private String actOfAppointmentSignatureDateAsString;
+	private Long actOfAppointmentSignatureTimestamp;
+	
 	@Override
 	public IdentityDto setIdentifier(String identifier) {
 		return (IdentityDto) super.setIdentifier(identifier);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
@@ -102,6 +103,16 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		if(user == null)
 			throw new RuntimeException("L'utilisateur <<"+actor.getCode()+">> n'existe pas");
 		KeycloakHelper.executeActionEmailUpdatePassword(user.getIdentifier());
+	}
+	
+	@Override @Transactional
+	public void savePreferences(Actor actor) {
+		__persistence__.update(actor);
+	}
+	
+	@Override @Transactional
+	public void saveProfile(Actor actor) {
+		__persistence__.update(actor);
 	}
 	
 	@Override

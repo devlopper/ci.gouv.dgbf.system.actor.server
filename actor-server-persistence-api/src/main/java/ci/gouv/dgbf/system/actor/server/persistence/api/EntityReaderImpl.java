@@ -10,6 +10,8 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
@@ -78,6 +80,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
+			
+			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(arguments);
+			
+			if(BudgetaryFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readWhereCodeOrNameLike(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

@@ -7,6 +7,8 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -46,6 +48,12 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return RejectedAccountRequestQuerier.getInstance().countWhereFilter(arguments);
+			
+			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
+				return AdministrativeUnitQuerier.getInstance().countWhereCodeOrNameLike(arguments);
+			
+			if(BudgetaryFunctionQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
+				return BudgetaryFunctionQuerier.getInstance().countWhereCodeOrNameLike(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

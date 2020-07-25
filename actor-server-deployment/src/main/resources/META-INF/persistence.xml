@@ -31,6 +31,12 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="hibernate.hbm2ddl.auto" value="validate"/>

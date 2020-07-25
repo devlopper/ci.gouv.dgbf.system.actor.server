@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
@@ -26,6 +27,9 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringIm
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION,nullable = false) @NotNull private Section section;
 	
+	@Transient private String code;
+	@Transient private String name;
+	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {
 		return (AdministrativeUnit) super.setIdentifier(identifier);
@@ -40,6 +44,8 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringIm
 	}
 	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_CODE = "code";
+	public static final String FIELD_NAME = "name";
 	
 	public static final String COLUMN_SECTION = "section";
 	

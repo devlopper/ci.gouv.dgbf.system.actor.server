@@ -35,6 +35,8 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) private Identity identity;
 	@Column(name = COLUMN_CREATION_DATE) private LocalDateTime creationDate;
+	@Column(name = COLUMN_NOTATION) private Byte notation;
+	@Column(name = COLUMN_COLOR) private String color; 
 	
 	@Transient private String firstName;
 	@Transient private String lastNames;
@@ -96,9 +98,13 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_NAMES = "names";
 	public static final String FIELD_CREATION_DATE = "creationDate";
+	public static final String FIELD_NOTATION = "notation";
+	public static final String FIELD_COLOR = "color";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_IDENTITY = "IDENTITE";
+	public static final String COLUMN_NOTATION = "NOTATION";
+	public static final String COLUMN_COLOR = "COULEUR";
 }

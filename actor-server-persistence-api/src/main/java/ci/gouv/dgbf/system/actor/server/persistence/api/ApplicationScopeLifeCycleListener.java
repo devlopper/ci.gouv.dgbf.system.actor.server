@@ -16,6 +16,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuer
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
@@ -68,6 +71,10 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		
 		AccountRequestQuerier.initialize();
 		RejectedAccountRequestQuerier.initialize();
+		
+		CivilityQuerier.initialize();
+		AdministrativeUnitQuerier.initialize();
+		BudgetaryFunctionQuerier.initialize();
 		
 		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 	}
