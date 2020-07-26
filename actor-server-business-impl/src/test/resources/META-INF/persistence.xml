@@ -37,6 +37,8 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>

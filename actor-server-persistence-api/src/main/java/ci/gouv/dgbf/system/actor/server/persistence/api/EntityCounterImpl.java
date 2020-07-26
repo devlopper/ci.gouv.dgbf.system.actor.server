@@ -52,8 +52,11 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
 				return AdministrativeUnitQuerier.getInstance().countWhereCodeOrNameLike(arguments);
 			
-			if(BudgetaryFunctionQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
-				return BudgetaryFunctionQuerier.getInstance().countWhereCodeOrNameLike(arguments);
+			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
+				return FunctionQuerier.getInstance().count(arguments);
+			
+			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
+				return BudgetaryFunctionQuerier.getInstance().count(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

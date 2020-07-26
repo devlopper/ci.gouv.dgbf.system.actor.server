@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -20,7 +19,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
 })
-public interface FunctionQuerier extends Querier {
+public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
@@ -66,7 +65,7 @@ public interface FunctionQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements FunctionQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Function> implements FunctionQuerier,Serializable {
 		
 		@Override
 		public Collection<Function> readByTypesCodes(Collection<String> typesCodes) {
@@ -76,6 +75,11 @@ public interface FunctionQuerier extends Querier {
 		@Override
 		public Long countByTypesCodes(Collection<String> typesCodes) {
 			return EntityCounter.getInstance().count(Function.class, QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES,PARAMETER_NAME_TYPES_CODES,typesCodes);
+		}
+		
+		@Override
+		protected Class<Function> getKlass() {
+			return Function.class;
 		}
 	}
 	
@@ -88,6 +92,8 @@ public interface FunctionQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
+		Querier.CodableAndNamable.initialize(Function.class);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Function.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_TYPES_CODES

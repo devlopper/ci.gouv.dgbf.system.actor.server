@@ -84,8 +84,11 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(arguments);
 			
-			if(BudgetaryFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readWhereCodeOrNameLike(arguments);
+			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
+				return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);
+			
+			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
+				return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}
