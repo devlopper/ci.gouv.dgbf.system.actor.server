@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,22 @@ public class AccountRequestBudgetaryFunction extends AbstractIdentifiableSystemS
 	@Override
 	public AccountRequestBudgetaryFunction setIdentifier(String identifier) {
 		return (AccountRequestBudgetaryFunction) super.setIdentifier(identifier);
+	}
+	
+	public AccountRequestBudgetaryFunction setAccountRequestFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setAccountRequest(null);
+		else
+			setAccountRequest(EntityFinder.getInstance().find(AccountRequest.class, identifier));
+		return this;
+	}
+	
+	public AccountRequestBudgetaryFunction setBudgetaryFunctionFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setBudgetaryFunction(null);
+		else
+			setBudgetaryFunction(EntityFinder.getInstance().find(BudgetaryFunction.class, identifier));
+		return this;
 	}
 	
 	public static final String FIELD_ACCOUNT_REQUEST = "accountRequest";

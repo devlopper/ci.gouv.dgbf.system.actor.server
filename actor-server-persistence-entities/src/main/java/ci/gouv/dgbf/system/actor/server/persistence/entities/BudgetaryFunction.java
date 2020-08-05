@@ -24,5 +24,15 @@ public class BudgetaryFunction extends AbstractIdentifiableSystemScalarStringIde
 		return (BudgetaryFunction) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public BudgetaryFunction setCode(String code) {
+		return (BudgetaryFunction) super.setCode(code);
+	}
+	
+	@Override
+	public BudgetaryFunction setName(String name) {
+		return (BudgetaryFunction) super.setName(name);
+	}
+	
 	public static final String TABLE_NAME = "FONCTION_BUDGETAIRE";	
 }

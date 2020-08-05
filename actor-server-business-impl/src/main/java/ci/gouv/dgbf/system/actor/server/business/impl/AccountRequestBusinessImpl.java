@@ -9,18 +9,23 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
+import org.cyk.utility.server.business.BusinessServiceProvider;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
@@ -29,13 +34,47 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequ
 public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<AccountRequest, AccountRequestPersistence> implements AccountRequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Override
+	public BusinessServiceProvider<AccountRequest> save(AccountRequest accountRequest, Properties properties) {
+		super.save(accountRequest, properties);
+		//update budgetary functions
+		//Collection<AccountRequestBudgetaryFunction> accountRequestBudgetaryFunctions = AccountRequestBudgetaryFunctionQuerier;
+		return this;
+	}
+	
+	@Override
+	public void notifyAccessToken(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			new Thread(new Runnable() {				
+				@Override
+				public void run() {
+					try {
+						MailSender.getInstance().send("SIIBC - Demande de compte", "Votre jeton d'accès à votre demande de compte : "+accountRequest.getAccessToken(), accountRequest.getElectronicMailAddress());
+					} catch (Exception exception) {
+						LogHelper.log(exception, getClass());
+					}	
+				}
+			}).start();			
+		});
+	}
+	
+	@Override
+	public void notifyAccessToken(AccountRequest... accountRequests) {
+		if(ArrayHelper.isEmpty(accountRequests))
+			return;
+		notifyAccessToken(CollectionHelper.listOf(accountRequests));
+	}
+	
 	@Override @Transactional
 	public void accept(Collection<AccountRequest> accountRequests) {
 		if(CollectionHelper.isEmpty(accountRequests))
 			return;
+		LocalDateTime localDateTime = LocalDateTime.now();
 		accountRequests.forEach(accountRequest -> {
 			//we create actor
-			__inject__(ActorBusiness.class).create(new Actor().setCreationDate(LocalDateTime.now()).setIdentity(accountRequest.getIdentity()));
+			__inject__(ActorBusiness.class).create(new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()));
 			//we remote request from pool
 			__persistence__.delete(accountRequest);
 		});
@@ -81,6 +120,13 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		if(StringHelper.isBlank(accountRequest.getIdentifier()))
 			accountRequest.setIdentifier("DM_"+accountRequest.getElectronicMailAddress());
 		accountRequest.setCreationDate(LocalDateTime.now());
+		accountRequest.setAccessToken(RandomHelper.getAlphanumeric(3)+"_"+RandomHelper.getAlphanumeric(4)+"_"+RandomHelper.getAlphanumeric(3));
+	}
+	
+	@Override
+	protected void __listenExecuteCreateAfter__(AccountRequest accountRequest, Properties properties,BusinessFunctionCreator function) {
+		super.__listenExecuteCreateAfter__(accountRequest, properties, function);
+		notifyAccessToken(accountRequest);
 	}
 	
 	@Override

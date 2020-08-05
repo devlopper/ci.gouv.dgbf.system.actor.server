@@ -24,5 +24,15 @@ public class Civility extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return (Civility) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public Civility setCode(String code) {
+		return (Civility) super.setCode(code);
+	}
+	
+	@Override
+	public Civility setName(String name) {
+		return (Civility) super.setName(name);
+	}
+	
 	public static final String TABLE_NAME = "CIVILITE";	
 }

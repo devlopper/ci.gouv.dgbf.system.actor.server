@@ -12,6 +12,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,7 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	@Column(name = COLUMN_ELECTRONIC_MAIL_ADDRESS) @NotNull private String electronicMailAddress;
 	
 	@Column(name = COLUMN_REGISTRATION_NUMBER) private String registrationNumber;
-	@Column(name = COLUMN_POSTAL_BOX) private String postalBox;
+	@Column(name = COLUMN_POSTAL_BOX_ADDRESS) private String postalBoxAddress;
 	@Column(name = COLUMN_MOBILE_PHONE_NUMBER) private String mobilePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
@@ -41,30 +43,59 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE) private LocalDate actOfAppointmentSignatureDate;
 	
 	@Transient private String names;
-	@Transient private Long actOfAppointmentSignatureTimestamp;
+	@Transient private String actOfAppointmentSignatureDateAsString;
+	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
 	
 	@Override
 	public Identity setIdentifier(String identifier) {
 		return (Identity) super.setIdentifier(identifier);
 	}
 	
+	public Identity setAdministrativeUnitFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setAdministrativeUnit(null);
+		else
+			setAdministrativeUnit(EntityFinder.getInstance().find(AdministrativeUnit.class, identifier));
+		return this;
+	}
+	
+	public Identity setCivilityFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setCivility(null);
+		else
+			setCivility(EntityFinder.getInstance().find(Civility.class, identifier));
+		return this;
+	}
+	
+	public Identity setGroupFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setGroup(null);
+		else
+			setGroup(EntityFinder.getInstance().find(IdentityGroup.class, identifier));
+		return this;
+	}
+	
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_REGISTRATION_NUMBER = "registrationNumber";
-	public static final String FIELD_POSTAL_BOX = "postalBox";
+	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
 	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_CIVILITY = "civility";
+	public static final String FIELD_CIVILITY_STRING = "civilityAsString";
 	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	
-	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_TIMESTAMP = "actOfAppointmentSignatureTimestamp";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
 	public static final String FIELD_NAMES = "names";
 	
 	public static final String TABLE_NAME = "IDENTITE";
@@ -73,7 +104,7 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	public static final String COLUMN_LAST_NAMES = "PRENOMS";
 	public static final String COLUMN_ELECTRONIC_MAIL_ADDRESS = "EMAIL";
 	public static final String COLUMN_REGISTRATION_NUMBER = "MATRICULE";
-	public static final String COLUMN_POSTAL_BOX = "BOITE_POSTALE";
+	public static final String COLUMN_POSTAL_BOX_ADDRESS = "BOITE_POSTALE";
 	public static final String COLUMN_MOBILE_PHONE_NUMBER = "NUMERO_MOBILE";
 	public static final String COLUMN_OFFICE_PHONE_NUMBER = "NUMERO_BUREAU";
 	public static final String COLUMN_OFFICE_PHONE_EXTENSION = "POSTE_BUREAU";
@@ -88,9 +119,24 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	/**/
 	
 	public static interface Interface {
+		Civility getCivility();
 		String getFirstName();
 		String getLastNames();
+		String getNames();
+		IdentityGroup getGroup();
+		String getRegistrationNumber();
+		String getPostalBoxAddress();
+		String getMobilePhoneNumber();
+		String getOfficePhoneNumber();
+		String getOfficePhoneExtension();
 		String getElectronicMailAddress();
+		AdministrativeUnit getAdministrativeUnit();
+		String getAdministrativeFunction();
+		String getActOfAppointmentReference();
+		String getActOfAppointmentSignatory();
+		LocalDate getActOfAppointmentSignatureDate();
+		String getActOfAppointmentSignatureDateAsString();
+		Long getActOfAppointmentSignatureDateAsTimestamp();
 	}
 	
 	@Override

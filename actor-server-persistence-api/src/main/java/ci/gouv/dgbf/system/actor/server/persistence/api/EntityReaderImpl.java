@@ -29,6 +29,15 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(arguments != null && arguments.getQuery() != null) {
 			if(ActorQuerier.QUERY_IDENTIFIER_READ_ONE_WITH_ALL_PRIVILEGES_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return (T) ActorQuerier.getInstance().readOneWithAllPrivilegesByIdentifier((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_IDENTIFIER));
+			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_PROJECTION_01_WITH_BUDGETARIES_FUNCTIONS_AND_FUNCTIONS_BY_ACCESS_TOKEN.equals(arguments.getQuery().getIdentifier()))
+				return (T) AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByAccessToken((String)arguments
+						.getFilterFieldValue(AccountRequestQuerier.PARAMETER_NAME_ACCESS_TOKEN));
+			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_PROJECTION_01_WITH_BUDGETARIES_FUNCTIONS_AND_FUNCTIONS_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return (T) AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier((String)arguments
+						.getFilterFieldValue(AccountRequestQuerier.PARAMETER_NAME_IDENTIFIER));
+			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_PROJECTION_02_WITH_BUDGETARIES_FUNCTIONS_AND_FUNCTIONS_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return (T) AccountRequestQuerier.getInstance().readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier((String)arguments
+						.getFilterFieldValue(AccountRequestQuerier.PARAMETER_NAME_IDENTIFIER));
 		}
 		return super.readOne(tupleClass, arguments);
 	}

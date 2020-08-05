@@ -81,9 +81,16 @@
 		<param-name>cyk.variable.swagger.enabled</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	<!--
+	<context-param>
+		<param-name>cyk.variable.swagger.bean.config.resource.package</param-name>
+		<param-value>ci.gouv.dgbf.system.actor.server.representation.api.swagger</param-value>
+	</context-param>
+	-->
 	
 	<context-param>
 		<param-name>cyk.variable.swagger.bean.config.resource.package</param-name>
 		<param-value>org.cyk.utility.server.representation,org.cyk.utility.server.representation.impl,ci.gouv.dgbf.system.actor.server.representation.api</param-value>
-	</context-param>		
+	</context-param>
+		
 </web-app>

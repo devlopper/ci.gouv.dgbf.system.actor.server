@@ -24,5 +24,15 @@ public class IdentityGroup extends AbstractIdentifiableSystemScalarStringIdentif
 		return (IdentityGroup) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public IdentityGroup setCode(String code) {
+		return (IdentityGroup) super.setCode(code);
+	}
+	
+	@Override
+	public IdentityGroup setName(String name) {
+		return (IdentityGroup) super.setName(name);
+	}
+	
 	public static final String TABLE_NAME = "GROUPE_IDENTITE";	
 }

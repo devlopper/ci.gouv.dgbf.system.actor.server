@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.representation.entities;
 
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.representation.AbstractMapperSourceDestinationImpl;
 import org.mapstruct.Mapper;
@@ -13,6 +14,7 @@ public abstract class AccountRequestDtoMapper extends AbstractMapperSourceDestin
 	@Override
 	protected void __listenGetSourceAfter__(AccountRequest accountRequest, AccountRequestDto accountRequestDto) {
 		super.__listenGetSourceAfter__(accountRequest, accountRequestDto);
-		accountRequestDto.setCreationDateAsString(TimeHelper.formatLocalDateTime(accountRequest.getCreationDate()));
+		if(accountRequest.getCreationDate() != null && StringHelper.isBlank(accountRequest.getCreationDateAsString()))
+			accountRequestDto.setCreationDateAsString(TimeHelper.formatLocalDateTime(accountRequest.getCreationDate()));
 	}
 }

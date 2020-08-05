@@ -1,6 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -19,10 +22,30 @@ public class IdentityBusinessImpl extends AbstractBusinessEntityImpl<Identity, I
 		if(identity == null)
 			return null;
 		Identity __identity__ = new Identity()
-				.setIdentifier(identity.getElectronicMailAddress())
+				.setActOfAppointmentReference(identity.getActOfAppointmentReference())
+				.setActOfAppointmentSignatory(identity.getActOfAppointmentSignatory())
+				.setActOfAppointmentSignatureDate(identity.getActOfAppointmentSignatureDate())
+				.setActOfAppointmentSignatureDateAsTimestamp(identity.getActOfAppointmentSignatureDateAsTimestamp())
+				.setAdministrativeFunction(identity.getAdministrativeFunction())
+				.setAdministrativeUnit(identity.getAdministrativeUnit())
+				.setCivility(identity.getCivility())
+				.setElectronicMailAddress(identity.getElectronicMailAddress())
 				.setFirstName(identity.getFirstName())
+				.setGroup(identity.getGroup())
+				.setIdentifier(identity.getElectronicMailAddress())
 				.setLastNames(identity.getLastNames())
-				.setElectronicMailAddress(identity.getElectronicMailAddress());
+				.setMobilePhoneNumber(identity.getMobilePhoneNumber())
+				.setNames(identity.getNames())
+				.setOfficePhoneExtension(identity.getOfficePhoneExtension())
+				.setOfficePhoneNumber(identity.getOfficePhoneNumber())
+				.setPostalBoxAddress(identity.getPostalBoxAddress())
+				.setRegistrationNumber(identity.getRegistrationNumber())
+				;
+		if(__identity__.getActOfAppointmentSignatureDate() == null) {
+			if(__identity__.getActOfAppointmentSignatureDateAsTimestamp() != null)
+				__identity__.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(__identity__.getActOfAppointmentSignatureDateAsTimestamp())
+						,ZoneId.systemDefault()));
+		}
 		create(__identity__);
 		return __identity__;
 	}

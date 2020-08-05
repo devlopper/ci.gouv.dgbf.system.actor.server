@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -33,15 +35,31 @@ import lombok.experimental.Accessors;
 public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Identity.Interface,Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) private Identity identity;
+	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) @NotNull private Identity identity;
 	@Column(name = COLUMN_CREATION_DATE) private LocalDateTime creationDate;
 	@Column(name = COLUMN_NOTATION) private Byte notation;
 	@Column(name = COLUMN_COLOR) private String color; 
 	
 	@Transient private String firstName;
 	@Transient private String lastNames;
-	@Transient private String electronicMailAddress;	
 	@Transient private String names;
+	@Transient private String electronicMailAddress;	
+	@Transient private String registrationNumber;
+	@Transient private String postalBoxAddress;
+	@Transient private String mobilePhoneNumber;
+	@Transient private String officePhoneNumber;
+	@Transient private String officePhoneExtension;
+	@Transient private AdministrativeUnit administrativeUnit;
+	@Transient private String administrativeFunction;
+	@Transient private Civility civility;
+	@Transient private IdentityGroup group;
+	@Transient private String actOfAppointmentReference;
+	@Transient private String actOfAppointmentSignatory;
+	@Transient private LocalDate actOfAppointmentSignatureDate;	
+	@Transient private String actOfAppointmentSignatureDateAsString;
+	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Transient private String creationDateAsString;
+	
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<Scope> scopes;

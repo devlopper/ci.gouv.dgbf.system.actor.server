@@ -24,5 +24,5 @@ public class Section extends AbstractIdentifiableSystemScalarStringImpl implemen
 		return (Section) super.setIdentifier(identifier);
 	}
 	
-	public static final String TABLE_NAME = "SECTION";	
+	public static final String TABLE_NAME = "VM_APP_SECTION";	
 }

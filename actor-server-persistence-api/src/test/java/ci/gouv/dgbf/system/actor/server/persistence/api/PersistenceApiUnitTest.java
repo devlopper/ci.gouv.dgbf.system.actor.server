@@ -2,6 +2,9 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,19 +14,28 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -48,6 +60,148 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "default";
+	}
+	
+	@Test
+	public void accountRequestQuerier_readProjection01ByAccessToken(){
+		LocalDate d1 = LocalDate.of(2020, 02, 03);
+		LocalDateTime d2 = LocalDateTime.of(2021, 01, 05,00,00);
+		LocalDateTime d3 = LocalDateTime.of(2021, 01, 05,14,35);
+		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("11010045").setName("DTI"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("11010045").setSectionFromIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new IdentityGroup().setCode("1").setName("Fonctionnaire"),new Civility().setCode("1").setName("Monsieur"));
+		EntityCreator.getInstance().createOneInTransaction(new Identity().setIdentifier("1").setActOfAppointmentReference("Ref05").setActOfAppointmentSignatory("KG")
+				.setActOfAppointmentSignatureDate(d1).setAdministrativeFunction("CE").setAdministrativeUnitFromIdentifier("11010045")
+				.setCivilityFromIdentifier("1").setElectronicMailAddress("m").setFirstName("kom").setGroupFromIdentifier("1").setLastNames("yao")
+				.setMobilePhoneNumber("01020304").setOfficePhoneExtension("01").setOfficePhoneNumber("22").setPostalBoxAddress("06BP")
+				.setRegistrationNumber("100A"));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequest().setIdentifier("1").setIdentityFromIdentifier("1").setCreationDate(d2).setAccessToken("at")
+				.setSubmissionDate(d3));
+		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readProjection01ByAccessToken("at");	
+		assertThat(accountRequest).isNotNull();
+		assertThat(accountRequest.getAccessToken()).isEqualTo("at");
+		assertThat(accountRequest.getActOfAppointmentReference()).isEqualTo("Ref05");
+		assertThat(accountRequest.getActOfAppointmentSignatory()).isEqualTo("KG");
+		assertThat(accountRequest.getActOfAppointmentSignatureDateAsString()).isEqualTo("03/02/2020");
+		assertThat(accountRequest.getAdministrativeFunction()).isEqualTo("CE");
+		assertThat(accountRequest.getAdministrativeUnitAsString()).isEqualTo("11010045 DTI");
+		assertThat(accountRequest.getCivilityAsString()).isEqualTo("Monsieur");
+		assertThat(accountRequest.getCreationDateAsString()).isEqualTo("05/01/2021 à 00:00");
+		assertThat(accountRequest.getElectronicMailAddress()).isEqualTo("m");
+		assertThat(accountRequest.getFirstName()).isEqualTo("kom");
+		assertThat(accountRequest.getGroupAsString()).isEqualTo("Fonctionnaire");
+		assertThat(accountRequest.getLastNames()).isEqualTo("yao");
+		assertThat(accountRequest.getMobilePhoneNumber()).isEqualTo("01020304");
+		assertThat(accountRequest.getOfficePhoneExtension()).isEqualTo("01");
+		assertThat(accountRequest.getOfficePhoneNumber()).isEqualTo("22");
+		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
+		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
+		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
+		assertThat(accountRequest.getBudgetaryFunctions()).isNull();
+		assertThat(accountRequest.getFunctions()).isNull();
+	}
+	
+	@Test
+	public void accountRequestQuerier_readProjection01WithBudgetaryFunctionsAndFunctionsByAccessToken(){
+		LocalDate d1 = LocalDate.of(2020, 02, 03);
+		LocalDateTime d2 = LocalDateTime.of(2021, 01, 05,00,00);
+		LocalDateTime d3 = LocalDateTime.of(2021, 01, 05,14,35);
+		String functionTypeIdentifier = RandomHelper.getAlphabetic(3);
+		String functionIdentifier = RandomHelper.getAlphabetic(3);
+		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
+		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
+		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
+		EntityCreator.getInstance().createManyInTransaction(new BudgetaryFunction().setCode(budgetaryFunctionIdentifier).setName("1"));		
+		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("11010045").setName("DTI"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("11010045").setSectionFromIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new IdentityGroup().setCode("1").setName("Fonctionnaire"),new Civility().setCode("1").setName("Monsieur"));
+		EntityCreator.getInstance().createOneInTransaction(new Identity().setIdentifier("1").setActOfAppointmentReference("Ref05").setActOfAppointmentSignatory("KG")
+				.setActOfAppointmentSignatureDate(d1).setAdministrativeFunction("CE").setAdministrativeUnitFromIdentifier("11010045")
+				.setCivilityFromIdentifier("1").setElectronicMailAddress("m").setFirstName("kom").setGroupFromIdentifier("1").setLastNames("yao")
+				.setMobilePhoneNumber("01020304").setOfficePhoneExtension("01").setOfficePhoneNumber("22").setPostalBoxAddress("06BP")
+				.setRegistrationNumber("100A"));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequest().setIdentifier("1").setIdentityFromIdentifier("1").setCreationDate(d2).setAccessToken("at")
+				.setSubmissionDate(d3));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequestBudgetaryFunction().setAccountRequestFromIdentifier("1").setBudgetaryFunctionFromIdentifier(budgetaryFunctionIdentifier));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequestFunction().setAccountRequestFromIdentifier("1").setFunctionFromIdentifier(functionIdentifier));
+		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByAccessToken("at");	
+		assertThat(accountRequest).isNotNull();
+		assertThat(accountRequest.getAccessToken()).isEqualTo("at");
+		assertThat(accountRequest.getActOfAppointmentReference()).isEqualTo("Ref05");
+		assertThat(accountRequest.getActOfAppointmentSignatory()).isEqualTo("KG");
+		assertThat(accountRequest.getActOfAppointmentSignatureDateAsString()).isEqualTo("03/02/2020");
+		assertThat(accountRequest.getAdministrativeFunction()).isEqualTo("CE");
+		assertThat(accountRequest.getAdministrativeUnitAsString()).isEqualTo("11010045 DTI");
+		assertThat(accountRequest.getCivilityAsString()).isEqualTo("Monsieur");
+		assertThat(accountRequest.getCreationDateAsString()).isEqualTo("05/01/2021 à 00:00");
+		assertThat(accountRequest.getElectronicMailAddress()).isEqualTo("m");
+		assertThat(accountRequest.getFirstName()).isEqualTo("kom");
+		assertThat(accountRequest.getGroupAsString()).isEqualTo("Fonctionnaire");
+		assertThat(accountRequest.getLastNames()).isEqualTo("yao");
+		assertThat(accountRequest.getMobilePhoneNumber()).isEqualTo("01020304");
+		assertThat(accountRequest.getOfficePhoneExtension()).isEqualTo("01");
+		assertThat(accountRequest.getOfficePhoneNumber()).isEqualTo("22");
+		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
+		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
+		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
+		assertThat(accountRequest.getBudgetaryFunctions()).isNotNull();
+		assertThat(accountRequest.getFunctions()).isNotNull();
+	}
+	
+	@Test
+	public void accountRequestQuerier_readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(){
+		LocalDate d1 = LocalDate.of(2020, 02, 03);
+		LocalDateTime d2 = LocalDateTime.of(2021, 01, 05,00,00);
+		LocalDateTime d3 = LocalDateTime.of(2021, 01, 05,14,35);
+		String functionTypeIdentifier = RandomHelper.getAlphabetic(3);
+		String functionIdentifier = RandomHelper.getAlphabetic(3);
+		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
+		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
+		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
+		EntityCreator.getInstance().createManyInTransaction(new BudgetaryFunction().setCode(budgetaryFunctionIdentifier).setName("1"));		
+		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("11010045").setName("DTI"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("11010045").setSectionFromIdentifier("SEC01"));
+		EntityCreator.getInstance().createManyInTransaction(new IdentityGroup().setCode("1").setName("Fonctionnaire"),new Civility().setCode("1").setName("Monsieur"));
+		EntityCreator.getInstance().createOneInTransaction(new Identity().setIdentifier("1").setActOfAppointmentReference("Ref05").setActOfAppointmentSignatory("KG")
+				.setActOfAppointmentSignatureDate(d1).setAdministrativeFunction("CE").setAdministrativeUnitFromIdentifier("11010045")
+				.setCivilityFromIdentifier("1").setElectronicMailAddress("m").setFirstName("kom").setGroupFromIdentifier("1").setLastNames("yao")
+				.setMobilePhoneNumber("01020304").setOfficePhoneExtension("01").setOfficePhoneNumber("22").setPostalBoxAddress("06BP")
+				.setRegistrationNumber("100A"));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequest().setIdentifier("1").setIdentityFromIdentifier("1").setCreationDate(d2).setAccessToken("at")
+				.setSubmissionDate(d3));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequestBudgetaryFunction().setAccountRequestFromIdentifier("1").setBudgetaryFunctionFromIdentifier(budgetaryFunctionIdentifier));
+		EntityCreator.getInstance().createOneInTransaction(new AccountRequestFunction().setAccountRequestFromIdentifier("1").setFunctionFromIdentifier(functionIdentifier));
+		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier("1");	
+		assertThat(accountRequest).isNotNull();
+		assertThat(accountRequest.getAccessToken()).isEqualTo("at");
+		assertThat(accountRequest.getActOfAppointmentReference()).isEqualTo("Ref05");
+		assertThat(accountRequest.getActOfAppointmentSignatory()).isEqualTo("KG");
+		assertThat(accountRequest.getActOfAppointmentSignatureDateAsString()).isNull();
+		assertThat(accountRequest.getActOfAppointmentSignatureDateAsTimestamp()).isEqualTo(d1.atTime(0, 0).toInstant(ZoneOffset.UTC).toEpochMilli());
+		assertThat(accountRequest.getAdministrativeFunction()).isEqualTo("CE");
+		assertThat(accountRequest.getAdministrativeUnitAsString()).isNull();
+		assertThat(accountRequest.getAdministrativeUnit().getIdentifier()).isEqualTo("11010045");
+		assertThat(accountRequest.getAdministrativeUnit().getName()).isEqualTo("DTI");
+		assertThat(accountRequest.getCivilityAsString()).isNull();
+		assertThat(accountRequest.getCivility()).isNotNull();
+		assertThat(accountRequest.getCivility().getName()).isEqualTo("Monsieur");
+		assertThat(accountRequest.getCreationDateAsString()).isEqualTo("05/01/2021 à 00:00");
+		assertThat(accountRequest.getElectronicMailAddress()).isEqualTo("m");
+		assertThat(accountRequest.getFirstName()).isEqualTo("kom");
+		assertThat(accountRequest.getGroupAsString()).isNull();
+		assertThat(accountRequest.getGroup().getName()).isEqualTo("Fonctionnaire");
+		assertThat(accountRequest.getLastNames()).isEqualTo("yao");
+		assertThat(accountRequest.getMobilePhoneNumber()).isEqualTo("01020304");
+		assertThat(accountRequest.getOfficePhoneExtension()).isEqualTo("01");
+		assertThat(accountRequest.getOfficePhoneNumber()).isEqualTo("22");
+		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
+		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
+		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
+		assertThat(accountRequest.getBudgetaryFunctions()).isNotNull();
+		assertThat(accountRequest.getFunctions()).isNotNull();
 	}
 	
 	//@Test

@@ -10,6 +10,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 
 public interface AccountRequestBusiness extends BusinessEntity<AccountRequest> {
 
+	void notifyAccessToken(Collection<AccountRequest> accountRequests);
+	void notifyAccessToken(AccountRequest...accountRequests);
+	
 	@Transactional
 	void accept(Collection<AccountRequest> accountRequests);
 	
@@ -22,6 +25,7 @@ public interface AccountRequestBusiness extends BusinessEntity<AccountRequest> {
 	@Transactional
 	void reject(AccountRequest...accountRequests);
 	
+	String SAVE = "AccountRequestBusiness.save";
 	String ACCEPT = "AccountRequestBusiness.accept";
 	String REJECT = "AccountRequestBusiness.reject";
 }

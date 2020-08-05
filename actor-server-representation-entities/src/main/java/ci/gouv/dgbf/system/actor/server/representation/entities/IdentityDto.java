@@ -19,7 +19,7 @@ public class IdentityDto extends AbstractIdentifiableSystemScalarStringImpl impl
 	private String electronicMailAddress;	
 	
 	private String registrationNumber;
-	private String postalBox;
+	private String postalBoxAddress;
 	private String mobilePhoneNumber;
 	private String officePhoneNumber;
 	private String officePhoneExtension;

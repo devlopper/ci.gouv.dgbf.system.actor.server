@@ -1,10 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -16,6 +18,11 @@ import io.swagger.annotations.ApiOperation;
 
 @Path(AccountRequestRepresentation.PATH)
 public interface AccountRequestRepresentation extends RepresentationEntity<AccountRequestDto> {
+
+	@POST
+	@Path(PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES)
+	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	Response notifyAccessTokenByElectronicMailAddresses(@QueryParam("emails") List<String> electronicMailAddresses);
 	
 	@POST
 	@Path(PATH_ACCEPT)
@@ -36,6 +43,7 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	}
 	
 	String PATH = "accountrequest";
+	String PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES = "notifyAccessTokenByElectronicMailAddresses";
 	String PATH_ACCEPT = "accept";
 	String PATH_REJECT = "reject";
 	
