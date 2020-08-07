@@ -16,6 +16,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
@@ -45,6 +48,13 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Collection<T> readMany(Class<T> tupleClass, QueryExecutorArguments arguments) {
+		if(ScopeOfTypeSectionQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeSectionQuerier.getInstance().readMany(arguments);
+		if(ScopeOfTypeAdministrativeUnitQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeAdministrativeUnitQuerier.getInstance().readMany(arguments);
+		if(ScopeOfTypeBudgetSpecializationUnitQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readMany(arguments);
+		
 		if(arguments != null) {
 			if(PrivilegeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) PrivilegeQuerier.getInstance().readVisibleByActorCode((String)arguments.getFilterFieldValue(PrivilegeQuerier.PARAMETER_NAME_ACTOR_CODE));
@@ -71,14 +81,7 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereTypeIsUAAndFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readVisibleSectionsWhereFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readInvisibleSectionsWhereFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readVisibleAdministrativeUnitsWithSectionsWhereFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_ADMINISTRATIVE_UNITS_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readInvisibleAdministrativeUnitsWithSectionsWhereFilter(arguments);
+			
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilterNotAssociated(arguments);
 			

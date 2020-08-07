@@ -5,10 +5,16 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
@@ -37,5 +43,46 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_NAME, "Constitutionnel Conseil"));
 		assertThat(scopes).isNotNull();
 		assertThat(scopes.stream().map(Scope::getName).collect(Collectors.toList())).containsExactly("Conseil Constitutionnel");
+	}
+	
+	/**/
+	
+	public static void assertInvisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readInvisibleSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertVisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER)
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertInvisibleAdministrativeUnitsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleAdministrativeUnitsWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertVisibleAdministrativeUnitsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleAdministrativeUnitsWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertInvisibleBudgetSpecializationUnitsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertVisibleBudgetSpecializationUnitsWhereFilter(String actorCode,String...expectedCodes) {
+		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	public static void assertScopes(Collection<Scope> scopes,String...expectedCodes) {
+		if(CollectionHelper.isEmpty(scopes)) {
+			assertThat(ArrayHelper.isEmpty(expectedCodes)).as("No scopes found").isTrue();
+		}else {
+			assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).contains(expectedCodes);
+		}
 	}
 }

@@ -29,6 +29,11 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 		return (BudgetSpecializationUnit) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public BudgetSpecializationUnit setCode(String code) {
+		return (BudgetSpecializationUnit) super.setCode(code);
+	}
+	
 	public BudgetSpecializationUnit setSectionFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setSection(null);

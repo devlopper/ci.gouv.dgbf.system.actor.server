@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -48,6 +49,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		Collection<Scope> administrativeUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_UA)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(administrativeUnits))
 			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+		
+		Collection<Scope> budgetSpecializationUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_USB)).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(budgetSpecializationUnits))
+			deleteBudgetSpecializationUnits(actor,budgetSpecializationUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 	}
 	
 	private void deleteSections(String actorCode,Collection<String> sectionsCodes) {
@@ -55,19 +60,30 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			return;
 		Collection<ActorScope> actorScopesSections = ActorScopeQuerier.getInstance().readByActorsCodesByScopesCodes(List.of(actorCode),sectionsCodes);
 		Collection<ActorScope> actorScopesAdministrativeUnits = ActorScopeQuerier.getInstance().readByActorsCodesByScopeTypesCodes(List.of(actorCode)
-				,List.of(ScopeType.CODE_UA));		
-		if(CollectionHelper.isEmpty(actorScopesSections) && CollectionHelper.isEmpty(actorScopesAdministrativeUnits))
+				,List.of(ScopeType.CODE_UA));	
+		Collection<ActorScope> actorScopesBudgetSpecializationUnits = ActorScopeQuerier.getInstance().readByActorsCodesByScopeTypesCodes(List.of(actorCode)
+				,List.of(ScopeType.CODE_USB));	
+		if(CollectionHelper.isEmpty(actorScopesSections) && CollectionHelper.isEmpty(actorScopesAdministrativeUnits) && CollectionHelper.isEmpty(actorScopesBudgetSpecializationUnits))
 			return;	
 		if(CollectionHelper.isNotEmpty(actorScopesSections))
 			deleteMany(actorScopesSections);
 	
-		if(CollectionHelper.isNotEmpty(actorScopesAdministrativeUnits)) {
-			Collection<String> sectionsIdentifiers = CollectionHelper.isEmpty(sectionsCodes) ? null : ScopeQuerier.getInstance()
-					.readByCodesByTypesCodes(sectionsCodes, List.of(ScopeType.CODE_SECTION)).stream().map(x -> x.getIdentifier()).collect(Collectors.toList());
+		Collection<String> sectionsIdentifiers = CollectionHelper.isEmpty(sectionsCodes) ? null : ScopeQuerier.getInstance()
+				.readByCodesByTypesCodes(sectionsCodes, List.of(ScopeType.CODE_SECTION)).stream().map(x -> x.getIdentifier()).collect(Collectors.toList());
+		
+		if(CollectionHelper.isNotEmpty(actorScopesAdministrativeUnits)) {			
 			actorScopesAdministrativeUnits.forEach(actorScopesAdministrativeUnit -> {
 				AdministrativeUnit administrativeUnit = EntityFinder.getInstance().find(AdministrativeUnit.class, actorScopesAdministrativeUnit.getScope().getIdentifier());
 				if(sectionsIdentifiers.contains(administrativeUnit.getSection().getIdentifier()))
 					delete(actorScopesAdministrativeUnit);
+			});
+		}
+		
+		if(CollectionHelper.isNotEmpty(actorScopesBudgetSpecializationUnits)) {
+			actorScopesBudgetSpecializationUnits.forEach(actorScopesBudgetSpecializationUnit -> {
+				BudgetSpecializationUnit budgetSpecializationUnit = EntityFinder.getInstance().find(BudgetSpecializationUnit.class, actorScopesBudgetSpecializationUnit.getScope().getIdentifier());
+				if(sectionsIdentifiers.contains(budgetSpecializationUnit.getSection().getIdentifier()))
+					delete(actorScopesBudgetSpecializationUnit);
 			});
 		}
 	}
@@ -87,5 +103,18 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		//if(CollectionHelper.isEmpty(actorScopesAdministrativeUnits))
 		//	return;
 		//deleteMany(actorScopesAdministrativeUnits);
+	}
+	
+	private void deleteBudgetSpecializationUnits(Actor actor,Collection<String> budgetSpecializationUnitsCodes) {
+		if(CollectionHelper.isEmpty(budgetSpecializationUnitsCodes))
+			return;
+		for(String budgetSpecializationUnitsCode : budgetSpecializationUnitsCodes) {
+			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),budgetSpecializationUnitsCode);
+			if(actorScope == null) {
+				create(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(budgetSpecializationUnitsCode)).setVisible(Boolean.FALSE));
+			}else {
+				delete(actorScope);
+			}
+		}
 	}
 }
