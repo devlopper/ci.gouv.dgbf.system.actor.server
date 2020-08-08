@@ -22,8 +22,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuer
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction;
@@ -284,20 +282,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				.collect(Collectors.toList())).containsExactly("1","2","3");
 		assertThat(ScopeQuerier.getInstance().readByActorsCodesByTypesCodes(List.of("3"),List.of("1")).stream().map(Scope::getCode)
 				.collect(Collectors.toList())).containsExactly("2");
-	}
-	
-	@Test
-	public void scopeQuerier_readVisibleSectionsByActorCode(){
-		assertThat(ScopeOfTypeSectionQuerier.getInstance().readVisibleSectionsByActorCode("1")).isNull();
-		assertThat(ScopeOfTypeSectionQuerier.getInstance().readVisibleSectionsByActorCode("3").stream().map(Scope::getCode)
-				.collect(Collectors.toList())).containsExactly("4","5");
-	}
-	
-	@Test
-	public void scopeQuerier_readVisibleAdministrativeUnitsByActorCode(){
-		assertThat(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleAdministrativeUnitsByActorCode("1")).isNull();
-		assertThat(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleAdministrativeUnitsByActorCode("3").stream().map(Scope::getCode)
-				.collect(Collectors.toList())).containsExactly("ua01");
 	}
 	
 	@Test

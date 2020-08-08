@@ -29,12 +29,12 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 
 	@Override
 	public Response getSectionsByActorCode(String actorCode) {
-		return __getByActorCode__(actorCode,ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_BY_ACTOR_CODE);
+		return __getByActorCode__(actorCode,ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
 	}
 	
 	@Override
 	public Response getAdministrativeUnitsByActorCode(String actorCode) {
-		return __getByActorCode__(actorCode,ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE);
+		return __getByActorCode__(actorCode,ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_ADMINISTRATIVE_UNITS_WHERE_FILTER);
 	}
 	
 	/**/

@@ -48,23 +48,23 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	/**/
 	
 	public static void assertInvisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readInvisibleSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	
 	public static void assertVisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {
 		assertScopes(EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
-				.setQueryFromIdentifier(ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_SECTIONS_WHERE_FILTER)
+				.setQueryFromIdentifier(ScopeOfTypeSectionQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER)
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	
 	public static void assertInvisibleAdministrativeUnitsWhereFilter(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleAdministrativeUnitsWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	
 	public static void assertVisibleAdministrativeUnitsWhereFilter(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleAdministrativeUnitsWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	

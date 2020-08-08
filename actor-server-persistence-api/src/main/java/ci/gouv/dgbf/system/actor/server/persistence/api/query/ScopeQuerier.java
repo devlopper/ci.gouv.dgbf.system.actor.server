@@ -328,13 +328,15 @@ public interface ScopeQuerier extends Querier {
 		@Override
 		public Collection<Scope> readVisibleByActorCode(String actorCode) {
 			Collection<Scope> scopes = null;
-			Collection<Scope> sections = ScopeOfTypeSectionQuerier.getInstance().readVisibleSectionsByActorCode(actorCode);
+			Collection<Scope> sections = ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+					.addFilterField(PARAMETER_NAME_ACTOR_CODE, actorCode));
 			if(CollectionHelper.isNotEmpty(sections)) {
 				if(scopes == null)
 					scopes = new ArrayList<>();
 				scopes.addAll(sections);
 			}
-			Collection<Scope> administrativeUnits = ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleAdministrativeUnitsByActorCode(actorCode);
+			Collection<Scope> administrativeUnits = ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+					.addFilterField(PARAMETER_NAME_ACTOR_CODE, actorCode));
 			if(CollectionHelper.isNotEmpty(administrativeUnits)) {
 				if(scopes == null)
 					scopes = new ArrayList<>();
@@ -345,8 +347,10 @@ public interface ScopeQuerier extends Querier {
 		
 		@Override
 		public Long countVisibleByActorCode(String actorCode) {
-			return NumberHelper.getLong(NumberHelper.add(ScopeOfTypeSectionQuerier.getInstance().countVisibleSectionsByActorCode(actorCode)
-					,ScopeOfTypeAdministrativeUnitQuerier.getInstance().countVisibleAdministrativeUnitsByActorCode(actorCode)));
+			return NumberHelper.getLong(NumberHelper.add(ScopeOfTypeSectionQuerier.getInstance().countVisibleWhereFilter(
+					new QueryExecutorArguments().addFilterField(ScopeOfTypeSectionQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode))
+					,ScopeOfTypeAdministrativeUnitQuerier.getInstance().countVisibleWhereFilter(new QueryExecutorArguments()
+							.addFilterField(PARAMETER_NAME_ACTOR_CODE, actorCode))));
 		}
 	}
 	
