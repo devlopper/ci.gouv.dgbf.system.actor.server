@@ -13,9 +13,14 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 public interface ActorScopeBusiness extends BusinessEntity<ActorScope> {
 
 	@Transactional
+	void createByActorByScopes(Actor actor,Collection<Scope> scopes);
+	
+	@Transactional
 	void deleteByActorByScopes(Actor actor,Collection<Scope> scopes);
 	
 	/**/
 	
+	String CREATE_BY_ACTOR_BY_SCOPES = "ActorScope.createByActorByScopes";
 	String DELETE_BY_ACTOR_BY_SCOPES = "ActorScope.deleteByActorByScopes";
+	
 }

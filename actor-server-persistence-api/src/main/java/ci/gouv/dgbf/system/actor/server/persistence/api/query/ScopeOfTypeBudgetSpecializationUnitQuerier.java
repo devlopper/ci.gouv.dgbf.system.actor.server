@@ -1,5 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -38,15 +47,26 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleBudgetSpecializationUnitsWhereFilter");
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
-		return "(EXISTS (SELECT actorScope.identifier FROM ActorScope actorScope WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-				+" AND actorScope.scope.identifier = scope.identifier AND (actorScope.visible IS NULL OR actorScope.visible = true)) " + 
-				" OR " + 
-				" EXISTS (SELECT actorScope.identifier FROM ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection " + 
-				" JOIN Section section ON section = scopeSection WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND EXISTS("
-				+ "SELECT budgetSpecializationUnit FROM BudgetSpecializationUnit budgetSpecializationUnit "
-				+ "WHERE budgetSpecializationUnit = scope AND budgetSpecializationUnit.section = section AND NOT EXISTS(SELECT actorScopeBudgetSpecializationUnit FROM ActorScope actorScopeBudgetSpecializationUnit "
-				+ "WHERE actorScopeBudgetSpecializationUnit.scope = scope AND actorScopeBudgetSpecializationUnit.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND (actorScopeBudgetSpecializationUnit.visible IS NOT NULL AND actorScopeBudgetSpecializationUnit.visible = false))"
-				+ ")))";
+		return  or(
+				/*From Actor Scope*/
+				exists(
+					select("actorScope.identifier"),from("ActorScope actorScope"),where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+					,"actorScope.scope.identifier = scope.identifier","(actorScope.visible IS NULL OR actorScope.visible = true)"))
+				)
+				/*From Section : Its section is in actor scope and it has not been explicitly marked as not visible*/
+				,exists(and(
+					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
+					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+					,exists(
+						select("budgetSpecializationUnit"),from("BudgetSpecializationUnit budgetSpecializationUnit")
+						,where(and("budgetSpecializationUnit = scope","budgetSpecializationUnit.section = section",
+							not(exists(select("actorScopeBudgetSpecializationUnit ")+from("ActorScope actorScopeBudgetSpecializationUnit ")
+							+ where(and("actorScopeBudgetSpecializationUnit.scope = scope","actorScopeBudgetSpecializationUnit.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+								,"actorScopeBudgetSpecializationUnit.visible IS NOT NULL","actorScopeBudgetSpecializationUnit.visible = false")
+							)))))
+					)
+				))
+		);
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {

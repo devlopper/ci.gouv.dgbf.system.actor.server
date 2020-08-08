@@ -1,5 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -7,12 +14,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-
-import org.cyk.utility.__kernel__.persistence.query.Language.From;
-import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -70,17 +71,17 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
 		return or(
 				//From Actor Scope
-				exists(Select.of("v.identifier"),From.of("ActorScope v"),Where.of(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
+				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
 				//From Administrative Unit
-				,exists(Select.of("actorScope.identifier"),From.of("ActorScope actorScope")
-				,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
-				,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
-				,Where.of(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+						,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
+						,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
+						,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
 				//From Budget Specialization Unit
-				,exists(Select.of("actorScope.identifier"),From.of("ActorScope actorScope")
-				,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
-				,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
-				,Where.of(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+						,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
+						,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
+						,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
 			);
 	}
 	

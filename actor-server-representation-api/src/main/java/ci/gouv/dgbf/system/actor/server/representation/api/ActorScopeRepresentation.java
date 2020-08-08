@@ -20,6 +20,20 @@ import io.swagger.annotations.ApiOperation;
 public interface ActorScopeRepresentation extends RepresentationEntity<ActorScopeDto> {
 	
 	@POST
+	@Path(PATH_CREATE_BY_ACTOR_CODE_SCOPES_CODES)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "createByActorByScopes",tags = {"create"})
+	Response createByActorByScopes(ActorDto actor,Collection<ScopeDto> scopes);
+	
+	@POST
+	@Path(PATH_CREATE_BY_SCOPES_CODES)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "createByScopes",tags = {"create"})
+	Response createByScopes(Collection<ScopeDto> scopes);
+	
+	@POST
 	@Path(PATH_DELETE_BY_ACTOR_CODE_SCOPES_CODES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -38,6 +52,8 @@ public interface ActorScopeRepresentation extends RepresentationEntity<ActorScop
 	}
 	
 	String PATH = "actorscope";
+	String PATH_CREATE_BY_ACTOR_CODE_SCOPES_CODES = "createByActorByScopes";
+	String PATH_CREATE_BY_SCOPES_CODES = "createByScopes";
 	String PATH_DELETE_BY_ACTOR_CODE_SCOPES_CODES = "deleteByActorByScopes";
 	String PATH_DELETE_BY_SCOPES = "deleteByScopes";
 }

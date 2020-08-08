@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
@@ -25,6 +26,44 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityImpl<ActorScopeDto> implements ActorScopeRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response createByScopes(Collection<ScopeDto> scopes) {
+		if(CollectionHelper.isEmpty(scopes))
+			return null;
+		ActorDto actor = null;
+		for(ScopeDto index : scopes)
+			if(index.getActor() != null) {
+				actor = index.getActor();
+				break;
+			}
+		return createByActorByScopes(actor, scopes);
+	}
+	
+	@Override
+	public Response createByActorByScopes(ActorDto actor, Collection<ScopeDto> scopes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {				
+					@Override
+					public void run() {
+						Actor __actor__ = EntityFinder.getInstance().find(Actor.class, actor.getIdentifier());
+						Collection<Scope> __scopes__ = null;
+						for(ScopeDto index : scopes) {
+							Scope scope = EntityFinder.getInstance().find(Scope.class, index.getIdentifier());
+							if(scope != null) {
+								if(__scopes__ == null)
+									__scopes__ = new ArrayList<>();
+								__scopes__.add(scope);
+							}
+						}
+						__inject__(ActorScopeBusiness.class).createByActorByScopes(__actor__, __scopes__);
+					}
+				};
+			}			
+		});
+	}
+	
 	@Override
 	public Response deleteByActorByScopes(ActorDto actor, Collection<ScopeDto> scopes) {
 		if(actor == null)

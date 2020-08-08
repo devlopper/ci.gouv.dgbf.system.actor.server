@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,21 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		super.__listenExecuteCreateBefore__(actorScope, properties, function);
 		if(StringHelper.isBlank(actorScope.getIdentifier()) && actorScope.getActor() != null && actorScope.getScope() != null && actorScope.getScope().getType() != null)
 			actorScope.setIdentifier(actorScope.getActor().getCode()+"_"+actorScope.getScope().getType().getCode()+"_"+actorScope.getScope().getCode());
+	}
+	
+	@Override @Transactional
+	public void createByActorByScopes(Actor actor, Collection<Scope> scopes) {
+		if(actor == null || CollectionHelper.isEmpty(scopes))
+			throw new RuntimeException("acteur et domaine(s) obligatoires");
+		Collection<ActorScope> actorScopes = new ArrayList<>();
+		scopes.forEach(scope -> {
+			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(), scope.getCode());
+			if(actorScope == null)
+				actorScope = new ActorScope().setActor(actor).setScope(scope);
+			actorScope.setVisible(Boolean.TRUE);
+			actorScopes.add(actorScope);
+		});
+		saveMany(actorScopes);
 	}
 	
 	@Override @Transactional
@@ -96,7 +112,17 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			if(actorScope == null) {
 				create(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(administrativeUnitsCode)).setVisible(Boolean.FALSE));
 			}else {
-				delete(actorScope);
+				ActorScope actorScopeSection = null;
+				AdministrativeUnit administrativeUnit = EntityFinder.getInstance().find(AdministrativeUnit.class, actorScope.getScope().getIdentifier());
+				if(administrativeUnit != null) {
+					Scope scopeSection = EntityFinder.getInstance().find(Scope.class, administrativeUnit.getSection().getIdentifier());
+					if(scopeSection != null)
+						actorScopeSection = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),scopeSection.getCode());	
+				}			
+				if(actorScopeSection == null)
+					delete(actorScope);
+				else
+					update(actorScope.setVisible(Boolean.FALSE));
 			}
 		}
 		//Collection<ActorScope> actorScopesAdministrativeUnits = ActorScopeQuerier.getInstance().readByActorsCodesByScopesCodes(List.of(actor.getCode()),administrativeUnitsCodes);
