@@ -1,5 +1,8 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
+import java.util.logging.Level;
+
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.junit.jupiter.api.Test;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
@@ -13,11 +16,15 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void scopeQuerier_readVisibleSectionsWhereFilter(){
 		assertVisibleSectionsWhereFilter("kycdev@gmail.com","327","103");
+		assertVisibleSectionsWhereFilter("kb@m.com","108");
 	}
 	
 	@Test
 	public void scopeQuerier_readInvisibleSectionsWhereFilter(){
-		assertInvisibleSectionsWhereFilter("kycdev@gmail.com","101","102");
+		//assertInvisibleSectionsWhereFilter("kycdev@gmail.com",null,new String[] {"101","102"});
+		//assertInvisibleSectionsWhereFilter("kb@m.com",null,new String[] {"102","103","103"});
+		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		assertInvisibleSectionsWhereFilter("kb@m.com","102",new String[] {});
 	}
 	
 	@Test

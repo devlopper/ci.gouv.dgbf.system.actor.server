@@ -47,9 +47,9 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	
 	/**/
 	
-	public static void assertInvisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {
+	public static void assertInvisibleSectionsWhereFilter(String actorCode,String code,String[] expectedCodes) {
 		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
-				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_CODE, code)),expectedCodes);
 	}
 	
 	public static void assertVisibleSectionsWhereFilter(String actorCode,String...expectedCodes) {

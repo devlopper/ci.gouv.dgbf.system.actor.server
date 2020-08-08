@@ -6,6 +6,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	/* read visible sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsWhereFilter");
 	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
-		return or(
+		return parenthesis(or(
 				//From Actor Scope
 				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
 				//From Administrative Unit
@@ -82,7 +83,7 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 						,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
 						,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
 						,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
-			);
+			));
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWherePredicate() {
