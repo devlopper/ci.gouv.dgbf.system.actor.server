@@ -130,6 +130,9 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 		
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readVisibleWhereFilter(arguments);
+			
 			if(QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readVisibleWithSectionsWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))

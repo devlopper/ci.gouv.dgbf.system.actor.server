@@ -29,11 +29,18 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	@GET
 	@Path(PATH_GET_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les unités administratives d'un compte utilisateur",tags = {"get","unite_administrative"})
+	@ApiOperation(value = "Obtenir les unités administratives d'un compte utilisateur",tags = {"get","unité administrative"})
 	Response getAdministrativeUnitsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
+	
+	@GET
+	@Path(PATH_GET_BUDGET_SPECIALIZATION_UNITS_BY_ACTOR_CODE)
+	@Produces({MediaType.APPLICATION_JSON})
+	@ApiOperation(value = "Obtenir les unités de spécialisation du budget d'un compte utilisateur",tags = {"get","unité de specialisation du budget"})
+	Response getBudgetSpecializationUnitsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	String PATH = "domaine";
 	String PATH_GET_BY_ACTOR_CODE = "getByActorCode";
 	String PATH_GET_SECTIONS_BY_ACTOR_CODE = "sections_par_acteur";
 	String PATH_GET_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE = "unites_administratives_par_acteur";
+	String PATH_GET_BUDGET_SPECIALIZATION_UNITS_BY_ACTOR_CODE = "unites-specialisations-budgets-par-acteur";
 }
