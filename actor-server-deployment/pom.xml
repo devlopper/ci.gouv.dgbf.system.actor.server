@@ -51,8 +51,8 @@
 		<security.single.sign.on.system.keycloak.prod.realm.name>SIIB</security.single.sign.on.system.keycloak.prod.realm.name>
 		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
 		<security.single.sign.on.system.keycloak.prod.client.secret>ac0749e3-14f8-4a14-a6e1-4edfb9375e69</security.single.sign.on.system.keycloak.prod.client.secret>
-		<security.single.sign.on.system.keycloak.prod.credential.username>admin</security.single.sign.on.system.keycloak.prod.credential.username>
-		<security.single.sign.on.system.keycloak.prod.credential.password>admin</security.single.sign.on.system.keycloak.prod.credential.password>
+		<security.single.sign.on.system.keycloak.prod.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.prod.credential.username>
+		<security.single.sign.on.system.keycloak.prod.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.prod.credential.password>
 		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
 	</properties>
 	
