@@ -18,14 +18,11 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
-import org.cyk.utility.server.business.BusinessServiceProvider;
-
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
@@ -35,11 +32,15 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	public BusinessServiceProvider<AccountRequest> save(AccountRequest accountRequest, Properties properties) {
-		super.save(accountRequest, properties);
-		//update budgetary functions
-		//Collection<AccountRequestBudgetaryFunction> accountRequestBudgetaryFunctions = AccountRequestBudgetaryFunctionQuerier;
-		return this;
+	public void record(Collection<AccountRequest> accountRequests) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void submit(Collection<AccountRequest> accountRequests) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override

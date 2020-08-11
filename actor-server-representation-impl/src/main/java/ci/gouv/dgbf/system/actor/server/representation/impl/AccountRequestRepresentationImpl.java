@@ -26,6 +26,18 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public Response record(Collection<AccountRequestDto> accountRequests) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Response submit(Collection<AccountRequestDto> accountRequests) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public Response notifyAccessTokenByElectronicMailAddresses(List<String> electronicMailAddresses) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override

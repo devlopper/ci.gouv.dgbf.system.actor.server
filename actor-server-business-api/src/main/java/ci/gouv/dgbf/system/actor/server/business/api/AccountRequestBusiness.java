@@ -14,6 +14,12 @@ public interface AccountRequestBusiness extends BusinessEntity<AccountRequest> {
 	void notifyAccessToken(AccountRequest...accountRequests);
 	
 	@Transactional
+	void record(Collection<AccountRequest> accountRequests);
+	
+	@Transactional
+	void submit(Collection<AccountRequest> accountRequests);
+	
+	@Transactional
 	void accept(Collection<AccountRequest> accountRequests);
 	
 	@Transactional
@@ -25,7 +31,8 @@ public interface AccountRequestBusiness extends BusinessEntity<AccountRequest> {
 	@Transactional
 	void reject(AccountRequest...accountRequests);
 	
-	String SAVE = "AccountRequestBusiness.save";
+	String RECORD = "AccountRequestBusiness.record";
+	String SUBMIT = "AccountRequestBusiness.submit";
 	String ACCEPT = "AccountRequestBusiness.accept";
 	String REJECT = "AccountRequestBusiness.reject";
 }

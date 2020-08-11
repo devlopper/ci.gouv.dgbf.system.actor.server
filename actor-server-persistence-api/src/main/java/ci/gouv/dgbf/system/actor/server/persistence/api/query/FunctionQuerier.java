@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
@@ -22,18 +21,21 @@ import org.cyk.utility.__kernel__.value.Value;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 
 @Queries(value = {
-		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
+	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
+	//,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
 })
 public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 
 	String PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER = "accountRequestIdentifier";
+	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ);
 	//Collection<FunctionType> readOrderByCodeAscending();
 	
-	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
+	String QUERY_NAME_COUNT = "countOrderByCodeAscending";
+	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	
 	/* read by types codes order by code ascending */
 	String QUERY_NAME_READ_BY_TYPES_CODES = "readByTypesCodes";
@@ -85,7 +87,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		
 		@Override
 		public Long countByTypesCodes(Collection<String> typesCodes) {
-			return EntityCounter.getInstance().count(Function.class, QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES,PARAMETER_NAME_TYPES_CODES,typesCodes);
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES,PARAMETER_NAME_TYPES_CODES,typesCodes);
 		}
 		
 		@Override
@@ -98,6 +100,16 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 			if(QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readByAccountRequestIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER));
 			return super.readMany(arguments);
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
+				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
+			if(QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier()))
+				return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT);
+			return super.count(arguments);
 		}
 		
 		@Override

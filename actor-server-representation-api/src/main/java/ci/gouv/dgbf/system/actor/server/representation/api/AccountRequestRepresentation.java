@@ -20,6 +20,20 @@ import io.swagger.annotations.ApiOperation;
 public interface AccountRequestRepresentation extends RepresentationEntity<AccountRequestDto> {
 
 	@POST
+	@Path(PATH_RECORD)
+	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Enregistrer des demandes de comptes",tags = {TAG})
+	Response record(Collection<AccountRequestDto> accountRequests);
+	
+	@POST
+	@Path(PATH_SUBMIT)
+	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Soumettre des demandes de comptes",tags = {TAG})
+	Response submit(Collection<AccountRequestDto> accountRequests);
+	
+	@POST
 	@Path(PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES)
 	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	Response notifyAccessTokenByElectronicMailAddresses(@QueryParam("emails") List<String> electronicMailAddresses);
@@ -28,14 +42,14 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	@Path(PATH_ACCEPT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Accepter les demandes de comptes",tags = {TAG})
+	@ApiOperation(value = "Accepter des demandes de comptes",tags = {TAG})
 	Response accept(Collection<AccountRequestDto> accountRequests);
 	
 	@POST
 	@Path(PATH_REJECT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Rejeter les demandes de comptes",tags = {TAG})
+	@ApiOperation(value = "Rejeter des demandes de comptes",tags = {TAG})
 	Response reject(Collection<AccountRequestDto> accountRequests);
 	
 	static AccountRequestRepresentation getProxy() {
@@ -43,7 +57,9 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	}
 	
 	String PATH = "accountrequest";
-	String PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES = "notifyAccessTokenByElectronicMailAddresses";
+	String PATH_RECORD = "record";
+	String PATH_SUBMIT = "submit";
+	String PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES = "notifyAccessTokenByElectronicMailAddresses";	
 	String PATH_ACCEPT = "accept";
 	String PATH_REJECT = "reject";
 	
