@@ -1,7 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
@@ -38,6 +38,9 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
 	
+	String PARAMETER_NAME_SECTION_CODE = "sectionCode";
+	String PARAMETER_NAME_SECTION_NAME = "sectionName";
+	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
 	
@@ -49,12 +52,17 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
 		return  parenthesis(or(
-				/*From Actor Scope*/
+				/*Marked Explicitly as visible = true : Read from Actor Scope*/
 				exists(
-					select("actorScope.identifier"),from("ActorScope actorScope"),where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-					,"actorScope.scope.identifier = scope.identifier","(actorScope.visible IS NULL OR actorScope.visible = true)"))
+					select("actorScope.identifier"),from("ActorScope actorScope"),where(and(
+							"actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+							,"actorScope.scope.identifier = scope.identifier"
+							,"(actorScope.visible IS NULL OR actorScope.visible = true)"
+					))
 				)
-				/*From Section : Its section is in actor scope and it has not been explicitly marked as not visible*/
+				/*Not Marked Explicitly -> visible = false or visible = null
+				 * 1 - Read From Section : Its section is in actor scope
+				 * */
 				,exists(and(
 					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
 					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
@@ -72,8 +80,13 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {
 		return Language.Where.of(Language.Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
-				,getQueryValueReadVisibleWhereFilterPredicateVisible(),Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,getQueryValueReadVisibleWhereFilterPredicateVisible()
+				,Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
 				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				/*,parenthesis(or(
+						Language.Where.like("section", BudgetSpecializationUnit.FIELD_CODE, PARAMETER_NAME_SECTION_CODE)
+						,Language.Where.like("section", BudgetSpecializationUnit.FIELD_NAME, PARAMETER_NAME_SECTION_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+						))*/
 				));
 	}
 	
@@ -173,6 +186,9 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			*/
 			arguments.setFilter(filter);
 		}
 		

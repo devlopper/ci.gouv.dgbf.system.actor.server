@@ -1,9 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
+import java.util.Collection;
 import java.util.logging.Level;
 
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
+
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
 	private static final long serialVersionUID = 1L;
@@ -11,6 +16,17 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void scopeQuerier_USBs(){
+		System.out.println("--------------------- USBs ---------------------");
+		Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereTypeIsUSBAndFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER));
+		if(scopes != null)
+			scopes.forEach(scope -> {
+				System.out.println(scope.getCode()+" : "+scope.getSectionAsString());
+			});
 	}
 	
 	@Test

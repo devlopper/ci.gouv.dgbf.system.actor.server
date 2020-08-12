@@ -77,6 +77,27 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_VALUE_COUNT_WHERE_TYPE_IS_UA_AND_FILTER = "SELECT COUNT(t.identifier) "+QUERY_VALUE_READ_WHERE_TYPE_IS_UA_AND_FILTER_FROM_WHERE;
 	Long countWhereTypeIsUAAndFilter(QueryExecutorArguments arguments);
 	
+	/* read where type is usb and filter order by code ascending */
+	String QUERY_NAME_READ_WHERE_TYPE_IS_USB_AND_FILTER = "readWhereTypeIsUSBAndFilter";
+	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_WHERE_TYPE_IS_USB_AND_FILTER);
+	Map<String,Integer> QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE
+			,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING);
+	String QUERY_VALUE_READ_WHERE_TYPE_IS_USB_AND_FILTER_FROM_WHERE = " FROM Scope t "
+			+ " JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit.identifier = t.identifier "
+			+ " JOIN Section section ON section.identifier = budgetSpecializationUnit.section "
+			+ " JOIN Scope sectionScope ON sectionScope.identifier = section.identifier "
+			+Language.Where.of(Language.Where.and(				
+					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				));
+	String QUERY_VALUE_READ_WHERE_TYPE_IS_USB_AND_FILTER = "SELECT t.identifier,t.code,t.name,"+Language.Select.concatCodeName("sectionScope")+ QUERY_VALUE_READ_WHERE_TYPE_IS_UA_AND_FILTER_FROM_WHERE+ " ORDER BY t.code ASC";
+	Collection<Scope> readWhereTypeIsUSBAndFilter(QueryExecutorArguments arguments);
+	
+	/* count where type is usb and filter */
+	String QUERY_NAME_COUNT_WHERE_TYPE_IS_USB_AND_FILTER = "countWhereTypeIsUSBAndFilter";
+	String QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_USB_AND_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_COUNT_WHERE_TYPE_IS_USB_AND_FILTER);
+	String QUERY_VALUE_COUNT_WHERE_TYPE_IS_USB_AND_FILTER = "SELECT COUNT(t.identifier) "+QUERY_VALUE_READ_WHERE_TYPE_IS_USB_AND_FILTER_FROM_WHERE;
+	Long countWhereTypeIsUSBAndFilter(QueryExecutorArguments arguments);
+	
 	/**************************************************************************************************************************************************************************/
 	
 	/* read all order by type code asscending by code ascending */
@@ -246,6 +267,25 @@ public interface ScopeQuerier extends Querier {
 		}
 		
 		private static void prepareWhereTypeIsUAAndFilter(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		@Override
+		public Collection<Scope> readWhereTypeIsUSBAndFilter(QueryExecutorArguments arguments) {
+			prepareWhereTypeIsUSBAndFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereTypeIsUSBAndFilter(QueryExecutorArguments arguments) {
+			prepareWhereTypeIsUSBAndFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private static void prepareWhereTypeIsUSBAndFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
@@ -446,6 +486,17 @@ public interface ScopeQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA_AND_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_TYPE_IS_UA_AND_FILTER
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_TYPE_IS_USB_AND_FILTER
+				).setTupleFieldsNamesIndexes(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER_TUPLE_FIELDS_NAMES_INDEXES)
+			);		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_USB_AND_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_TYPE_IS_USB_AND_FILTER
 				)
 			);
 		
