@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 import java.io.Serializable;
 
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -19,6 +20,8 @@ import lombok.experimental.Accessors;
 public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
+	
 	@Override
 	public ScopeType setIdentifier(String identifier) {
 		return (ScopeType) super.setIdentifier(identifier);
@@ -34,7 +37,11 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 		return (ScopeType) super.setName(name);
 	}
 	
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	
 	public static final String TABLE_NAME = "TYPE_DOMAINE";
+	
+	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
 	
 	public static final String CODE_AB = "AB";
 	public static final String CODE_SECTION = "SECTION";

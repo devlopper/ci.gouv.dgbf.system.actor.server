@@ -4,6 +4,12 @@ ENV SIIB_DB_PORT 1521
 ENV SIIB_DB_SID SIB
 ENV SIIB_DB_USER acteur
 ENV SIIB_DB_PASSWORD acteur
+ENV KEYCLOAK_REALM SIIBTEST
+#ENV security.single.sign.on.system.keycloak.prod.realm.name SIIBTEST
+ENV security.single.sign.on.system.keycloak.prod.client.identifier admin-cli
+ENV security.single.sign.on.system.keycloak.prod.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
+ENV security.single.sign.on.system.keycloak.prod.credential.username mic-acteur-api
+ENV security.single.sign.on.system.keycloak.prod.credential.password mic-@cteur-@pi@2O2o
 ADD gitignore/thorntail/hollow.jar /opt/hollow.jar
 ADD gitignore/thorntail/project-defaults.yml /opt/project-defaults.yml
 ADD target/actor-server-deployment-0.1.0.war /opt/runnable.war

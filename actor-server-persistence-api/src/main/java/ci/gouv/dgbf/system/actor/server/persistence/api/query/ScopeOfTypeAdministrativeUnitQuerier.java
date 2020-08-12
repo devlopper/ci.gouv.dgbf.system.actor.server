@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
@@ -44,7 +45,7 @@ public interface ScopeOfTypeAdministrativeUnitQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleAdministrativeUnitsWhereFilter");
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
-		return  or(
+		return  parenthesis(or(
 					/*From Actor Scope*/
 					exists(
 						select("actorScope.identifier"),from("ActorScope actorScope"),where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
@@ -63,7 +64,7 @@ public interface ScopeOfTypeAdministrativeUnitQuerier extends Querier {
 								)))))
 						)
 					))
-			);
+			));
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {

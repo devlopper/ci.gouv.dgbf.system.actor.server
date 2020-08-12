@@ -16,6 +16,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdminis
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -42,8 +43,25 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void scopeTypeQuerier_readOrderByCodeAscending(){
+		assertThat(ScopeTypeQuerier.getInstance().readOrderByCodeAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_UA,ScopeType.CODE_USB);
+	}
+	
+	@Test
+	public void scopeTypeQuerier_readOrderByOrderNumberAscending(){
+		assertThat(ScopeTypeQuerier.getInstance().readOrderByOrderNumberAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_USB,ScopeType.CODE_UA);
+	}
+	
+	@Test
 	public void scopeQuerier_readInvisibleSectionsWhereFilter(){
 		assertInvisibleSectionsByActorCode("a@m.com","section1","section2","section3","section4","section5");
+		assertInvisibleSectionsByFilter("a@m.com", "section2", null, "section2");
+		assertInvisibleSectionsByFilter("a@m.com", "section3", null, "section3");
+		assertInvisibleSectionsByFilter("a@m.com", "4", null, "section4");
+		assertInvisibleSectionsByFilter("a@m.com", "section", null, "section1","section2","section3","section4","section5");
+		
 		assertInvisibleSectionsByActorCode("aa@m.com","section1","section2","section3","section4","section5");
 		assertInvisibleSectionsByActorCode("ACT_nothing","section1","section2","section3","section4","section5");
 		assertInvisibleSectionsByActorCode("ACT_section1","section2","section3","section4","section5");
@@ -66,6 +84,9 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	@Test
 	public void scopeQuerier_readInvisibleAdministrativeUnitsWhereFilter(){
 		assertInvisibleAdministrativeUnitsByActorCode("ACT_nothing","ua1section1","ua1section2","ua1section3","ua1section4","ua1section5");
+		assertInvisibleAdministrativeUnitsByFilter("ACT_nothing", "ua1section1", null, "ua1section1");
+		assertInvisibleAdministrativeUnitsByFilter("ACT_nothing", "ua1section3", null, "ua1section3");
+		
 		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1","ua1section2","ua1section3","ua1section4","ua1section5");
 		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1And2","ua1section3","ua1section4","ua1section5");
 		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1And3","ua1section2","ua1section4","ua1section5");
@@ -102,6 +123,12 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	
+	private void assertInvisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
 	private void assertVisibleSectionsByActorCode(String actorCode,String...expectedCodes) {
 		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
@@ -111,6 +138,13 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	}
+	
+	private void assertInvisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
 	private void assertVisibleAdministrativeUnitsByActorCode(String actorCode,String...expectedCodes) {
@@ -137,12 +171,21 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		}
 	}
 	
+	private void assertScopesExactly(Collection<Scope> scopes,String...expectedCodes) {
+		if(CollectionHelper.isEmpty(scopes)) {
+			assertThat(ArrayHelper.isEmpty(expectedCodes)).as("No scopes found").isTrue();
+		}else {
+			assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+		}
+	}
+	
 	/**/
 	
 	@Override
 	protected void createData() {
-		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_UA)
-				,new ScopeType().setCode(ScopeType.CODE_USB));
+		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode(ScopeType.CODE_SECTION).setOrderNumber((byte)1)
+				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)3)
+				,new ScopeType().setCode(ScopeType.CODE_USB).setOrderNumber((byte)2));
 		for(Integer sectionIndex = 1; sectionIndex <= 5; sectionIndex = sectionIndex + 1) {
 			Scope sectionScope = new Scope().setCode("section"+sectionIndex).setTypeFromIdentifier(ScopeType.CODE_SECTION);
 			EntityCreator.getInstance().createManyInTransaction(sectionScope);

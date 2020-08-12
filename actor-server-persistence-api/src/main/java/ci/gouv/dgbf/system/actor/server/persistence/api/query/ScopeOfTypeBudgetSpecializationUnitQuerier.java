@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
@@ -47,7 +48,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleBudgetSpecializationUnitsWhereFilter");
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
-		return  or(
+		return  parenthesis(or(
 				/*From Actor Scope*/
 				exists(
 					select("actorScope.identifier"),from("ActorScope actorScope"),where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
@@ -66,7 +67,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 							)))))
 					)
 				))
-		);
+		));
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {

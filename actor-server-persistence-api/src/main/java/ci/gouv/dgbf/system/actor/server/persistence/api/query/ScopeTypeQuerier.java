@@ -15,6 +15,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = ScopeType.class,name = ScopeTypeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM ScopeType t ORDER BY t.code ASC")
+		,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = ScopeType.class,name = ScopeTypeQuerier.QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER,value = "SELECT t FROM ScopeType t ORDER BY t.orderNumber ASC,t.code ASC")
 })
 public interface ScopeTypeQuerier extends Querier {
 
@@ -22,13 +23,22 @@ public interface ScopeTypeQuerier extends Querier {
 	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING);
 	Collection<ScopeType> readOrderByCodeAscending();
-		
+	
+	String QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER = "readOrderByOrderNumberAscending";
+	String QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER);
+	Collection<ScopeType> readOrderByOrderNumberAscending();
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements ScopeTypeQuerier,Serializable {	
 		@Override
 		public Collection<ScopeType> readOrderByCodeAscending() {
 			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
+		}
+		
+		@Override
+		public Collection<ScopeType> readOrderByOrderNumberAscending() {
+			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
 		}
 	}
 	
