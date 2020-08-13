@@ -11,6 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
@@ -27,6 +28,8 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			return ScopeOfTypeAdministrativeUnitQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeBudgetSpecializationUnitQuerier.isProcessable(arguments))
 			return ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().count(arguments);
+		if(ScopeOfTypeActivityQuerier.isProcessable(arguments))
+			return ScopeOfTypeActivityQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(FunctionQuerier.QUERY_IDENTIFIER_COUNT_WITH_PROFILES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier())) {

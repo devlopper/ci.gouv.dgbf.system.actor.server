@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
@@ -34,13 +35,30 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 	}
 	
 	@Override
-	public Response getAdministrativeUnitsByActorCode(String actorCode) {
-		return __getByActorCode__(actorCode,ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
+	public Response getBudgetSpecializationUnitsByActorCode(String actorCode) {
+		return __getByActorCode__(actorCode,ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
 	}
 	
 	@Override
-	public Response getBudgetSpecializationUnitsByActorCode(String actorCode) {
-		return __getByActorCode__(actorCode,ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
+	public Response getActionsByActorCode(String actorCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Response getActivitiesByActorCode(String actorCode) {
+		return __getByActorCode__(actorCode,ScopeOfTypeActivityQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
+	}
+	
+	@Override
+	public Response getLinesByActorCode(String actorCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Response getAdministrativeUnitsByActorCode(String actorCode) {
+		return __getByActorCode__(actorCode,ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
 	}
 	
 	/**/

@@ -28,7 +28,7 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ScopeType type;
 	
 	@Transient private Scope section;
-	@Transient private String sectionAsString;
+	@Transient private String sectionAsString,actionAsString,budgetSpecializationUnitAsString;
 	
 	@Override
 	public Scope setIdentifier(String identifier) {
@@ -61,6 +61,8 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
+	public static final String FIELD_ACTION_AS_STRING = "actionAsString";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING = "budgetSpecializationUnitAsString";
 	
 	public static final String COLUMN_TYPE = "type";
 	

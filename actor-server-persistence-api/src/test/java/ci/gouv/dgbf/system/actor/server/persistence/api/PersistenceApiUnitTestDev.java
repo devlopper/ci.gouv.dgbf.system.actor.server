@@ -7,6 +7,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
@@ -27,6 +28,17 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 			scopes.forEach(scope -> {
 				System.out.println(scope.getCode()+" : "+scope.getSectionAsString());
 			});
+	}
+	
+	@Test
+	public void scopeQuerier_ACTIVITYs(){
+		System.out.println("--------------------- ACTIVITYs ---------------------");
+		Collection<Scope> scopes = ScopeOfTypeActivityQuerier.getInstance().readWhereFilter(new QueryExecutorArguments());
+		if(scopes != null)
+			System.out.println("COUNT : "+scopes.size());
+			/*scopes.forEach(scope -> {
+				System.out.println(scope.getCode()+" : "+scope.getSectionAsString());
+			});*/
 	}
 	
 	@Test
