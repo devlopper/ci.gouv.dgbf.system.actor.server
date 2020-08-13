@@ -50,5 +50,5 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String CODE_USB = "USB";
 	public static final String CODE_ACTION = "ACTION";
 	public static final String CODE_ACTIVITE = "ACTIVITE";
-	public static final String CODE_LIGNE = "LIGNE";
+	public static final String CODE_IMPUTATION = "IMPUTATION";
 }
