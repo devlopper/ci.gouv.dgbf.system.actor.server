@@ -50,7 +50,7 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	/* read where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readImputationsWhereFilter");
 	static String getQueryValueReadWhereFilterFromWhere() {
-		return jpql(from("Scope t "),"JOIN ActivityEconomicNature imputation ON imputation = t"
+		return jpql(from("Scope t "),"JOIN ActivityEconomicNature activityEconomicNature ON activityEconomicNature = t"
 			,Language.Where.of(Language.Where.and(				
 					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
@@ -76,15 +76,47 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 					))
 				)
 				/*Not Marked Explicitly -> visible = false or visible = null
-				 * 1 - Read From Section : Its section is in actor scope
 				 * */
+				//1 - Read From Section : Its section is in actor scope
 				,exists(and(
+					// Let us suppose actorScope is a section of actor
 					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
 					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+					// Find all not explicitly marked not visible
 					,exists(
-						select("imputation"),from("ActivityEconomicNature imputation")
-						,where(and("imputation = scope","imputation.section = section",
-							not(exists(select("imputation ")+from("ActorScope actorScopeActivityEconomicNature ")
+						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
+						,where(and("activityEconomicNature = scope","activityEconomicNature.section = section",
+							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
+							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
+							)))))
+					)
+				))
+				//2 - Read From BudgetSpecializationUnit : Its budgetSpecializationUnit is in actor scope
+				,exists(and(
+					// Let us suppose actorScope is an activity of actor
+					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit")
+					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+					// Find all not explicitly marked not visible
+					,exists(
+						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
+						,where(and("activityEconomicNature = scope","activityEconomicNature.budgetSpecializationUnit = budgetSpecializationUnit",
+							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
+							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
+							)))))
+					)
+				))
+				//3 - Read From Activity : Its activity is in actor scope
+				,exists(and(
+					// Let us suppose actorScope is an activity of actor
+					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeActivity ON actorScope.scope = scopeActivity")
+					,"JOIN Activity activity ON activity = scopeActivity",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+					// Find all not explicitly marked not visible
+					,exists(
+						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
+						,where(and("activityEconomicNature = scope","activityEconomicNature.activity = activity",
+							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
 							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
 								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
 							)))))
@@ -260,7 +292,7 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 		QueryHelper.addQueries(
 				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 						, jpql(select(Select.fields("t", ActivityEconomicNature.FIELD_IDENTIFIER,ActivityEconomicNature.FIELD_CODE,ActivityEconomicNature.FIELD_NAME)
-								,Select.fields("imputation", ActivityEconomicNature.FIELD_SECTION_CODE_NAME,ActivityEconomicNature.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
+								,Select.fields("activityEconomicNature", ActivityEconomicNature.FIELD_SECTION_CODE_NAME,ActivityEconomicNature.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
 										,ActivityEconomicNature.FIELD_ACTION_CODE_NAME))
 								, getQueryValueReadWhereFilterFromWhere()
 								,order(asc("t",Activity.FIELD_CODE)))

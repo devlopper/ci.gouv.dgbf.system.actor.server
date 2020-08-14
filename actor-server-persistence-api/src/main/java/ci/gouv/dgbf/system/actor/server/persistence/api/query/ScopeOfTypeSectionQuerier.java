@@ -75,14 +75,24 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
 				//From Administrative Unit
 				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-						,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
-						,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
-						,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
+					,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
+					,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
 				//From Budget Specialization Unit
 				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-						,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
-						,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
-						,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
+					,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
+					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
+				//From Activity
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
+					,"JOIN Activity activity ON activity = scopeActivity "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.section = scope")))
+				//From Imputation
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
+					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.section = scope")))
 			));
 	}
 	

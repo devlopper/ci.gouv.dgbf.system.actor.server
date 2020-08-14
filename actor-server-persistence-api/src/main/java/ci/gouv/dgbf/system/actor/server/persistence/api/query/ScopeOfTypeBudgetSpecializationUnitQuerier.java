@@ -75,6 +75,16 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 							)))))
 					)
 				))
+				//From Activity
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
+					,"JOIN Activity activity ON activity = scopeActivity "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.budgetSpecializationUnit = scope")))
+				//From Imputation
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
+					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.budgetSpecializationUnit = scope")))
 		));
 	}
 	

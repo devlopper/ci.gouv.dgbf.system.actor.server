@@ -89,6 +89,24 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 							)))))
 					)
 				))
+				// From USB
+				,exists(and(
+						jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit")
+						,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+						,exists(
+							select("activity"),from("Activity activity")
+							,where(and("activity = scope","activity.budgetSpecializationUnit = budgetSpecializationUnit",
+								not(exists(select("activity ")+from("ActorScope actorScopeActivity ")
+								+ where(and("actorScopeActivity.scope = scope","actorScopeActivity.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+									,"actorScopeActivity.visible IS NOT NULL","actorScopeActivity.visible = false")
+								)))))
+						)
+					))
+				//From Imputation
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
+					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.activity = scope")))
 		));
 	}
 	
