@@ -1,5 +1,15 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,6 +17,7 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.klass.ClassHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
@@ -20,6 +31,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -505,5 +517,88 @@ public interface ScopeQuerier extends Querier {
 		ScopeOfTypeBudgetSpecializationUnitQuerier.initialize();
 		ScopeOfTypeActivityQuerier.initialize();
 		ScopeOfTypeActivityEconomicNatureQuerier.initialize();
+	}
+
+	/**/
+	
+	static String getPredicateHasBeenMarkedVisible() {
+		return exists(
+				select("v.identifier")
+				,from("ActorScope v")
+				,where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope","(v.visible IS NULL OR v.visible = true)"))
+			);
+	}
+	
+	static String getPredicateHasVisibleChild(String tupleName,String variableName,String fieldName) {
+		return 
+			exists(
+				select("actorScope.identifier")
+				,from("ActorScope actorScope")
+				,"JOIN Scope scopeChild ON actorScope.scope = scopeChild"
+				,"JOIN "+tupleName+" "+variableName+" ON "+variableName+" = scopeChild"
+				,where(and(variableName+"."+fieldName+" = scope","actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+			);
+		/*
+		return parenthesis(or(
+				//From Actor Scope
+				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
+				//From Administrative Unit
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
+					,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
+				//From Budget Specialization Unit
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
+					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
+				//From Activity
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
+					,"JOIN Activity activity ON activity = scopeActivity "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.section = scope")))
+				//From Imputation
+				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
+					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
+					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
+					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.section = scope")))
+			));		
+		*/
+	}
+	
+	static String getPredicateHasVisibleChild(Class<?> klass,String fieldName) {
+		return getPredicateHasVisibleChild(klass.getSimpleName(), StringHelper.getVariableNameFrom(klass.getSimpleName()), fieldName);
+	}
+	
+	static String getPredicateHasVisibleParent(String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName) {
+		return 
+			exists(and(
+				jpql(
+						select("actorScope.identifier")
+						,from("ActorScope actorScope JOIN Scope scopeParent ON actorScope.scope = scopeParent")
+						,"JOIN "+parentTupleName+" "+parentVariableName+" ON "+parentVariableName+" = scopeParent"
+						,where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE)
+				)
+				,exists(
+						select(variableName)
+						,from(tupleName+" "+variableName)
+						,where(and(
+								variableName+" = scope",variableName+"."+fieldName+" = "+fieldName,
+								not(
+										exists(select("actorScope"+tupleName+" ")+from("ActorScope actorScope"+tupleName+" ")
+											+ where(and("actorScope"+tupleName+".scope = scope"
+													,"actorScope"+tupleName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+													,"actorScope"+tupleName+".visible IS NOT NULL","actorScope"+tupleName+".visible = false"
+													))
+											)
+									)
+						))
+				)
+			));
+	}
+	
+	static String getPredicateHasVisibleParent(String parentTupleName,String tupleName) {
+		String variableName = StringHelper.getVariableNameFrom(parentTupleName);
+		return getPredicateHasVisibleParent(parentTupleName, variableName, tupleName, StringHelper.getVariableNameFrom(tupleName), variableName);
 	}
 }

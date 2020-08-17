@@ -6,11 +6,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -32,7 +28,9 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 
@@ -67,61 +65,10 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
 		return  parenthesis(or(
-				/*Marked Explicitly as visible = true : Read from Actor Scope*/
-				exists(
-					select("actorScope.identifier"),from("ActorScope actorScope"),where(and(
-							"actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-							,"actorScope.scope.identifier = scope.identifier"
-							,"(actorScope.visible IS NULL OR actorScope.visible = true)"
-					))
-				)
-				/*Not Marked Explicitly -> visible = false or visible = null
-				 * */
-				//1 - Read From Section : Its section is in actor scope
-				,exists(and(
-					// Let us suppose actorScope is a section of actor
-					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
-					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-					// Find all not explicitly marked not visible
-					,exists(
-						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
-						,where(and("activityEconomicNature = scope","activityEconomicNature.section = section",
-							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
-							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
-							)))))
-					)
-				))
-				//2 - Read From BudgetSpecializationUnit : Its budgetSpecializationUnit is in actor scope
-				,exists(and(
-					// Let us suppose actorScope is an activity of actor
-					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit")
-					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-					// Find all not explicitly marked not visible
-					,exists(
-						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
-						,where(and("activityEconomicNature = scope","activityEconomicNature.budgetSpecializationUnit = budgetSpecializationUnit",
-							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
-							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
-							)))))
-					)
-				))
-				//3 - Read From Activity : Its activity is in actor scope
-				,exists(and(
-					// Let us suppose actorScope is an activity of actor
-					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeActivity ON actorScope.scope = scopeActivity")
-					,"JOIN Activity activity ON activity = scopeActivity",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-					// Find all not explicitly marked not visible
-					,exists(
-						select("activityEconomicNature"),from("ActivityEconomicNature activityEconomicNature")
-						,where(and("activityEconomicNature = scope","activityEconomicNature.activity = activity",
-							not(exists(select("activityEconomicNature ")+from("ActorScope actorScopeActivityEconomicNature ")
-							+ where(and("actorScopeActivityEconomicNature.scope = scope","actorScopeActivityEconomicNature.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-								,"actorScopeActivityEconomicNature.visible IS NOT NULL","actorScopeActivityEconomicNature.visible = false")
-							)))))
-					)
-				))
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleParent(Section.class)
+				,getPredicateHasVisibleParent(BudgetSpecializationUnit.class)
+				,getPredicateHasVisibleParent(Activity.class)
 		));
 	}
 	
@@ -313,5 +260,9 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 		if(arguments == null || arguments.getQuery() == null)
 			return Boolean.FALSE;
 		return ArrayUtils.contains(QUERIES_IDENTIFIERS, arguments.getQuery().getIdentifier());
+	}
+
+	static String getPredicateHasVisibleParent(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleParent(klass.getSimpleName(), ActivityEconomicNature.class.getSimpleName());
 	}
 }

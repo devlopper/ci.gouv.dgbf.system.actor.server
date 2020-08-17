@@ -1,12 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,6 +20,10 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -39,60 +38,15 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	Collection<Scope> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);
 	
-	/* read visible sections by actor code order by code ascending */
-	/*
-	String QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsByActorCode");
-	String QUERY_VALUE_READ_VISIBLE_BY_ACTOR_CODE_WHERE = 
-			"WHERE scope.type.code = '"+ScopeType.CODE_SECTION+"' AND ("+
-			"    EXISTS (" + 
-			"        SELECT actorScope.identifier " + 
-			"        FROM ActorScope actorScope " + 
-			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND actorScope.scope.identifier = scope.identifier "+ 
-			"    ) " + 
-			"    OR " + 
-			"    EXISTS (" + 
-			"        SELECT actorScope.identifier " + 
-			"        FROM ActorScope actorScope " + 
-			"        JOIN Scope scopeUa ON actorScope.scope = scopeUa " + 
-			"        JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa " + 
-			"        WHERE actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE+" AND administrativeUnit.section = scope" + 
-			"    )" + 
-			")";
-	String QUERY_VALUE_READ_VISIBLE_BY_ACTOR_CODE = "SELECT scope FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_BY_ACTOR_CODE_WHERE+ " ORDER BY scope.code ASC";
-	Collection<Scope> readVisibleSectionsByActorCode(String actorCode);
-	*/
-	/* count visible sections by actor code */
-	/*
-	String QUERY_IDENTIFIER_COUNT_VISIBLE_BY_ACTOR_CODE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE);
-	String QUERY_VALUE_COUNT_VISIBLE_BY_ACTOR_CODE = "SELECT COUNT(scope.identifier) FROM Scope scope " + QUERY_VALUE_READ_VISIBLE_BY_ACTOR_CODE_WHERE;
-	Long countVisibleSectionsByActorCode(String actorCode);
-	*/
 	/* read visible sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsWhereFilter");
 	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
 		return parenthesis(or(
-				//From Actor Scope
-				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
-				//From Administrative Unit
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
-					,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
-				//From Budget Specialization Unit
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
-					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
-				//From Activity
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
-					,"JOIN Activity activity ON activity = scopeActivity "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.section = scope")))
-				//From Imputation
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
-					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.section = scope")))
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleChild(AdministrativeUnit.class)
+				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class)
+				,getPredicateHasVisibleChild(Activity.class)
+				,getPredicateHasVisibleChild(ActivityEconomicNature.class)
 			));
 	}
 	
@@ -260,5 +214,9 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 		if(arguments == null || arguments.getQuery() == null)
 			return Boolean.FALSE;
 		return ArrayUtils.contains(QUERIES_IDENTIFIERS, arguments.getQuery().getIdentifier());
+	}
+	
+	static String getPredicateHasVisibleChild(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleChild(klass, "section");
 	}
 }

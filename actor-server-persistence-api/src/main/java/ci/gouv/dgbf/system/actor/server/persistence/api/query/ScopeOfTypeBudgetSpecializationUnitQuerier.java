@@ -1,14 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -28,7 +21,10 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 
@@ -52,39 +48,10 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
 		return  parenthesis(or(
-				/*Marked Explicitly as visible = true : Read from Actor Scope*/
-				exists(
-					select("actorScope.identifier"),from("ActorScope actorScope"),where(and(
-							"actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-							,"actorScope.scope.identifier = scope.identifier"
-							,"(actorScope.visible IS NULL OR actorScope.visible = true)"
-					))
-				)
-				/*Not Marked Explicitly -> visible = false or visible = null
-				 * 1 - Read From Section : Its section is in actor scope
-				 * */
-				,exists(and(
-					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
-					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-					,exists(
-						select("budgetSpecializationUnit"),from("BudgetSpecializationUnit budgetSpecializationUnit")
-						,where(and("budgetSpecializationUnit = scope","budgetSpecializationUnit.section = section",
-							not(exists(select("actorScopeBudgetSpecializationUnit ")+from("ActorScope actorScopeBudgetSpecializationUnit ")
-							+ where(and("actorScopeBudgetSpecializationUnit.scope = scope","actorScopeBudgetSpecializationUnit.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-								,"actorScopeBudgetSpecializationUnit.visible IS NOT NULL","actorScopeBudgetSpecializationUnit.visible = false")
-							)))))
-					)
-				))
-				//From Activity
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
-					,"JOIN Activity activity ON activity = scopeActivity "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.budgetSpecializationUnit = scope")))
-				//From Imputation
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
-					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.budgetSpecializationUnit = scope")))
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleParent(Section.class)
+				,getPredicateHasVisibleChild(Activity.class)
+				,getPredicateHasVisibleChild(ActivityEconomicNature.class)
 		));
 	}
 	
@@ -296,5 +263,13 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 		if(arguments == null || arguments.getQuery() == null)
 			return Boolean.FALSE;
 		return ArrayUtils.contains(QUERIES_IDENTIFIERS, arguments.getQuery().getIdentifier());
+	}
+	
+	static String getPredicateHasVisibleChild(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleChild(klass, "budgetSpecializationUnit");
+	}
+	
+	static String getPredicateHasVisibleParent(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleParent(klass.getSimpleName(), "BudgetSpecializationUnit");
 	}
 }

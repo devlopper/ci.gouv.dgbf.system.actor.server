@@ -6,11 +6,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,7 +27,10 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeActivityQuerier extends Querier {
 
@@ -66,47 +65,10 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
 		return  parenthesis(or(
-				/*Marked Explicitly as visible = true : Read from Actor Scope*/
-				exists(
-					select("actorScope.identifier"),from("ActorScope actorScope"),where(and(
-							"actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-							,"actorScope.scope.identifier = scope.identifier"
-							,"(actorScope.visible IS NULL OR actorScope.visible = true)"
-					))
-				)
-				/*Not Marked Explicitly -> visible = false or visible = null
-				 * 1 - Read From Section : Its section is in actor scope
-				 * */
-				,exists(and(
-					jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeSection ON actorScope.scope = scopeSection")
-					,"JOIN Section section ON section = scopeSection",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-					,exists(
-						select("activity"),from("Activity activity")
-						,where(and("activity = scope","activity.section = section",
-							not(exists(select("activity ")+from("ActorScope actorScopeActivity ")
-							+ where(and("actorScopeActivity.scope = scope","actorScopeActivity.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-								,"actorScopeActivity.visible IS NOT NULL","actorScopeActivity.visible = false")
-							)))))
-					)
-				))
-				// From USB
-				,exists(and(
-						jpql(select("actorScope.identifier"),from("ActorScope actorScope JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit")
-						,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit",where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-						,exists(
-							select("activity"),from("Activity activity")
-							,where(and("activity = scope","activity.budgetSpecializationUnit = budgetSpecializationUnit",
-								not(exists(select("activity ")+from("ActorScope actorScopeActivity ")
-								+ where(and("actorScopeActivity.scope = scope","actorScopeActivity.actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-									,"actorScopeActivity.visible IS NOT NULL","actorScopeActivity.visible = false")
-								)))))
-						)
-					))
-				//From Imputation
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
-					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.activity = scope")))
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleParent(Section.class)
+				,getPredicateHasVisibleParent(BudgetSpecializationUnit.class)
+				,getPredicateHasVisibleChild(ActivityEconomicNature.class)
 		));
 	}
 	
@@ -297,5 +259,15 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 		if(arguments == null || arguments.getQuery() == null)
 			return Boolean.FALSE;
 		return ArrayUtils.contains(QUERIES_IDENTIFIERS, arguments.getQuery().getIdentifier());
+	}
+
+	/**/
+	
+	static String getPredicateHasVisibleChild(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleChild(klass, "activity");
+	}
+	
+	static String getPredicateHasVisibleParent(Class<?> klass) {
+		return ScopeQuerier.getPredicateHasVisibleParent(klass.getSimpleName(), "Activity");
 	}
 }
