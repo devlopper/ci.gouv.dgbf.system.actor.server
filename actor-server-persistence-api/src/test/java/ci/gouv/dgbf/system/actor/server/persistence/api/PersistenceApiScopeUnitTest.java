@@ -3,13 +3,11 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSection
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -47,112 +46,257 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
-	public void scopeTypeQuerier_readOrderByCodeAscending(){
+	public void readTypeOrderByCodeAscending(){
 		assertThat(ScopeTypeQuerier.getInstance().readOrderByCodeAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_UA,ScopeType.CODE_USB);
+			.containsExactly(ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_SECTION,ScopeType.CODE_UA,ScopeType.CODE_USB);
 	}
 	
 	@Test
-	public void scopeTypeQuerier_readOrderByOrderNumberAscending(){
+	public void readTypeOrderByOrderNumberAscending(){
 		assertThat(ScopeTypeQuerier.getInstance().readOrderByOrderNumberAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_USB,ScopeType.CODE_UA);
+			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_USB,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_UA);
 	}
 	
 	@Test
-	public void scopeQuerier_readInvisibleSectionsWhereFilter(){
-		assertInvisibleSectionsByActorCode("a@m.com","section1","section2","section3","section4","section5");
-		assertInvisibleSectionsByFilter("a@m.com", "section2", null, "section2");
-		assertInvisibleSectionsByFilter("a@m.com", "section3", null, "section3");
-		assertInvisibleSectionsByFilter("a@m.com", "4", null, "section4");
-		assertInvisibleSectionsByFilter("a@m.com", "section", null, "section1","section2","section3","section4","section5");
+	public void readInvisibleSectionsWhereFilter(){
+		assertInvisibleSectionsByFilter("inconnu", null, null, "s1","s2","s3");
+		assertInvisibleSectionsByFilter("inconnu", "s", null, "s1","s2","s3");
+		assertInvisibleSectionsByFilter("inconnu", "s1", null,"s1");
+		assertInvisibleSectionsByFilter("inconnu", "2", null,"s2");
 		
-		assertInvisibleSectionsByActorCode("aa@m.com","section1","section2","section3","section4","section5");
-		assertInvisibleSectionsByActorCode("ACT_nothing","section1","section2","section3","section4","section5");
-		assertInvisibleSectionsByActorCode("ACT_section1","section2","section3","section4","section5");
-		assertInvisibleSectionsByActorCode("ACT_section1And2","section3","section4","section5");
-		assertInvisibleSectionsByActorCode("ACT_section1And3","section2","section4","section5");
-		assertInvisibleSectionsByActorCode("kycdev@gmail.com","section2","section4");
-	}
-	
-	@Test
-	public void scopeQuerier_readVisibleSectionsWhereFilter(){
-		assertVisibleSectionsByActorCode("a@m.com");
-		assertVisibleSectionsByActorCode("aa@m.com");
-		assertVisibleSectionsByActorCode("ACT_nothing");
-		assertVisibleSectionsByActorCode("ACT_section1","section1");
-		assertVisibleSectionsByActorCode("ACT_section1And2","section1","section2");
-		assertVisibleSectionsByActorCode("ACT_section1And3","section1","section3");		
-		assertVisibleSectionsByActorCode("kycdev@gmail.com","section1","section3","section5");
-	}
-	
-	@Test
-	public void scopeQuerier_readInvisibleAdministrativeUnitsWhereFilter(){
-		assertInvisibleAdministrativeUnitsByActorCode("ACT_nothing","ua1section1","ua1section2","ua1section3","ua1section4","ua1section5");
-		assertInvisibleAdministrativeUnitsByFilter("ACT_nothing", "ua1section1", null, "ua1section1");
-		assertInvisibleAdministrativeUnitsByFilter("ACT_nothing", "ua1section3", null, "ua1section3");
+		assertInvisibleSectionsByFilter("admin", null, null);
 		
-		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1","ua1section2","ua1section3","ua1section4","ua1section5");
-		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1And2","ua1section3","ua1section4","ua1section5");
-		assertInvisibleAdministrativeUnitsByActorCode("ACT_section1And3","ua1section2","ua1section4","ua1section5");
+		assertInvisibleSectionsByFilter("section_manager_1", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("section_manager_2", null, null, "s1","s3");
+		assertInvisibleSectionsByFilter("section_manager_3", null, null, "s1","s2");
+		assertInvisibleSectionsByFilter("section_manager_4", null, null, "s2");
+		
+		assertInvisibleSectionsByFilter("usb_manager_1", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("usb_manager_2", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("usb_manager_3", null, null,"s2");
+		
+		assertInvisibleSectionsByFilter("activity_manager_1", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("activity_manager_2", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("activity_manager_3", null, null, "s2");
+		
+		assertInvisibleSectionsByFilter("ua_manager_1", null, null, "s3");
+		assertInvisibleSectionsByFilter("ua_manager_2", null, null, "s2","s3");
+		assertInvisibleSectionsByFilter("ua_manager_3", null, null, "s1","s2");
 	}
 	
 	@Test
-	public void scopeQuerier_readVisibleAdministrativeUnitsWhereFilter(){
-		assertVisibleAdministrativeUnitsByActorCode("ACT_nothing");
-		assertVisibleAdministrativeUnitsByActorCode("ACT_section1","ua1section1","ua2section1","ua3section1");
-		assertVisibleAdministrativeUnitsByActorCode("ACT_section1And2","ua1section1","ua1section2");
-		assertVisibleAdministrativeUnitsByActorCode("ACT_section1And3","ua1section1","ua1section3");
+	public void readVisibleSectionsWhereFilter(){
+		assertVisibleSectionsByFilter("inconnu", null, null);
+		assertVisibleSectionsByFilter("inconnu", "s", null);
+		assertVisibleSectionsByFilter("inconnu", "s1", null);
+		assertVisibleSectionsByFilter("inconnu", "2", null);
+		
+		assertVisibleSectionsByFilter("admin", null, null,"s1","s2","s3");
+		assertVisibleSectionsByFilter("admin", "s", null,"s1","s2","s3");
+		assertVisibleSectionsByFilter("admin", "s1", null,"s1");
+		assertVisibleSectionsByFilter("admin", "2", null,"s2");
+		
+		assertVisibleSectionsByFilter("section_manager_1", null, null, "s1");
+		assertVisibleSectionsByFilter("section_manager_2", null, null, "s2");
+		assertVisibleSectionsByFilter("section_manager_3", null, null, "s3");
+		assertVisibleSectionsByFilter("section_manager_4", null, null, "s1","s3");
+		
+		assertVisibleSectionsByFilter("usb_manager_1", null, null, "s1");
+		assertVisibleSectionsByFilter("usb_manager_2", null, null, "s1");
+		assertVisibleSectionsByFilter("usb_manager_3", null, null, "s1","s3");
+		
+		assertVisibleSectionsByFilter("activity_manager_1", null, null, "s1");
+		assertVisibleSectionsByFilter("activity_manager_2", null, null, "s1");
+		assertVisibleSectionsByFilter("activity_manager_3", null, null, "s1","s3");
+		
+		assertVisibleSectionsByFilter("ua_manager_1", null, null, "s1","s2");
+		assertVisibleSectionsByFilter("ua_manager_2", null, null, "s1");
+		assertVisibleSectionsByFilter("ua_manager_3", null, null, "s3");
 	}
 	
 	@Test
-	public void scopeQuerier_readInvisibleBudgetSpecializationUnitsWhereFilter(){
-		assertInvisibleBudgetSpecializationUnitsByFilter("ACT_nothing",null,null,"usb1section1","usb1section2","usb1section3","usb1section4","usb1section5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ACT_nothing",null,null,"usb1section1","usb1section2","usb1section3","usb1section4","usb1section5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ACT_section1",null,null,"usb1section2","usb1section3","usb1section4","usb1section5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ACT_section1And2",null,null,"usb1section3","usb1section4","usb1section5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ACT_section1And3",null,null,"usb1section2","usb1section4","usb1section5");
+	public void readInvisibleBudgetSpecializationUnitsWhereFilter(){
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null);
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null,"usb2");
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("admin", null, null);
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, "usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, "usb1","usb2","usb3");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null);
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, "usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, "usb1","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null,"usb1","usb2");
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, "usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, "usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, "usb1","usb3","usb4");
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null, "usb1","usb2","usb3","usb4","usb5");
 	}
 	
 	@Test
-	public void scopeQuerier_readVisibleBudgetSpecializationUnitsWhereFilter(){
-		assertVisibleBudgetSpecializationUnitsByFilter("ACT_nothing",null,null);
-		assertVisibleBudgetSpecializationUnitsByFilter("ACT_section1",null,null,"usb1section1","usb2section1","usb3section1");
-		assertVisibleBudgetSpecializationUnitsByFilter("ACT_section1And2",null,null,"usb1section1","usb1section2");
-		assertVisibleBudgetSpecializationUnitsByFilter("ACT_section1And3",null,null,"usb1section1","usb1section3");
+	public void readVisibleBudgetSpecializationUnitsWhereFilter(){
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null);
+		
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", null, null,"usb1","usb2","usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s", null,"usb1","usb2","usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s1", null);
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "2", null,"usb2");
+		
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, "usb1","usb2","usb3");
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, "usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null, "usb1","usb2","usb3","usb4","usb5");
+		
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, "usb1");
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, "usb2");
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null, "usb3","usb4","usb5");
+		
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, "usb1");
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, "usb1","usb2");
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, "usb2","usb5");
+		
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null);
 	}
 	
 	@Test
-	public void scopeQuerier_readInvisibleActivitiessWhereFilter(){
-		assertInvisibleActivitiesByFilter("ACT_nothing",null,null,"activity1usb1section1");
+	public void readInvisibleActivitiessWhereFilter(){
+		assertInvisibleActivitiesByFilter("inconnu", null, null, "a1","a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("inconnu", "a", null, "a1","a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("inconnu", "a1", null,"a1");
+		assertInvisibleActivitiesByFilter("inconnu", "2", null,"a2");
+		
+		assertInvisibleActivitiesByFilter("admin", null, null);
+		
+		assertInvisibleActivitiesByFilter("section_manager_1", null, null, "a6");
+		assertInvisibleActivitiesByFilter("section_manager_2", null, null, "a1","a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("section_manager_3", null, null, "a1","a2","a3","a4","a5");
+		assertInvisibleActivitiesByFilter("section_manager_4", null, null);
+		
+		assertInvisibleActivitiesByFilter("usb_manager_1", null, null, "a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("usb_manager_2", null, null,"a1","a2","a6");
+		assertInvisibleActivitiesByFilter("usb_manager_3", null, null,"a1","a2","a3","a4","a5");
+		
+		assertInvisibleActivitiesByFilter("activity_manager_1", null, null, "a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("activity_manager_2", null, null, "a1","a5","a6");
+		assertInvisibleActivitiesByFilter("activity_manager_3", null, null, "a1","a2","a3","a4");
+		
+		assertInvisibleActivitiesByFilter("ua_manager_1", null, null, "a1","a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("ua_manager_2", null, null, "a1","a2","a3","a4","a5","a6");
+		assertInvisibleActivitiesByFilter("ua_manager_3", null, null, "a1","a2","a3","a4","a5","a6");
 	}
 	
 	@Test
-	public void scopeQuerier_readVisibleActivitiessWhereFilter(){
-		assertVisibleActivitiesByFilter("ACT_nothing",null,null);
+	public void readVisibleActivitiessWhereFilter(){
+		assertVisibleActivitiesByFilter("inconnu", null, null);
+		assertVisibleActivitiesByFilter("inconnu", "a", null);
+		assertVisibleActivitiesByFilter("inconnu", "a1", null);
+		assertVisibleActivitiesByFilter("inconnu", "2", null);
+		
+		assertVisibleActivitiesByFilter("admin", null, null,"a1","a2","a3","a4","a5","a6");
+		assertVisibleActivitiesByFilter("admin", "a", null,"a1","a2","a3","a4","a5","a6");
+		assertVisibleActivitiesByFilter("admin", "a1",null,"a1");
+		assertVisibleActivitiesByFilter("admin", "2", null,"a2");
+		
+		assertVisibleActivitiesByFilter("section_manager_1", null, null, "a1","a2","a3","a4","a5");
+		assertVisibleActivitiesByFilter("section_manager_2", null, null);
+		assertVisibleActivitiesByFilter("section_manager_3", null, null, "a6");
+		assertVisibleActivitiesByFilter("section_manager_4", null, null, "a1","a2","a3","a4","a5","a6");
+		
+		assertVisibleActivitiesByFilter("usb_manager_1", null, null, "a1","a2");
+		assertVisibleActivitiesByFilter("usb_manager_2", null, null, "a3","a4","a5");
+		assertVisibleActivitiesByFilter("usb_manager_3", null, null, "a6");
+		
+		assertVisibleActivitiesByFilter("activity_manager_1", null, null, "a1");
+		assertVisibleActivitiesByFilter("activity_manager_2", null, null, "a2","a3","a4");
+		assertVisibleActivitiesByFilter("activity_manager_3", null, null, "a5","a6");
+		
+		assertVisibleActivitiesByFilter("ua_manager_1", null, null);
+		assertVisibleActivitiesByFilter("ua_manager_2", null, null);
+		assertVisibleActivitiesByFilter("ua_manager_3", null, null);
+	}
+	
+	@Test
+	public void readInvisibleAdministrativeUnitsWhereFilter(){
+		assertInvisibleAdministrativeUnitsByFilter("inconnu", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("inconnu", "a", null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("inconnu", "a1", null,"ua1");
+		assertInvisibleAdministrativeUnitsByFilter("inconnu", "2", null,"ua2");
+		
+		assertInvisibleAdministrativeUnitsByFilter("admin", null, null);
+		
+		assertInvisibleAdministrativeUnitsByFilter("section_manager_1", null, null, "ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("section_manager_2", null, null, "ua1","ua2","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("section_manager_3", null, null, "ua1","ua2","ua3","ua4","ua5");
+		assertInvisibleAdministrativeUnitsByFilter("section_manager_4", null, null, "ua3","ua4","ua5");
+		
+		assertInvisibleAdministrativeUnitsByFilter("usb_manager_1", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("usb_manager_2", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("usb_manager_3", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		
+		assertInvisibleAdministrativeUnitsByFilter("activity_manager_1", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("activity_manager_2", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("activity_manager_3", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		
+		assertInvisibleAdministrativeUnitsByFilter("ua_manager_1", null, null,"ua2","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("ua_manager_2", null, null,"ua1","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertInvisibleAdministrativeUnitsByFilter("ua_manager_3", null, null,"ua1","ua2","ua3","ua4","ua5","ua7");
+	}
+	
+	@Test
+	public void readVisibleAdministrativeUnitsWhereFilter(){
+		assertVisibleAdministrativeUnitsByFilter("inconnu", null, null);
+		assertVisibleAdministrativeUnitsByFilter("inconnu", "a", null);
+		assertVisibleAdministrativeUnitsByFilter("inconnu", "a1", null);
+		assertVisibleAdministrativeUnitsByFilter("inconnu", "2", null);
+		
+		assertVisibleAdministrativeUnitsByFilter("admin", null, null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertVisibleAdministrativeUnitsByFilter("admin", "a", null,"ua1","ua2","ua3","ua4","ua5","ua6","ua7","ua8","ua9");
+		assertVisibleAdministrativeUnitsByFilter("admin", "a1", null,"ua1");
+		assertVisibleAdministrativeUnitsByFilter("admin", "2", null,"ua2");
+		
+		assertVisibleAdministrativeUnitsByFilter("section_manager_1", null, null, "ua1","ua2");
+		assertVisibleAdministrativeUnitsByFilter("section_manager_2", null, null, "ua3","ua4","ua5");
+		assertVisibleAdministrativeUnitsByFilter("section_manager_3", null, null, "ua6","ua7","ua8","ua9");
+		assertVisibleAdministrativeUnitsByFilter("section_manager_4", null, null, "ua1","ua2","ua6","ua7","ua8","ua9");
+		
+		assertVisibleAdministrativeUnitsByFilter("usb_manager_1", null, null);
+		assertVisibleAdministrativeUnitsByFilter("usb_manager_2", null, null);
+		assertVisibleAdministrativeUnitsByFilter("usb_manager_3", null, null);
+		
+		assertVisibleAdministrativeUnitsByFilter("activity_manager_1", null, null);
+		assertVisibleAdministrativeUnitsByFilter("activity_manager_2", null, null);
+		assertVisibleAdministrativeUnitsByFilter("activity_manager_3", null, null);
+		
+		assertVisibleAdministrativeUnitsByFilter("ua_manager_1", null, null,"ua1","ua3");
+		assertVisibleAdministrativeUnitsByFilter("ua_manager_2", null, null,"ua2");
+		assertVisibleAdministrativeUnitsByFilter("ua_manager_3", null, null,"ua6","ua8","ua9");
 	}
 	
 	/**/
 
-	private void assertInvisibleSectionsByActorCode(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
-				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
-	}
-	
 	private void assertInvisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
-	private void assertVisibleSectionsByActorCode(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
-				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
-	}
-	
-	private void assertInvisibleAdministrativeUnitsByActorCode(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
-				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
-				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	private void assertVisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
 	private void assertInvisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
@@ -162,20 +306,22 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
-	private void assertVisibleAdministrativeUnitsByActorCode(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
-				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
+	private void assertVisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
 	private void assertInvisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.setQueryFromIdentifier(ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
 	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
@@ -194,19 +340,18 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		assertScopesExactly(scopes,expectedCodes);
 	}
 	
-	private void assertScopes(Collection<Scope> scopes,String...expectedCodes) {
-		if(CollectionHelper.isEmpty(scopes)) {
-			assertThat(ArrayHelper.isEmpty(expectedCodes)).as("No scopes found").isTrue();
-		}else {
-			assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).contains(expectedCodes);
-		}
+	private void assertScopesExactly(Collection<Scope> scopes,String...expectedCodes) {
+		assertScopes(scopes, Boolean.TRUE, expectedCodes);
 	}
 	
-	private void assertScopesExactly(Collection<Scope> scopes,String...expectedCodes) {
+	private void assertScopes(Collection<Scope> scopes,Boolean exactly,String...expectedCodes) {
 		if(CollectionHelper.isEmpty(scopes)) {
 			assertThat(ArrayHelper.isEmpty(expectedCodes)).as("No scopes found").isTrue();
 		}else {
-			assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+			if(exactly == null || Boolean.TRUE.equals(exactly))
+				assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+			else
+				assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).contains(expectedCodes);
 		}
 	}
 	
@@ -214,44 +359,103 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Override
 	protected void createData() {
-		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode(ScopeType.CODE_SECTION).setOrderNumber((byte)1)
-				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)3)
-				,new ScopeType().setCode(ScopeType.CODE_USB).setOrderNumber((byte)2));
-		for(Integer sectionIndex = 1; sectionIndex <= 5; sectionIndex = sectionIndex + 1) {
-			Scope sectionScope = new Scope().setCode("section"+sectionIndex).setTypeFromIdentifier(ScopeType.CODE_SECTION);
-			EntityCreator.getInstance().createManyInTransaction(sectionScope);
-			Section section = new Section().setIdentifier(sectionScope.getIdentifier());
-			EntityCreator.getInstance().createManyInTransaction(section);
-			for(Integer uaIndex = 1; uaIndex <= 3; uaIndex = uaIndex + 1) {
-				Scope administrativeUnitScope = new Scope().setCode("ua"+uaIndex+sectionScope.getCode()).setTypeFromIdentifier(ScopeType.CODE_UA);
-				AdministrativeUnit administrativeUnit = new AdministrativeUnit().setIdentifier(administrativeUnitScope.getIdentifier())
-						.setCode(administrativeUnitScope.getCode()).setSection(section);
-				EntityCreator.getInstance().createManyInTransaction(administrativeUnitScope,administrativeUnit);
-			}
-			for(Integer usbIndex = 1; usbIndex <= 3; usbIndex = usbIndex + 1) {
-				Scope usbScope = new Scope().setCode("usb"+usbIndex+sectionScope.getCode()).setTypeFromIdentifier(ScopeType.CODE_USB);
-				BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionScope.getIdentifier()); 
-				EntityCreator.getInstance().createManyInTransaction(usbScope,usb);
-				
-				for(Integer activityIndex = 1; activityIndex <= 3; activityIndex = activityIndex + 1) {
-					Scope activityScope = new Scope().setCode("activity"+activityIndex+usb.getCode()).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
-					Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode()).setSectionFromIdentifier(section.getIdentifier())
-							.setBudgetSpecializationUnitFromIdentifier(usb.getIdentifier());
-					EntityCreator.getInstance().createManyInTransaction(activityScope,activity);	
-				}				
-			}
-		}
+		EntityCreator.getInstance().createManyInTransaction(
+				new ScopeType().setCode(ScopeType.CODE_SECTION).setOrderNumber((byte)1)
+				,new ScopeType().setCode(ScopeType.CODE_USB).setOrderNumber((byte)2)
+				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)3)
+				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)4)
+				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)5));
 		
-		createActor("a@m.com");
-		createActor("aa@m.com");
+		//Sections
+		createSection("s1");
+		createSection("s2");
+		createSection("s3");
 		
-		createActor("ACT_nothing");
-		createActor("ACT_section1","section1");
-		createActor("ACT_section2","section2");
-		createActor("ACT_section1And2","section1","section2");
-		createActor("ACT_section1And3","section1","section3");
+		//USBs
+		createBudgetSpecializationUnit("usb1", "s1");
+		createBudgetSpecializationUnit("usb2", "s1");
+		createBudgetSpecializationUnit("usb3", "s1");		
+		createBudgetSpecializationUnit("usb4", "s3");
+		createBudgetSpecializationUnit("usb5", "s3");
 		
-		createActor("kycdev@gmail.com","section1","ua2section3","usb3section5");
+		//Activities
+		createActivity("a1", "usb1");
+		createActivity("a2", "usb1");
+		createActivity("a3", "usb2");
+		createActivity("a4", "usb2");
+		createActivity("a5", "usb2");
+		createActivity("a6", "usb5");
+		
+		//Imputations
+		createImputation("i1", "a1");
+		
+		//UAs
+		createAdministrativeUnit("ua1", "s1");
+		createAdministrativeUnit("ua2", "s1");
+		createAdministrativeUnit("ua3", "s2");
+		createAdministrativeUnit("ua4", "s2");
+		createAdministrativeUnit("ua5", "s2");
+		createAdministrativeUnit("ua6", "s3");
+		createAdministrativeUnit("ua7", "s3");
+		createAdministrativeUnit("ua8", "s3");
+		createAdministrativeUnit("ua9", "s3");
+		
+		//Actors
+		createActor("inconnu");
+		createActor("admin","s1","s2","s3");
+		
+		createActor("section_manager_1","s1");
+		createActor("section_manager_2","s2");
+		createActor("section_manager_3","s3");
+		createActor("section_manager_4","s1","s3");
+		
+		createActor("usb_manager_1","usb1");
+		createActor("usb_manager_2","usb2");
+		createActor("usb_manager_3","usb3","usb4","usb5");
+		
+		createActor("activity_manager_1","a1");
+		createActor("activity_manager_2","a2","a3","a4");
+		createActor("activity_manager_3","a5","a6");
+		
+		createActor("ua_manager_1","ua1","ua3");
+		createActor("ua_manager_2","ua2");
+		createActor("ua_manager_3","ua6","ua8","ua9");
+	}
+	
+	private void createSection(String code) {
+		Scope sectionScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_SECTION);
+		EntityCreator.getInstance().createManyInTransaction(sectionScope);
+		Section section = new Section().setIdentifier(sectionScope.getIdentifier());
+		EntityCreator.getInstance().createManyInTransaction(section);
+	}
+	
+	private void createBudgetSpecializationUnit(String code,String sectionIdentifier) {
+		Scope usbScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_USB);
+		BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionIdentifier); 
+		EntityCreator.getInstance().createManyInTransaction(usbScope,usb);
+	}
+	
+	private void createActivity(String code,String budgetSpecializationUnitIdentifier) {
+		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
+		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
+				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitIdentifier);
+		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createManyInTransaction(activityScope,activity);	
+	}
+	
+	private void createImputation(String code,String activityIdentifier) {
+		Scope imputationScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_IMPUTATION);
+		ActivityEconomicNature activityEconomicNature = new ActivityEconomicNature().setCode(code).setCode(code).setActivityFromIdentifier(activityIdentifier);
+		activityEconomicNature.setBudgetSpecializationUnit(activityEconomicNature.getActivity().getBudgetSpecializationUnit());
+		activityEconomicNature.setSection(activityEconomicNature.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createManyInTransaction(imputationScope,activityEconomicNature);
+	}
+	
+	private void createAdministrativeUnit(String code,String sectionIdentifier) {
+		Scope administrativeUnitScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_UA);
+		AdministrativeUnit administrativeUnit = new AdministrativeUnit().setIdentifier(administrativeUnitScope.getIdentifier())
+				.setCode(administrativeUnitScope.getCode()).setSectionFromIdentifier(sectionIdentifier);
+		EntityCreator.getInstance().createManyInTransaction(administrativeUnitScope,administrativeUnit);
 	}
 	
 	private void createActor(String code,String...scopesIdentifiers) {

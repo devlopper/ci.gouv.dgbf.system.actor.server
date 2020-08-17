@@ -3,15 +3,21 @@ package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.business.EntityCreator;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
@@ -23,9 +29,20 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.PrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RejectedAccountRequestPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -35,6 +52,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
@@ -227,5 +247,252 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount+3);
 		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("1")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactly("1","2");
 		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("2")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactly("1","2","3","4","5");
+	}
+
+	@Test
+	public void actor_deleteVisibleSections(){
+		createData();		
+		assertDeleteVisibleSections("admin", "s1","s2","s3");
+	}
+	
+	@Test
+	public void actor_deleteVisibleBudgetSpecializationUnits(){
+		createData();		
+		assertDeleteVisibleBudgetSpecializationUnits("admin", "usb1","usb2","usb3","usb4","usb5");
+	}
+	
+	@Test
+	public void actor_deleteVisibleActivities(){
+		createData();		
+		assertDeleteVisibleActivities("admin", "a1","a2","a3","a4","a5","a6");
+	}
+	
+	/**/
+	
+	protected void createData() {
+		EntityCreator.getInstance().createMany(
+				new ScopeType().setCode(ScopeType.CODE_SECTION).setOrderNumber((byte)1)
+				,new ScopeType().setCode(ScopeType.CODE_USB).setOrderNumber((byte)2)
+				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)3)
+				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)4)
+				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)5)
+				);
+		
+		EntityCreator.getInstance().createMany(
+				new ProfileType().setCode(ProfileType.CODE_SYSTEME)
+				,new ProfileType().setCode(ProfileType.CODE_UTILISATEUR)
+				);
+		
+		//Sections
+		createSection("s1");
+		createSection("s2");
+		createSection("s3");
+		
+		//USBs
+		createBudgetSpecializationUnit("usb1", "s1");
+		createBudgetSpecializationUnit("usb2", "s1");
+		createBudgetSpecializationUnit("usb3", "s1");		
+		createBudgetSpecializationUnit("usb4", "s3");
+		createBudgetSpecializationUnit("usb5", "s3");
+		
+		//Activities
+		createActivity("a1", "usb1");
+		createActivity("a2", "usb1");
+		createActivity("a3", "usb2");
+		createActivity("a4", "usb2");
+		createActivity("a5", "usb2");
+		createActivity("a6", "usb5");
+		
+		//Imputations
+		createImputation("i1", "a1");
+		
+		//UAs
+		createAdministrativeUnit("ua1", "s1");
+		createAdministrativeUnit("ua2", "s1");
+		createAdministrativeUnit("ua3", "s2");
+		createAdministrativeUnit("ua4", "s2");
+		createAdministrativeUnit("ua5", "s2");
+		createAdministrativeUnit("ua6", "s3");
+		createAdministrativeUnit("ua7", "s3");
+		createAdministrativeUnit("ua8", "s3");
+		createAdministrativeUnit("ua9", "s3");
+		
+		//Actors
+		createActor("inconnu");
+		createActor("admin","s1","s2","s3");
+		
+		createActor("section_manager_1","s1");
+		createActor("section_manager_2","s2");
+		createActor("section_manager_3","s3");
+		createActor("section_manager_4","s1","s3");
+		
+		createActor("usb_manager_1","usb1");
+		createActor("usb_manager_2","usb2");
+		createActor("usb_manager_3","usb3","usb4","usb5");
+		
+		createActor("activity_manager_1","a1");
+		createActor("activity_manager_2","a2","a3","a4");
+		createActor("activity_manager_3","a5","a6");
+		
+		createActor("ua_manager_1","ua1","ua3");
+		createActor("ua_manager_2","ua2");
+		createActor("ua_manager_3","ua6","ua8","ua9");
+	}
+	
+	private void createSection(String code) {
+		Scope sectionScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_SECTION);
+		EntityCreator.getInstance().createMany(sectionScope);
+		Section section = new Section().setIdentifier(sectionScope.getIdentifier());
+		EntityCreator.getInstance().createMany(section);
+	}
+	
+	private void createBudgetSpecializationUnit(String code,String sectionIdentifier) {
+		Scope usbScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_USB);
+		BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionIdentifier); 
+		EntityCreator.getInstance().createMany(usbScope,usb);
+	}
+	
+	private void createActivity(String code,String budgetSpecializationUnitIdentifier) {
+		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
+		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
+				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitIdentifier);
+		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createMany(activityScope,activity);	
+	}
+	
+	private void createImputation(String code,String activityIdentifier) {
+		Scope imputationScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_IMPUTATION);
+		ActivityEconomicNature activityEconomicNature = new ActivityEconomicNature().setCode(code).setCode(code).setActivityFromIdentifier(activityIdentifier);
+		activityEconomicNature.setBudgetSpecializationUnit(activityEconomicNature.getActivity().getBudgetSpecializationUnit());
+		activityEconomicNature.setSection(activityEconomicNature.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createMany(imputationScope,activityEconomicNature);
+	}
+	
+	private void createAdministrativeUnit(String code,String sectionIdentifier) {
+		Scope administrativeUnitScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_UA);
+		AdministrativeUnit administrativeUnit = new AdministrativeUnit().setIdentifier(administrativeUnitScope.getIdentifier())
+				.setCode(administrativeUnitScope.getCode()).setSectionFromIdentifier(sectionIdentifier);
+		EntityCreator.getInstance().createMany(administrativeUnitScope,administrativeUnit);
+	}
+	
+	private void createActor(String code,String...scopesIdentifiers) {
+		Actor actor = new Actor().setCode(code).setFirstName(code).setLastNames(code).setElectronicMailAddress(code);
+		__inject__(ActorBusiness.class).create(actor);		
+		createActorScopes(actor, scopesIdentifiers);
+	}
+	
+	private void createActorScopes(Actor actor,String...scopesIdentifiers) {
+		if(ArrayHelper.isNotEmpty(scopesIdentifiers))
+			for(String scopesIdentifier : scopesIdentifiers)
+				__inject__(ActorScopeBusiness.class).createByActorByScopes(actor, List.of(__inject__(ScopePersistence.class).readByBusinessIdentifier(scopesIdentifier))); 
+	}
+	
+	protected void createActorScopes(String code,String...scopesIdentifiers) {
+		createActorScopes(__inject__(ActorPersistence.class).readByBusinessIdentifier(code), scopesIdentifiers);
+	}
+	
+	private void assertVisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
+	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
+	private void assertVisibleActivitiesByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		Collection<Scope> scopes = ScopeOfTypeActivityQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name));
+		assertScopesExactly(scopes,expectedCodes);
+	}
+	
+	private void assertDeleteVisibleSections(String actorCode,String...codes) {
+		String code = codes[0];
+		String[] otherCodes = ArrayUtils.subarray(codes, 1, codes.length);
+		assertVisibleSectionsByFilter(actorCode, null, null, codes);
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+		assertThat(actorScope).isNotNull();
+		
+		for(Integer count = 0; count < 10; count = count + 1) {
+			deleteActorScope(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNull();
+			assertVisibleSectionsByFilter(actorCode, null, null, otherCodes);
+			
+			createActorScopes(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNotNull();
+			assertThat(actorScope.getVisible()).isTrue();		
+			assertVisibleSectionsByFilter(actorCode, null, null, codes);
+		}
+	}
+	
+	private void assertDeleteVisibleBudgetSpecializationUnits(String actorCode,String...codes) {
+		String code = codes[0];
+		String[] otherCodes = ArrayUtils.subarray(codes, 1, codes.length);
+		assertVisibleBudgetSpecializationUnitsByFilter(actorCode, null, null, codes);
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+		assertThat(actorScope).isNull();
+		
+		for(Integer count = 0; count < 10; count = count + 1) {
+			deleteActorScope(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNotNull();
+			assertThat(actorScope.getVisible()).isFalse();		
+			assertVisibleBudgetSpecializationUnitsByFilter(actorCode, null, null, otherCodes);
+			
+			createActorScopes(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNotNull();
+			assertThat(actorScope.getVisible()).isTrue();		
+			assertVisibleBudgetSpecializationUnitsByFilter(actorCode, null, null, codes);
+		}
+	}
+	
+	private void assertDeleteVisibleActivities(String actorCode,String...codes) {
+		String code = codes[0];
+		String[] otherCodes = ArrayUtils.subarray(codes, 1, codes.length);
+		assertVisibleActivitiesByFilter(actorCode, null, null, codes);
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+		assertThat(actorScope).isNull();
+		
+		for(Integer count = 0; count < 10; count = count + 1) {
+			deleteActorScope(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNotNull();
+			assertThat(actorScope.getVisible()).isFalse();		
+			assertVisibleActivitiesByFilter(actorCode, null, null, otherCodes);
+			
+			createActorScopes(actorCode, code);
+			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
+			assertThat(actorScope).isNotNull();
+			assertThat(actorScope.getVisible()).isTrue();		
+			assertVisibleActivitiesByFilter(actorCode, null, null, codes);
+		}
+	}
+	
+	private void deleteActorScope(String actorCode,String scopeCode) {
+		Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(actorCode);
+		Scope scope = __inject__(ScopePersistence.class).readByBusinessIdentifier(scopeCode);
+		__inject__(ActorScopeBusiness.class).deleteByActorByScopes(actor, List.of(scope));
+	}
+	
+	private void assertScopesExactly(Collection<Scope> scopes,String...expectedCodes) {
+		assertScopes(scopes, Boolean.TRUE, expectedCodes);
+	}
+	
+	private void assertScopes(Collection<Scope> scopes,Boolean exactly,String...expectedCodes) {
+		if(CollectionHelper.isEmpty(scopes)) {
+			assertThat(ArrayHelper.isEmpty(expectedCodes)).as("No scopes found").isTrue();
+		}else {
+			if(exactly == null || Boolean.TRUE.equals(exactly))
+				assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+			else
+				assertThat(scopes.stream().map(x -> x.getCode()).collect(Collectors.toList())).contains(expectedCodes);
+		}
 	}
 }

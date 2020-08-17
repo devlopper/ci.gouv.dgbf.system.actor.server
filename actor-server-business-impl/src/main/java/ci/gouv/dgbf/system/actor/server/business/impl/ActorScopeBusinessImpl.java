@@ -65,10 +65,6 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		if(CollectionHelper.isNotEmpty(sections))
 			deleteSections(actor,sections.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 		
-		Collection<Scope> administrativeUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_UA)).collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(administrativeUnits))
-			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
-		
 		Collection<Scope> budgetSpecializationUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_USB)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(budgetSpecializationUnits))
 			deleteBudgetSpecializationUnits(actor,budgetSpecializationUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
@@ -80,6 +76,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		Collection<Scope> imputations = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_IMPUTATION)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(imputations))
 			deleteImputations(actor,imputations.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+		
+		Collection<Scope> administrativeUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_UA)).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(administrativeUnits))
+			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 	}
 	
 	private void deleteSections(Actor actor,Collection<String> sectionsCodes) {
@@ -91,8 +91,17 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	}
 	
 	private void deleteAdministrativeUnits(Actor actor,Collection<String> administrativeUnitsCodes) {
-		delete(actor, ScopeType.CODE_UA, administrativeUnitsCodes, null,new DeleteListener() {			
+		delete(actor, ScopeType.CODE_UA, administrativeUnitsCodes, null,new DeleteListener.AbstractImpl<AdministrativeUnit>() {			
 			@Override
+			protected Class<AdministrativeUnit> getKlass() {
+				return AdministrativeUnit.class;
+			}
+			
+			@Override
+			protected Collection<String> getParentsFieldsNames(AdministrativeUnit administrativeUnit) {
+				return List.of(AdministrativeUnit.FIELD_SECTION);
+			}
+			/*@Override
 			public Boolean isDeletable(ActorScope actorScope) {
 				AdministrativeUnit administrativeUnit = EntityFinder.getInstance().find(AdministrativeUnit.class, actorScope.getScope().getIdentifier());
 				if(administrativeUnit == null)
@@ -101,43 +110,54 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 				if(ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),scopeSection.getCode()) == null)
 					return Boolean.TRUE;		
 				return Boolean.FALSE;
-			}
+			}*/
 		});
-		/*
-		if(CollectionHelper.isEmpty(administrativeUnitsCodes))
-			return;
-		for(String administrativeUnitsCode : administrativeUnitsCodes) {
-			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),administrativeUnitsCode);
-			if(actorScope == null) {
-				create(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(administrativeUnitsCode)).setVisible(Boolean.FALSE));
-			}else {
-				ActorScope actorScopeSection = null;
-				AdministrativeUnit administrativeUnit = EntityFinder.getInstance().find(AdministrativeUnit.class, actorScope.getScope().getIdentifier());
-				if(administrativeUnit != null) {
-					Scope scopeSection = EntityFinder.getInstance().find(Scope.class, administrativeUnit.getSection().getIdentifier());
-					if(scopeSection != null)
-						actorScopeSection = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),scopeSection.getCode());	
-				}			
-				if(actorScopeSection == null)
-					delete(actorScope);
-				else
-					update(actorScope.setVisible(Boolean.FALSE));
-			}
-		}
-		*/
 	}
 	
 	private void deleteBudgetSpecializationUnits(Actor actor,Collection<String> budgetSpecializationUnitsCodes) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {Activity.class,ScopeType.CODE_ACTIVITE,null});
 		childrenInfos.add(new Object[] {ActivityEconomicNature.class,ScopeType.CODE_IMPUTATION,null});
-		delete(actor, ScopeType.CODE_USB, budgetSpecializationUnitsCodes, childrenInfos,null);
+		delete(actor, ScopeType.CODE_USB, budgetSpecializationUnitsCodes, childrenInfos,new DeleteListener.AbstractImpl<BudgetSpecializationUnit>() {
+			@Override
+			protected Class<BudgetSpecializationUnit> getKlass() {
+				return BudgetSpecializationUnit.class;
+			}
+			
+			@Override
+			protected Collection<String> getParentsFieldsNames(BudgetSpecializationUnit budgetSpecializationUnit) {
+				return List.of(BudgetSpecializationUnit.FIELD_SECTION);
+			}
+			/*
+			@Override
+			public Boolean isDeletable(ActorScope actorScope) {
+				BudgetSpecializationUnit budgetSpecializationUnit = get(actorScope);
+				if(budgetSpecializationUnit == null)
+					return Boolean.TRUE;
+				Scope scopeSection = EntityFinder.getInstance().find(Scope.class, budgetSpecializationUnit.getSection().getIdentifier());
+				if(ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),scopeSection.getCode()) == null)
+					return Boolean.TRUE;		
+				return Boolean.FALSE;
+			}
+			*/
+			
+		});
 	}
 	
 	private void deleteActivities(Actor actor,Collection<String> activitiesCodes) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {ActivityEconomicNature.class,ScopeType.CODE_IMPUTATION,null});
-		delete(actor, ScopeType.CODE_ACTIVITE, activitiesCodes, childrenInfos,null);
+		delete(actor, ScopeType.CODE_ACTIVITE, activitiesCodes, childrenInfos,new DeleteListener.AbstractImpl<Activity>() {
+			@Override
+			protected Class<Activity> getKlass() {
+				return Activity.class;
+			}
+			
+			@Override
+			protected Collection<String> getParentsFieldsNames(Activity activity) {
+				return List.of(Activity.FIELD_BUDGET_SPECIALIZATION_UNIT,Activity.FIELD_SECTION);
+			}		
+		});
 	}
 	
 	private void deleteImputations(Actor actor,Collection<String> imputationsCodes) {
@@ -146,7 +166,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	
 	/**/
 	
-	private void delete(Actor actor,String typeCode,Collection<String> codes,Collection<Object[]> childrenInfos,DeleteListener listener) {
+	private void delete(Actor actor,String typeCode,Collection<String> codes,Collection<Object[]> childrenInfos,DeleteListener<?> listener) {
 		if(actor == null || CollectionHelper.isEmpty(codes))
 			return;
 		//Collection<ActorScope> actorScopes = ActorScopeQuerier.getInstance().readByActorsCodesByScopesCodes(List.of(actor.getCode()),codes);
@@ -192,7 +212,54 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		}
 	}
 	
-	public static interface DeleteListener {
+	public static interface DeleteListener<T> {
 		Boolean isDeletable(ActorScope actorScope);
+		
+		public static abstract class AbstractImpl<SCOPE> implements DeleteListener<SCOPE>,Serializable{
+			protected abstract Class<SCOPE> getKlass();
+			
+			protected SCOPE get(ActorScope actorScope) {
+				return EntityFinder.getInstance().find(getKlass(), actorScope.getScope().getIdentifier());
+			}
+			
+			protected abstract Collection<String> getParentsFieldsNames(SCOPE scope);
+			
+			protected Object getParentIdentifier(SCOPE scope,String fieldName) {
+				Collection<String> parentsFieldsNames = getParentsFieldsNames(scope);
+				if(CollectionHelper.isEmpty(parentsFieldsNames))
+					return null;
+				for(String parentFieldName : parentsFieldsNames) {
+					if(StringHelper.isBlank(parentFieldName))
+						continue;
+					Object parent = FieldHelper.read(scope, parentFieldName);
+					if(parent == null)
+						continue;
+					return FieldHelper.readSystemIdentifier(parent);
+				}
+				return null;
+			}
+			
+			protected Scope getParent(SCOPE scope,String fieldName) {
+				Object parentIdentifier = getParentIdentifier(scope,fieldName);
+				if(parentIdentifier == null)
+					return null;
+				return EntityFinder.getInstance().find(Scope.class, parentIdentifier);
+			}
+			
+			@Override
+			public Boolean isDeletable(ActorScope actorScope) {
+				SCOPE scope = get(actorScope);
+				if(scope == null)
+					return Boolean.TRUE;
+				for(String fieldName : getParentsFieldsNames(scope)) {
+					Scope parent = getParent(scope,fieldName);
+					if(parent == null)
+						continue;
+					if(ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorScope.getActor().getCode(),parent.getCode()) != null)
+						return Boolean.FALSE;
+				}
+				return Boolean.FALSE;
+			}
+		}
 	}
 }

@@ -17,9 +17,11 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		org.cyk.utility.__kernel__.klass.PersistableClassesGetter.COLLECTION.set(java.util.List.of(
 				ProfileFunction.class,ProfilePrivilege.class
 				,Privilege.class,PrivilegeType.class
+				,ActorProfile.class,ActorScope.class
+				,ActivityEconomicNature.class,AdministrativeUnit.class,Activity.class,BudgetSpecializationUnit.class,Section.class
 				,ScopeFunction.class,Scope.class,ScopeTypeFunction.class
 				,Function.class,FunctionType.class
-				,ActorProfile.class,Actor.class
+				,Actor.class
 				,Profile.class,ProfileType.class,ScopeType.class
 				,AccountRequest.class
 				,Identity.class

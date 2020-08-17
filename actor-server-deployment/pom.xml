@@ -30,7 +30,7 @@
 		<data.source.oracle.dev.user>SIIBC_Actor</data.source.oracle.dev.user>
 		<data.source.oracle.dev.password>actor</data.source.oracle.dev.password>
 		<security.single.sign.on.system.keycloak.dev.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.dev.url>
-		<security.single.sign.on.system.keycloak.dev.realm.name>SIIB</security.single.sign.on.system.keycloak.dev.realm.name>
+		<security.single.sign.on.system.keycloak.dev.realm.name>SIIBTEST</security.single.sign.on.system.keycloak.dev.realm.name>
 		<security.single.sign.on.system.keycloak.dev.client.identifier>admin-cli</security.single.sign.on.system.keycloak.dev.client.identifier>
 		<security.single.sign.on.system.keycloak.dev.client.secret>913c69e7-e82d-41d7-a197-d97b5c761548</security.single.sign.on.system.keycloak.dev.client.secret>
 		<security.single.sign.on.system.keycloak.dev.credential.username>admin</security.single.sign.on.system.keycloak.dev.credential.username>
@@ -48,7 +48,7 @@
 		<data.base.management.system.oracle.prod.sid>sib</data.base.management.system.oracle.prod.sid>
 		<data.source.oracle.prod.user>acteur</data.source.oracle.prod.user>		
 		<security.single.sign.on.system.keycloak.prod.url>http://10.3.4.60:8080/auth</security.single.sign.on.system.keycloak.prod.url>
-		<security.single.sign.on.system.keycloak.prod.realm.name>SIIBTEST</security.single.sign.on.system.keycloak.prod.realm.name>
+		<security.single.sign.on.system.keycloak.prod.realm.name>SIIB</security.single.sign.on.system.keycloak.prod.realm.name>
 		<security.single.sign.on.system.keycloak.prod.client.identifier>admin-cli</security.single.sign.on.system.keycloak.prod.client.identifier>
 		<security.single.sign.on.system.keycloak.prod.client.secret>ac0749e3-14f8-4a14-a6e1-4edfb9375e69</security.single.sign.on.system.keycloak.prod.client.secret>
 		<security.single.sign.on.system.keycloak.prod.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.prod.credential.username>

@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,35 @@ public class ActivityEconomicNature extends AbstractIdentifiableSystemScalarStri
 	@Override
 	public ActivityEconomicNature setIdentifier(String identifier) {
 		return (ActivityEconomicNature) super.setIdentifier(identifier);
+	}
+	
+	@Override
+	public ActivityEconomicNature setCode(String code) {
+		return (ActivityEconomicNature) super.setCode(code);
+	}
+	
+	public ActivityEconomicNature setSectionFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setSection(null);
+		else
+			setSection(EntityFinder.getInstance().find(Section.class, identifier));
+		return this;
+	}
+	
+	public ActivityEconomicNature setBudgetSpecializationUnitFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setBudgetSpecializationUnit(null);
+		else
+			setBudgetSpecializationUnit(EntityFinder.getInstance().find(BudgetSpecializationUnit.class, identifier));
+		return this;
+	}
+	
+	public ActivityEconomicNature setActivityFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setActivity(null);
+		else
+			setActivity(EntityFinder.getInstance().find(Activity.class, identifier));
+		return this;
 	}
 	
 	public static final String FIELD_SECTION = "section";
