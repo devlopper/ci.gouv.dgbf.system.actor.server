@@ -18,7 +18,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				ProfileFunction.class,ProfilePrivilege.class
 				,Privilege.class,PrivilegeType.class
 				,ActorProfile.class,ActorScope.class
-				,ActivityEconomicNature.class,AdministrativeUnit.class,Activity.class,BudgetSpecializationUnit.class,Section.class
+				,Imputation.class,AdministrativeUnit.class,Activity.class,BudgetSpecializationUnit.class,Section.class
 				,ScopeFunction.class,Scope.class,ScopeTypeFunction.class
 				,Function.class,FunctionType.class
 				,Actor.class

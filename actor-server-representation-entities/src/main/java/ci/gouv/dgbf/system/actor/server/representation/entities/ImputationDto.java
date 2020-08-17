@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class ActivityEconomicNatureDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+public class ImputationDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String sectionAsString;	
@@ -20,8 +20,8 @@ public class ActivityEconomicNatureDto extends AbstractIdentifiableSystemScalarS
 	private String economicNatureAsString;
 	
 	@Override
-	public ActivityEconomicNatureDto setIdentifier(String identifier) {
-		return (ActivityEconomicNatureDto) super.setIdentifier(identifier);
+	public ImputationDto setIdentifier(String identifier) {
+		return (ImputationDto) super.setIdentifier(identifier);
 	}
 
 }

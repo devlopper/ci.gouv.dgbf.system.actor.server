@@ -21,7 +21,7 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -46,7 +46,7 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 				,getPredicateHasVisibleChild(AdministrativeUnit.class)
 				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class)
 				,getPredicateHasVisibleChild(Activity.class)
-				,getPredicateHasVisibleChild(ActivityEconomicNature.class)
+				,getPredicateHasVisibleChild(Imputation.class)
 			));
 	}
 	

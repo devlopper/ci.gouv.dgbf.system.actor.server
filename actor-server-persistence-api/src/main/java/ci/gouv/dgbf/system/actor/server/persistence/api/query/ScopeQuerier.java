@@ -1,13 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -17,7 +15,6 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.klass.ClassHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
@@ -516,7 +513,7 @@ public interface ScopeQuerier extends Querier {
 		ScopeOfTypeAdministrativeUnitQuerier.initialize();
 		ScopeOfTypeBudgetSpecializationUnitQuerier.initialize();
 		ScopeOfTypeActivityQuerier.initialize();
-		ScopeOfTypeActivityEconomicNatureQuerier.initialize();
+		ScopeOfTypeImputationQuerier.initialize();
 	}
 
 	/**/
@@ -560,7 +557,7 @@ public interface ScopeQuerier extends Querier {
 				//From Imputation
 				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
 					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
-					,"JOIN ActivityEconomicNature imputation ON imputation = scopeImputation "
+					,"JOIN Imputation imputation ON imputation = scopeImputation "
 					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.section = scope")))
 			));		
 		*/

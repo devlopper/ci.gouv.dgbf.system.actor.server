@@ -12,7 +12,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 
     	<!-- Transaction -->
@@ -68,7 +68,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 		
     	<!-- Transaction -->
@@ -124,7 +124,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 
     	<!-- Transaction -->
@@ -180,7 +180,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
-		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 
     	<!-- Transaction -->

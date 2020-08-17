@@ -27,12 +27,12 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
+public interface ScopeOfTypeImputationQuerier extends Querier {
 
 	String SCOPE_TYPE = ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION;
 	
@@ -48,7 +48,7 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	/* read where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readImputationsWhereFilter");
 	static String getQueryValueReadWhereFilterFromWhere() {
-		return jpql(from("Scope t "),"JOIN ActivityEconomicNature activityEconomicNature ON activityEconomicNature = t"
+		return jpql(from("Scope t "),"JOIN Imputation imputation ON imputation = t"
 			,Language.Where.of(Language.Where.and(				
 					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
@@ -107,7 +107,7 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeActivityEconomicNatureQuerier,Serializable {
+	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeImputationQuerier,Serializable {
 		
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
@@ -207,8 +207,8 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	
 	/**/
 	
-	static ScopeOfTypeActivityEconomicNatureQuerier getInstance() {
-		return Helper.getInstance(ScopeOfTypeActivityEconomicNatureQuerier.class, INSTANCE);
+	static ScopeOfTypeImputationQuerier getInstance() {
+		return Helper.getInstance(ScopeOfTypeImputationQuerier.class, INSTANCE);
 	}
 	
 	Value INSTANCE = new Value();
@@ -238,9 +238,9 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 		
 		QueryHelper.addQueries(
 				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
-						, jpql(select(Select.fields("t", ActivityEconomicNature.FIELD_IDENTIFIER,ActivityEconomicNature.FIELD_CODE,ActivityEconomicNature.FIELD_NAME)
-								,Select.fields("activityEconomicNature", ActivityEconomicNature.FIELD_SECTION_CODE_NAME,ActivityEconomicNature.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
-										,ActivityEconomicNature.FIELD_ACTION_CODE_NAME))
+						, jpql(select(Select.fields("t", Imputation.FIELD_IDENTIFIER,Imputation.FIELD_CODE,Imputation.FIELD_NAME)
+								,Select.fields("imputation", Imputation.FIELD_SECTION_CODE_NAME,Imputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
+										,Imputation.FIELD_ACTION_CODE_NAME))
 								, getQueryValueReadWhereFilterFromWhere()
 								,order(asc("t",Activity.FIELD_CODE)))
 						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING
@@ -263,6 +263,6 @@ public interface ScopeOfTypeActivityEconomicNatureQuerier extends Querier {
 	}
 
 	static String getPredicateHasVisibleParent(Class<?> klass) {
-		return ScopeQuerier.getPredicateHasVisibleParent(klass.getSimpleName(), ActivityEconomicNature.class.getSimpleName());
+		return ScopeQuerier.getPredicateHasVisibleParent(klass.getSimpleName(), Imputation.class.getSimpleName());
 	}
 }

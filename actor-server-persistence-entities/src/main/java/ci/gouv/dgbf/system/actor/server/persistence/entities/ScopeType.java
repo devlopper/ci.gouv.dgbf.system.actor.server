@@ -42,13 +42,17 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String TABLE_NAME = "TYPE_DOMAINE";
 	
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
-	
+
 	public static final String CODE_AB = "AB";
 	public static final String CODE_SECTION = "SECTION";
-	public static final String CODE_UA = "UA";
-	public static final String CODE_UGP = "UGP";
+	
+	// Chaine programmatique
 	public static final String CODE_USB = "USB";
 	public static final String CODE_ACTION = "ACTION";
 	public static final String CODE_ACTIVITE = "ACTIVITE";
 	public static final String CODE_IMPUTATION = "IMPUTATION";
+
+	// Chaine de gestion
+	public static final String CODE_UGP = "UGP";
+	public static final String CODE_UA = "UA";
 }

@@ -18,8 +18,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ActivityEconomicNature.TABLE_NAME)
-public class ActivityEconomicNature extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+@Entity @Table(name=Imputation.TABLE_NAME)
+public class Imputation extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
@@ -37,16 +37,16 @@ public class ActivityEconomicNature extends AbstractIdentifiableSystemScalarStri
 	@Column(name = COLUMN_ECONOMIC_NATURE_CODE_NAME) private String economicNatureCodeName;
 	
 	@Override
-	public ActivityEconomicNature setIdentifier(String identifier) {
-		return (ActivityEconomicNature) super.setIdentifier(identifier);
+	public Imputation setIdentifier(String identifier) {
+		return (Imputation) super.setIdentifier(identifier);
 	}
 	
 	@Override
-	public ActivityEconomicNature setCode(String code) {
-		return (ActivityEconomicNature) super.setCode(code);
+	public Imputation setCode(String code) {
+		return (Imputation) super.setCode(code);
 	}
 	
-	public ActivityEconomicNature setSectionFromIdentifier(String identifier) {
+	public Imputation setSectionFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setSection(null);
 		else
@@ -54,7 +54,7 @@ public class ActivityEconomicNature extends AbstractIdentifiableSystemScalarStri
 		return this;
 	}
 	
-	public ActivityEconomicNature setBudgetSpecializationUnitFromIdentifier(String identifier) {
+	public Imputation setBudgetSpecializationUnitFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setBudgetSpecializationUnit(null);
 		else
@@ -62,7 +62,7 @@ public class ActivityEconomicNature extends AbstractIdentifiableSystemScalarStri
 		return this;
 	}
 	
-	public ActivityEconomicNature setActivityFromIdentifier(String identifier) {
+	public Imputation setActivityFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setActivity(null);
 		else

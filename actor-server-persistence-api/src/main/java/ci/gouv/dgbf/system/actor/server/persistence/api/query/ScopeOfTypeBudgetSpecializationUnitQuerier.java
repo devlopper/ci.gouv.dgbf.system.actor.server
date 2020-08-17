@@ -22,7 +22,7 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
@@ -51,7 +51,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 				ScopeQuerier.getPredicateHasBeenMarkedVisible()
 				,getPredicateHasVisibleParent(Section.class)
 				,getPredicateHasVisibleChild(Activity.class)
-				,getPredicateHasVisibleChild(ActivityEconomicNature.class)
+				,getPredicateHasVisibleChild(Imputation.class)
 		));
 	}
 	

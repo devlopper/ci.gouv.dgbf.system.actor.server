@@ -23,7 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -86,7 +86,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {BudgetSpecializationUnit.class,ScopeType.CODE_USB,null});
 		childrenInfos.add(new Object[] {Activity.class,ScopeType.CODE_ACTIVITE,null});
-		childrenInfos.add(new Object[] {ActivityEconomicNature.class,ScopeType.CODE_IMPUTATION,null});
+		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
 		delete(actor, ScopeType.CODE_USB, sectionsCodes, childrenInfos,null);
 	}
 	
@@ -117,7 +117,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	private void deleteBudgetSpecializationUnits(Actor actor,Collection<String> budgetSpecializationUnitsCodes) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {Activity.class,ScopeType.CODE_ACTIVITE,null});
-		childrenInfos.add(new Object[] {ActivityEconomicNature.class,ScopeType.CODE_IMPUTATION,null});
+		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
 		delete(actor, ScopeType.CODE_USB, budgetSpecializationUnitsCodes, childrenInfos,new DeleteListener.AbstractImpl<BudgetSpecializationUnit>() {
 			@Override
 			protected Class<BudgetSpecializationUnit> getKlass() {
@@ -146,7 +146,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	
 	private void deleteActivities(Actor actor,Collection<String> activitiesCodes) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
-		childrenInfos.add(new Object[] {ActivityEconomicNature.class,ScopeType.CODE_IMPUTATION,null});
+		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
 		delete(actor, ScopeType.CODE_ACTIVITE, activitiesCodes, childrenInfos,new DeleteListener.AbstractImpl<Activity>() {
 			@Override
 			protected Class<Activity> getKlass() {
@@ -197,9 +197,9 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 				if(CollectionHelper.isEmpty(children))
 					continue;
 				for(ActorScope child : children) {
-					if(childInfo[0].equals(ActivityEconomicNature.class)) {
-						ActivityEconomicNature activityEconomicNature = EntityFinder.getInstance().find(ActivityEconomicNature.class, child.getScope().getIdentifier());
-						if(ScopeType.CODE_ACTIVITE.equals(typeCode) && !identifiers.contains(activityEconomicNature.getActivity().getIdentifier()))
+					if(childInfo[0].equals(Imputation.class)) {
+						Imputation imputation = EntityFinder.getInstance().find(Imputation.class, child.getScope().getIdentifier());
+						if(ScopeType.CODE_ACTIVITE.equals(typeCode) && !identifiers.contains(imputation.getActivity().getIdentifier()))
 							continue;
 					}else if(childInfo[0].equals(Activity.class)) {
 						Activity activity = EntityFinder.getInstance().find(Activity.class, child.getScope().getIdentifier());

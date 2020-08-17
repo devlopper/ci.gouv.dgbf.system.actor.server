@@ -38,7 +38,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSection
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityEconomicNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -362,10 +362,10 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	
 	private void createImputation(String code,String activityIdentifier) {
 		Scope imputationScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_IMPUTATION);
-		ActivityEconomicNature activityEconomicNature = new ActivityEconomicNature().setCode(code).setCode(code).setActivityFromIdentifier(activityIdentifier);
-		activityEconomicNature.setBudgetSpecializationUnit(activityEconomicNature.getActivity().getBudgetSpecializationUnit());
-		activityEconomicNature.setSection(activityEconomicNature.getBudgetSpecializationUnit().getSection());
-		EntityCreator.getInstance().createMany(imputationScope,activityEconomicNature);
+		Imputation imputation = new Imputation().setCode(code).setCode(code).setActivityFromIdentifier(activityIdentifier);
+		imputation.setBudgetSpecializationUnit(imputation.getActivity().getBudgetSpecializationUnit());
+		imputation.setSection(imputation.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createMany(imputationScope,imputation);
 	}
 	
 	private void createAdministrativeUnit(String code,String sectionIdentifier) {
