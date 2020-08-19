@@ -50,9 +50,13 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private String officePhoneNumber;
 	@Transient private String officePhoneExtension;
 	@Transient private AdministrativeUnit administrativeUnit;
+	@Transient private String administrativeUnitAsString;
+	@Transient private String sectionAsString;
 	@Transient private String administrativeFunction;
 	@Transient private Civility civility;
+	@Transient private String civilityAsString;
 	@Transient private IdentityGroup group;
+	@Transient private String groupAsString;
 	@Transient private String actOfAppointmentReference;
 	@Transient private String actOfAppointmentSignatory;
 	@Transient private LocalDate actOfAppointmentSignatureDate;	
@@ -114,6 +118,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	public static final String FIELD_REGISTRATION_NUMBER = "registrationNumber";
 	public static final String FIELD_NAMES = "names";
 	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
@@ -121,6 +126,11 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_NOTATION = "notation";
 	public static final String FIELD_COLOR = "color";
+	public static final String FIELD_CIVILITY_STRING = "civilityAsString";
+	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
+	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	

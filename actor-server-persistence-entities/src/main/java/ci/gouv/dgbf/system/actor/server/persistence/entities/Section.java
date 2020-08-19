@@ -24,5 +24,15 @@ public class Section extends AbstractIdentifiableSystemScalarStringIdentifiableB
 		return (Section) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public Section setCode(String code) {
+		return (Section) super.setCode(code);
+	}
+	
+	@Override
+	public Section setName(String name) {
+		return (Section) super.setName(name);
+	}
+	
 	public static final String TABLE_NAME = "VM_APP_SECTION";	
 }

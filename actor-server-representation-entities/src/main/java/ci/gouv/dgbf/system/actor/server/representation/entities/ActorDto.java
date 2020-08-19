@@ -29,6 +29,11 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private String password;
 	private Byte notation;
 	private String color; 
+	private String administrativeFunction;
+	private String sectionAsString;
+	private String administrativeUnitAsString;
+	private String civilityAsString;
+	private String groupAsString;
 	
 	private AdministrativeUnitDto administrativeUnit;
 	private CivilityDto civility;

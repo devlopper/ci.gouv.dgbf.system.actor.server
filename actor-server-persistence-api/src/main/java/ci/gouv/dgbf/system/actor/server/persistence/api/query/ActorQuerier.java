@@ -1,11 +1,17 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
@@ -26,7 +32,9 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 
 public interface ActorQuerier extends Querier {
 
@@ -65,6 +73,14 @@ public interface ActorQuerier extends Querier {
 			actor.setPrivileges(PrivilegeQuerier.getInstance().readVisibleByActorCode(code));
 			actor.setScopes(ScopeQuerier.getInstance().readVisibleByActorCode(code));
 			return actor;
+		}
+		
+		@Override
+		public Actor readProfileInformationsByCode(String code) {
+			if(StringHelper.isBlank(code))
+				return null;
+			return QueryExecutor.getInstance().executeReadOne(Actor.class, new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE).addFilterFieldsValues(PARAMETER_NAME_CODE,code));
 		}
 		
 		@Override
@@ -140,9 +156,12 @@ public interface ActorQuerier extends Querier {
 	String QUERY_VALUE_READ_BY_CODE = Language.of(Language.Select.of("t"),Language.From.of("Actor t"),Language.Where.of("t."+Actor.FIELD_CODE+" = :"+PARAMETER_NAME_CODE));
 	
 	/* Read all informations for external by code */
-	String QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = "readAllInformationsForExternalByCode";
-	String QUERY_IDENTIFIER_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE);
+	String QUERY_IDENTIFIER_READ_ALL_INFORMATIONS_FOR_EXTERNAL_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, "readAllInformationsForExternalByCode");
 	Actor readAllInformationsForExternalByCode(String code);
+	
+	/* Read profile informations by code */
+	String QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE = QueryIdentifierBuilder.getInstance().build(Actor.class, "readProfileInformationsByCode");
+	Actor readProfileInformationsByCode(String code);
 	
 	/* read where filter */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Actor.class, "readWhereFilter");
@@ -166,6 +185,36 @@ public interface ActorQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE
+				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
+				,Query.FIELD_VALUE,jpql(
+						select(
+							FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_FIRST_NAME)
+							,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_LAST_NAMES)
+							,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_REGISTRATION_NUMBER)
+							,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS)
+							,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_FUNCTION)
+							,FieldHelper.join(Identity.FIELD_CIVILITY,Civility.FIELD_CODE)
+							,FieldHelper.join("identityGroup",IdentityGroup.FIELD_NAME)
+							
+							//Joins
+							,Select.concatCodeName("section")
+							,Select.concatCodeName(Identity.FIELD_ADMINISTRATIVE_UNIT)						
+						)
+						,from("Actor a"
+							,"LEFT JOIN Civility civility ON civility = a.identity.civility"
+							,"LEFT JOIN IdentityGroup identityGroup ON identityGroup = a.identity.group"
+							,"LEFT JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = a.identity.administrativeUnit"
+							,"LEFT JOIN Section section ON section = a.identity.administrativeUnit.section"
+							)
+						,where(Where.equals("a", PARAMETER_NAME_CODE))
+					)
+				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_REGISTRATION_NUMBER
+						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_ADMINISTRATIVE_FUNCTION,Actor.FIELD_CIVILITY_STRING,Actor.FIELD_GROUP_AS_STRING
+						//Joins
+						,Actor.FIELD_SECTION_AS_STRING,Actor.FIELD_ADMINISTRATIVE_UNIT_AS_STRING))
+			);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ALL_01
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_ALL_01

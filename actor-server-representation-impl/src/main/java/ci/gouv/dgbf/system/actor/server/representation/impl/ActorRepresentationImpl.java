@@ -6,7 +6,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
@@ -27,19 +26,12 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Response getAllInformationsByCode(String code) {
+	public Response getProfileInformationsByCode(String code) {
 		if(StringHelper.isBlank(code))
 			return Response.status(Status.BAD_REQUEST).entity("nom d'utilisateur obligatoire").build();
-		Actor actor = ActorQuerier.getInstance().readAllInformationsForExternalByCode(code);
+		Actor actor = ActorQuerier.getInstance().readProfileInformationsByCode(code);
 		if(actor == null)
 			return Response.status(Status.BAD_REQUEST).entity("nom d'utilisateur <<"+code+">> inconnu").build();
-		if(CollectionHelper.isNotEmpty(actor.getPrivileges()))
-			actor.getPrivileges().forEach(p -> {
-				
-			});
-			actor.getScopes().forEach(s -> {
-				
-			});
 		ActorDto actorDto = MappingHelper.getSource(actor, ActorDto.class);
 		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(actorDto));
 	}

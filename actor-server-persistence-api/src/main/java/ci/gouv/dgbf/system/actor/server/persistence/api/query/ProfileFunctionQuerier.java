@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
+import org.cyk.utility.__kernel__.persistence.query.Language.Order;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -23,6 +24,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 
 public interface ProfileFunctionQuerier extends Querier {
 
+	String PARAMETER_NAME_PROFILES_TYPES_CODES = "profilesTypesCodes";
 	String PARAMETER_NAME_PROFILES_CODES = "profilesCodes";
 	String PARAMETER_NAME_PROFILE_CODE = "profileCode";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
@@ -72,6 +74,14 @@ public interface ProfileFunctionQuerier extends Querier {
 			);
 	Long countByFunctionsCodes(Collection<String> functionsCodes);
 	
+	/* read by profiles types codes by functions codes order by profile code ascending */
+	String QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, "readByProfilesTypesCodesByFunctionsCodes");
+	Collection<ProfileFunction> readByProfilesTypesCodesByFunctionsCodes(Collection<String> profilesTypesCodes,Collection<String> functionsCodes);
+	
+	/* count by profiles types codes by functions codes */
+	String QUERY_IDENTIFIER_COUNT_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES);
+	Long countByProfilesTypesCodesByFunctionsCodes(Collection<String> profilesTypesCodes,Collection<String> functionsCodes);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends AbstractObject implements ProfileFunctionQuerier,Serializable {
@@ -102,6 +112,18 @@ public interface ProfileFunctionQuerier extends Querier {
 		public Long countByFunctionsCodes(Collection<String> functionsCodes) {
 			return EntityCounter.getInstance().count(ProfileFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES)
 					.addFilterField(PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes));
+		}
+		
+		@Override
+		public Collection<ProfileFunction> readByProfilesTypesCodesByFunctionsCodes(Collection<String> profilesTypesCodes, Collection<String> functionsCodes) {
+			return QueryExecutor.getInstance().executeReadMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
+					, PARAMETER_NAME_PROFILES_TYPES_CODES,profilesTypesCodes,PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
+		}
+		
+		@Override
+		public Long countByProfilesTypesCodesByFunctionsCodes(Collection<String> profilesTypesCodes,Collection<String> functionsCodes) {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
+					,PARAMETER_NAME_PROFILES_TYPES_CODES,profilesTypesCodes,PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 	}
 	
@@ -139,6 +161,23 @@ public interface ProfileFunctionQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_FUNCTIONS_CODES
+				)
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,ProfileFunction.class
+				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
+						,From.of("ProfileFunction t")			
+						,Where.of(Where.and("t.profile.type.code IN :"+PARAMETER_NAME_PROFILES_TYPES_CODES,"t.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES))			
+						,Order.of("t.profile.code ASC,t.function.code ASC"))
+				)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,Language.of(Select.of("COUNT(t)")
+						,From.of("ProfileFunction t")
+						,Where.of(Where.and("t.profile.type.code IN :"+PARAMETER_NAME_PROFILES_TYPES_CODES,"t.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES))			
+						)
 				)
 			);
 	}

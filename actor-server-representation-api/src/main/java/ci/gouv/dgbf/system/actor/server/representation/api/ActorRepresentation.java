@@ -17,10 +17,10 @@ import io.swagger.annotations.ApiOperation;
 public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	
 	@GET
-	@Path(PATH_GET_ALL_INFORMATIONS_BY_CODE)
+	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Obtenir toutes les informations d'un compte utilisateur",tags = {"get"})
-	Response getAllInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
+	@ApiOperation(value = "Obtenir les informations de profile d'un compte utilisateur",tags = {"get"})
+	Response getProfileInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
@@ -41,7 +41,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	String PATH = "actor";
-	String PATH_GET_ALL_INFORMATIONS_BY_CODE = "getAllInformationsByCode";
+	String PATH_GET_PROFILE_INFORMATIONS_BY_CODE = "informations-profile-par-acteur";
 	String PATH_IMPORT_FROM_KEYCLOAK = "importFromKeycloak";
 	String PATH_EXPORT_TO_KEYCLOAK = "exportToKeycloak";
 	String PATH_SEND_UPDATE_PASSWORD_EMAIL = "sendUpdatePasswordEmail";

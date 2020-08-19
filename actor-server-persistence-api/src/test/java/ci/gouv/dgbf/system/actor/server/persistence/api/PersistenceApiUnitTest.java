@@ -317,10 +317,10 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				,new Scope().setCode("5").setName("4").setTypeFromIdentifier(ScopeType.CODE_SECTION)
 				,new Scope().setCode("ua01").setName("5").setTypeFromIdentifier(ScopeType.CODE_UA));
 		
-		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("1"),new Section().setIdentifier("2"),new Section().setIdentifier("3")
-				,new Section().setIdentifier("4"),new Section().setIdentifier("5"));
-		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("ua01").setSectionFromIdentifier("5")
-				,new AdministrativeUnit().setIdentifier("ua02").setSectionFromIdentifier("3"));
+		EntityCreator.getInstance().createManyInTransaction(new Section().setCode("1"),new Section().setCode("2"),new Section().setCode("3")
+				,new Section().setCode("4"),new Section().setCode("5"));
+		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setCode("ua01").setSectionFromIdentifier("5")
+				,new AdministrativeUnit().setCode("ua02").setSectionFromIdentifier("3"));
 		
 		EntityCreator.getInstance().createManyInTransaction(new PrivilegeType().setCode("1").setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Privilege().setCode("1").setName("1").setTypeFromIdentifier("1")
