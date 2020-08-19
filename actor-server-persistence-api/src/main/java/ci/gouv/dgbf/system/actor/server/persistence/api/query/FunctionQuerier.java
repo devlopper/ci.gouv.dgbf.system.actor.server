@@ -32,7 +32,6 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ);
-	//Collection<FunctionType> readOrderByCodeAscending();
 	
 	String QUERY_NAME_COUNT = "countOrderByCodeAscending";
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
@@ -99,6 +98,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		public Collection<Function> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readByAccountRequestIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
+				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ);
 			return super.readMany(arguments);
 		}
 		

@@ -8,8 +8,12 @@ import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.From;
+import org.cyk.utility.__kernel__.persistence.query.Language.Select;
+import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
@@ -20,7 +24,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 public interface ProfileFunctionQuerier extends Querier {
 
 	String PARAMETER_NAME_PROFILES_CODES = "profilesCodes";
+	String PARAMETER_NAME_PROFILE_CODE = "profileCode";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
+	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
+	
+	/* read by profile code by function code */
+	String QUERY_IDENTIFIER_READ_BY_PROFILE_CODE_BY_FUNCTION_CODE = QueryIdentifierBuilder.getInstance().build(ProfileFunction.class, "readByProfileCodeByFunctionCode");
+	String QUERY_VALUE_READ_BY_PROFILE_CODE_BY_FUNCTION_CODE = Language.of(Select.of("t"),From.of("ProfileFunction t")			
+			,Where.of(Where.and("t.profile.code = :"+PARAMETER_NAME_PROFILE_CODE,"t.function.code = :"+PARAMETER_NAME_FUNCTION_CODE)));
+	ProfileFunction readByProfileCodeByFunctionCode(String profileCode,String functionCode);
 	
 	/* read by profiles codes order by function code ascending */
 	String QUERY_NAME_READ_BY_PROFILES_CODES = "readByProfilesCodes";
@@ -64,6 +76,13 @@ public interface ProfileFunctionQuerier extends Querier {
 	
 	public static abstract class AbstractImpl extends AbstractObject implements ProfileFunctionQuerier,Serializable {
 		@Override
+		public ProfileFunction readByProfileCodeByFunctionCode(String profileCode, String functionCode) {
+			return QueryExecutor.getInstance().executeReadOne(ProfileFunction.class, new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_PROFILE_CODE_BY_FUNCTION_CODE)
+					.addFilterFieldsValues(PARAMETER_NAME_PROFILE_CODE,profileCode,PARAMETER_NAME_FUNCTION_CODE,functionCode));
+		}
+		
+		@Override
 		public Collection<ProfileFunction> readByProfilesCodes(Collection<String> profilesCodes) {
 			return EntityReader.getInstance().readMany(ProfileFunction.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_PROFILES_CODES,profilesCodes);
 		}
@@ -95,6 +114,12 @@ public interface ProfileFunctionQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILE_CODE_BY_FUNCTION_CODE
+				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,ProfileFunction.class
+				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_PROFILE_CODE_BY_FUNCTION_CODE
+				)
+			);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
 				,Query.FIELD_TUPLE_CLASS,ProfileFunction.class,Query.FIELD_RESULT_CLASS,ProfileFunction.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_PROFILES_CODES

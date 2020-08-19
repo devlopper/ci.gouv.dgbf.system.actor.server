@@ -6,7 +6,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Section.TABLE_NAME)
 @Cacheable(value = true)
-public class Section extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class Section extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Override

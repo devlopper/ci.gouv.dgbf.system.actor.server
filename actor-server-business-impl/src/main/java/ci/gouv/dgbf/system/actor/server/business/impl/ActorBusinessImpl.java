@@ -68,7 +68,7 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 					.setElectronicMailAddress(user.getElectronicMailAddress())
 				);
 		}
-		LogHelper.logInfo("Number of users to import from keycloak is "+CollectionHelper.getSize(actors),getClass());
+		LogHelper.logInfo("Number of users to import from keycloak is "+CollectionHelper.getSize(actors)+"/"+users.size(),getClass());
 		if(CollectionHelper.isNotEmpty(actors))
 			createMany(actors);
 		return CollectionHelper.getSize(actors);

@@ -115,6 +115,9 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_LAST_NAMES = "lastNames";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_NAMES = "names";
+	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
+	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
+	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_NOTATION = "notation";
 	public static final String FIELD_COLOR = "color";

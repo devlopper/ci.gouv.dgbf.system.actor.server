@@ -19,11 +19,20 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private String firstName;
 	private String lastNames;
 	private String names;
-	private String electronicMailAddress;	
+	private String electronicMailAddress;
+	private String registrationNumber;
+	private String postalBoxAddress;
+	private String mobilePhoneNumber;
+	private String officePhoneNumber;
+	private String officePhoneExtension;
 	private String username;
 	private String password;
 	private Byte notation;
 	private String color; 
+	
+	private AdministrativeUnitDto administrativeUnit;
+	private CivilityDto civility;
+	private IdentityGroupDto group;
 	
 	private ArrayList<FunctionDto> functions;
 	private ArrayList<PrivilegeDto> privileges;
