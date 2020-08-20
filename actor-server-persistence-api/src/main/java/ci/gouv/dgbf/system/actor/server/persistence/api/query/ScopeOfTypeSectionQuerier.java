@@ -1,6 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
@@ -8,8 +13,10 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -26,6 +33,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeSectionQuerier extends Querier {
 
@@ -37,6 +45,14 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	
 	Collection<Scope> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);
+	
+	/* read where filter order by code ascending */
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readSectionsWhereFilter");
+	Collection<Scope> readWhereFilter(QueryExecutorArguments arguments);
+	
+	/* count where filter */
+	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+	Long countWhereFilter(QueryExecutorArguments arguments);
 	
 	/* read visible sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsWhereFilter");
@@ -90,7 +106,9 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 			if(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readVisibleWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readInvisibleWhereFilter(arguments);			
+				return readInvisibleWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilter(arguments);
 			throw new RuntimeException("Query <<"+arguments.getQuery().getIdentifier()+">> not readable by "+getClass());
 		}
 		
@@ -99,7 +117,9 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 			if(QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countVisibleWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countInvisibleWhereFilter(arguments);			
+				return countInvisibleWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereFilter(arguments);
 			throw new RuntimeException("Query <<"+arguments.getQuery().getIdentifier()+">> not countable by "+getClass());
 		}
 		
@@ -147,17 +167,28 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 			prepareVisibleWhereFilter(arguments);
 		}
 		
-		/*
 		@Override
-		public Collection<Scope> readVisibleByActorCode(String actorCode) {
-			return EntityReader.getInstance().readMany(Scope.class, QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		public Collection<Scope> readWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+			prepareWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
 		}
 		
 		@Override
-		public Long countVisibleByActorCode(String actorCode) {
-			return EntityCounter.getInstance().count(Scope.class, QUERY_IDENTIFIER_COUNT_VISIBLE_BY_ACTOR_CODE,PARAMETER_NAME_ACTOR_CODE,actorCode);
+		public Long countWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
+			prepareWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
 		}
-		*/
+		
+		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			arguments.setFilter(filter);
+		}
 	}
 	
 	/**/
@@ -169,18 +200,6 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		/*
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE
-				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_BY_ACTOR_CODE
-				)
-			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_BY_ACTOR_CODE
-				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_VISIBLE_BY_ACTOR_CODE
-				)
-			);
-		*/
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,"SELECT scope FROM Scope scope " + getQueryValueReadVisibleWhereFilterWhere()+ " ORDER BY scope.code ASC"
@@ -202,11 +221,29 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope " + getQueryValueReadInvisibleWhereFilterWhere()
 				)
 			);
+		
+		QueryHelper.addQueries(
+				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
+						, jpql(select(Select.fields("t", Section.FIELD_IDENTIFIER,Section.FIELD_CODE,Section.FIELD_NAME))
+								, getQueryValueReadWhereFilterFromWhere()
+								,order(asc("t",Section.FIELD_CODE)))
+						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME))
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereFilterFromWhere()))
+		);
+	}
+	
+	static String getQueryValueReadWhereFilterFromWhere() {
+		return jpql(from("Section t")
+			,Where.of(Where.and(				
+					Where.like("t", Section.FIELD_CODE, PARAMETER_NAME_CODE)
+					,Where.like("t", Section.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				))
+			);
 	}
 	
 	String[] QUERIES_IDENTIFIERS = {
-			/*QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE,QUERY_IDENTIFIER_COUNT_VISIBLE_BY_ACTOR_CODE
-			,*/QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
+			QUERY_IDENTIFIER_READ_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
+			,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 			,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
 			};
 	

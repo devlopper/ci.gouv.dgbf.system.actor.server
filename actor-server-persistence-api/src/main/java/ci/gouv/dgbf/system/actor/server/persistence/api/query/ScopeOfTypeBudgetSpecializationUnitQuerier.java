@@ -250,9 +250,6 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			*/
 			arguments.setFilter(filter);
 		}
 	}

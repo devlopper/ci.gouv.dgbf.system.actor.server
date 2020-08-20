@@ -47,13 +47,6 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 	
 	/* read where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readActivitiesWhereFilter");
-	static String getQueryValueReadWhereFilterFromWhere() {
-		return jpql(from("Scope t "),"JOIN Activity activity ON activity = t"
-			,Language.Where.of(Language.Where.and(				
-					Language.Where.like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE),Language.Where.like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				))
-			);
-	}
 	Collection<Scope> readWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count where filter */
@@ -151,9 +144,9 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 			Filter filter = new Filter();
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			*/
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -178,9 +171,6 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			*/
 			arguments.setFilter(filter);
 		}
 		
@@ -238,15 +228,27 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 		
 		QueryHelper.addQueries(
 				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
-						, jpql(select(Select.fields("t", Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME)
-								,Select.fields("activity", Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME))
+						, jpql(select(Select.fields("t", Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME
+								, Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
 								, getQueryValueReadWhereFilterFromWhere()
 								,order(asc("t",Activity.FIELD_CODE)))
 						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING
-								,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING))
+								,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING))
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 						, jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereFilterFromWhere()))
 		);
+	}
+	
+	static String getQueryValueReadWhereFilterFromWhere() {
+		return jpql(from("Activity t ")
+			,Language.Where.of(Language.Where.and(				
+					Language.Where.like("t", Activity.FIELD_CODE, PARAMETER_NAME_CODE)
+					,Language.Where.like("t", Activity.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,Language.Where.like("t", Activity.FIELD_ACTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,Language.Where.like("t", Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,Language.Where.like("t", Activity.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				))
+			);
 	}
 	
 	String[] QUERIES_IDENTIFIERS = {
