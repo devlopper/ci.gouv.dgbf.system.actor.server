@@ -11,6 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
@@ -29,6 +30,8 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			return ScopeOfTypeAdministrativeUnitQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeBudgetSpecializationUnitQuerier.isProcessable(arguments))
 			return ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().count(arguments);
+		if(ScopeOfTypeActionQuerier.isProcessable(arguments))
+			return ScopeOfTypeActionQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeActivityQuerier.isProcessable(arguments))
 			return ScopeOfTypeActivityQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
@@ -57,14 +60,14 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return RejectedAccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			
-			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
-				return AdministrativeUnitQuerier.getInstance().countWhereCodeOrNameLike(arguments);
-			
 			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
 				return FunctionQuerier.getInstance().count(arguments);
 			
 			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
 				return BudgetaryFunctionQuerier.getInstance().count(arguments);
+			
+			if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
+				return AdministrativeUnitQuerier.getInstance().count(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

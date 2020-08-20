@@ -12,19 +12,21 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
@@ -48,13 +50,13 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	@Test
 	public void readTypeOrderByCodeAscending(){
 		assertThat(ScopeTypeQuerier.getInstance().readOrderByCodeAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly(ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_SECTION,ScopeType.CODE_UA,ScopeType.CODE_USB);
+			.containsExactly(ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_SECTION,ScopeType.CODE_UA,ScopeType.CODE_USB);
 	}
 	
 	@Test
 	public void readTypeOrderByOrderNumberAscending(){
 		assertThat(ScopeTypeQuerier.getInstance().readOrderByOrderNumberAscending().stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_USB,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_UA);
+			.containsExactly(ScopeType.CODE_SECTION,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION,ScopeType.CODE_UA);
 	}
 	
 	@Test
@@ -169,6 +171,69 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null);
 		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null);
 		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null);
+	}
+	
+	@Test
+	public void readInvisibleActionsWhereFilter(){		
+		assertInvisibleActionsByFilter("inconnu", null, null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("inconnu", "action", null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("inconnu", "action1", null,"action1");
+		assertInvisibleActionsByFilter("inconnu", "2", null,"action2");
+		
+		assertInvisibleActionsByFilter("admin", null, null);
+		assertInvisibleActionsByFilter("admin", "action", null);
+		assertInvisibleActionsByFilter("admin", "action1", null);
+		assertInvisibleActionsByFilter("admin", "2", null);
+		
+		assertInvisibleActionsByFilter("section_manager_1", null, null, "action4");
+		assertInvisibleActionsByFilter("section_manager_2", null, null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("section_manager_3", null, null, "action1","action2","action3");
+		assertInvisibleActionsByFilter("section_manager_4", null, null);
+		
+		assertInvisibleActionsByFilter("usb_manager_1", null, null, "action3","action4");
+		assertInvisibleActionsByFilter("usb_manager_2", null, null, "action1","action2","action4");
+		assertInvisibleActionsByFilter("usb_manager_3", null, null, "action1","action2","action3");
+		
+		assertInvisibleActionsByFilter("activity_manager_1", null, null, "action2","action3","action4");
+		assertInvisibleActionsByFilter("activity_manager_2", null, null, "action1","action4");
+		assertInvisibleActionsByFilter("activity_manager_3", null, null, "action1","action2");
+		
+		assertInvisibleActionsByFilter("ua_manager_1", null, null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("ua_manager_2", null, null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("ua_manager_3", null, null,"action1","action2","action3","action4");
+		
+	}
+	
+	@Test
+	public void readVisibleActionsWhereFilter(){
+		assertVisibleActionsByFilter("inconnu", null, null);
+		assertVisibleActionsByFilter("inconnu", "s", null);
+		assertVisibleActionsByFilter("inconnu", "s1", null);
+		assertVisibleActionsByFilter("inconnu", "2", null);
+		
+		assertVisibleActionsByFilter("admin", null, null,"action1","action2","action3","action4");
+		assertVisibleActionsByFilter("admin", "action", null,"action1","action2","action3","action4");
+		assertVisibleActionsByFilter("admin", "action1", null,"action1");
+		assertVisibleActionsByFilter("admin", "2", null,"action2");
+		
+		assertVisibleActionsByFilter("section_manager_1", null, null, "action1","action2","action3");
+		assertVisibleActionsByFilter("section_manager_2", null, null);
+		assertVisibleActionsByFilter("section_manager_3", null, null, "action4");
+		assertVisibleActionsByFilter("section_manager_4", null, null, "action1","action2","action3","action4");
+		
+		assertVisibleActionsByFilter("usb_manager_1", null, null, "action1","action2");
+		assertVisibleActionsByFilter("usb_manager_2", null, null, "action3");
+		assertVisibleActionsByFilter("usb_manager_3", null, null, "action4");
+		
+		assertVisibleActionsByFilter("action_manager_1", null, null, "action1");
+		
+		assertVisibleActionsByFilter("activity_manager_1", null, null, "action1");
+		assertVisibleActionsByFilter("activity_manager_2", null, null, "action2","action3");
+		assertVisibleActionsByFilter("activity_manager_3", null, null, "action3","action4");
+		
+		assertVisibleActionsByFilter("ua_manager_1", null, null);
+		assertVisibleActionsByFilter("ua_manager_2", null, null);
+		assertVisibleActionsByFilter("ua_manager_3", null, null);
 	}
 	
 	@Test
@@ -299,20 +364,6 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
-	private void assertInvisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
-				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
-	}
-	
-	private void assertVisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
-				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER)
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
-	}
-	
 	private void assertInvisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
 				.setQueryFromIdentifier(ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
@@ -322,6 +373,18 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	
 	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
+	private void assertInvisibleActionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeActionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
+	private void assertVisibleActionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeActionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
@@ -338,6 +401,20 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name));
 		assertScopesExactly(scopes,expectedCodes);
+	}
+	
+	private void assertInvisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+	}
+	
+	private void assertVisibleAdministrativeUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeAdministrativeUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
 	private void assertScopesExactly(Collection<Scope> scopes,String...expectedCodes) {
@@ -362,9 +439,10 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(
 				new ScopeType().setCode(ScopeType.CODE_SECTION).setOrderNumber((byte)1)
 				,new ScopeType().setCode(ScopeType.CODE_USB).setOrderNumber((byte)2)
-				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)3)
-				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)4)
-				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)5));
+				,new ScopeType().setCode(ScopeType.CODE_ACTION).setOrderNumber((byte)3)
+				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)4)
+				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)5)
+				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)6));
 		
 		//Sections
 		createSection("s1");
@@ -378,13 +456,19 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		createBudgetSpecializationUnit("usb4", "s3");
 		createBudgetSpecializationUnit("usb5", "s3");
 		
+		//Actions
+		createAction("action1", "usb1");
+		createAction("action2", "usb1");
+		createAction("action3", "usb2");
+		createAction("action4", "usb5");
+		
 		//Activities
-		createActivity("a1", "usb1");
-		createActivity("a2", "usb1");
-		createActivity("a3", "usb2");
-		createActivity("a4", "usb2");
-		createActivity("a5", "usb2");
-		createActivity("a6", "usb5");
+		createActivity("a1", "action1");
+		createActivity("a2", "action2");
+		createActivity("a3", "action3");
+		createActivity("a4", "action3");
+		createActivity("a5", "action3");
+		createActivity("a6", "action4");
 		
 		//Imputations
 		createImputation("i1", "a1");
@@ -413,6 +497,10 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		createActor("usb_manager_2","usb2");
 		createActor("usb_manager_3","usb3","usb4","usb5");
 		
+		createActor("action_manager_1","action1");
+		createActor("action_manager_2","action2","action3");
+		createActor("action_manager_3","action4");
+		
 		createActor("activity_manager_1","a1");
 		createActor("activity_manager_2","a2","a3","a4");
 		createActor("activity_manager_3","a5","a6");
@@ -425,7 +513,7 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	private void createSection(String code) {
 		Scope sectionScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_SECTION);
 		EntityCreator.getInstance().createManyInTransaction(sectionScope);
-		Section section = new Section().setIdentifier(sectionScope.getIdentifier());
+		Section section = new Section().setCode(sectionScope.getIdentifier());
 		EntityCreator.getInstance().createManyInTransaction(section);
 	}
 	
@@ -435,10 +523,19 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(usbScope,usb);
 	}
 	
-	private void createActivity(String code,String budgetSpecializationUnitIdentifier) {
+	private void createAction(String code,String budgetSpecializationUnitFromIdentifierIdentifier) {
+		Scope actionScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTION);
+		Action action = new Action().setIdentifier(actionScope.getIdentifier()).setCode(actionScope.getCode())
+				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitFromIdentifierIdentifier);
+		action.setSection(action.getBudgetSpecializationUnit().getSection());
+		EntityCreator.getInstance().createManyInTransaction(actionScope,action);	
+	}
+	
+	private void createActivity(String code,String actionIdentifier) {
 		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
 		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
-				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitIdentifier);
+				.setActionFromIdentifier(actionIdentifier);
+		activity.setBudgetSpecializationUnit(activity.getAction().getBudgetSpecializationUnit());
 		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
 		EntityCreator.getInstance().createManyInTransaction(activityScope,activity);	
 	}
@@ -446,6 +543,7 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	private void createImputation(String code,String activityIdentifier) {
 		Scope imputationScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_IMPUTATION);
 		Imputation imputation = new Imputation().setCode(code).setCode(code).setActivityFromIdentifier(activityIdentifier);
+		imputation.setAction(imputation.getActivity().getAction());
 		imputation.setBudgetSpecializationUnit(imputation.getActivity().getBudgetSpecializationUnit());
 		imputation.setSection(imputation.getBudgetSpecializationUnit().getSection());
 		EntityCreator.getInstance().createManyInTransaction(imputationScope,imputation);

@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -19,9 +18,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=Activity.TABLE_NAME)
-@Cacheable(value = true)
-public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+@Entity @Table(name=Action.TABLE_NAME)
+public class Action extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
@@ -30,20 +28,17 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
-	@Column(name = COLUMN_ACTION_CODE_NAME) private String actionCodeName;
-	
 	@Override
-	public Activity setIdentifier(String identifier) {
-		return (Activity) super.setIdentifier(identifier);
+	public Action setIdentifier(String identifier) {
+		return (Action) super.setIdentifier(identifier);
 	}
 	
 	@Override
-	public Activity setCode(String code) {
-		return (Activity) super.setCode(code);
+	public Action setCode(String code) {
+		return (Action) super.setCode(code);
 	}
 	
-	public Activity setSectionFromIdentifier(String identifier) {
+	public Action setSectionFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setSection(null);
 		else
@@ -51,7 +46,7 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return this;
 	}
 	
-	public Activity setBudgetSpecializationUnitFromIdentifier(String identifier) {
+	public Action setBudgetSpecializationUnitFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setBudgetSpecializationUnit(null);
 		else
@@ -59,27 +54,15 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return this;
 	}
 	
-	public Activity setActionFromIdentifier(String identifier) {
-		if(StringHelper.isBlank(identifier))
-			setAction(null);
-		else
-			setAction(EntityFinder.getInstance().find(Action.class, identifier));
-		return this;
-	}
-	
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
-	public static final String FIELD_ACTION = "action";
-	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";
 	
-	public static final String TABLE_NAME = "VM_APP_ACTIVITE";
+	public static final String TABLE_NAME = "VM_APP_ACTION";
 	
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
-	public static final String COLUMN_ACTION = "ACTION";
-	public static final String COLUMN_ACTION_CODE_NAME = "ACTION_CODE_LIBELLE";
 }

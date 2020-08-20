@@ -510,10 +510,13 @@ public interface ScopeQuerier extends Querier {
 			);
 		
 		ScopeOfTypeSectionQuerier.initialize();
-		ScopeOfTypeAdministrativeUnitQuerier.initialize();
+		
 		ScopeOfTypeBudgetSpecializationUnitQuerier.initialize();
+		ScopeOfTypeActionQuerier.initialize();
 		ScopeOfTypeActivityQuerier.initialize();
 		ScopeOfTypeImputationQuerier.initialize();
+		
+		ScopeOfTypeAdministrativeUnitQuerier.initialize();
 	}
 
 	/**/

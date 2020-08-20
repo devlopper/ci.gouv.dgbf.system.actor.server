@@ -28,7 +28,7 @@ public class Imputation extends AbstractIdentifiableSystemScalarStringIdentifiab
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
-	//@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
+	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
 	@Column(name = COLUMN_ACTION_CODE_NAME) private String actionCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ACTIVITY) private Activity activity;

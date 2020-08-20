@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -58,8 +59,10 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			return (Collection<T>) ScopeOfTypeAdministrativeUnitQuerier.getInstance().readMany(arguments);
 		if(ScopeOfTypeBudgetSpecializationUnitQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readMany(arguments);
+		if(ScopeOfTypeActionQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeActionQuerier.getInstance().readMany(arguments);
 		if(ScopeOfTypeActivityQuerier.isProcessable(arguments))
-			return (Collection<T>) ScopeOfTypeActivityQuerier.getInstance().readMany(arguments);
+			return (Collection<T>) ScopeOfTypeActivityQuerier.getInstance().readMany(arguments);		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
 		
@@ -103,14 +106,14 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
 			
-			if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(arguments);
-			
 			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
 				return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);
 			
 			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
 				return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
+			
+			if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
+				return (Collection<T>) AdministrativeUnitQuerier.getInstance().readMany(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}
