@@ -43,6 +43,8 @@ public interface ScopeQuerier extends Querier {
 	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
 	
+	String PARAMETER_NAME_SECTION_CODE_NAME = "sectionCodeName";
+	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME = 4;
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	

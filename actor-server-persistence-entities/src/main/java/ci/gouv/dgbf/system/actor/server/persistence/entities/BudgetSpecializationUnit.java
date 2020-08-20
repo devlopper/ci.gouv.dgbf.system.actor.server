@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,6 +24,7 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	
 	@Override
 	public BudgetSpecializationUnit setIdentifier(String identifier) {
@@ -42,9 +44,16 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 		return this;
 	}
 	
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
+	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	
 	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
 	
 	public static final String TABLE_NAME = "VM_APP_USB";
 }

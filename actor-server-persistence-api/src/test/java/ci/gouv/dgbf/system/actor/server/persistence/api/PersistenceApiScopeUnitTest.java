@@ -351,7 +351,25 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	/**/
+	
+	@Test
+	public void readBudgetSpecializationUnitsWhereFilter(){
+		assertBudgetSpecializationUnitsByFilter(null, null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertBudgetSpecializationUnitsByFilter("1", null, null, "usb1");
+		assertBudgetSpecializationUnitsByFilter("b", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertBudgetSpecializationUnitsByFilter(null, null, "s1", "usb1","usb2","usb3");
+		assertBudgetSpecializationUnitsByFilter(null, null, "s3", "usb4","usb5");
+		assertBudgetSpecializationUnitsByFilter(null, null, "s2");
+	}
+	
+	/**/
 
+	private void assertBudgetSpecializationUnitsByFilter(String code,String name,String sectionCodeName,String...expectedCodes) {
+		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name
+						,ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME,sectionCodeName)),expectedCodes);
+	}
+	
 	private void assertInvisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeSectionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
@@ -519,7 +537,8 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	
 	private void createBudgetSpecializationUnit(String code,String sectionIdentifier) {
 		Scope usbScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_USB);
-		BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionIdentifier); 
+		BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionIdentifier);
+		usb.setSectionCodeName(usb.getSection().toString());
 		EntityCreator.getInstance().createManyInTransaction(usbScope,usb);
 	}
 	
