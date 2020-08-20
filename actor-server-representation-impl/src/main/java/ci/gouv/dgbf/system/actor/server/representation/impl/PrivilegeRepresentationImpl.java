@@ -27,6 +27,15 @@ public class PrivilegeRepresentationImpl extends AbstractRepresentationEntityImp
 
 	@Override
 	public Response getByActorCode(String actorCode) {
+		return __getByActorCode__(actorCode, Boolean.FALSE);
+	}
+	
+	@Override
+	public Response getForServiceManagerByActorCode(String actorCode) {
+		return __getByActorCode__(actorCode, Boolean.TRUE);
+	}
+	
+	private Response __getByActorCode__(String actorCode,Boolean isForServiceManager) {
 		if(StringHelper.isBlank(actorCode))
 			return Response.status(Status.BAD_REQUEST).entity("nom d'utilisateur obligatoire").build();
 		Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(actorCode);
@@ -58,9 +67,24 @@ public class PrivilegeRepresentationImpl extends AbstractRepresentationEntityImp
 				CollectionHelper.cast(PrivilegeDto.class, representationEntities).forEach(privilege -> {
 					privilege.setTypeAsString(privilege.getType().getCode());
 					privilege.setType(null);
+					if(Boolean.TRUE.equals(isForServiceManager)) {
+						privilege.setIdentifier(getServiceManagerUUID(privilege.getIdentifier()));
+						privilege.setParentIdentifier(getServiceManagerUUID(privilege.getParentIdentifier()));
+					}
 				});
 			}
 		});
 		return EntityReader.getInstance().read(arguments);
-	}	
+	}
+	
+	private String getServiceManagerUUID(String string) {
+		if(StringHelper.isBlank(string))
+			return string;
+		for(String prefix : PREFIXES)
+			if(string.startsWith(prefix))
+				return string.substring(prefix.length());
+		return string;
+	}
+	
+	private static final String[] PREFIXES = {"MODULE","SERVICE","MENU","ACTION"};
 }
