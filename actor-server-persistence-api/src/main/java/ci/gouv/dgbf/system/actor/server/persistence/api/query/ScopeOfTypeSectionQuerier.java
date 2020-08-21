@@ -56,26 +56,6 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	
 	/* read visible sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleSectionsWhereFilter");
-	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
-		return parenthesis(or(
-				ScopeQuerier.getPredicateHasBeenMarkedVisible()
-				,getPredicateHasVisibleChild(AdministrativeUnit.class)
-				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class)
-				,getPredicateHasVisibleChild(Activity.class)
-				,getPredicateHasVisibleChild(Imputation.class)
-			));
-	}
-	
-	static String getQueryValueReadVisibleWhereFilterWherePredicate() {
-		return Where.and("scope.type.code = '"+ScopeType.CODE_SECTION+"'"
-				,getQueryValueReadVisibleWhereFilterWherePredicateVisible(),Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
-	}
-	
-	static String getQueryValueReadVisibleWhereFilterWhere() {
-		return Where.of(getQueryValueReadVisibleWhereFilterWherePredicate());
-	}
-	
 	Collection<Scope> readVisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count visible sections where filter */
@@ -84,13 +64,6 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 	
 	/* read invisible sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readInvisibleSectionsWhereFilter");
-	
-	static String getQueryValueReadInvisibleWhereFilterWhere() {
-		return "WHERE "+Language.Where.and("scope.type.code = '"+ScopeType.CODE_SECTION+"'"
-				,"NOT "+getQueryValueReadVisibleWhereFilterWherePredicateVisible(),Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
-	}
-	
 	Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count invisible sections where filter */
@@ -230,6 +203,32 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME))
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereFilterFromWhere()))
 		);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
+		return parenthesis(or(
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleChild(AdministrativeUnit.class)
+				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class)
+				,getPredicateHasVisibleChild(Activity.class)
+				,getPredicateHasVisibleChild(Imputation.class)
+			));
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWherePredicate() {
+		return Where.and("scope.type.code = '"+ScopeType.CODE_SECTION+"'"
+				,getQueryValueReadVisibleWhereFilterWherePredicateVisible(),Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWhere() {
+		return Where.of(getQueryValueReadVisibleWhereFilterWherePredicate());
+	}
+	
+	static String getQueryValueReadInvisibleWhereFilterWhere() {
+		return "WHERE "+Language.Where.and("scope.type.code = '"+ScopeType.CODE_SECTION+"'"
+				,"NOT "+getQueryValueReadVisibleWhereFilterWherePredicateVisible(),Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
 	}
 	
 	static String getQueryValueReadWhereFilterFromWhere() {

@@ -11,11 +11,15 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
@@ -47,7 +51,6 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
-	
 	Collection<Scope> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);
 	
@@ -63,7 +66,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleBudgetSpecializationUnitsWhereFilter");
 	
 	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
-		return  parenthesis(or(
+		return parenthesis(or(
 				ScopeQuerier.getPredicateHasBeenMarkedVisible()
 				,getPredicateHasVisibleParent(Section.class)
 				,getPredicateHasVisibleChild(Activity.class)
@@ -72,15 +75,16 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {
-		return Language.Where.of(Language.Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
+		return Where.of(Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
 				,getQueryValueReadVisibleWhereFilterPredicateVisible()
-				,Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				/*,parenthesis(or(
-						Language.Where.like("section", BudgetSpecializationUnit.FIELD_CODE, PARAMETER_NAME_SECTION_CODE)
-						,Language.Where.like("section", BudgetSpecializationUnit.FIELD_NAME, PARAMETER_NAME_SECTION_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-						))*/
+				,Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				//,Where.like("section", BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				));
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterFromAndWhere() {
+		return "FROM Scope scope JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scope "+ getQueryValueReadVisibleWhereFilterWhere();
 	}
 	
 	Collection<Scope> readVisibleWhereFilter(QueryExecutorArguments arguments);
@@ -88,6 +92,20 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	/* count visible budget specialisation units where filter */
 	String QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
 	Long countVisibleWhereFilter(QueryExecutorArguments arguments);
+	
+	/* read invisible where filter order by code ascending */
+	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readInvisibleBudgetSpecializationUnitsWhereFilter");
+	
+	static String getQueryValueReadInvisibleWhereFilterWhere() {
+		return "WHERE "+Language.Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
+				,"NOT "+getQueryValueReadVisibleWhereFilterPredicateVisible(),Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
+	}
+	Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments);
+	
+	/* count invisible where filter */
+	String QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER);
+	Long countInvisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* read visible budget specialisation units with sections where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleBudgetSpecializationUnitsWithSectionsWhereFilter");
@@ -139,6 +157,8 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readVisibleWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readInvisibleWhereFilter(arguments);
 			
 			if(QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readVisibleWithSectionsWhereFilter(arguments);
@@ -153,6 +173,9 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 		public Long count(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countVisibleWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countInvisibleWhereFilter(arguments);
+			
 			if(QUERY_IDENTIFIER_COUNT_VISIBLE_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countVisibleWithSectionsWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_COUNT_INVISIBLE_WITH_SECTIONS_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -167,8 +190,26 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			if(arguments.getQuery() == null)
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
 			prepareVisibleWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+			Collection<Scope> scopes = QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+			//setParentsCodeName(scopes);
+			return scopes;
 		}
+		
+		/*private void setParentsCodeName(Collection<Scope> scopes) {
+			if(CollectionHelper.isEmpty(scopes))
+				return;
+			//Read by identifiers
+			Collection<BudgetSpecializationUnit> budgetSpecializationUnits = EntityReader.getInstance()
+					.readMany(BudgetSpecializationUnit.class, new QueryExecutorArguments().addSystemIdentifiers(FieldHelper.readSystemIdentifiers(scopes)));
+			if(CollectionHelper.isEmpty(budgetSpecializationUnits))
+				return;
+			scopes.forEach(scope -> {
+				budgetSpecializationUnits.stream().filter(x -> x.getIdentifier().equals(scope.getIdentifier())).collect(Collectors.toList());
+				scope.setSectionAsString(CollectionHelper.getFirst(
+						budgetSpecializationUnits.stream().filter(x -> x.getIdentifier().equals(scope.getIdentifier())).collect(Collectors.toList())
+						).getSectionCodeName());
+			});
+		}*/
 		
 		@Override
 		public Long countVisibleWhereFilter(QueryExecutorArguments arguments) {
@@ -183,9 +224,8 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			*/
+			
+			ScopeQuerier.addParentCodeNameContains(arguments, filter, Section.class);
 			arguments.setFilter(filter);
 		}
 		
@@ -252,6 +292,28 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
+		
+		@Override
+		public Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER);
+			prepareInvisibleWhereFilter(arguments);
+			Collection<Scope> scopes = QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+			//setParentsCodeName(scopes);
+			return scopes;
+		}
+		
+		@Override
+		public Long countInvisibleWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER);
+			prepareInvisibleWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private static void prepareInvisibleWhereFilter(QueryExecutorArguments arguments) {
+			prepareVisibleWhereFilter(arguments);
+		}
 	}
 	
 	/**/
@@ -265,8 +327,9 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	static void initialize() {		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
-				,Query.FIELD_VALUE,"SELECT scope FROM Scope scope " + getQueryValueReadVisibleWhereFilterWhere()+ " ORDER BY scope.code ASC"
-				)
+				,Query.FIELD_VALUE,"SELECT scope.identifier,scope.code,scope.name,b.sectionCodeName FROM Scope scope JOIN BudgetSpecializationUnit b ON b = scope "
+				+ getQueryValueReadVisibleWhereFilterWhere()+ " ORDER BY scope.code ASC"
+				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -274,6 +337,18 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 				)
 			);
 	
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,"SELECT scope.identifier,scope.code,scope.name,b.sectionCodeName FROM Scope scope JOIN BudgetSpecializationUnit b ON b = scope "
+				+ getQueryValueReadInvisibleWhereFilterWhere()+ " ORDER BY scope.code ASC"
+				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING)
+			);
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope " + getQueryValueReadInvisibleWhereFilterWhere()
+				)
+			);
+		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER
@@ -321,6 +396,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			QUERY_IDENTIFIER_READ_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 			,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 			,QUERY_IDENTIFIER_READ_VISIBLE_WITH_SECTIONS_WHERE_FILTER
+			,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
 			,QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WITH_SECTIONS_WHERE_FILTER
 			};
 	

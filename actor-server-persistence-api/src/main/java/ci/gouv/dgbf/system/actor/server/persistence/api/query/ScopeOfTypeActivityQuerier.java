@@ -26,6 +26,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
@@ -61,6 +62,7 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 				ScopeQuerier.getPredicateHasBeenMarkedVisible()
 				,getPredicateHasVisibleParent(Section.class)
 				,getPredicateHasVisibleParent(BudgetSpecializationUnit.class)
+				,getPredicateHasVisibleParent(Action.class)
 				,getPredicateHasVisibleChild(Imputation.class)
 		));
 	}
@@ -171,6 +173,7 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			ScopeQuerier.addParentCodeNameContains(arguments, filter, Section.class,BudgetSpecializationUnit.class,Action.class);
 			arguments.setFilter(filter);
 		}
 		

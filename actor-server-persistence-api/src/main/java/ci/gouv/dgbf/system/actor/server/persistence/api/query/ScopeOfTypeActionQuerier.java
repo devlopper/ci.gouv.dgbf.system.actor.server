@@ -73,8 +73,8 @@ public interface ScopeOfTypeActionQuerier extends Querier {
 				,getQueryValueReadVisibleWhereFilterPredicateVisible()
 				,Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
 				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				,Where.like("scope", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				,Where.like("scope", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				//,Where.like("scope", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				//,Where.like("scope", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				));
 	}
 	
@@ -171,9 +171,8 @@ public interface ScopeOfTypeActionQuerier extends Querier {
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			/*filter.addFieldsContains(arguments,PARAMETER_NAME_SECTION_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			*/
+			
+			ScopeQuerier.addParentCodeNameContains(arguments, filter, Section.class,BudgetSpecializationUnit.class);
 			arguments.setFilter(filter);
 		}
 		

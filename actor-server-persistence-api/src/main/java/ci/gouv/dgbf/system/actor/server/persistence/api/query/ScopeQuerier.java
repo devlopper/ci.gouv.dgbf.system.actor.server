@@ -1,11 +1,13 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -21,6 +23,7 @@ import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -514,7 +517,14 @@ public interface ScopeQuerier extends Querier {
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_TYPE_IS_USB_AND_FILTER
 				)
 			);
-		
+		/*
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_IDENTIFIERS
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
+				,Query.FIELD_VALUE,"SELECT s FROM Scope s WHERE s.identifier IN :"+PARAMETER_NAME_IDENTIFIERS+" ORDER BY s.code ASC"));		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_IDENTIFIERS
+				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,"SELECT COUNT(s.identifier) FROM Scope s WHERE s.identifier IN :"+PARAMETER_NAME_IDENTIFIERS));
+		*/
 		ScopeOfTypeSectionQuerier.initialize();
 		
 		ScopeOfTypeBudgetSpecializationUnitQuerier.initialize();
@@ -589,8 +599,8 @@ public interface ScopeQuerier extends Querier {
 						select(variableName)
 						,from(tupleName+" "+variableName)
 						,where(and(
-								variableName+" = scope",variableName+"."+fieldName+" = "+fieldName,
-								not(
+								variableName+" = scope",variableName+"."+fieldName+" = "+fieldName
+								,not(
 										exists(select("actorScope"+tupleName+" ")+from("ActorScope actorScope"+tupleName+" ")
 											+ where(and("actorScope"+tupleName+".scope = scope"
 													,"actorScope"+tupleName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE
@@ -598,6 +608,10 @@ public interface ScopeQuerier extends Querier {
 													))
 											)
 									)
+								,parenthesis(or(
+										Where.like(parentVariableName, PARAMETER_NAME_CODE, parentVariableName+"CodeName")
+										,Where.like(parentVariableName, PARAMETER_NAME_NAME, parentVariableName+"CodeName",NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+								))
 						))
 				)
 			));
@@ -606,5 +620,17 @@ public interface ScopeQuerier extends Querier {
 	static String getPredicateHasVisibleParent(String parentTupleName,String tupleName) {
 		String variableName = StringHelper.getVariableNameFrom(parentTupleName);
 		return getPredicateHasVisibleParent(parentTupleName, variableName, tupleName, StringHelper.getVariableNameFrom(tupleName), variableName);
+	}
+	
+	static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Collection<Class<?>> classes) {
+		for(Class<?> klass : classes) {
+			String variableName = StringHelper.getVariableNameFrom(klass.getSimpleName()+"CodeName");
+			filter.addFieldsContains(arguments,variableName);
+			filter.addFieldContainsStringOrWords(variableName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
+		}
+	}
+	
+	static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Class<?>...classes) {
+		addParentCodeNameContains(arguments, filter, CollectionHelper.listOf(classes));
 	}
 }

@@ -118,59 +118,61 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Test
 	public void readInvisibleBudgetSpecializationUnitsWhereFilter(){
-		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", null, null, "usb1","usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null, "usb1","usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null);
-		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null,"usb2");
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", null, null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null, null);
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null, null,"usb2");
 		
-		assertInvisibleBudgetSpecializationUnitsByFilter("admin", null, null);
+		assertInvisibleBudgetSpecializationUnitsByFilter("inconnu", null, null, "s1", "usb1","usb2","usb3");
 		
-		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, "usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null, "usb1","usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, "usb1","usb2","usb3");
-		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null);
+		assertInvisibleBudgetSpecializationUnitsByFilter("admin", null, null, null);
 		
-		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, "usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, "usb1","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null,"usb1","usb2");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, null, "usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, null, "usb1","usb2","usb3");
+		assertInvisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null, null);
 		
-		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, "usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, "usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, "usb1","usb3","usb4");
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, null, "usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, null, "usb1","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null, null,"usb1","usb2");
 		
-		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null, "usb1","usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null, "usb1","usb2","usb3","usb4","usb5");
-		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, null, "usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, null, "usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, null, "usb1","usb3","usb4");
+		
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertInvisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null, null, "usb1","usb2","usb3","usb4","usb5");
 	}
 	
 	@Test
 	public void readVisibleBudgetSpecializationUnitsWhereFilter(){
-		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", null, null);
-		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null);
-		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null);
-		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", null, null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "s1", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("inconnu", "2", null, null);
 		
-		assertVisibleBudgetSpecializationUnitsByFilter("admin", null, null,"usb1","usb2","usb3","usb4","usb5");
-		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s", null,"usb1","usb2","usb3","usb4","usb5");
-		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s1", null);
-		assertVisibleBudgetSpecializationUnitsByFilter("admin", "2", null,"usb2");
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", null, null, null,"usb1","usb2","usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s", null, null,"usb1","usb2","usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "s1", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("admin", "2", null, null,"usb2");
 		
-		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, "usb1","usb2","usb3");
-		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null);
-		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, "usb4","usb5");
-		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null, "usb1","usb2","usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_1", null, null, null, "usb1","usb2","usb3");
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_2", null, null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_3", null, null, null, "usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("section_manager_4", null, null, null, "usb1","usb2","usb3","usb4","usb5");
 		
-		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, "usb1");
-		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, "usb2");
-		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null, "usb3","usb4","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_1", null, null, null, "usb1");
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_2", null, null, null, "usb2");
+		assertVisibleBudgetSpecializationUnitsByFilter("usb_manager_3", null, null, null, "usb3","usb4","usb5");
 		
-		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, "usb1");
-		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, "usb1","usb2");
-		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, "usb2","usb5");
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_1", null, null, null, "usb1");
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_2", null, null, null, "usb1","usb2");
+		assertVisibleBudgetSpecializationUnitsByFilter("activity_manager_3", null, null, null, "usb2","usb5");
 		
-		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null);
-		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null);
-		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_1", null, null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_2", null, null, null);
+		assertVisibleBudgetSpecializationUnitsByFilter("ua_manager_3", null, null, null);
 	}
 	
 	@Test
@@ -365,9 +367,14 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	/**/
 
 	private void assertBudgetSpecializationUnitsByFilter(String code,String name,String sectionCodeName,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+		Collection<Scope> scopes = ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name
-						,ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME,sectionCodeName)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME,sectionCodeName));
+		assertScopesExactly(scopes,expectedCodes);
+		if(CollectionHelper.isNotEmpty(scopes))
+			scopes.forEach(scope -> {
+				assertThat(scope.getSectionAsString()).isNotEmpty();
+			});
 	}
 	
 	private void assertInvisibleSectionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
@@ -382,17 +389,34 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}
 	
-	private void assertInvisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
-				.setQueryFromIdentifier(ScopeOfTypeBudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_INVISIBLE_WITH_SECTIONS_WHERE_FILTER)
+	private void assertInvisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String sectionCodeName,String...expectedCodes) {
+		Collection<Scope> scopes;
+		assertScopesExactly(scopes = ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name,"sectionCodeName",sectionCodeName)),expectedCodes);
+		if(CollectionHelper.isNotEmpty(scopes))
+			scopes.forEach(scope -> {
+				assertThat(scope.getSectionAsString()).as("Section code and name of USB "+scope.getCode()+" is null").isNotBlank();
+			});
+		assertThat(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().countInvisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name,"sectionCodeName",sectionCodeName)))
+			.isEqualTo(ArrayHelper.getSize(expectedCodes).longValue());
 	}
 	
-	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String sectionCodeName,String...expectedCodes) {
+		Collection<Scope> scopes = ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name,"sectionCodeName",sectionCodeName));
+		assertScopesExactly(scopes,expectedCodes);
+		if(CollectionHelper.isNotEmpty(scopes))
+			scopes.forEach(scope -> {
+				assertThat(scope.getSectionAsString()).as("Section code and name of USB "+scope.getCode()+" is null").isNotBlank();
+			});
+		assertThat(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().countVisibleWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name,"sectionCodeName",sectionCodeName)))
+			.isEqualTo(ArrayHelper.getSize(expectedCodes).longValue());
 	}
 	
 	private void assertInvisibleActionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
