@@ -11,15 +11,11 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
@@ -64,29 +60,6 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	
 	/* read visible budget specialisation units where filter order by code ascending */
 	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleBudgetSpecializationUnitsWhereFilter");
-	
-	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
-		return parenthesis(or(
-				ScopeQuerier.getPredicateHasBeenMarkedVisible()
-				,getPredicateHasVisibleParent(Section.class)
-				,getPredicateHasVisibleChild(Activity.class)
-				,getPredicateHasVisibleChild(Imputation.class)
-		));
-	}
-	
-	static String getQueryValueReadVisibleWhereFilterWhere() {
-		return Where.of(Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
-				,getQueryValueReadVisibleWhereFilterPredicateVisible()
-				,Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				//,Where.like("section", BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				));
-	}
-	
-	static String getQueryValueReadVisibleWhereFilterFromAndWhere() {
-		return "FROM Scope scope JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scope "+ getQueryValueReadVisibleWhereFilterWhere();
-	}
-	
 	Collection<Scope> readVisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count visible budget specialisation units where filter */
@@ -94,13 +67,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 	Long countVisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* read invisible where filter order by code ascending */
-	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readInvisibleBudgetSpecializationUnitsWhereFilter");
-	
-	static String getQueryValueReadInvisibleWhereFilterWhere() {
-		return "WHERE "+Language.Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
-				,"NOT "+getQueryValueReadVisibleWhereFilterPredicateVisible(),Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
-	}
+	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readInvisibleBudgetSpecializationUnitsWhereFilter");	
 	Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count invisible where filter */
@@ -333,7 +300,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope " + getQueryValueReadVisibleWhereFilterWhere()
+				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope JOIN BudgetSpecializationUnit b ON b = scope " + getQueryValueReadVisibleWhereFilterWhere()
 				)
 			);
 	
@@ -345,7 +312,7 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope " + getQueryValueReadInvisibleWhereFilterWhere()
+				,Query.FIELD_VALUE,"SELECT COUNT(scope.identifier) FROM Scope scope JOIN BudgetSpecializationUnit b ON b = scope " + getQueryValueReadInvisibleWhereFilterWhere()
 				)
 			);
 		
@@ -390,6 +357,34 @@ public interface ScopeOfTypeBudgetSpecializationUnitQuerier extends Querier {
 					,Where.like("t", BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
 			);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterPredicateVisible() {
+		return parenthesis(or(
+				ScopeQuerier.getPredicateHasBeenMarkedVisible()
+				,getPredicateHasVisibleParent(Section.class)
+				,getPredicateHasVisibleChild(Activity.class)
+				,getPredicateHasVisibleChild(Imputation.class)
+		));
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWhere() {
+		return Where.of(Where.and("scope.type.code = '"+SCOPE_TYPE+"'"
+				,getQueryValueReadVisibleWhereFilterPredicateVisible()
+				,Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,Where.like("b", BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				));
+	}
+	
+	static String getQueryValueReadInvisibleWhereFilterWhere() {
+		return "WHERE "+Language.Where.and(
+				"scope.type.code = '"+SCOPE_TYPE+"'"
+				,"NOT "+getQueryValueReadVisibleWhereFilterPredicateVisible()
+				,Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,Where.like("b", BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				);
 	}
 	
 	String[] QUERIES_IDENTIFIERS = {

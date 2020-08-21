@@ -15,10 +15,13 @@ import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 
@@ -51,6 +54,10 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		Collection<ProfilePrivilege> profilePrivileges = ProfilePrivilegeQuerier.getInstance().readByProfilesCodes(List.of(profile.getCode()));
 		if(CollectionHelper.isNotEmpty(profilePrivileges))
 			__inject__(ProfilePrivilegeBusiness.class).deleteMany(profilePrivileges);
+		
+		Collection<ProfileFunction> profileFunctions = ProfileFunctionQuerier.getInstance().readByProfilesCodes(List.of(profile.getCode()));
+		if(CollectionHelper.isNotEmpty(profileFunctions))
+			__inject__(ProfileFunctionBusiness.class).deleteMany(profileFunctions);
 	}
 	
 	@Override

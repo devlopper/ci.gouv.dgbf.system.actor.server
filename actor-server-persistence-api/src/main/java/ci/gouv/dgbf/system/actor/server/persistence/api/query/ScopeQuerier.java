@@ -1,13 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -23,7 +21,6 @@ import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
-import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -608,10 +605,9 @@ public interface ScopeQuerier extends Querier {
 													))
 											)
 									)
-								,parenthesis(or(
-										Where.like(parentVariableName, PARAMETER_NAME_CODE, parentVariableName+"CodeName")
-										,Where.like(parentVariableName, PARAMETER_NAME_NAME, parentVariableName+"CodeName",NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-								))
+								/*,parenthesis(or(
+										Where.like(parentVariableName, PARAMETER_NAME_NAME, parentVariableName+"CodeName",NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+								))*/
 						))
 				)
 			));

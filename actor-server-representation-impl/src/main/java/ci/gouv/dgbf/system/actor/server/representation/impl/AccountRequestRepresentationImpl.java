@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
@@ -27,14 +28,37 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 
 	@Override
 	public Response record(Collection<AccountRequestDto> accountRequests) {
-		// TODO Auto-generated method stub
-		return null;
+		if(CollectionHelper.isEmpty(accountRequests))
+			return ResponseBuilder.getInstance().buildRuntimeException(null, "Veuillez fournir les demandes de comptes");
+		Collection<AccountRequest> persistences = MappingHelper.getDestinations(accountRequests, AccountRequest.class); 
+		Runner.Arguments runnerArguments = new Runner.Arguments().addRunnables(new Runnable() {				
+			@Override
+			public void run() {
+				__inject__(AccountRequestBusiness.class).record(persistences);
+			}
+		});
+		Runner.getInstance().run(runnerArguments);
+		if(runnerArguments.getThrowable() == null)
+			return Response.ok(persistences.size()+" demande(s) de compte(s) enregistrée(s)").build();
+		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
 	}
 	
 	@Override
 	public Response submit(Collection<AccountRequestDto> accountRequests) {
-		// TODO Auto-generated method stub
-		return null;
+		if(CollectionHelper.isEmpty(accountRequests))
+			return ResponseBuilder.getInstance().buildRuntimeException(null, "Veuillez fournir les demandes de comptes");
+		Collection<AccountRequest> persistences = __inject__(AccountRequestBusiness.class).findBySystemIdentifiers(accountRequests.stream()
+				.map(AccountRequestDto::getIdentifier).collect(Collectors.toList())); 
+		Runner.Arguments runnerArguments = new Runner.Arguments().addRunnables(new Runnable() {				
+			@Override
+			public void run() {
+				__inject__(AccountRequestBusiness.class).submit(persistences);
+			}
+		});
+		Runner.getInstance().run(runnerArguments);
+		if(runnerArguments.getThrowable() == null)
+			return Response.ok(persistences.size()+" demande(s) de compte(s) soumise(s)").build();
+		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
 	}
 	
 	@Override
@@ -91,7 +115,7 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 		});
 		Runner.getInstance().run(runnerArguments);
 		if(runnerArguments.getThrowable() == null)
-			return Response.ok(persistences.size()+" demende(s) de compte(s) "+(Boolean.TRUE.equals(accept) ? "acceptée(s)" : "rejetée(s)")).build();
+			return Response.ok(persistences.size()+" demande(s) de compte(s) "+(Boolean.TRUE.equals(accept) ? "acceptée(s)" : "rejetée(s)")).build();
 		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
 	}
 	

@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
+
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
@@ -33,14 +34,15 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	
 	@Override
 	public void record(Collection<AccountRequest> accountRequests) {
-		// TODO Auto-generated method stub
-		
+		saveMany(accountRequests);
+		//TODO this is temporary and has to be deleted
+		notifyRecord(accountRequests);
 	}
 	
 	@Override
 	public void submit(Collection<AccountRequest> accountRequests) {
-		// TODO Auto-generated method stub
-		
+		saveMany(accountRequests);
+		notifySubmit(accountRequests);
 	}
 	
 	@Override
@@ -52,7 +54,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 				@Override
 				public void run() {
 					try {
-						MailSender.getInstance().send("SIIBC - Demande de compte", "Votre jeton d'accès à votre demande de compte : "+accountRequest.getAccessToken(), accountRequest.getElectronicMailAddress());
+						MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre jeton d'accès à votre demande de compte : "+accountRequest.getAccessToken(), accountRequest.getElectronicMailAddress());
 					} catch (Exception exception) {
 						LogHelper.log(exception, getClass());
 					}	
@@ -78,7 +80,8 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 			__inject__(ActorBusiness.class).create(new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()));
 			//we remote request from pool
 			__persistence__.delete(accountRequest);
-		});
+		});		
+		notifyAccept(accountRequests);
 	}
 	
 	@Override @Transactional
@@ -103,7 +106,8 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 			EntityCreator.getInstance().createOne(rejectedAccountRequest);
 			//we remote request from pool
 			delete(accountRequest);
-		});
+		});		
+		notifyReject(accountRequests);
 	}
 	
 	@Override @Transactional
@@ -127,7 +131,6 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	@Override
 	protected void __listenExecuteCreateAfter__(AccountRequest accountRequest, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateAfter__(accountRequest, properties, function);
-		notifyAccessToken(accountRequest);
 	}
 	
 	@Override
@@ -140,5 +143,91 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	@Override
 	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
 		return Boolean.TRUE;
+	}
+
+	/**/
+	
+	private static void notifyRecord(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			notifyRecord(accountRequest);
+		});
+	}
+	
+	private static void notifyRecord(AccountRequest accountRequest) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été enregistrée.", accountRequest.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
+	private static void notifySubmit(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			notifySubmit(accountRequest);
+		});
+	}
+	
+	private static void notifySubmit(AccountRequest accountRequest) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été soumise.", accountRequest.getIdentity().getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
+	private static void notifyReject(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			notifyReject(accountRequest);
+		});
+	}
+	
+	private static void notifyReject(AccountRequest accountRequest) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été rejetée.", accountRequest.getIdentity().getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
+	private static void notifyAccept(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			notifyAccept(accountRequest);
+		});
+	}
+	
+	private static void notifyAccept(AccountRequest accountRequest) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été acceptée.", accountRequest.getIdentity().getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
 	}
 }
