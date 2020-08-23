@@ -38,8 +38,6 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
-		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
 	@Override
@@ -177,65 +175,65 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Test
 	public void readInvisibleActionsWhereFilter(){		
-		assertInvisibleActionsByFilter("inconnu", null, null,"action1","action2","action3","action4");
-		assertInvisibleActionsByFilter("inconnu", "action", null,"action1","action2","action3","action4");
-		assertInvisibleActionsByFilter("inconnu", "action1", null,"action1");
-		assertInvisibleActionsByFilter("inconnu", "2", null,"action2");
+		assertInvisibleActionsByFilter("inconnu", null, null,null,null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("inconnu", "action", null,null,null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("inconnu", "action1", null,null,null,"action1");
+		assertInvisibleActionsByFilter("inconnu", "2", null,null,null,"action2");
 		
-		assertInvisibleActionsByFilter("admin", null, null);
-		assertInvisibleActionsByFilter("admin", "action", null);
-		assertInvisibleActionsByFilter("admin", "action1", null);
-		assertInvisibleActionsByFilter("admin", "2", null);
+		assertInvisibleActionsByFilter("admin", null, null,null,null);
+		assertInvisibleActionsByFilter("admin", "action", null,null,null);
+		assertInvisibleActionsByFilter("admin", "action1", null,null,null);
+		assertInvisibleActionsByFilter("admin", "2", null,null,null);
 		
-		assertInvisibleActionsByFilter("section_manager_1", null, null, "action4");
-		assertInvisibleActionsByFilter("section_manager_2", null, null,"action1","action2","action3","action4");
-		assertInvisibleActionsByFilter("section_manager_3", null, null, "action1","action2","action3");
-		assertInvisibleActionsByFilter("section_manager_4", null, null);
+		assertInvisibleActionsByFilter("section_manager_1", null, null,null,null, "action4");
+		assertInvisibleActionsByFilter("section_manager_2", null, null,null,null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("section_manager_3", null, null,null,null, "action1","action2","action3");
+		assertInvisibleActionsByFilter("section_manager_4", null, null,null,null);
 		
-		assertInvisibleActionsByFilter("usb_manager_1", null, null, "action3","action4");
-		assertInvisibleActionsByFilter("usb_manager_2", null, null, "action1","action2","action4");
-		assertInvisibleActionsByFilter("usb_manager_3", null, null, "action1","action2","action3");
+		assertInvisibleActionsByFilter("usb_manager_1", null, null,null,null, "action3","action4");
+		assertInvisibleActionsByFilter("usb_manager_2", null, null,null,null, "action1","action2","action4");
+		assertInvisibleActionsByFilter("usb_manager_3", null, null,null,null, "action1","action2","action3");
 		
-		assertInvisibleActionsByFilter("activity_manager_1", null, null, "action2","action3","action4");
-		assertInvisibleActionsByFilter("activity_manager_2", null, null, "action1","action4");
-		assertInvisibleActionsByFilter("activity_manager_3", null, null, "action1","action2");
+		assertInvisibleActionsByFilter("activity_manager_1", null, null,null,null, "action2","action3","action4");
+		assertInvisibleActionsByFilter("activity_manager_2", null, null,null,null, "action1","action4");
+		assertInvisibleActionsByFilter("activity_manager_3", null, null,null,null, "action1","action2");
 		
-		assertInvisibleActionsByFilter("ua_manager_1", null, null,"action1","action2","action3","action4");
-		assertInvisibleActionsByFilter("ua_manager_2", null, null,"action1","action2","action3","action4");
-		assertInvisibleActionsByFilter("ua_manager_3", null, null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("ua_manager_1", null, null,null,null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("ua_manager_2", null, null,null,null,"action1","action2","action3","action4");
+		assertInvisibleActionsByFilter("ua_manager_3", null, null,null,null,"action1","action2","action3","action4");
 		
 	}
 	
 	@Test
 	public void readVisibleActionsWhereFilter(){
-		assertVisibleActionsByFilter("inconnu", null, null);
-		assertVisibleActionsByFilter("inconnu", "s", null);
-		assertVisibleActionsByFilter("inconnu", "s1", null);
-		assertVisibleActionsByFilter("inconnu", "2", null);
+		assertVisibleActionsByFilter("inconnu", null, null,null,null);
+		assertVisibleActionsByFilter("inconnu", "s", null,null,null);
+		assertVisibleActionsByFilter("inconnu", "s1", null,null,null);
+		assertVisibleActionsByFilter("inconnu", "2", null,null,null);
 		
-		assertVisibleActionsByFilter("admin", null, null,"action1","action2","action3","action4");
-		assertVisibleActionsByFilter("admin", "action", null,"action1","action2","action3","action4");
-		assertVisibleActionsByFilter("admin", "action1", null,"action1");
-		assertVisibleActionsByFilter("admin", "2", null,"action2");
+		assertVisibleActionsByFilter("admin", null, null,null,null,"action1","action2","action3","action4");
+		assertVisibleActionsByFilter("admin", "action", null,null,null,"action1","action2","action3","action4");
+		assertVisibleActionsByFilter("admin", "action1", null,null,null,"action1");
+		assertVisibleActionsByFilter("admin", "2", null,null,null,"action2");
 		
-		assertVisibleActionsByFilter("section_manager_1", null, null, "action1","action2","action3");
-		assertVisibleActionsByFilter("section_manager_2", null, null);
-		assertVisibleActionsByFilter("section_manager_3", null, null, "action4");
-		assertVisibleActionsByFilter("section_manager_4", null, null, "action1","action2","action3","action4");
+		assertVisibleActionsByFilter("section_manager_1", null, null,null,null, "action1","action2","action3");
+		assertVisibleActionsByFilter("section_manager_2", null, null,null,null);
+		assertVisibleActionsByFilter("section_manager_3", null, null,null,null, "action4");
+		assertVisibleActionsByFilter("section_manager_4", null, null,null,null, "action1","action2","action3","action4");
 		
-		assertVisibleActionsByFilter("usb_manager_1", null, null, "action1","action2");
-		assertVisibleActionsByFilter("usb_manager_2", null, null, "action3");
-		assertVisibleActionsByFilter("usb_manager_3", null, null, "action4");
+		assertVisibleActionsByFilter("usb_manager_1", null, null,null,null, "action1","action2");
+		assertVisibleActionsByFilter("usb_manager_2", null, null,null,null, "action3");
+		assertVisibleActionsByFilter("usb_manager_3", null, null,null,null, "action4");
 		
-		assertVisibleActionsByFilter("action_manager_1", null, null, "action1");
+		assertVisibleActionsByFilter("action_manager_1", null, null,null,null, "action1");
 		
-		assertVisibleActionsByFilter("activity_manager_1", null, null, "action1");
-		assertVisibleActionsByFilter("activity_manager_2", null, null, "action2","action3");
-		assertVisibleActionsByFilter("activity_manager_3", null, null, "action3","action4");
+		assertVisibleActionsByFilter("activity_manager_1", null, null,null,null, "action1");
+		assertVisibleActionsByFilter("activity_manager_2", null, null,null,null, "action2","action3");
+		assertVisibleActionsByFilter("activity_manager_3", null, null,null,null, "action3","action4");
 		
-		assertVisibleActionsByFilter("ua_manager_1", null, null);
-		assertVisibleActionsByFilter("ua_manager_2", null, null);
-		assertVisibleActionsByFilter("ua_manager_3", null, null);
+		assertVisibleActionsByFilter("ua_manager_1", null, null,null,null);
+		assertVisibleActionsByFilter("ua_manager_2", null, null,null,null);
+		assertVisibleActionsByFilter("ua_manager_3", null, null,null,null);
 	}
 	
 	@Test
@@ -352,8 +350,6 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		assertVisibleAdministrativeUnitsByFilter("ua_manager_3", null, null,"ua6","ua8","ua9");
 	}
 	
-	/**/
-	
 	@Test
 	public void readBudgetSpecializationUnitsWhereFilter(){
 		assertBudgetSpecializationUnitsByFilter(null, null, null, "usb1","usb2","usb3","usb4","usb5");
@@ -419,16 +415,20 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 			.isEqualTo(ArrayHelper.getSize(expectedCodes).longValue());
 	}
 	
-	private void assertInvisibleActionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+	private void assertInvisibleActionsByFilter(String actorCode,String code,String name,String sectionCodeName,String budgetSpecializationUnitCodeName,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeActionQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name
+						,ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME,sectionCodeName
+						,ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,budgetSpecializationUnitCodeName)),expectedCodes);
 	}
 	
-	private void assertVisibleActionsByFilter(String actorCode,String code,String name,String...expectedCodes) {
+	private void assertVisibleActionsByFilter(String actorCode,String code,String name,String sectionCodeName,String budgetSpecializationUnitCodeName,String...expectedCodes) {
 		assertScopesExactly(ScopeOfTypeActionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
-						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name
+						,ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME,sectionCodeName
+						,ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,budgetSpecializationUnitCodeName)),expectedCodes);
 	}
 	
 	private void assertInvisibleActivitiesByFilter(String actorCode,String code,String name,String...expectedCodes) {
@@ -571,6 +571,8 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		Action action = new Action().setIdentifier(actionScope.getIdentifier()).setCode(actionScope.getCode())
 				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitFromIdentifierIdentifier);
 		action.setSection(action.getBudgetSpecializationUnit().getSection());
+		action.setSectionCodeName(action.getSection().toString());
+		action.setBudgetSpecializationUnitCodeName(action.getBudgetSpecializationUnit().toString());
 		EntityCreator.getInstance().createManyInTransaction(actionScope,action);	
 	}
 	

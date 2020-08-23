@@ -398,7 +398,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	}
 	
 	private void assertVisibleBudgetSpecializationUnitsByFilter(String actorCode,String code,String name,String...expectedCodes) {
-		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopesExactly(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode
 						,ScopeQuerier.PARAMETER_NAME_CODE, code,ScopeQuerier.PARAMETER_NAME_NAME, name)),expectedCodes);
 	}

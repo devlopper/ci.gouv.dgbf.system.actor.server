@@ -50,6 +50,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
 				,CountQueryIdentifierGetter.class);
 		
+		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
+		
 		IdentityQuerier.initialize();
 		
 		FunctionQuerier.initialize();
@@ -76,7 +78,5 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		CivilityQuerier.initialize();
 		AdministrativeUnitQuerier.initialize();
 		BudgetaryFunctionQuerier.initialize();
-		
-		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 	}
 }

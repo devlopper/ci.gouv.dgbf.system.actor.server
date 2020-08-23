@@ -69,12 +69,12 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	}
 	
 	public static void assertInvisibleBudgetSpecializationUnitsWhereFilter(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readInvisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	
 	public static void assertVisibleBudgetSpecializationUnitsWhereFilter(String actorCode,String...expectedCodes) {
-		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWithSectionsWhereFilter(new QueryExecutorArguments()
+		assertScopes(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)),expectedCodes);
 	}
 	

@@ -629,4 +629,8 @@ public interface ScopeQuerier extends Querier {
 	static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Class<?>...classes) {
 		addParentCodeNameContains(arguments, filter, CollectionHelper.listOf(classes));
 	}
+	
+	static String getFromWhere(Class<?> klass,String variableName,String whereClause) {
+		return jpql(String.format("FROM Scope scope JOIN %1$s %2$s ON %2$s = scope",klass.getSimpleName(),variableName),whereClause);
+	}
 }
