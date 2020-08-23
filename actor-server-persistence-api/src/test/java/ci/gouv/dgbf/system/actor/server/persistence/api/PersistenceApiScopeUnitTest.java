@@ -580,8 +580,11 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
 		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
 				.setActionFromIdentifier(actionIdentifier);
+		activity.setActionCodeName(activity.getAction().toString());
 		activity.setBudgetSpecializationUnit(activity.getAction().getBudgetSpecializationUnit());
+		activity.setBudgetSpecializationUnitCodeName(activity.getBudgetSpecializationUnit().toString());
 		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
+		activity.setSectionCodeName(activity.getSection().toString());
 		EntityCreator.getInstance().createManyInTransaction(activityScope,activity);	
 	}
 	
