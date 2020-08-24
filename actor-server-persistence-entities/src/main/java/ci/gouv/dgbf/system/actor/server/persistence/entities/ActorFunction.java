@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,22 @@ public class ActorFunction extends AbstractIdentifiableSystemScalarStringImpl im
 	@Override
 	public ActorFunction setIdentifier(String identifier) {
 		return (ActorFunction) super.setIdentifier(identifier);
+	}
+	
+	public ActorFunction setActorFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setActor(null);
+		else
+			setActor(EntityFinder.getInstance().find(Actor.class, identifier));
+		return this;
+	}
+	
+	public ActorFunction setFunctionFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setFunction(null);
+		else
+			setFunction(EntityFinder.getInstance().find(Function.class, identifier));
+		return this;
 	}
 	
 	public static final String FIELD_ACTOR = "actor";

@@ -46,6 +46,11 @@ public class ActorProfile extends AbstractIdentifiableSystemScalarStringImpl imp
 		return this;
 	}
 	
+	@Override
+	public String toString() {
+		return actor+" : "+profile;
+	}
+	
 	public static final String FIELD_PROFILE = "profile";
 	public static final String FIELD_ACTOR = "actor";
 	

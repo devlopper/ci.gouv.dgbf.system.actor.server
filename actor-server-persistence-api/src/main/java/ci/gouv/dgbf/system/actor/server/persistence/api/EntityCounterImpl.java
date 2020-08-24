@@ -55,6 +55,7 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			
 			if(ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return ActorQuerier.getInstance().countWhereFilter(arguments);
+			
 			if(AccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))

@@ -15,6 +15,7 @@ public class ProfileFunctionDto extends AbstractIdentifiableSystemScalarStringIm
 	
 	private ProfileDto profile;
 	private FunctionDto function;
+	private String actorIdentifier;
 
 	@Override
 	public ProfileFunctionDto set__deletable__(Boolean __deletable__) {

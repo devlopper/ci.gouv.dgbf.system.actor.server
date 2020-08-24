@@ -66,7 +66,9 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
+	@Transient private Collection<Privilege> visibleModules;
 	@Transient private Collection<Scope> scopes;
+	@Transient private Collection<Scope> visibleSections;
 	@Transient private String username;
 	@Transient private String password;
 	@Transient private Boolean keycloakUserCreatable;
@@ -131,6 +133,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
+	public static final String FIELD_FUNCTIONS = "functions";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	

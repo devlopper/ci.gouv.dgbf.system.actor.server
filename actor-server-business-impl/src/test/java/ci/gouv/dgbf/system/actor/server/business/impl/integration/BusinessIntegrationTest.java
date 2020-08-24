@@ -342,21 +342,25 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	private void createSection(String code) {
 		Scope sectionScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_SECTION);
 		EntityCreator.getInstance().createMany(sectionScope);
-		Section section = new Section().setIdentifier(sectionScope.getIdentifier());
+		Section section = new Section().setCode(sectionScope.getIdentifier());
 		EntityCreator.getInstance().createMany(section);
 	}
 	
 	private void createBudgetSpecializationUnit(String code,String sectionIdentifier) {
 		Scope usbScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_USB);
 		BudgetSpecializationUnit usb = new BudgetSpecializationUnit().setCode(usbScope.getCode()).setSectionFromIdentifier(sectionIdentifier); 
+		usb.setSectionCodeName(usb.getSection().toString());
 		EntityCreator.getInstance().createMany(usbScope,usb);
 	}
 	
 	private void createActivity(String code,String budgetSpecializationUnitIdentifier) {
 		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
-		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
+		Activity activity = new Activity().setCode(activityScope.getIdentifier()).setCode(activityScope.getCode())
 				.setBudgetSpecializationUnitFromIdentifier(budgetSpecializationUnitIdentifier);
 		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
+		activity.setSectionCodeName(activity.getSection().toString());
+		activity.setBudgetSpecializationUnitCodeName(activity.getBudgetSpecializationUnit().toString());
+		activity.setActionCodeName("");
 		EntityCreator.getInstance().createMany(activityScope,activity);	
 	}
 	
@@ -370,8 +374,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	
 	private void createAdministrativeUnit(String code,String sectionIdentifier) {
 		Scope administrativeUnitScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_UA);
-		AdministrativeUnit administrativeUnit = new AdministrativeUnit().setIdentifier(administrativeUnitScope.getIdentifier())
-				.setCode(administrativeUnitScope.getCode()).setSectionFromIdentifier(sectionIdentifier);
+		AdministrativeUnit administrativeUnit = new AdministrativeUnit().setCode(administrativeUnitScope.getCode()).setSectionFromIdentifier(sectionIdentifier);
 		EntityCreator.getInstance().createMany(administrativeUnitScope,administrativeUnit);
 	}
 	

@@ -42,4 +42,6 @@ public class PrivilegeType extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_ORDER_NUMBER = "numero_ordre";
 	
 	public static final String TABLE_NAME = "TYPE_PRIVILEGE";	
+	
+	public static final String CODE_MODULE = "MODULE";
 }

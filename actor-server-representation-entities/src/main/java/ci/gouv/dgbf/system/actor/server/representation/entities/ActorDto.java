@@ -41,7 +41,9 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	private ArrayList<FunctionDto> functions;
 	private ArrayList<PrivilegeDto> privileges;
+	private ArrayList<PrivilegeDto> visibleModules;
 	private ArrayList<ScopeDto> scopes;
+	private ArrayList<ScopeDto> visibleSections;
 
 	@Override
 	public ActorDto setIdentifier(String identifier) {

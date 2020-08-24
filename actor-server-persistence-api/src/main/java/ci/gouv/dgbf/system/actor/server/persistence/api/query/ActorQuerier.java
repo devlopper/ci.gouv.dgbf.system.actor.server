@@ -9,8 +9,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
@@ -32,9 +34,14 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 
 public interface ActorQuerier extends Querier {
 
@@ -99,6 +106,80 @@ public interface ActorQuerier extends Querier {
 			Filter filter = IdentityQuerier.AbstractImpl.buildFilterOfWhereFilter(arguments);		
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			arguments.setFilter(filter);
+		}
+		
+		@Override
+		public Collection<Actor> readWithFunctionsWhereFilter(QueryExecutorArguments arguments) {
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+			Collection<Actor> actors = readWhereFilter(arguments);
+			if(CollectionHelper.isEmpty(actors))
+				return null;
+			__setFunctions__(actors);
+			return actors;
+		}
+		
+		@Override
+		public Collection<Actor> readWithAllWhereFilter(QueryExecutorArguments arguments) {
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+			Collection<Actor> actors = readWhereFilter(arguments);
+			if(CollectionHelper.isEmpty(actors))
+				return null;
+			__setFunctions__(actors);
+			__setVisibleModules__(actors);
+			__setVisibleSections__(actors);
+			return actors;
+		}
+		
+		/*@Override
+		public Long countWithFunctionsWhereFilter(QueryExecutorArguments arguments) {
+			return countWhereFilter(arguments);
+		}*/
+		
+		private void __setFunctions__(Collection<Actor> actors) {
+			if(CollectionHelper.isEmpty(actors))
+				return;
+			Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(actorProfiles)) {
+				Collection<ProfileFunction> profileFunctions = ProfileFunctionQuerier.getInstance().readByProfilesCodes(actorProfiles.stream().map(x -> x.getProfile().getCode()).collect(Collectors.toList()));
+				if(CollectionHelper.isNotEmpty(profileFunctions)) {
+					actors.forEach(actor -> {
+						Collection<Profile> profiles = actorProfiles.stream().filter(actorProfile -> actorProfile.getActor().equals(actor))
+								.map(actorProfile -> actorProfile.getProfile()).collect(Collectors.toList());
+						if(CollectionHelper.isNotEmpty(profiles))
+							actor.setFunctions(profileFunctions.stream().filter(profileFunction -> profiles.contains(profileFunction.getProfile())).map(x -> x.getFunction()).collect(Collectors.toList()));
+					});
+				}
+			}
+		}
+		
+		private void __setVisibleModules__(Collection<Actor> actors) {
+			if(CollectionHelper.isEmpty(actors))
+				return;
+			Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(actorProfiles)) {
+				Collection<ProfilePrivilege> profilePrivileges = ProfilePrivilegeQuerier.getInstance().readByProfilesCodes(actorProfiles.stream().map(x -> x.getProfile().getCode()).collect(Collectors.toList()));
+				if(CollectionHelper.isNotEmpty(profilePrivileges)) {
+					actors.forEach(actor -> {
+						Collection<Profile> profiles = actorProfiles.stream().filter(actorProfile -> actorProfile.getActor().equals(actor))
+								.map(actorProfile -> actorProfile.getProfile()).collect(Collectors.toList());
+						if(CollectionHelper.isNotEmpty(profiles))
+							actor.setVisibleModules(profilePrivileges.stream()
+									.filter(profilePrivilege -> profiles.contains(profilePrivilege.getProfile()))
+									.filter(profilePrivilege -> profilePrivilege.getPrivilege().getType().getCode().equals(PrivilegeType.CODE_MODULE))
+									.map(x -> x.getPrivilege())
+									.collect(Collectors.toList()));
+					});
+				}
+			}
+		}
+		
+		private void __setVisibleSections__(Collection<Actor> actors) {
+			if(CollectionHelper.isEmpty(actors))
+				return;
+			actors.forEach(actor -> {
+				actor.setVisibleSections(ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+						.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,List.of(actor.getCode()))));
+			});
 		}
 	}
 	
@@ -165,17 +246,24 @@ public interface ActorQuerier extends Querier {
 	
 	/* read where filter */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Actor.class, "readWhereFilter");
-	Map<String,Integer> QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER
-			,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE);
-	String QUERY_VALUE_READ_WHERE_FILTER = IdentityQuerier.getQueryValueReadWhereFilter(Actor.class,List.of(Actor.FIELD_CODE)
-			,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)));
 	Collection<Actor> readWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count where filter */
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
-	String QUERY_VALUE_COUNT_WHERE_FILTER = IdentityQuerier.getQueryValueCountWhereFilter(Actor.class,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)));
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
+	/* read with functions where filter */
+	String QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Actor.class, "readWithFunctionsWhereFilter");
+	Collection<Actor> readWithFunctionsWhereFilter(QueryExecutorArguments arguments);
+	
+	/* read with functions where filter */
+	String QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Actor.class, "readWithAllWhereFilter");
+	Collection<Actor> readWithAllWhereFilter(QueryExecutorArguments arguments);
+	
+	/* count with functions where filter */
+	/*String QUERY_IDENTIFIER_COUNT_WITH_FUNCTIONS_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER);
+	Long countWithFunctionsWhereFilter(QueryExecutorArguments arguments);
+	*/
 	/**/
 	
 	static ActorQuerier getInstance() {
@@ -240,12 +328,15 @@ public interface ActorQuerier extends Querier {
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_FILTER
-				).setTupleFieldsNamesIndexes(QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES)
+				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueReadWhereFilter(Actor.class
+						,List.of(Actor.FIELD_CODE)
+						,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)))
+				).setTupleFieldsNamesIndexesFromFieldsNames(Actor.FIELD_IDENTIFIER,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_NAMES
+						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_WHERE_FILTER
+				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueCountWhereFilter(Actor.class,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)))
 				)
 			);
 		
