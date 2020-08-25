@@ -6,6 +6,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.security.keycloak.UserManager;
@@ -31,10 +32,14 @@ public class ProfileFunctionPersistenceImpl extends AbstractPersistenceEntityImp
 			Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByProfilesCodes(profileFunction.getProfile().getCode());
 			if(CollectionHelper.isNotEmpty(actorProfiles)) {
 				for(ActorProfile actorProfile : actorProfiles) {
-					User user = UserManager.getInstance().readByUserName(actorProfile.getActor().getCode());
-					if(user == null)
-						continue;					
-					UserManager.getInstance().addRolesByNames(List.of(user), profileFunction.getFunction().getCode());
+					try {
+						User user = UserManager.getInstance().readByUserName(actorProfile.getActor().getCode());
+						if(user == null)
+							continue;										
+						UserManager.getInstance().addRolesByNames(List.of(user), profileFunction.getFunction().getCode());
+					} catch (Exception exception) {
+						LogHelper.logWarning(String.format("role %s not added in keycloak on user %s",profileFunction.getFunction().getCode(),actorProfile.getActor().getCode()), getClass());
+					}
 				}
 			}
 		}
@@ -48,10 +53,14 @@ public class ProfileFunctionPersistenceImpl extends AbstractPersistenceEntityImp
 			Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByProfilesCodes(profileFunction.getProfile().getCode());
 			if(CollectionHelper.isNotEmpty(actorProfiles)) {
 				for(ActorProfile actorProfile : actorProfiles) {
-					User user = UserManager.getInstance().readByUserName(actorProfile.getActor().getCode());
-					if(user == null)
-						continue;					
-					UserManager.getInstance().deleteRolesByNames(List.of(user), profileFunction.getFunction().getCode());
+					try {
+						User user = UserManager.getInstance().readByUserName(actorProfile.getActor().getCode());
+						if(user == null)
+							continue;										
+						UserManager.getInstance().deleteRolesByNames(List.of(user), profileFunction.getFunction().getCode());
+					} catch (Exception exception) {
+						LogHelper.logWarning(String.format("role %s not deleted in keycloak on user %s",profileFunction.getFunction().getCode(),actorProfile.getActor().getCode()), getClass());
+					}
 				}
 			}
 		}

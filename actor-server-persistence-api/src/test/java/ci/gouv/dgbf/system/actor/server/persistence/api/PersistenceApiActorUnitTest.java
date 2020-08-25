@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
@@ -12,6 +14,7 @@ import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
@@ -37,13 +40,21 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
-		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
 	@Override
 	protected String getPersistenceUnitName() {
 		return "default";
+	}
+	
+	@Test
+	public void readWhereFilter(){
+		assertReadWhereFilter(null, null, null, null, "admin","u01","u02","u03");
+		assertReadWhereFilter("admin", null, null, null, "admin");
+		assertReadWhereFilter("u", null, null, null, "u01","u02","u03");
+		assertReadWhereFilter("1", null, null, null, "u01");
+		assertReadWhereFilter(null, "user", null, null, "u01","u02","u03");
+		assertReadWhereFilter(null, null, null, "F1", "u01","u03");
 	}
 	
 	@Test
@@ -106,10 +117,21 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		
 		//Actors
 		createActor("admin","Monsieur","Komenan","Yao","Fonctionnaire","ky@m.com","Chef de service","1022");
+		createActor("u01","Monsieur","user","01","Fonctionnaire","ky@m01.com","Chef de service","1022");
+		createActor("u02","Monsieur","user","02","Fonctionnaire","ky@m02.com","Chef de service","1022");
+		createActor("u03","Monsieur","user","03","Fonctionnaire","ky@m03.com","Chef de service","1022");
 		
 		createActorScopes("admin", "327");
 		createProfilePrivileges("admin", "M1");
 		createProfileFunctions("admin", "F2");
+		
+		createProfileFunctions("u01", "F1");
+		
+		createProfileFunctions("u02", "F2");
+		createProfileFunctions("u02", "F3");
+		
+		createProfileFunctions("u03", "F1");
+		createProfileFunctions("u03", "F3");
 	}
 	
 	private void createSection(String code,String name) {
@@ -162,5 +184,18 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		for(String scopeIdentifier : scopesIdentifiers)
 			actorScopes.add(new ActorScope().setActorFromIdentifier(actorIdentifier).setScopeFromIdentifier(scopeIdentifier));
 		EntityCreator.getInstance().createManyInTransaction(actorScopes);
+	}
+	
+	/**/
+	
+	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String functionCode ,String...expectedCodes) {
+		Collection<Actor> actors = ActorQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().addFilterFieldsValues(
+				IdentityQuerier.PARAMETER_NAME_CODE,actorCode,IdentityQuerier.PARAMETER_NAME_FIRST_NAME,firstName,IdentityQuerier.PARAMETER_NAME_LAST_NAMES,lastNames
+				,ActorQuerier.PARAMETER_NAME_FUNCTION_CODE,functionCode));
+		if(ArrayHelper.isEmpty(expectedCodes)) {
+			assertThat(actors).as("actors found").isNull();
+		}else {
+			assertThat(actors.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+		}
 	}
 }

@@ -22,6 +22,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
@@ -90,26 +91,27 @@ public interface IdentityQuerier extends Querier {
 		return Where.of(Where.and(predicates));
 	}
 	
-	static String getQueryValueReadWhereFilter(Class<?> tupleClass,Collection<String> additionalFieldsNames,Collection<String> additionalPredicates) {
+	static String getQueryValueReadWhereFilter(Class<?> tupleClass,Collection<String> additionalFieldsNames,String additionalJoins,Collection<String> additionalPredicates) {
 		String variable = "t"+(Identity.class.equals(tupleClass) ? ConstantEmpty.STRING : ".identity");
 		String additionalFieldsNamesAsString = CollectionHelper.isEmpty(additionalFieldsNames) ? ConstantEmpty.STRING : 
 			","+additionalFieldsNames.stream().map(x -> "t."+x).collect(Collectors.joining(","));
 		return Language.of(Select.of("t.identifier,"+Select.fields(variable,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
 				+","+Select.concat(variable, Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
 				+","+variable+"."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS+additionalFieldsNamesAsString)
-				,From.ofTuple(tupleClass),getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates)
+				,From.ofTuple(tupleClass)+(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins),getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates)
 				,Order.of(Order.join(Order.asc(variable, Identity.FIELD_FIRST_NAME),Order.asc(variable, Identity.FIELD_LAST_NAMES))));
 	}
 	
-	String QUERY_VALUE_READ_WHERE_FILTER = getQueryValueReadWhereFilter(Identity.class,null,null);
+	String QUERY_VALUE_READ_WHERE_FILTER = getQueryValueReadWhereFilter(Identity.class,null,null,null);
 	Collection<Identity> readWhereFilter(QueryExecutorArguments arguments);
 	
 	/* count where filter */
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
-	static String getQueryValueCountWhereFilter(Class<?> tupleClass,Collection<String> additionalPredicates) {
-		return Language.of(Select.of("COUNT(t.identifier)"),From.ofTuple(tupleClass),getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates));
+	static String getQueryValueCountWhereFilter(Class<?> tupleClass,String additionalJoins,Collection<String> additionalPredicates) {
+		return Language.of(Select.of("COUNT(t.identifier)"),From.ofTuple(tupleClass)+(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins)
+				,getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates));
 	}
-	String QUERY_VALUE_COUNT_WHERE_FILTER = getQueryValueCountWhereFilter(Identity.class,null);
+	String QUERY_VALUE_COUNT_WHERE_FILTER = getQueryValueCountWhereFilter(Identity.class,null,null);
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
 	/**/

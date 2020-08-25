@@ -1,8 +1,13 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -36,6 +41,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
@@ -46,6 +52,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 public interface ActorQuerier extends Querier {
 
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
+	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
 	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
@@ -92,12 +100,16 @@ public interface ActorQuerier extends Querier {
 		
 		@Override
 		public Collection<Actor> readWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
 			prepareWhereFilter(arguments);
 			return QueryExecutor.getInstance().executeReadMany(Actor.class, arguments);
 		}
 		
 		@Override
 		public Long countWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
 			prepareWhereFilter(arguments);
 			return QueryExecutor.getInstance().executeCount(arguments);
 		}
@@ -105,6 +117,8 @@ public interface ActorQuerier extends Querier {
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = IdentityQuerier.AbstractImpl.buildFilterOfWhereFilter(arguments);		
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+			filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_CODE);
 			arguments.setFilter(filter);
 		}
 		
@@ -329,14 +343,16 @@ public interface ActorQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueReadWhereFilter(Actor.class
-						,List.of(Actor.FIELD_CODE)
-						,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)))
+						,List.of(Actor.FIELD_CODE),getQueryValueReadWhereFilterAdditionalJoins()
+						,List.of(getQueryValueReadWhereFilterAdditionalPredicates()))
 				).setTupleFieldsNamesIndexesFromFieldsNames(Actor.FIELD_IDENTIFIER,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_NAMES
 						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueCountWhereFilter(Actor.class,List.of(Where.like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)))
+				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueCountWhereFilter(Actor.class
+						,getQueryValueReadWhereFilterAdditionalJoins()
+						,List.of(getQueryValueReadWhereFilterAdditionalPredicates()))
 				)
 			);
 		
@@ -350,6 +366,24 @@ public interface ActorQuerier extends Querier {
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_CODE
 				)
+			);
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalJoins() {
+		return "JOIN ActorProfile ap ON ap.actor = t";
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalPredicates() {
+		return and(
+				like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
+				,parenthesis(or(
+					":"+PARAMETER_NAME_FUNCTION_CODE_NULLABLE+" = true"
+					,exists(
+						select("pf")
+						,from("ProfileFunction pf")
+						,where(and("pf.profile = ap.profile",like("pf", FieldHelper.join(ProfileFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)))
+					)
+				))
 			);
 	}
 }

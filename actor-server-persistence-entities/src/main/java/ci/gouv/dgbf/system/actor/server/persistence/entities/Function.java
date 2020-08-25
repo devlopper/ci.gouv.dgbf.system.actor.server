@@ -58,4 +58,6 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String COLUMN_TYPE = "type";
 	
 	public static final String TABLE_NAME = "FONCTION";	
+	
+	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
 }
