@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.security.keycloak.KeycloakHelper;
 import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.security.keycloak.UserManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -29,14 +30,17 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfileTypePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -45,6 +49,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 @ApplicationScoped
 public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPersistence> implements ActorBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Override @Transactional
+	public void createPrivilegesFromFunctions(Collection<Actor> actors,Collection<Function> functions) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functions", functions);
+		Collection<Profile> profiles = ProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles of actors", profiles);
+		__inject__(ProfilePrivilegeBusiness.class).createFromFunctions(profiles, functions);
+	}
 	
 	@Override
 	public Integer importFromKeycloak() {

@@ -17,7 +17,16 @@ public interface ProfilePrivilegeBusiness extends BusinessEntity<ProfilePrivileg
 	void createFromPrivileges(Profile profile,Collection<Privilege> privileges);
 	
 	@Transactional
+	void createFromPrivileges(Collection<Profile> profiles,Collection<Privilege> privileges);
+	
+	@Transactional
 	void createFromProfiles(Profile profile,Collection<Profile> profiles);
+	
+	@Transactional
+	void createFromProfiles(Collection<Profile> profiles,Collection<Profile> profilesOfPrivileges);
+	
+	@Transactional
+	void createFromFunctions(Collection<Profile> profiles,Collection<Function> functions);
 	
 	@Transactional
 	void createFromFunctions(Profile profile,Collection<Function> functions);

@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,15 @@ public class ProfilePrivilegeBusinessImpl extends AbstractBusinessEntityImpl<Pro
 	private static final long serialVersionUID = 1L;
 
 	@Override @Transactional
+	public void createFromPrivileges(Collection<Profile> profiles, Collection<Privilege> privileges) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles", profiles);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("privileges", privileges);
+		profiles.forEach(profile -> {
+			createFromPrivileges(profile, privileges);
+		});
+	}
+	
+	@Override @Transactional
 	public void createFromPrivileges(Profile profile, Collection<Privilege> privileges) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("profile", profile);
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("privileges", privileges);
@@ -46,27 +56,45 @@ public class ProfilePrivilegeBusinessImpl extends AbstractBusinessEntityImpl<Pro
 	}
 	
 	@Override @Transactional
-	public void createFromProfiles(Profile profile,Collection<Profile> profiles) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfNull("profile", profile);
+	public void createFromProfiles(Collection<Profile> profiles, Collection<Profile> profilesOfPrivileges) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles", profiles);
-		Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesCodes(profiles.stream().map(Profile::getCode).collect(Collectors.toList()));
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profilesOfPrivileges", profilesOfPrivileges);
+		Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesCodes(profilesOfPrivileges.stream().map(Profile::getCode).collect(Collectors.toList()));
 		if(CollectionHelper.isEmpty(privileges))
 			return;
-		createFromPrivileges(profile, privileges);
+		createFromPrivileges(profiles, privileges);
+	}
+	
+	@Override @Transactional
+	public void createFromProfiles(Profile profile,Collection<Profile> profilesOfPrivileges) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("profile", profile);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profilesOfPrivileges", profilesOfPrivileges);
+		createFromProfiles(List.of(profile), profilesOfPrivileges);
 	}
 
+	@Override
+	public void createFromFunctions(Collection<Profile> profiles, Collection<Function> functions) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles", profiles);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functions", functions);
+		Collection<Profile> profilesOfFunctions = ProfileQuerier.getInstance().readByFunctionsCodes(functions.stream().map(Function::getCode).collect(Collectors.toList()));
+		if(CollectionHelper.isEmpty(profilesOfFunctions))
+			return;
+		Collection<ProfileFunction> profileFunctions = new ArrayList<ProfileFunction>();
+		profiles.forEach(profile -> {
+			functions.forEach(function -> {
+				ProfileFunction profileFunction = ProfileFunctionQuerier.getInstance().readByProfileCodeByFunctionCode(profile.getCode(), function.getCode());
+				if(profileFunction == null)
+					profileFunctions.add(new ProfileFunction().setProfile(profile).setFunction(function));
+			});
+		});
+		__inject__(ProfileFunctionBusiness.class).createMany(profileFunctions);
+		createFromProfiles(profiles, profilesOfFunctions);
+	}
+	
 	@Override @Transactional
 	public void createFromFunctions(Profile profile,Collection<Function> functions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("profile", profile);
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functions", functions);
-		Collection<Profile> profiles = ProfileQuerier.getInstance().readByFunctionsCodes(functions.stream().map(Function::getCode).collect(Collectors.toList()));
-		if(CollectionHelper.isEmpty(profiles))
-			return;
-		for(Function function : functions) {
-			ProfileFunction profileFunction = ProfileFunctionQuerier.getInstance().readByProfileCodeByFunctionCode(profile.getCode(), function.getCode());
-			if(profileFunction == null)
-				__inject__(ProfileFunctionBusiness.class).create(new ProfileFunction().setProfile(profile).setFunction(function));
-		}
-		createFromProfiles(profile, profiles);
+		createFromFunctions(List.of(profile), functions);
 	}
 }

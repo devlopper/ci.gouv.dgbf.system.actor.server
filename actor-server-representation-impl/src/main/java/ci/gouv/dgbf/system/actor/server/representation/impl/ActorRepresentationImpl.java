@@ -1,11 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
@@ -16,8 +19,10 @@ import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 
@@ -25,6 +30,39 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<ActorDto> implements ActorRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response createPrivilegesFromFunctions(Collection<ActorDto> actors) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						if(CollectionHelper.isEmpty(actors))
+							throw new RuntimeException("Acteurs obligatoire");
+						Collection<Actor> persistences = null;
+						Collection<Function> functions = null;
+						for(ActorDto dto : actors) {
+							Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(dto.getCode());
+							if(actor == null)
+								throw new RuntimeException("L'utilisateur <<"+dto.getCode()+">> n'existe pas");
+							if(persistences == null)
+								persistences = new ArrayList<>();
+							if(functions == null) {
+								functions = new ArrayList<>();
+								for(String code : dto.getFunctionsCodes()) {
+									functions.add(__inject__(FunctionPersistence.class).readByBusinessIdentifier(code));
+								}
+							}
+							persistences.add(actor);
+						}
+						__inject__(ActorBusiness.class).createPrivilegesFromFunctions(persistences, functions);;
+					}
+				};
+			}
+		});
+	}
+	
 	@Override
 	public Response getProfileInformationsByCode(String code) {
 		if(StringHelper.isBlank(code))

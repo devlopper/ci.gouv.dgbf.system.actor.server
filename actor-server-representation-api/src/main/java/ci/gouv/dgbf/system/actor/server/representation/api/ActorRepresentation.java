@@ -1,4 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
+import java.util.Collection;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -15,6 +18,13 @@ import io.swagger.annotations.ApiOperation;
 
 @Path(ActorRepresentation.PATH)
 public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
+	
+	@POST
+	@Path(PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Créer des privilèges à partir de fonctions",tags = {TAG_ACTORS})
+	Response createPrivilegesFromFunctions(Collection<ActorDto> actors);
 	
 	@GET
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
@@ -47,6 +57,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_SEND_UPDATE_PASSWORD_EMAIL = "sendUpdatePasswordEmail";
 	//String PATH_SAVE_PREFERENCES = "savePreferences";
 	//String PATH_SAVE_PROFILE = "saveProfile";
+	String PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS = "create_privileges_from_functions";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	

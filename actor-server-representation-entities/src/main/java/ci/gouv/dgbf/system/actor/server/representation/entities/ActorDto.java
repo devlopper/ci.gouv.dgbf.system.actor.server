@@ -40,6 +40,7 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private IdentityGroupDto group;
 	
 	private ArrayList<FunctionDto> functions;
+	private ArrayList<String> functionsCodes;
 	private ArrayList<PrivilegeDto> privileges;
 	private ArrayList<PrivilegeDto> visibleModules;
 	private ArrayList<ScopeDto> scopes;
