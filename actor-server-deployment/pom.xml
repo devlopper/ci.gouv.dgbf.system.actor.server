@@ -68,6 +68,12 @@
 			<artifactId>jee-utility-server-deployment</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>		
 	
 	<profiles>

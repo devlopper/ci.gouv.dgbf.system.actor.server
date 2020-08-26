@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -25,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 
@@ -75,13 +77,17 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		if(CollectionHelper.isEmpty(accountRequests))
 			return;
 		LocalDateTime localDateTime = LocalDateTime.now();
+		Collection<Actor> actors = new ArrayList<>();
 		accountRequests.forEach(accountRequest -> {
-			//we create actor
-			__inject__(ActorBusiness.class).create(new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()));
-			//we remote request from pool
-			__persistence__.delete(accountRequest);
-		});		
-		notifyAccept(accountRequests);
+			String password = RandomHelper.getAlphanumeric(6);
+			Actor actor = new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()).setPassword(password);
+			actors.add(actor);
+		});
+		//we create actor
+		__inject__(ActorBusiness.class).createMany(actors);
+		//we remote request from pool
+		__persistence__.deleteMany(accountRequests);
+		notifyAccept(actors);
 	}
 	
 	@Override @Transactional
@@ -95,19 +101,20 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	public void reject(Collection<AccountRequest> accountRequests) {
 		if(CollectionHelper.isEmpty(accountRequests))
 			return;
+		Collection<RejectedAccountRequest> rejectedAccountRequests = new ArrayList<>();
 		LocalDateTime localDateTime = LocalDateTime.now();
 		accountRequests.forEach(accountRequest -> {
-			//we archive rejection
 			RejectedAccountRequest rejectedAccountRequest = new RejectedAccountRequest();		
 			rejectedAccountRequest.setDate(localDateTime).setElectronicMailAddress(accountRequest.getIdentity().getElectronicMailAddress())
 			.setFirstName(accountRequest.getIdentity().getFirstName()).setLastNames(accountRequest.getIdentity().getLastNames()).setReason(null)
-			.setRequestDate(accountRequest.getCreationDate());			
-			//__inject__(RejectedAccountRequestBusiness.class).create(rejectedAccountRequest);//FIXME WHY NOT WORKING ???
-			EntityCreator.getInstance().createOne(rejectedAccountRequest);
-			//we remote request from pool
-			delete(accountRequest);
-		});		
-		notifyReject(accountRequests);
+			.setRequestDate(accountRequest.getCreationDate()).setReason("???");
+			rejectedAccountRequests.add(rejectedAccountRequest);
+		});
+		//we archive rejection
+		EntityCreator.getInstance().createMany(CollectionHelper.cast(Object.class, rejectedAccountRequests));
+		//we remove request and its identity from pool
+		deleteMany(accountRequests);
+		notifyReject(rejectedAccountRequests);
 	}
 	
 	@Override @Transactional
@@ -160,7 +167,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été enregistrée.", accountRequest.getElectronicMailAddress());
+					MailSender.getInstance().send("SIGOBE - Demande de compte", FreeMarker.getRecordedMailMessage(accountRequest), accountRequest.getElectronicMailAddress());
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}	
@@ -181,7 +188,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été soumise.", accountRequest.getIdentity().getElectronicMailAddress());
+					MailSender.getInstance().send("SIGOBE - Demande de compte", FreeMarker.getSubmittedMailMessage(accountRequest), accountRequest.getIdentity().getElectronicMailAddress());
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}	
@@ -189,20 +196,20 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		}).start();		
 	}
 	
-	private static void notifyReject(Collection<AccountRequest> accountRequests) {
-		if(CollectionHelper.isEmpty(accountRequests))
+	private static void notifyReject(Collection<RejectedAccountRequest> rejectedAccountRequests) {
+		if(CollectionHelper.isEmpty(rejectedAccountRequests))
 			return;
-		accountRequests.forEach(accountRequest -> {
-			notifyReject(accountRequest);
+		rejectedAccountRequests.forEach(rejectedAccountRequest -> {
+			notifyReject(rejectedAccountRequest);
 		});
 	}
 	
-	private static void notifyReject(AccountRequest accountRequest) {
+	private static void notifyReject(RejectedAccountRequest rejectedAccountRequest) {
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été rejetée.", accountRequest.getIdentity().getElectronicMailAddress());
+					MailSender.getInstance().send("SIGOBE - Demande de compte", FreeMarker.getRejectedMailMessage(rejectedAccountRequest), rejectedAccountRequest.getElectronicMailAddress());
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}	
@@ -210,24 +217,24 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		}).start();		
 	}
 	
-	private static void notifyAccept(Collection<AccountRequest> accountRequests) {
-		if(CollectionHelper.isEmpty(accountRequests))
+	private static void notifyAccept(Collection<Actor> actors) {
+		if(CollectionHelper.isEmpty(actors))
 			return;
-		accountRequests.forEach(accountRequest -> {
-			notifyAccept(accountRequest);
+		actors.forEach(actor -> {
+			notifyAccept(actor);
 		});
 	}
 	
-	private static void notifyAccept(AccountRequest accountRequest) {
+	private static void notifyAccept(Actor actor) {
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - Demande de compte", "Votre demande de compte a été acceptée.", accountRequest.getIdentity().getElectronicMailAddress());
+					MailSender.getInstance().send("SIGOBE - Demande de compte", FreeMarker.getAcceptedMailMessage(actor), actor.getIdentity().getElectronicMailAddress());
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
-				}	
+				}
 			}
-		}).start();		
+		}).start();
 	}
 }

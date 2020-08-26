@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -142,5 +143,41 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	@Override
 	public String toString() {
 		return firstName+" "+lastNames+" "+electronicMailAddress;
+	}
+	
+	public static String getNames(String civility,String firstName,String lastNames) {
+		String names = null;
+		if(StringHelper.isNotBlank(firstName))
+			names = firstName;
+		if(StringHelper.isNotBlank(lastNames))
+			if(StringHelper.isBlank(names))
+				names = lastNames;
+			else
+				names += " "+lastNames;
+		if(names == null)
+			names = ConstantEmpty.STRING;
+		if(StringHelper.isNotBlank(names) && StringHelper.isNotBlank(civility))
+			names = civility+" "+names;
+		return names;
+	}
+	
+	public static String getNames(Identity identity) {
+		return getNames(identity.getCivility() == null ? null : identity.getCivility().getName(), identity.getFirstName(), identity.getLastNames());
+	}
+	
+	public static String getNames(AccountRequest accountRequest) {
+		if(accountRequest.getIdentity() == null)
+			return getNames(accountRequest.getCivility() == null ? null : accountRequest.getCivility().getName(), accountRequest.getFirstName(), accountRequest.getLastNames());
+		return getNames(accountRequest.getIdentity());
+	}
+	
+	public static String getNames(Actor actor) {
+		if(actor.getIdentity() == null)
+			return getNames(actor.getCivility() == null ? null : actor.getCivility().getName(), actor.getFirstName(), actor.getLastNames());
+		return getNames(actor.getIdentity());
+	}
+	
+	public static String getNames(RejectedAccountRequest rejectedAccountRequest) {
+		return getNames(null, rejectedAccountRequest.getFirstName(), rejectedAccountRequest.getLastNames());
 	}
 }

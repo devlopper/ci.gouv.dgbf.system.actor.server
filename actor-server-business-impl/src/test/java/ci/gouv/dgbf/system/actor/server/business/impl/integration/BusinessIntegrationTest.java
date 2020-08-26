@@ -97,7 +97,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	public void accountRequest_validate() throws Exception{
 		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
 		
-		__inject__(AccountRequestBusiness.class).createMany(List.of(new AccountRequest().setIdentifier("a").setFirstName("a").setLastNames("a").setElectronicMailAddress("a@m.com")
+		__inject__(AccountRequestBusiness.class).record(List.of(new AccountRequest().setIdentifier("a").setFirstName("a").setLastNames("a").setElectronicMailAddress("a@m.com")
 				,new AccountRequest().setIdentifier("b").setFirstName("b").setLastNames("b").setElectronicMailAddress("b@m.com")
 				,new AccountRequest().setIdentifier("c").setFirstName("c").setLastNames("c").setElectronicMailAddress("c@m.com")));
 			

@@ -57,6 +57,7 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	@Transient private Long creationDateAsTimestamp;
 	@Transient private String submissionDateAsString;
 	@Transient private Long submissionDateAsTimestamp;
+	@Transient private String rejectReason;
 	
 	@Transient private Collection<BudgetaryFunction> budgetaryFunctions;
 	@Transient private Collection<Function> functions;
