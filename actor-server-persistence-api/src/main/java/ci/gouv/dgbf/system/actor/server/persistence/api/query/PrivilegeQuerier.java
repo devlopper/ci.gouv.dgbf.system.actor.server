@@ -151,9 +151,11 @@ public interface PrivilegeQuerier extends Querier {
 					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l6", Privilege.FIELD_PARENT_IDENTIFIER, "l5", Privilege.FIELD_IDENTIFIER)
 					)
 			,Language.Where.of(Language.Where.or("l1.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l2.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS
-					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l4.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l5.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS))
+					,"l3.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l4.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l5.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS
+					,"l6.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS))
 			,Language.Order.of("t.identifier ASC"))
 			;
 	Collection<Privilege> readParentsByChildrenIdentifiers(Collection<String> childrenIdentifiers);
@@ -168,9 +170,11 @@ public interface PrivilegeQuerier extends Querier {
 					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l6", Privilege.FIELD_PARENT_IDENTIFIER, "l5", Privilege.FIELD_IDENTIFIER)
 					)
 			,Language.Where.of(Language.Where.or("l1.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l2.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS
-					,"l3.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l4.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l5.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS))
+					,"l3.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l4.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS,"l5.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS
+					,"l6.identifier IN :"+PARAMETER_NAME_CHILDREN_IDENTIFIERS))
 			);
 	Long countParentsByChildrenIdentifiers(Collection<String> childrenIdentifiers);
 	
@@ -184,9 +188,11 @@ public interface PrivilegeQuerier extends Querier {
 					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l6", Privilege.FIELD_PARENT_IDENTIFIER, "l5", Privilege.FIELD_IDENTIFIER)
 					)
 			,Language.Where.of(Language.Where.or("l1.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l2.code IN :"+PARAMETER_NAME_CHILDREN_CODES
-					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
+					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES
+					,"l6.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
 			,Language.Order.of("t.code ASC"))
 			;
 	Collection<Privilege> readParentsByChildrenCodes(Collection<String> childrenCodes);
@@ -201,9 +207,11 @@ public interface PrivilegeQuerier extends Querier {
 					,Language.From.leftJoin("Privilege", "l3", Privilege.FIELD_PARENT_IDENTIFIER, "l2", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l4", Privilege.FIELD_PARENT_IDENTIFIER, "l3", Privilege.FIELD_IDENTIFIER)
 					,Language.From.leftJoin("Privilege", "l5", Privilege.FIELD_PARENT_IDENTIFIER, "l4", Privilege.FIELD_IDENTIFIER)
+					,Language.From.leftJoin("Privilege", "l6", Privilege.FIELD_PARENT_IDENTIFIER, "l5", Privilege.FIELD_IDENTIFIER)
 					)
 			,Language.Where.of(Language.Where.or("l1.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l2.code IN :"+PARAMETER_NAME_CHILDREN_CODES
-					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
+					,"l3.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l4.code IN :"+PARAMETER_NAME_CHILDREN_CODES,"l5.code IN :"+PARAMETER_NAME_CHILDREN_CODES
+					,"l6.code IN :"+PARAMETER_NAME_CHILDREN_CODES))
 			);
 	Long countParentsByChildrenCodes(Collection<String> childrenCodes);
 	
