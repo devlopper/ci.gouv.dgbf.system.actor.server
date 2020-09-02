@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 
@@ -70,6 +71,8 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 		Actor actor = ActorQuerier.getInstance().readProfileInformationsByCode(code);
 		if(actor == null)
 			return Response.status(Status.BAD_REQUEST).entity("nom d'utilisateur <<"+code+">> inconnu").build();
+		if(StringHelper.isBlank(actor.getNames()))
+			actor.setNames(Identity.getNames(null,actor.getFirstName(),actor.getLastNames()));
 		ActorDto actorDto = MappingHelper.getSource(actor, ActorDto.class);
 		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(actorDto));
 	}

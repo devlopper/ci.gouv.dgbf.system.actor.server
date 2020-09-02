@@ -98,7 +98,8 @@ public interface IdentityQuerier extends Querier {
 		return Language.of(Select.of("t.identifier,"+Select.fields(variable,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
 				+","+Select.concat(variable, Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
 				+","+variable+"."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS+additionalFieldsNamesAsString)
-				,From.ofTuple(tupleClass)+(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins),getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates)
+				,From.ofTuple(tupleClass)+(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins)
+				,getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates)
 				,Order.of(Order.join(Order.asc(variable, Identity.FIELD_FIRST_NAME),Order.asc(variable, Identity.FIELD_LAST_NAMES))));
 	}
 	
