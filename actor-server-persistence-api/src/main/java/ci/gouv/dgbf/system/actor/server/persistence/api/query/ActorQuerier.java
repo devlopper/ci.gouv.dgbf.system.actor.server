@@ -345,8 +345,7 @@ public interface ActorQuerier extends Querier {
 				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueReadWhereFilter(Actor.class
 						,List.of(Actor.FIELD_CODE),getQueryValueReadWhereFilterAdditionalJoins()
 						,List.of(getQueryValueReadWhereFilterAdditionalPredicates()))
-				).setTupleFieldsNamesIndexesFromFieldsNames(Actor.FIELD_IDENTIFIER,Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES,Actor.FIELD_NAMES
-						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_CODE)
+				).setTupleFieldsNamesIndexes(IdentityQuerier.getQueryTupleFieldsNamesIndexesReadWhereFilter(Actor.FIELD_CODE))
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Long.class

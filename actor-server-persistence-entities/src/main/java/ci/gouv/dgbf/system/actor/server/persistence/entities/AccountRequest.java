@@ -44,6 +44,7 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	@Transient private AdministrativeUnit administrativeUnit;
 	@Transient private String administrativeUnitAsString;
 	@Transient private String administrativeFunction;
+	@Transient private String sectionAsString;
 	@Transient private Civility civility;
 	@Transient private String civilityAsString;
 	@Transient private IdentityGroup group;

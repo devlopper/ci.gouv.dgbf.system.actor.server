@@ -28,6 +28,7 @@ public class AccountRequestDto extends AbstractIdentifiableSystemScalarStringImp
 	private AdministrativeUnitDto administrativeUnit;
 	private String administrativeUnitAsString;
 	private String administrativeFunction;
+	private String sectionAsString;
 	private CivilityDto civility;
 	private String civilityAsString;
 	private IdentityGroupDto group;

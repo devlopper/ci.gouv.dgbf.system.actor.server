@@ -46,6 +46,7 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	@Transient private String names;
 	@Transient private String actOfAppointmentSignatureDateAsString;
 	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Transient private String administrativeUnitAsString,sectionAsString;
 	
 	@Override
 	public Identity setIdentifier(String identifier) {
@@ -86,6 +87,7 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_CIVILITY_STRING = "civilityAsString";

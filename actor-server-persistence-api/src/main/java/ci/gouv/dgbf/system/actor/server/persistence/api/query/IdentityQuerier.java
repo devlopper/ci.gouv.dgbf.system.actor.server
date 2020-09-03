@@ -1,11 +1,18 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -78,12 +85,11 @@ public interface IdentityQuerier extends Querier {
 	
 	/* read where filter */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Identity.class, "readWhereFilter");
-	Map<String,Integer> QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Identity.FIELD_IDENTIFIER
-			,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES,Identity.FIELD_NAMES,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS);
 	
 	static String getQueryValueReadWhereFilterWhere(Class<?> tupleClass,Collection<String> additionalPredicates) {
 		String variable = "t"+(Identity.class.equals(tupleClass) ? ConstantEmpty.STRING : ".identity");
-		Collection<String> predicates = CollectionHelper.listOf(Where.like(variable, Identity.FIELD_FIRST_NAME, PARAMETER_NAME_FIRST_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_FIRST_NAME)
+		Collection<String> predicates = CollectionHelper.listOf(
+				Where.like(variable, Identity.FIELD_FIRST_NAME, PARAMETER_NAME_FIRST_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_FIRST_NAME)
 				,Where.like(variable, Identity.FIELD_LAST_NAMES, PARAMETER_NAME_LAST_NAMES, NUMBER_OF_WORDS_OF_PARAMETER_NAME_LAST_NAMES)
 				,Where.like(variable, Identity.FIELD_ELECTRONIC_MAIL_ADDRESS, PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS));
 		if(CollectionHelper.isNotEmpty(additionalPredicates))
@@ -93,14 +99,47 @@ public interface IdentityQuerier extends Querier {
 	
 	static String getQueryValueReadWhereFilter(Class<?> tupleClass,Collection<String> additionalFieldsNames,String additionalJoins,Collection<String> additionalPredicates) {
 		String variable = "t"+(Identity.class.equals(tupleClass) ? ConstantEmpty.STRING : ".identity");
-		String additionalFieldsNamesAsString = CollectionHelper.isEmpty(additionalFieldsNames) ? ConstantEmpty.STRING : 
-			","+additionalFieldsNames.stream().map(x -> "t."+x).collect(Collectors.joining(","));
-		return Language.of(Select.of("t.identifier,"+Select.fields(variable,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
-				+","+Select.concat(variable, Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
-				+","+variable+"."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS+additionalFieldsNamesAsString)
-				,From.ofTuple(tupleClass)+(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins)
+		return jpql(
+				//Select
+				select(
+				"t.identifier"
+				,Select.fields(variable,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
+				,Select.concat(variable, Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES)
+				,variable+"."+Identity.FIELD_ELECTRONIC_MAIL_ADDRESS
+				,Select.concatCodeName("administrativeUnit")
+				,variable+"."+Identity.FIELD_ADMINISTRATIVE_FUNCTION
+				,Select.concatCodeName("section")
+				,CollectionHelper.isEmpty(additionalFieldsNames) ? ConstantEmpty.STRING : additionalFieldsNames.stream().map(x -> "t."+x).collect(Collectors.joining(","))
+				)
+				//From
+				,jpql(
+					From.ofTuple(tupleClass)
+					,"LEFT JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = "+variable+".administrativeUnit"
+					,"LEFT JOIN Section section ON section = administrativeUnit.section"
+					,(StringHelper.isBlank(additionalJoins) ? ConstantEmpty.STRING : " "+additionalJoins)
+				)
+				//Where
 				,getQueryValueReadWhereFilterWhere(tupleClass,additionalPredicates)
-				,Order.of(Order.join(Order.asc(variable, Identity.FIELD_FIRST_NAME),Order.asc(variable, Identity.FIELD_LAST_NAMES))));
+				//Order
+				,order(Order.join(asc(variable, Identity.FIELD_FIRST_NAME),asc(variable, Identity.FIELD_LAST_NAMES)))
+				);
+	}
+	
+	static Map<String,Integer> getQueryTupleFieldsNamesIndexesReadWhereFilter(Collection<String> additionalFieldsNames) {
+		Collection<String> fieldsNames = CollectionHelper.listOf(Identity.FIELD_IDENTIFIER,Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES,Identity.FIELD_NAMES
+				,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS,Identity.FIELD_ADMINISTRATIVE_UNIT_AS_STRING,Identity.FIELD_ADMINISTRATIVE_FUNCTION,Identity.FIELD_SECTION_AS_STRING);
+		if(CollectionHelper.isNotEmpty(additionalFieldsNames))
+			fieldsNames.addAll(additionalFieldsNames);
+		return MapHelper.instantiateStringIntegerByStrings(fieldsNames);
+	}
+	
+	static Map<String,Integer> getQueryTupleFieldsNamesIndexesReadWhereFilter(String...additionalFieldsNames) {
+		Collection<String> collection;
+		if(ArrayHelper.isEmpty(additionalFieldsNames))
+			collection = null;
+		else
+			collection = List.of(additionalFieldsNames);
+		return getQueryTupleFieldsNamesIndexesReadWhereFilter(collection);
 	}
 	
 	String QUERY_VALUE_READ_WHERE_FILTER = getQueryValueReadWhereFilter(Identity.class,null,null,null);
@@ -127,7 +166,7 @@ public interface IdentityQuerier extends Querier {
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Identity.class,Query.FIELD_RESULT_CLASS,Identity.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_WHERE_FILTER
-				).setTupleFieldsNamesIndexes(QUERY_VALUE_READ_WHERE_FILTER_TUPLE_FIELDS_NAMES_INDEXES)
+				).setTupleFieldsNamesIndexes(getQueryTupleFieldsNamesIndexesReadWhereFilter())
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Identity.class,Query.FIELD_RESULT_CLASS,Long.class
