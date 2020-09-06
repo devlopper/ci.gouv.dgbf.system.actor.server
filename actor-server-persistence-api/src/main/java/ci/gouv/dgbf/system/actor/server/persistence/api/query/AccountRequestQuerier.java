@@ -131,6 +131,9 @@ public interface AccountRequestQuerier extends Querier {
 	
 	/**/
 	
+	/* count */
+	//String QUERY_IDENTIFIER_COUNT_ALL = QueryIdentifierBuilder.getInstance().build(AccountRequest.class, "countAll");
+	
 	/* Read by electronic mail address */
 	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(AccountRequest.class, "readByElectronicMailAddress");
 	String QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS = Language.of(Select.of("t"),From.ofTuple(AccountRequest.class)
@@ -196,6 +199,11 @@ public interface AccountRequestQuerier extends Querier {
 						,getQueryValueReadWhereFilterAdditionalJoins()
 						,List.of(getQueryValueReadWhereFilterAdditionalPredicates()))
 				)
+				/*,
+				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_ALL
+						,Query.FIELD_TUPLE_CLASS,AccountRequest.class,Query.FIELD_RESULT_CLASS,Long.class
+						,Query.FIELD_VALUE,"SELECT COUNT(t.identifier) FROM AccountRequest t"
+						)*/
 			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN

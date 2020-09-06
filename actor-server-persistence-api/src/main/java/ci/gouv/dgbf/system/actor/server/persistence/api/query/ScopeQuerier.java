@@ -534,63 +534,49 @@ public interface ScopeQuerier extends Querier {
 
 	/**/
 	
-	static String getPredicateHasBeenMarkedVisible() {
+	static String getPredicateHasBeenMarkedVisible(String parameterNameActorCode) {
 		return exists(
 				select("v.identifier")
 				,from("ActorScope v")
-				,where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope","(v.visible IS NULL OR v.visible = true)"))
+				,where(and("v.actor.code = "+parameterNameActorCode,"v.scope = scope","(v.visible IS NULL OR v.visible = true)"))
 			);
 	}
 	
-	static String getPredicateHasVisibleChild(String tupleName,String variableName,String fieldName) {
+	static String getPredicateHasBeenMarkedVisible() {
+		return getPredicateHasBeenMarkedVisible(":"+PARAMETER_NAME_ACTOR_CODE);
+	}
+	
+	static String getPredicateHasVisibleChild(String tupleName,String variableName,String fieldName,String parameterNameActorCode) {
 		return 
 			exists(
 				select("actorScope.identifier")
 				,from("ActorScope actorScope")
 				,"JOIN Scope scopeChild ON actorScope.scope = scopeChild"
 				,"JOIN "+tupleName+" "+variableName+" ON "+variableName+" = scopeChild"
-				,where(and(variableName+"."+fieldName+" = scope","actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
+				,where(and(variableName+"."+fieldName+" = scope","actorScope.actor.code = "+parameterNameActorCode))
 			);
-		/*
-		return parenthesis(or(
-				//From Actor Scope
-				exists(select("v.identifier"),from("ActorScope v"),where(and("v.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"v.scope = scope")))
-				//From Administrative Unit
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeUa ON actorScope.scope = scopeUa"
-					,"JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = scopeUa"
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"administrativeUnit.section = scope")))
-				//From Budget Specialization Unit
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeBudgetSpecializationUnit ON actorScope.scope = scopeBudgetSpecializationUnit"
-					,"JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = scopeBudgetSpecializationUnit "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"budgetSpecializationUnit.section = scope")))
-				//From Activity
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeActivity ON actorScope.scope = scopeActivity"
-					,"JOIN Activity activity ON activity = scopeActivity "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"activity.section = scope")))
-				//From Imputation
-				,exists(select("actorScope.identifier"),from("ActorScope actorScope")
-					,"JOIN Scope scopeImputation ON actorScope.scope = scopeImputation"
-					,"JOIN Imputation imputation ON imputation = scopeImputation "
-					,where(and("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE,"imputation.section = scope")))
-			));		
-		*/
+	}
+	
+	static String getPredicateHasVisibleChild(String tupleName,String variableName,String fieldName) {
+		return getPredicateHasVisibleChild(tupleName, variableName, fieldName, ":"+PARAMETER_NAME_ACTOR_CODE);
+	}
+	
+	static String getPredicateHasVisibleChild(Class<?> klass,String fieldName,String parameterNameActorCode) {
+		return getPredicateHasVisibleChild(klass.getSimpleName(), StringHelper.getVariableNameFrom(klass.getSimpleName()), fieldName,parameterNameActorCode);
 	}
 	
 	static String getPredicateHasVisibleChild(Class<?> klass,String fieldName) {
-		return getPredicateHasVisibleChild(klass.getSimpleName(), StringHelper.getVariableNameFrom(klass.getSimpleName()), fieldName);
+		return getPredicateHasVisibleChild(klass, fieldName,":"+PARAMETER_NAME_ACTOR_CODE);
 	}
 	
-	static String getPredicateHasVisibleParent(String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName) {
+	static String getPredicateHasVisibleParent(String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName,String parameterNameActorCode) {
 		return 
 			exists(and(
 				jpql(
 						select("actorScope.identifier")
 						,from("ActorScope actorScope JOIN Scope scopeParent ON actorScope.scope = scopeParent")
 						,"JOIN "+parentTupleName+" "+parentVariableName+" ON "+parentVariableName+" = scopeParent"
-						,where("actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE)
+						,where("actorScope.actor.code = "+parameterNameActorCode)
 				)
 				,exists(
 						select(variableName)
@@ -600,22 +586,23 @@ public interface ScopeQuerier extends Querier {
 								,not(
 										exists(select("actorScope"+tupleName+" ")+from("ActorScope actorScope"+tupleName+" ")
 											+ where(and("actorScope"+tupleName+".scope = scope"
-													,"actorScope"+tupleName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+													,"actorScope"+tupleName+".actor.code = "+parameterNameActorCode
 													,"actorScope"+tupleName+".visible IS NOT NULL","actorScope"+tupleName+".visible = false"
 													))
 											)
 									)
-								/*,parenthesis(or(
-										Where.like(parentVariableName, PARAMETER_NAME_NAME, parentVariableName+"CodeName",NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-								))*/
 						))
 				)
 			));
 	}
 	
-	static String getPredicateHasVisibleParent(String parentTupleName,String tupleName) {
+	static String getPredicateHasVisibleParent(String parentTupleName,String tupleName,String parameterNameActorCode) {
 		String variableName = StringHelper.getVariableNameFrom(parentTupleName);
-		return getPredicateHasVisibleParent(parentTupleName, variableName, tupleName, StringHelper.getVariableNameFrom(tupleName), variableName);
+		return getPredicateHasVisibleParent(parentTupleName, variableName, tupleName, StringHelper.getVariableNameFrom(tupleName), variableName,parameterNameActorCode);
+	}
+	
+	static String getPredicateHasVisibleParent(String parentTupleName,String tupleName) {
+		return getPredicateHasVisibleParent(parentTupleName, tupleName, ":"+PARAMETER_NAME_ACTOR_CODE);
 	}
 	
 	static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Collection<Class<?>> classes) {

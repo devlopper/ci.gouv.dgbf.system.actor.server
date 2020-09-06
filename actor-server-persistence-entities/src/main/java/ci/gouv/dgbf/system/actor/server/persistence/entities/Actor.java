@@ -18,9 +18,15 @@ import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.AuditOverrides;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,12 +37,22 @@ import lombok.experimental.Accessors;
 @Entity @Table(name=Actor.TABLE_NAME)
 @AttributeOverrides(value= {
 		@AttributeOverride(name = Actor.FIELD_CODE,column = @Column(name="NOM_UTILISATEUR"))
+		,@AttributeOverride(name = Actor.FIELD___AUDIT_WHO__,column = @Column(name="audit_acteur"))
+		,@AttributeOverride(name = Actor.FIELD___AUDIT_WHAT__,column = @Column(name="audit_action"))
+		,@AttributeOverride(name = Actor.FIELD___AUDIT_WHEN__,column = @Column(name="audit_date"))
+		,@AttributeOverride(name = Actor.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="audit_fonctionalite"))
 })
-public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Identity.Interface,Serializable {
+@Audited
+@AuditOverrides(value = {
+		@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringImpl.class)
+		,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl.class)
+		,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl.class)
+})
+public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl implements Identity.Interface,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) @NotNull private Identity identity;
-	@Column(name = COLUMN_CREATION_DATE) private LocalDateTime creationDate;
+	@Column(name = COLUMN_CREATION_DATE) @NotAudited private LocalDateTime creationDate;
 	@Column(name = COLUMN_NOTATION) private Byte notation;
 	@Column(name = COLUMN_COLOR) private String color; 
 	

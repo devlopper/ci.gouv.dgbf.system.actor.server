@@ -7,6 +7,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Select.selec
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
+//import static org.cyk.utility.__kernel__.persistence.query.Language.Where.equals;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
@@ -54,6 +55,9 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_SECTION_CODE = "visibleSectionCode";
+	String PARAMETER_NAME_VISIBLE_SECTION_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_SECTION_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_SECTION_NAME = "visibleSectionName";
 	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
@@ -117,8 +121,10 @@ public interface ActorQuerier extends Querier {
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = IdentityQuerier.AbstractImpl.buildFilterOfWhereFilter(arguments);		
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
-			filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
 			filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_CODE);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_SECTION_CODE);
+			ScopeOfTypeSectionQuerier.AbstractImpl.prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_SECTION_CODE,PARAMETER_NAME_VISIBLE_SECTION_NAME);
 			arguments.setFilter(filter);
 		}
 		
@@ -369,10 +375,19 @@ public interface ActorQuerier extends Querier {
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalJoins() {
-		return "JOIN ActorProfile ap ON ap.actor = t";
+		return jpql(
+				"JOIN ActorProfile ap ON ap.actor = t" // filter by profile
+				);
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicates() {
+		return and(
+				getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode()
+				,getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode()
+			);
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode() {
 		return and(
 				like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
 				,parenthesis(or(
@@ -380,9 +395,17 @@ public interface ActorQuerier extends Querier {
 					,exists(
 						select("pf")
 						,from("ProfileFunction pf")
-						,where(and("pf.profile = ap.profile",like("pf", FieldHelper.join(ProfileFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)))
+						,where(and("pf.profile = ap.profile",Where.equals("pf", FieldHelper.join(ProfileFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)))
 					)
 				))
 			);
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode() {
+		return parenthesis(or(
+				":"+PARAMETER_NAME_VISIBLE_SECTION_CODE_NULLABLE+" = true"
+				,exists("SELECT scope FROM Scope scope " + ScopeOfTypeSectionQuerier.getQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_VISIBLE_SECTION_CODE
+				,PARAMETER_NAME_VISIBLE_SECTION_NAME,"t.code"))
+			));
 	}
 }

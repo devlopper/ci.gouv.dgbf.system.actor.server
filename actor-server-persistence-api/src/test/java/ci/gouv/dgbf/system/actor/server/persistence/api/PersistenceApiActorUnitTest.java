@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -49,12 +50,16 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Test
 	public void readWhereFilter(){
-		assertReadWhereFilter(null, null, null, null, "admin","u01","u02","u03");
-		assertReadWhereFilter("admin", null, null, null, "admin");
-		assertReadWhereFilter("u", null, null, null, "u01","u02","u03");
-		assertReadWhereFilter("1", null, null, null, "u01");
-		assertReadWhereFilter(null, "user", null, null, "u01","u02","u03");
-		assertReadWhereFilter(null, null, null, "F1", "u01","u03");
+		assertReadWhereFilter(null, null, null, null,null, "admin","u01","u02","u03");
+		assertReadWhereFilter("admin", null, null, null,null, "admin");
+		assertReadWhereFilter("u", null, null, null,null, "u01","u02","u03");
+		assertReadWhereFilter("1", null, null, null,null, "u01");
+		assertReadWhereFilter(null, "user", null, null,null, "u01","u02","u03");
+		assertReadWhereFilter(null, null, null, "F1",null, "u01","u03");
+		
+		assertReadWhereFilter(null, null, null, null,"101", "u01","u03");
+		assertReadWhereFilter(null, null, null, null,"327", "admin","u03");
+		assertReadWhereFilter(null, null, null, null,"323", "u01","u02","u03");
 	}
 	
 	@Test
@@ -125,11 +130,17 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		createProfilePrivileges("admin", "M1");
 		createProfileFunctions("admin", "F2");
 		
+		createActorScopes("u01", "101");
+		createActorScopes("u01", "323");
 		createProfileFunctions("u01", "F1");
 		
+		createActorScopes("u02", "323");
 		createProfileFunctions("u02", "F2");
 		createProfileFunctions("u02", "F3");
 		
+		createActorScopes("u03", "101");
+		createActorScopes("u03", "327");
+		createActorScopes("u03", "323");
 		createProfileFunctions("u03", "F1");
 		createProfileFunctions("u03", "F3");
 	}
@@ -188,10 +199,14 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	
 	/**/
 	
-	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String functionCode ,String...expectedCodes) {
-		Collection<Actor> actors = ActorQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().addFilterFieldsValues(
-				IdentityQuerier.PARAMETER_NAME_CODE,actorCode,IdentityQuerier.PARAMETER_NAME_FIRST_NAME,firstName,IdentityQuerier.PARAMETER_NAME_LAST_NAMES,lastNames
-				,ActorQuerier.PARAMETER_NAME_FUNCTION_CODE,functionCode));
+	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String functionCode,String visibleSectionCode ,String...expectedCodes) {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().addFilterFieldsValues(
+				IdentityQuerier.PARAMETER_NAME_CODE,actorCode,IdentityQuerier.PARAMETER_NAME_FIRST_NAME,firstName,IdentityQuerier.PARAMETER_NAME_LAST_NAMES,lastNames);
+		if(StringHelper.isNotBlank(functionCode))
+			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_FUNCTION_CODE,functionCode);
+		if(StringHelper.isNotBlank(visibleSectionCode))
+			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_VISIBLE_SECTION_CODE,visibleSectionCode);
+		Collection<Actor> actors = ActorQuerier.getInstance().readWhereFilter(arguments);
 		if(ArrayHelper.isEmpty(expectedCodes)) {
 			assertThat(actors).as("actors found").isNull();
 		}else {

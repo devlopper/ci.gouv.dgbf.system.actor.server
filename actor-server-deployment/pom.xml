@@ -73,7 +73,7 @@
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<scope>compile</scope>
-		</dependency>
+		</dependency>		
 	</dependencies>		
 	
 	<profiles>

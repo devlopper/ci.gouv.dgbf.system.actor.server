@@ -3,12 +3,19 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.util.Collection;
 import java.util.logging.Level;
 
+import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
@@ -17,6 +24,14 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void counts(){
+		System.out.println("--------------------- Counts ---------------------");
+		System.out.println("Actors : "+EntityCounter.getInstance().count(Actor.class, ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER));
+		System.out.println("AccountRequests : "+EntityCounter.getInstance().count(AccountRequest.class, AccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER));
+		System.out.println("RejectedAccountRequests : "+EntityCounter.getInstance().count(RejectedAccountRequest.class, RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER));
 	}
 	
 	@Test

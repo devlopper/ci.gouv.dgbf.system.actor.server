@@ -115,9 +115,17 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 		private static void prepareVisibleWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
-			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter);
 			arguments.setFilter(filter);
+		}
+		
+		public static void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter,String parameterNameCode,String parameterNameName) {
+			filter.addFieldsContains(arguments,parameterNameCode);
+			filter.addFieldContainsStringOrWords(parameterNameName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+		}
+		
+		public static void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter) {
+			prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter, PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
 		}
 		
 		@Override
@@ -205,24 +213,46 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 		);
 	}
 	
-	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
+	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible(String parameterNameActorCode) {
 		return parenthesis(or(
-				ScopeQuerier.getPredicateHasBeenMarkedVisible()
-				,getPredicateHasVisibleChild(AdministrativeUnit.class)
-				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class)
-				,getPredicateHasVisibleChild(Activity.class)
-				,getPredicateHasVisibleChild(Imputation.class)
+				ScopeQuerier.getPredicateHasBeenMarkedVisible(parameterNameActorCode)
+				,getPredicateHasVisibleChild(AdministrativeUnit.class,parameterNameActorCode)
+				,getPredicateHasVisibleChild(BudgetSpecializationUnit.class,parameterNameActorCode)
+				,getPredicateHasVisibleChild(Activity.class,parameterNameActorCode)
+				,getPredicateHasVisibleChild(Imputation.class,parameterNameActorCode)
 			));
 	}
 	
-	static String getQueryValueReadVisibleWhereFilterWherePredicate() {
+	static String getQueryValueReadVisibleWhereFilterWherePredicateVisible() {
+		return getQueryValueReadVisibleWhereFilterWherePredicateVisible(":"+PARAMETER_NAME_ACTOR_CODE);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName,String parameterNameActorCode) {
 		return Where.and("scope.type.code = '"+ScopeType.CODE_SECTION+"'"
-				,getQueryValueReadVisibleWhereFilterWherePredicateVisible(),Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
-				,Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
+				,getQueryValueReadVisibleWhereFilterWherePredicateVisible(parameterNameActorCode)
+				,Where.like("scope", Scope.FIELD_CODE, parameterNameCode)
+				,Where.like("scope", Scope.FIELD_NAME, parameterNameName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName) {
+		return getQueryValueReadVisibleWhereFilterWherePredicate(parameterNameCode, parameterNameName, ":"+PARAMETER_NAME_ACTOR_CODE);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWherePredicate() {
+		return getQueryValueReadVisibleWhereFilterWherePredicate(PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName,String parameterNameActorCode) {
+		return Where.of(getQueryValueReadVisibleWhereFilterWherePredicate(parameterNameCode,parameterNameName,parameterNameActorCode));
+	}
+	
+	static String getQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName) {
+		return getQueryValueReadVisibleWhereFilterWhere(parameterNameCode, parameterNameName, ":"+PARAMETER_NAME_ACTOR_CODE);
 	}
 	
 	static String getQueryValueReadVisibleWhereFilterWhere() {
-		return Where.of(getQueryValueReadVisibleWhereFilterWherePredicate());
+		return getQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
 	}
 	
 	static String getQueryValueReadInvisibleWhereFilterWhere() {
@@ -252,7 +282,11 @@ public interface ScopeOfTypeSectionQuerier extends Querier {
 		return ArrayUtils.contains(QUERIES_IDENTIFIERS, arguments.getQuery().getIdentifier());
 	}
 	
+	static String getPredicateHasVisibleChild(Class<?> klass,String parameterNameActorCode) {
+		return ScopeQuerier.getPredicateHasVisibleChild(klass, "section",parameterNameActorCode);
+	}
+	
 	static String getPredicateHasVisibleChild(Class<?> klass) {
-		return ScopeQuerier.getPredicateHasVisibleChild(klass, "section");
+		return getPredicateHasVisibleChild(klass, ":"+PARAMETER_NAME_ACTOR_CODE);
 	}
 }

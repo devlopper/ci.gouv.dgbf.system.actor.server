@@ -81,6 +81,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		accountRequests.forEach(accountRequest -> {
 			String password = RandomHelper.getAlphanumeric(6);
 			Actor actor = new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()).setPassword(password);
+			actor.set__auditFunctionality__("ACCEPTATION_DEMANDE");
 			actors.add(actor);
 		});
 		//we create actor

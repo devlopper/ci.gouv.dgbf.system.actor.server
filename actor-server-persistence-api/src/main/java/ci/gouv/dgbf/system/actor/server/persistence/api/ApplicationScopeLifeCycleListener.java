@@ -33,6 +33,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -60,6 +61,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		
 		ScopeQuerier.initialize();
 		ScopeTypeQuerier.initialize();
+		SectionQuerier.initialize();
 		
 		PrivilegeQuerier.initialize();
 		PrivilegeTypeQuerier.initialize();
