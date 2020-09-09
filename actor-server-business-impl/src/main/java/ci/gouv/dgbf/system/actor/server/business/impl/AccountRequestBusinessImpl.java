@@ -79,8 +79,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Collection<Actor> actors = new ArrayList<>();
 		accountRequests.forEach(accountRequest -> {
-			String password = RandomHelper.getAlphanumeric(6);
-			Actor actor = new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()).setPassword(password);
+			Actor actor = new Actor().setCreationDate(localDateTime).setIdentity(accountRequest.getIdentity()).setPassword(ActorBusiness.generatePassword());
 			actor.set__auditFunctionality__("ACCEPTATION_DEMANDE");
 			actors.add(actor);
 		});
@@ -105,10 +104,12 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 		Collection<RejectedAccountRequest> rejectedAccountRequests = new ArrayList<>();
 		LocalDateTime localDateTime = LocalDateTime.now();
 		accountRequests.forEach(accountRequest -> {
+			if(StringHelper.isBlank(accountRequest.getRejectReason()))
+				throw new RuntimeException("Le motif de rejet est obligatoire");
 			RejectedAccountRequest rejectedAccountRequest = new RejectedAccountRequest();		
 			rejectedAccountRequest.setDate(localDateTime).setElectronicMailAddress(accountRequest.getIdentity().getElectronicMailAddress())
 			.setFirstName(accountRequest.getIdentity().getFirstName()).setLastNames(accountRequest.getIdentity().getLastNames()).setReason(null)
-			.setRequestDate(accountRequest.getCreationDate()).setReason("???");
+			.setRequestDate(accountRequest.getCreationDate()).setReason(accountRequest.getRejectReason());
 			rejectedAccountRequests.add(rejectedAccountRequest);
 		});
 		//we archive rejection

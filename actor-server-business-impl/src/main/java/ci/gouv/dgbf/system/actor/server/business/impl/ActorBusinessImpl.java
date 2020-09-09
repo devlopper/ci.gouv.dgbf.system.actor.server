@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.security.keycloak.KeycloakHelper;
 import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.security.keycloak.UserManager;
@@ -40,6 +41,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
@@ -160,12 +162,18 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
 		
 		// Integration to keycloak
+		if(StringHelper.isBlank(actor.getPassword()))
+			actor.setPassword(ActorBusiness.generatePassword());
 		if((actor.getKeycloakUserCreatable() == null || Boolean.TRUE.equals(actor.getKeycloakUserCreatable())) && Boolean.TRUE.equals(ConfigurationHelper.is(VariableName.KEYCLOAK_ENABLED)))
 			try {
 				createKeycloakUser(actor);
 			} catch (Exception exception) {
 				LogHelper.log(exception, getClass());
 			}
+		
+		if(Boolean.TRUE.equals(actor.getEmailSendableAfterCreation())) {
+			notifyCreate(actor);
+		}
 	}
 	
 	private void createKeycloakUser(Actor actor) {
@@ -212,6 +220,19 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	}
 	
 	/**/
+	
+	private static void notifyCreate(Actor actor) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - Création de compte", FreeMarker.getCreatedMailMessage(actor), actor.getIdentity().getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}
+			}
+		}).start();
+	}
 	
 	private static final String DEFAULT_PASSWORD = "123";
 }

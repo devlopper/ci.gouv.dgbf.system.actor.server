@@ -104,6 +104,17 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 			return ResponseBuilder.getInstance().buildRuntimeException(null, "Veuillez fournir les demandes de comptes à "+(Boolean.TRUE.equals(accept) ? "accepter" : "rejeter"));
 		Collection<AccountRequest> persistences = __inject__(AccountRequestBusiness.class).findBySystemIdentifiers(accountRequests.stream()
 				.map(AccountRequestDto::getIdentifier).collect(Collectors.toList())); 
+		if(!Boolean.TRUE.equals(accept)) {
+			for(AccountRequest p : persistences) {
+				for(AccountRequestDto dto : accountRequests) {
+					if(p.getIdentifier().equals(dto.getIdentifier())) {
+						p.setRejectReason(dto.getRejectReason());
+						break;
+					}
+				}	
+			}
+		}
+		
 		Runner.Arguments runnerArguments = new Runner.Arguments().addRunnables(new Runnable() {				
 			@Override
 			public void run() {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
+import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
@@ -24,6 +26,11 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	//@Test
+	public void create(){
+		EntityCreator.getInstance().createOneInTransaction(new Identity().setFirstName("a").setLastNames("b").setElectronicMailAddress("a@b.com"));
 	}
 	
 	@Test

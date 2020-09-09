@@ -32,6 +32,11 @@ public class FreeMarker {
 				, Map.of("names",Identity.getNames(rejectedAccountRequest),"reason",rejectedAccountRequest.getReason()));
 	}
 	
+	public static String getCreatedMailMessage(Actor actor) {
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("actor_created.ftlh")
+				, Map.of("names",Identity.getNames(actor),"username",actor.getCode(),"password",actor.getPassword()));
+	}
+	
 	/**/
 	
 	public static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_29);

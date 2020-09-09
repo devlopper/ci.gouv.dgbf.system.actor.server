@@ -43,6 +43,7 @@ public class AccountRequestDto extends AbstractIdentifiableSystemScalarStringImp
 	private String submissionDateAsString;
 	private Long submissionDateAsTimestamp;
 	private String accessToken;
+	private String rejectReason;
 	
 	private ArrayList<BudgetaryFunctionDto> budgetaryFunctions;
 	private ArrayList<FunctionDto> functions;

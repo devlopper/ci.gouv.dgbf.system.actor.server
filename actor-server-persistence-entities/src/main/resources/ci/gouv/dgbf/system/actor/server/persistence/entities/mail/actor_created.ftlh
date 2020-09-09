@@ -1,4 +1,4 @@
-<p>${names}&nbsp;,votre demande a &eacute;t&eacute; accept&eacute;e.</p>
+<p>${names}&nbsp;,un compte a &eacute;t&eacute; cr&eacute;&eacute;.</p>
 <p>Votre nom d'utilisateur et votre mot de passe sont les suivants :&nbsp;</p>
 <p>Nom d'utilisateur :&nbsp;${username}</p>
 <p>Mot de passe :&nbsp;${password}</p>
