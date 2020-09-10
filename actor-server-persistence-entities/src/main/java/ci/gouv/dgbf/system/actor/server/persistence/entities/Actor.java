@@ -80,6 +80,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
 	@Transient private String creationDateAsString;
 	
+	@Transient private Collection<Profile> profiles;
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<Privilege> visibleModules;
@@ -151,6 +152,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTIONS = "functions";
+	public static final String FIELD_PROFILES = "profiles";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	

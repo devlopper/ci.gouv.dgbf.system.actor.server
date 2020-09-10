@@ -17,7 +17,6 @@ import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
-import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
@@ -36,6 +35,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	
 	@Override
 	public void record(Collection<AccountRequest> accountRequests) {
+		processBeforeRecordOrSubmit(accountRequests);
 		saveMany(accountRequests);
 		//TODO this is temporary and has to be deleted
 		notifyRecord(accountRequests);
@@ -43,8 +43,24 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 	
 	@Override
 	public void submit(Collection<AccountRequest> accountRequests) {
+		processBeforeRecordOrSubmit(accountRequests);
 		saveMany(accountRequests);
 		notifySubmit(accountRequests);
+	}
+	
+	public void processBeforeRecordOrSubmit(Collection<AccountRequest> accountRequests) {
+		if(CollectionHelper.isEmpty(accountRequests))
+			return;
+		accountRequests.forEach(accountRequest -> {
+			AccountRequest existing = StringHelper.isBlank(accountRequest.getSystemIdentifier()) ? null : __inject__(AccountRequestPersistence.class).readBySystemIdentifier(accountRequest.getSystemIdentifier());
+			if(existing == null) {
+				accountRequest.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) accountRequest));
+				if(StringHelper.isBlank(accountRequest.getIdentifier()))
+					accountRequest.setIdentifier("D_"+accountRequest.getElectronicMailAddress());
+				accountRequest.setCreationDate(LocalDateTime.now());
+				accountRequest.setAccessToken(RandomHelper.getAlphanumeric(3)+"_"+RandomHelper.getAlphanumeric(4)+"_"+RandomHelper.getAlphanumeric(3));	
+			}	
+		});
 	}
 	
 	@Override
@@ -125,23 +141,7 @@ public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<Accou
 			return;
 		reject(CollectionHelper.listOf(accountRequests));
 	}
-	
-	@Override
-	protected void __listenExecuteCreateBefore__(AccountRequest accountRequest, Properties properties,BusinessFunctionCreator function) {
-		super.__listenExecuteCreateBefore__(accountRequest, properties, function);
-		//we create identity first
-		accountRequest.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) accountRequest));
-		if(StringHelper.isBlank(accountRequest.getIdentifier()))
-			accountRequest.setIdentifier("DM_"+accountRequest.getElectronicMailAddress());
-		accountRequest.setCreationDate(LocalDateTime.now());
-		accountRequest.setAccessToken(RandomHelper.getAlphanumeric(3)+"_"+RandomHelper.getAlphanumeric(4)+"_"+RandomHelper.getAlphanumeric(3));
-	}
-	
-	@Override
-	protected void __listenExecuteCreateAfter__(AccountRequest accountRequest, Properties properties,BusinessFunctionCreator function) {
-		super.__listenExecuteCreateAfter__(accountRequest, properties, function);
-	}
-	
+		
 	@Override
 	protected void __listenExecuteDeleteAfter__(AccountRequest accountRequest, Properties properties, BusinessFunctionRemover function) {
 		super.__listenExecuteDeleteAfter__(accountRequest, properties, function);

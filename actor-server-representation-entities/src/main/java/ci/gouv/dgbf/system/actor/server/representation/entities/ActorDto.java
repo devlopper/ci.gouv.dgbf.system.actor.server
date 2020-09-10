@@ -40,6 +40,7 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private IdentityGroupDto group;
 	private Boolean emailSendableAfterCreation;
 	
+	private ArrayList<ProfileDto> profiles;
 	private ArrayList<FunctionDto> functions;
 	private ArrayList<String> functionsCodes;
 	private ArrayList<PrivilegeDto> privileges;

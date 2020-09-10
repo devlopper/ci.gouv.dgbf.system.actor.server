@@ -33,10 +33,8 @@ import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.ProfileTypePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
@@ -44,9 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 
 @ApplicationScoped
 public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPersistence> implements ActorBusiness,Serializable {
@@ -147,20 +143,6 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	@Override
 	protected void __listenExecuteCreateAfter__(Actor actor, Properties properties, BusinessFunctionCreator function) {
 		super.__listenExecuteCreateAfter__(actor, properties, function);
-		//we instantiate user profile
-		Profile profile = new Profile().setType(__inject__(ProfileTypePersistence.class).readByBusinessIdentifier(ProfileType.CODE_UTILISATEUR));
-		profile.setCode(actor.getCode());
-		profile.setName("Profile de "+actor.getIdentity().getElectronicMailAddress());
-		//we collect predefined privileges from system profiles based on given functions
-		if(CollectionHelper.isNotEmpty(actor.getFunctions())) {
-			Collection<Privilege> privileges = PrivilegeQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(List.of(ProfileType.CODE_SYSTEME)
-					, actor.getFunctions().stream().map(x -> x.getCode()).collect(Collectors.toSet()));			
-			if(CollectionHelper.isNotEmpty(privileges))								
-				profile.getPrivileges(Boolean.TRUE).addAll(privileges);
-		}
-		__inject__(ProfileBusiness.class).create(profile);
-		__inject__(ActorProfileBusiness.class).create(new ActorProfile().setActor(actor).setProfile(profile));
-		
 		// Integration to keycloak
 		if(StringHelper.isBlank(actor.getPassword()))
 			actor.setPassword(ActorBusiness.generatePassword());

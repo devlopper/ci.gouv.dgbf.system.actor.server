@@ -23,31 +23,31 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Créer des privilèges à partir de fonctions",tags = {TAG_ACTORS})
+	@ApiOperation(value = "Créer des privilèges à partir de fonctions",tags = {TAG})
 	Response createPrivilegesFromFunctions(Collection<ActorDto> actors);
 	
 	@GET
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Obtenir les informations de profile d'un compte utilisateur",tags = {TAG_ACTORS})
+	@ApiOperation(value = "Obtenir les informations de profile d'un compte utilisateur",tags = {TAG})
 	Response getProfileInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak",tags = {TAG_ACTORS})
+	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak",tags = {TAG})
 	Response importFromKeycloak();
 	
 	@POST
 	@Path(PATH_EXPORT_TO_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Exporter les acteurs vers keycloak",tags = {TAG_ACTORS})
+	@ApiOperation(value = "Exporter les acteurs vers keycloak",tags = {TAG})
 	Response exportToKeycloak();
 	
 	@POST
 	@Path(PATH_SEND_UPDATE_PASSWORD_EMAIL)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Envoyer un mail de mise à jour du mot de passe",tags = {TAG_ACTORS})
+	@ApiOperation(value = "Envoyer un mail de mise à jour du mot de passe",tags = {TAG})
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	String PATH = "actor";
@@ -61,7 +61,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	
-	String TAG_ACTORS = "Acteurs";
+	String TAG = "Acteurs";
 	
 	static ActorRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ActorRepresentation.class);

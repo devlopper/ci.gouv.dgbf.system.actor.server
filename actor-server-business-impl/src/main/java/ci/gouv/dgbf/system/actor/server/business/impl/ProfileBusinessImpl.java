@@ -51,6 +51,9 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 	@Override
 	protected void __listenExecuteDeleteBefore__(Profile profile, Properties properties,BusinessFunctionRemover function) {
 		super.__listenExecuteDeleteBefore__(profile, properties, function);
+		if(profile.getType() != null && ProfileType.CODE_SYSTEME.equals(profile.getType().getCode()))
+			throw new RuntimeException("Impossible de supprimer le profile système <<"+profile+">>");
+		
 		Collection<ProfilePrivilege> profilePrivileges = ProfilePrivilegeQuerier.getInstance().readByProfilesCodes(List.of(profile.getCode()));
 		if(CollectionHelper.isNotEmpty(profilePrivileges))
 			__inject__(ProfilePrivilegeBusiness.class).deleteMany(profilePrivileges);

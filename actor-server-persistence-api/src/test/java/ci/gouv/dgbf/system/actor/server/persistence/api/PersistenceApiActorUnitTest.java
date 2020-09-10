@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
@@ -41,6 +42,7 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
+		SecurityHelper.PRINCIPALABLE.set(Boolean.FALSE);
 	}
 	
 	@Override
@@ -55,7 +57,7 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		assertReadWhereFilter("u", null, null, null,null, "u01","u02","u03");
 		assertReadWhereFilter("1", null, null, null,null, "u01");
 		assertReadWhereFilter(null, "user", null, null,null, "u01","u02","u03");
-		assertReadWhereFilter(null, null, null, "F1",null, "u01","u03");
+		assertReadWhereFilter(null, null, null, "P1",null, "u01","u03");
 		
 		assertReadWhereFilter(null, null, null, null,"101", "u01","u03");
 		assertReadWhereFilter(null, null, null, null,"327", "admin","u03");
@@ -81,7 +83,7 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 				.setQueryFromIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER)));
 		assertThat(actor.getFirstName()).isEqualTo("Komenan");
 		assertThat(actor.getLastNames()).isEqualTo("Yao");		
-		assertThat(actor.getFunctions()).isNotEmpty();
+		assertThat(actor.getProfiles()).isNotEmpty();
 		assertThat(actor.getVisibleModules()).isNotEmpty();
 		assertThat(actor.getVisibleSections()).isNotEmpty();
 	}
@@ -99,12 +101,19 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 				,new Civility().setCode("Monsieur"),new Civility().setCode("Madame"),new Civility().setCode("Docteur")
 				,new IdentityGroup().setCode("Fonctionnaire"),new IdentityGroup().setCode("Contractuel")
 				,new PrivilegeType().setCode(PrivilegeType.CODE_MODULE)
-				,new FunctionType().setCode("A"));
+				,new FunctionType().setCode("A")
+				,new ProfileType().setCode("A"));
 		
 		EntityCreator.getInstance().createManyInTransaction(
 				new Function().setCode("F1").setTypeFromIdentifier("A")
 				,new Function().setCode("F2").setTypeFromIdentifier("A")
 				,new Function().setCode("F3").setTypeFromIdentifier("A")
+				);
+		
+		EntityCreator.getInstance().createManyInTransaction(
+				new Profile().setCode("P1").setTypeFromIdentifier("A")
+				,new Profile().setCode("P2").setTypeFromIdentifier("A")
+				,new Profile().setCode("P3").setTypeFromIdentifier("A")
 				);
 		
 		//Sections
@@ -128,21 +137,21 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		
 		createActorScopes("admin", "327");
 		createProfilePrivileges("admin", "M1");
-		createProfileFunctions("admin", "F2");
+		createActorProfiles("admin", "P2");
 		
 		createActorScopes("u01", "101");
 		createActorScopes("u01", "323");
-		createProfileFunctions("u01", "F1");
+		createActorProfiles("u01", "P1");
 		
 		createActorScopes("u02", "323");
-		createProfileFunctions("u02", "F2");
-		createProfileFunctions("u02", "F3");
+		createActorProfiles("u02", "P2");
+		createActorProfiles("u02", "P3");
 		
 		createActorScopes("u03", "101");
 		createActorScopes("u03", "327");
 		createActorScopes("u03", "323");
-		createProfileFunctions("u03", "F1");
-		createProfileFunctions("u03", "F3");
+		createActorProfiles("u03", "P1");
+		createActorProfiles("u03", "P3");
 	}
 	
 	private void createSection(String code,String name) {
@@ -183,12 +192,12 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(profilePrivileges);
 	}
 	
-	private void createProfileFunctions(String profileIdentifier,String...functionIdentifiers) {
+	/*private void createProfileFunctions(String profileIdentifier,String...functionIdentifiers) {
 		Collection<Object> profileFunctions = new ArrayList<>();
 		for(String functionIdentifier : functionIdentifiers)
 			profileFunctions.add(new ProfileFunction().setProfileFromIdentifier(profileIdentifier).setFunctionFromIdentifier(functionIdentifier));
 		EntityCreator.getInstance().createManyInTransaction(profileFunctions);
-	}
+	}*/
 	
 	private void createActorScopes(String actorIdentifier,String...scopesIdentifiers) {
 		Collection<Object> actorScopes = new ArrayList<>();
@@ -197,20 +206,28 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(actorScopes);
 	}
 	
+	private void createActorProfiles(String actorIdentifier,String...profilesIdentifiers) {
+		Collection<Object> actorProfiles = new ArrayList<>();
+		for(String profileIdentifier : profilesIdentifiers)
+			actorProfiles.add(new ActorProfile().setActorFromIdentifier(actorIdentifier).setProfileFromIdentifier(profileIdentifier));
+		EntityCreator.getInstance().createManyInTransaction(actorProfiles);
+	}
+	
 	/**/
 	
-	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String functionCode,String visibleSectionCode ,String...expectedCodes) {
+	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String profileCode,String visibleSectionCode ,String...expectedCodes) {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().addFilterFieldsValues(
 				IdentityQuerier.PARAMETER_NAME_CODE,actorCode,IdentityQuerier.PARAMETER_NAME_FIRST_NAME,firstName,IdentityQuerier.PARAMETER_NAME_LAST_NAMES,lastNames);
-		if(StringHelper.isNotBlank(functionCode))
-			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_FUNCTION_CODE,functionCode);
+		if(StringHelper.isNotBlank(profileCode))
+			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_PROFILE_CODE,profileCode);
 		if(StringHelper.isNotBlank(visibleSectionCode))
 			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_VISIBLE_SECTION_CODE,visibleSectionCode);
 		Collection<Actor> actors = ActorQuerier.getInstance().readWhereFilter(arguments);
 		if(ArrayHelper.isEmpty(expectedCodes)) {
 			assertThat(actors).as("actors found").isNull();
 		}else {
-			assertThat(actors.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+			assertThat(actors).as("actors not found for parameters AC="+actorCode+", FN="+firstName+", LN="+lastNames+", PC="+profileCode+", VSC="+visibleSectionCode).isNotNull()
+;			assertThat(actors.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
 		}
 	}
 }

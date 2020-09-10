@@ -55,6 +55,8 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
+	String PARAMETER_NAME_PROFILE_CODE = "profileCode";
+	String PARAMETER_NAME_PROFILE_CODE_NULLABLE = PARAMETER_NAME_PROFILE_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_SECTION_CODE = "visibleSectionCode";
 	String PARAMETER_NAME_VISIBLE_SECTION_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_SECTION_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_SECTION_NAME = "visibleSectionName";
@@ -121,8 +123,10 @@ public interface ActorQuerier extends Querier {
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = IdentityQuerier.AbstractImpl.buildFilterOfWhereFilter(arguments);		
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
-			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
-			filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_CODE);
+			filter.addFieldEquals(PARAMETER_NAME_PROFILE_CODE, arguments);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_PROFILE_CODE);
+			//filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
+			//filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_CODE);
 			filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_SECTION_CODE);
 			ScopeOfTypeSectionQuerier.AbstractImpl.prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_SECTION_CODE,PARAMETER_NAME_VISIBLE_SECTION_NAME);
 			arguments.setFilter(filter);
@@ -144,7 +148,8 @@ public interface ActorQuerier extends Querier {
 			Collection<Actor> actors = readWhereFilter(arguments);
 			if(CollectionHelper.isEmpty(actors))
 				return null;
-			__setFunctions__(actors);
+			__setProfiles__(actors);
+			//__setFunctions__(actors);
 			__setVisibleModules__(actors);
 			__setVisibleSections__(actors);
 			return actors;
@@ -154,6 +159,18 @@ public interface ActorQuerier extends Querier {
 		public Long countWithFunctionsWhereFilter(QueryExecutorArguments arguments) {
 			return countWhereFilter(arguments);
 		}*/
+		
+		private void __setProfiles__(Collection<Actor> actors) {
+			if(CollectionHelper.isEmpty(actors))
+				return;
+			Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(actorProfiles)) {				
+				actors.forEach(actor -> {
+					actor.setProfiles(actorProfiles.stream().filter(actorProfile -> actorProfile.getActor().equals(actor))
+							.map(actorProfile -> actorProfile.getProfile()).collect(Collectors.toList()));
+				});				
+			}
+		}
 		
 		private void __setFunctions__(Collection<Actor> actors) {
 			if(CollectionHelper.isEmpty(actors))
@@ -375,14 +392,16 @@ public interface ActorQuerier extends Querier {
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalJoins() {
-		return jpql(
-				"JOIN ActorProfile ap ON ap.actor = t" // filter by profile
-				);
+		return /*jpql(
+				"LEFT JOIN ActorProfile ap ON ap.actor = t" // filter by profile
+				)*/null;
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicates() {
 		return and(
-				getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode()
+				/*getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode()
+				,*/
+				getQueryValueReadWhereFilterAdditionalPredicateHasProfileCode()
 				,getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode()
 			);
 	}
@@ -396,6 +415,20 @@ public interface ActorQuerier extends Querier {
 						select("pf")
 						,from("ProfileFunction pf")
 						,where(and("pf.profile = ap.profile",Where.equals("pf", FieldHelper.join(ProfileFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)))
+					)
+				))
+			);
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalPredicateHasProfileCode() {
+		return and(
+				like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
+				,parenthesis(or(
+					":"+PARAMETER_NAME_PROFILE_CODE_NULLABLE+" = true"
+					,exists(
+						select("ap")
+						,from("ActorProfile ap")
+						,where(and("ap.actor = t",Where.equals("ap", FieldHelper.join(ActorProfile.FIELD_PROFILE,Function.FIELD_CODE), PARAMETER_NAME_PROFILE_CODE)))
 					)
 				))
 			);

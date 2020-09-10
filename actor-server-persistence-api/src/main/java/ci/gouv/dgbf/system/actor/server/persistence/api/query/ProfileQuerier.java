@@ -1,5 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -8,6 +14,7 @@ import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
@@ -15,11 +22,14 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME
 				,value = "SELECT t FROM Profile t WHERE t.type.code = 'SYSTEME' ORDER BY t.code ASC")
+		,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
+				,value = "SELECT t FROM Profile t ORDER BY t.code ASC")
 })
 public interface ProfileQuerier extends Querier {
 
@@ -30,6 +40,10 @@ public interface ProfileQuerier extends Querier {
 	/* read order by code ascending */
 	String QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME = "readWhereTypeIsSystemeOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME);
+	
+	/* read order by code ascending */
+	String QUERY_NAME_READ = "readOrderByCodeAscending";
+	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ);
 	
 	/* read by types codes by functions codes order by code ascending */
 	String QUERY_NAME_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES = "readByTypesCodesByFunctionsCodes";
@@ -61,23 +75,11 @@ public interface ProfileQuerier extends Querier {
 	Long countByTypesCodes(Collection<String> typesCodes);
 	
 	/* read by actors codes order by code ascending */
-	String QUERY_NAME_READ_BY_ACTORS_CODES = "readByActorsCodes";
-	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_ACTORS_CODES);
-	String QUERY_VALUE_READ_BY_ACTORS_CODES = Language.of(Language.Select.of("t")
-			,Language.From.of("Profile t JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = t.identifier")			
-			,Language.Where.of("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
-			,Language.Order.of("t.code ASC"))
-			;
+	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, "readByActorsCodes");
 	Collection<Profile> readByActorsCodes(Collection<String> actorsCodes);
 	
 	/* read by functions codes order by code ascending */
-	String QUERY_NAME_READ_BY_FUNCTIONS_CODES = "readByFunctionsCodes";
-	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_BY_FUNCTIONS_CODES);
-	String QUERY_VALUE_READ_BY_FUNCTIONS_CODES = Language.of(Language.Select.of("t")
-			,Language.From.of("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			
-			,Language.Where.of("profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
-			,Language.Order.of("t.code ASC"))
-			;
+	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, "readByFunctionsCodes");
 	Collection<Profile> readByFunctionsCodes(Collection<String> functionsCodes);
 	
 	/**/
@@ -138,13 +140,19 @@ public interface ProfileQuerier extends Querier {
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES
+				,Query.FIELD_VALUE,jpql(select("t")
+						,from("Profile t JOIN ActorProfile actorProfile ON actorProfile.profile = t")			
+						,where(Where.in("actorProfile.actor", Actor.FIELD_CODE, PARAMETER_NAME_ACTORS_CODES))			
+						,order("t.code ASC"))
 				)
 			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_FUNCTIONS_CODES
+				,Query.FIELD_VALUE,jpql(select("t")
+						,from("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			
+						,where("profileFunction.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)			
+						,order("t.code ASC"))
 				)
 			);
 	}

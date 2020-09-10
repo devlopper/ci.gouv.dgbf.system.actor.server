@@ -5,4 +5,6 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 public interface ActorProfileBusiness extends BusinessEntity<ActorProfile> {
 
+	String SAVE = "ActorProfile.save";
+	
 }

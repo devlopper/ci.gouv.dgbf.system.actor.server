@@ -1,5 +1,10 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -55,27 +60,11 @@ public interface PrivilegeQuerier extends Querier {
 	Collection<Privilege> readByProfilesTypesCodesByFunctionsCodes(Collection<String> typesCodes,Collection<String> functionsCodes);
 	
 	/* read by actors codes order by code ascending */
-	String QUERY_NAME_READ_BY_ACTORS_CODES = "readByActorsCodes";
-	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_READ_BY_ACTORS_CODES);
-	String QUERY_VALUE_READ_BY_ACTORS_CODES = Language.of(Language.Select.of("t")
-			,Language.From.of("Privilege t"
-					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
-					+ " JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = profilePrivilege.profile.identifier"
-					)			
-			,Language.Where.of("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
-			,Language.Order.of("t.code ASC"))
-			;
+	String QUERY_IDENTIFIER_READ_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, "readByActorsCodes");
 	Collection<Privilege> readByActorsCodes(Collection<String> actorsCodes);
 	
 	/* count by actors codes order by code ascending */
-	String QUERY_NAME_COUNT_BY_ACTORS_CODES = "countByActorsCodes";
-	String QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().build(Privilege.class, QUERY_NAME_COUNT_BY_ACTORS_CODES);
-	String QUERY_VALUE_COUNT_BY_ACTORS_CODES = Language.of(Language.Select.of("COUNT(t.identifier)")
-			,Language.From.of("Privilege t"
-					+ " JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
-					+ " JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = profilePrivilege.profile.identifier")			
-			,Language.Where.of("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
-			);
+	String QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_ACTORS_CODES);
 	Long countByActorsCodes(Collection<String> actorsCodes);
 	
 	/* read by profiles codes order by code ascending */
@@ -335,13 +324,12 @@ public interface PrivilegeQuerier extends Querier {
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
-				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES
-				)
+				,Query.FIELD_VALUE,jpql(select("DISTINCT(t.identifier),t.code,t.name,t.type,t.parentIdentifier"),getReadByActorsFromWhere(),order("t.code ASC"))
+				).setTupleFieldsNamesIndexesFromFieldsNames(Privilege.FIELD_IDENTIFIER,Privilege.FIELD_CODE,Privilege.FIELD_NAME,Privilege.FIELD_TYPE,Privilege.FIELD_PARENT_IDENTIFIER)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
-				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_ACTORS_CODES
-				)
+				,Query.FIELD_VALUE,jpql(select("COUNT(DISTINCT t.identifier)"),getReadByActorsFromWhere()))
 			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
@@ -399,6 +387,14 @@ public interface PrivilegeQuerier extends Querier {
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_PARENTS_BY_CHILDREN_IDENTIFIERS
 				)
+			);
+	}
+	
+	static String getReadByActorsFromWhere() {
+		return jpql(
+				from("Privilege t","JOIN ProfilePrivilege profilePrivilege ON profilePrivilege.privilege.identifier = t.identifier"
+					,"JOIN ActorProfile actorProfile ON actorProfile.profile.identifier = profilePrivilege.profile.identifier")			
+				,where("actorProfile.actor.code IN :"+PARAMETER_NAME_ACTORS_CODES)			
 			);
 	}
 }

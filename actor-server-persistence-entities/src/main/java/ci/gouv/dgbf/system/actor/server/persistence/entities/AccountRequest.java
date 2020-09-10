@@ -30,7 +30,9 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) @NotNull private Identity identity;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_ACCESS_TOKEN) @NotNull private String accessToken;
+	@Column(name = COLUMN_SUBMITTED) private Boolean submitted;
 	@Column(name = COLUMN_SUBMISSION_DATE) private LocalDateTime submissionDate;
+	
 	
 	@Transient private String firstName;
 	@Transient private String lastNames;
@@ -107,11 +109,13 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	public static final String FIELD_SUBMISSION_DATE_AS_TIMESTAMP = "submissionDateAsTimestamp";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_BUDGETARY_FUNCTIONS = "budgetaryFunctions";
+	public static final String FIELD_SUBMITTED = "submitted";
 	
 	public static final String TABLE_NAME = "DEMANDE_COMPTE";
 	
 	public static final String COLUMN_IDENTITY = "IDENTITE";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_ACCESS_TOKEN = "JETON_ACCES";
+	public static final String COLUMN_SUBMITTED = "SOUMIS";
 	public static final String COLUMN_SUBMISSION_DATE = "DATE_SOUMISSION";
 }

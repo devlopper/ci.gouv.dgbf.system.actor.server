@@ -88,16 +88,17 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		Long profilePrivilegeCount = __inject__(ProfilePrivilegePersistence.class).count();
 		__inject__(ActorBusiness.class).create(new Actor().setFirstName("yao").setLastNames("yves").setElectronicMailAddress("a@m.com")
 				.addFunctionsByIdentifiers("1").setKeycloakUserCreatable(Boolean.FALSE));
-		assertThat(__inject__(ProfilePersistence.class).count()).isEqualTo(profileCount+1);
-		assertThat(__inject__(ActorProfilePersistence.class).count()).isEqualTo(actorProfileCount+1);
-		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount+2);
+		assertThat(__inject__(ProfilePersistence.class).count()).isEqualTo(profileCount);
+		assertThat(__inject__(ActorProfilePersistence.class).count()).isEqualTo(actorProfileCount);
+		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount);
 	}
 	
 	@Test
 	public void accountRequest_validate() throws Exception{
 		EntityCreator.getInstance().createMany(new ProfileType().setCode(ProfileType.CODE_UTILISATEUR).setName("2"));
 		
-		__inject__(AccountRequestBusiness.class).record(List.of(new AccountRequest().setIdentifier("a").setFirstName("a").setLastNames("a").setElectronicMailAddress("a@m.com")
+		__inject__(AccountRequestBusiness.class).record(List.of(
+				new AccountRequest().setIdentifier("a").setFirstName("a").setLastNames("a").setElectronicMailAddress("a@m.com")
 				,new AccountRequest().setIdentifier("b").setFirstName("b").setLastNames("b").setElectronicMailAddress("b@m.com")
 				,new AccountRequest().setIdentifier("c").setFirstName("c").setLastNames("c").setElectronicMailAddress("c@m.com")));
 			
@@ -112,7 +113,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		assertThat(__inject__(AccountRequestPersistence.class).count()).isEqualTo(2l);
 		assertThat(__inject__(ActorPersistence.class).count()).isEqualTo(1l);
 		assertThat(__inject__(RejectedAccountRequestPersistence.class).count()).isEqualTo(0l);
-		__inject__(AccountRequestBusiness.class).reject(__inject__(AccountRequestPersistence.class).readBySystemIdentifier("b"));
+		__inject__(AccountRequestBusiness.class).reject(__inject__(AccountRequestPersistence.class).readBySystemIdentifier("b").setRejectReason("RAS"));
 		
 		assertThat(__inject__(IdentityPersistence.class).count()).isEqualTo(2l);
 		assertThat(__inject__(AccountRequestPersistence.class).count()).isEqualTo(1l);

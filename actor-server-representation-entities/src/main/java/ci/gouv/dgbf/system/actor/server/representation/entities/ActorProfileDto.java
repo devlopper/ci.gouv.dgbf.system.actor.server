@@ -13,9 +13,16 @@ import lombok.experimental.Accessors;
 public class ActorProfileDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private ActorDto actor;
+	private ProfileDto profile;
+	
 	@Override
 	public ActorProfileDto setIdentifier(String identifier) {
 		return (ActorProfileDto) super.setIdentifier(identifier);
 	}
 
+	@Override
+	public ActorProfileDto set__deletable__(Boolean __deletable__) {
+		return (ActorProfileDto) super.set__deletable__(__deletable__);
+	}
 }
