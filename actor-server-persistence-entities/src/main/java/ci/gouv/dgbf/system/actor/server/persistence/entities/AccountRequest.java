@@ -30,7 +30,7 @@ public class AccountRequest extends AbstractIdentifiableSystemScalarStringImpl i
 	@ManyToOne @JoinColumn(name = COLUMN_IDENTITY) @NotNull private Identity identity;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_ACCESS_TOKEN) @NotNull private String accessToken;
-	@Column(name = COLUMN_SUBMITTED) private Boolean submitted;
+	//@Column(name = COLUMN_SUBMITTED) private Boolean submitted;
 	@Column(name = COLUMN_SUBMISSION_DATE) private LocalDateTime submissionDate;
 	
 	
