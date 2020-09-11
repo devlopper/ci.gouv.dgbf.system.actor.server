@@ -9,11 +9,18 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
 public interface ActorBusiness extends BusinessEntity<Actor> {
 
 	@Transactional
 	void createPrivilegesFromFunctions(Collection<Actor> actors,Collection<Function> functions);
+	
+	@Transactional
+	void createProfiles(Collection<Actor> actors,Collection<Profile> profiles);
+	
+	@Transactional
+	void deleteProfiles(Collection<Actor> actors,Collection<Profile> profiles);
 	
 	Integer importFromKeycloak();	
 	Integer exportToKeycloak();
@@ -26,6 +33,8 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	void saveProfile(Actor actor);
 	
 	String CREATE_PRIVILEGES_FROM_FUNCTIONS = "Actor.createPrivilegesFromFunctions";
+	String CREATE_PROFILES = "Actor.createProfiles";
+	String DELETE_PROFILES = "Actor.deleteProfiles";
 	String SAVE_PREFERENCES = "Actor.savePreferences";
 	String SAVE_PROFILE = "Actor.saveProfile";
 	

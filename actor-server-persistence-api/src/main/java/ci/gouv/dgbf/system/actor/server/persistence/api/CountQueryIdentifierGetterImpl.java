@@ -12,6 +12,8 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 
 	@Override
 	protected String __get__(String readQueryIdentifier) {
+		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(readQueryIdentifier))
+			return FunctionQuerier.QUERY_IDENTIFIER_COUNT;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(readQueryIdentifier))
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES;
 		if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER.equals(readQueryIdentifier))

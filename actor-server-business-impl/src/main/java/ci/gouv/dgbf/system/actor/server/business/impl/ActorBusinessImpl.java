@@ -57,6 +57,41 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		__inject__(ProfilePrivilegeBusiness.class).createFromFunctions(profiles, functions);
 	}
 	
+	@Override @Transactional
+	public void createProfiles(Collection<Actor> actors, Collection<Profile> profiles) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles", profiles);
+		Collection<ActorProfile> newActorProfiles = new ArrayList<>();
+		Collection<ActorProfile> existingActorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x->x.getCode()).collect(Collectors.toList()));
+		actors.forEach(actor -> {
+			Collection<Profile> existingProfiles = CollectionHelper.isEmpty(existingActorProfiles) ? null : existingActorProfiles.stream().filter(x->x.getActor().equals(actor))
+					.map(x->x.getProfile()).collect(Collectors.toList());
+			Collection<Profile> newProfiles = CollectionHelper.isEmpty(existingProfiles) ? profiles : profiles.stream().filter(x->!existingProfiles.contains(x))
+					.collect(Collectors.toList());
+			if(CollectionHelper.isNotEmpty(newProfiles))
+				newActorProfiles.addAll(newProfiles.stream().map(profile -> new ActorProfile().setActor(actor).setProfile(profile)).collect(Collectors.toList()));
+		});
+		if(CollectionHelper.isEmpty(newActorProfiles))
+			return;
+		__inject__(ActorProfileBusiness.class).createMany(newActorProfiles);
+	}
+	
+	@Override @Transactional
+	public void deleteProfiles(Collection<Actor> actors, Collection<Profile> profiles) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("profiles", profiles);
+		Collection<ActorProfile> oldActorProfiles = new ArrayList<>();
+		Collection<ActorProfile> existingActorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actors.stream().map(x->x.getCode()).collect(Collectors.toList()));
+		if(CollectionHelper.isEmpty(existingActorProfiles))
+			return;
+		actors.forEach(actor -> {
+			oldActorProfiles.addAll(existingActorProfiles.stream().filter(x->x.getActor().equals(actor) && profiles.contains(x.getProfile())).collect(Collectors.toList()));
+		});
+		if(CollectionHelper.isEmpty(oldActorProfiles))
+			return;
+		__inject__(ActorProfileBusiness.class).deleteMany(oldActorProfiles);
+	}
+	
 	@Override
 	public Integer importFromKeycloak() {
 		Collection<User> users = UserManager.getInstance().readAll();

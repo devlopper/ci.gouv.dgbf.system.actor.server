@@ -20,10 +20,12 @@ import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 
@@ -57,7 +59,54 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 							}
 							persistences.add(actor);
 						}
-						__inject__(ActorBusiness.class).createPrivilegesFromFunctions(persistences, functions);;
+						__inject__(ActorBusiness.class).createPrivilegesFromFunctions(persistences, functions);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response createProfiles(Collection<ActorDto> actors) {
+		return createOrDeleteProfiles(actors, Boolean.TRUE);
+	}
+	
+	@Override
+	public Response deleteProfiles(Collection<ActorDto> actors) {
+		return createOrDeleteProfiles(actors, Boolean.FALSE);
+	}
+	
+	private static Response createOrDeleteProfiles(Collection<ActorDto> actors,Boolean create) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						if(CollectionHelper.isEmpty(actors))
+							throw new RuntimeException("Acteurs obligatoire");
+						Collection<Actor> persistences = null;
+						Collection<Profile> profiles = null;
+						for(ActorDto dto : actors) {
+							Actor actor = __inject__(ActorPersistence.class).readByBusinessIdentifier(dto.getCode());
+							if(actor == null)
+								throw new RuntimeException("L'utilisateur <<"+dto.getCode()+">> n'existe pas");
+							if(persistences == null)
+								persistences = new ArrayList<>();
+							if(profiles == null) {
+								profiles = new ArrayList<>();
+								for(String code : dto.getProfilesCodes()) {
+									Profile profile = __inject__(ProfilePersistence.class).readByBusinessIdentifier(code);
+									if(profile != null)
+										profiles.add(profile);
+								}
+							}
+							persistences.add(actor);
+						}
+						if(Boolean.TRUE.equals(create))
+							__inject__(ActorBusiness.class).createProfiles(persistences, profiles);
+						else
+							__inject__(ActorBusiness.class).deleteProfiles(persistences, profiles);
 					}
 				};
 			}
@@ -126,4 +175,5 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 			}
 		});
 	}
+
 }

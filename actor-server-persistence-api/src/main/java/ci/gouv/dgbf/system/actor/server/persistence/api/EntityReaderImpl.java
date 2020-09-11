@@ -2,10 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
@@ -15,7 +12,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
@@ -24,9 +21,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetS
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends EntityReader.AbstractImpl implements Serializable {
@@ -66,28 +60,22 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
 		
-		if(arguments != null) {
+		if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ProfileQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ProfileQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) AdministrativeUnitQuerier.getInstance().readMany(arguments);
+		
+		if(arguments != null && arguments.getQuery() != null) {
 			if(PrivilegeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) PrivilegeQuerier.getInstance().readVisibleByActorCode((String)arguments.getFilterFieldValue(PrivilegeQuerier.PARAMETER_NAME_ACTOR_CODE));
-			if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(arguments.getQuery().getIdentifier())
-					|| FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier())) {	
-				if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(arguments.getQuery().getIdentifier()))
-					arguments.getQuery().setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ);
-				else if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
-					arguments.getQuery().setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
-				Collection<Function> functions = (Collection<Function>) super.readMany(tupleClass, arguments);
-				if(CollectionHelper.isEmpty(functions))
-					return null;
-				Collection<ProfileFunction> profileFunctions = ProfileFunctionQuerier.getInstance().readByProfilesTypesCodesByFunctionsCodes(
-						List.of(ProfileType.CODE_SYSTEME),functions.stream().map(x -> x.getCode()).collect(Collectors.toList()));
-				if(CollectionHelper.isNotEmpty(profileFunctions))
-					functions.forEach(function -> {
-						Collection<ProfileFunction> __profileFunctions__ = profileFunctions.stream().filter(profileFunction -> profileFunction.getFunction().equals(function)).collect(Collectors.toList());
-						if(CollectionHelper.isNotEmpty(__profileFunctions__))
-							function.setProfilesAsStrings(__profileFunctions__.stream().map(profileFunction -> profileFunction.getProfile().getName()).collect(Collectors.toList()));
-					});
-				return (Collection<T>) functions;
-			}
+			
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -111,14 +99,7 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
 			
-			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
-				return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);
 			
-			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
-				return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
-			
-			if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
-				return (Collection<T>) AdministrativeUnitQuerier.getInstance().readMany(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

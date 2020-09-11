@@ -32,19 +32,20 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.RejectedAccountRequestPe
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
@@ -134,6 +135,24 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		__inject__(RejectedAccountRequestBusiness.class).createMany(List.of(new RejectedAccountRequest().setFirstName("a").setLastNames("a")
 				.setElectronicMailAddress("a@m.com").setDate(LocalDateTime.now()).setRequestDate(LocalDateTime.now())));			
 		assertThat(__inject__(RejectedAccountRequestPersistence.class).count()).isEqualTo(1l);
+	}
+	
+	@Test
+	public void actor_editActorProfiles() throws Exception{
+		createData();
+		EntityCreator.getInstance().createMany(new Profile().setCode("P1").setName("1").setTypeFromIdentifier(ProfileType.CODE_UTILISATEUR));
+		
+		Long actorProfileCount = __inject__(ActorProfilePersistence.class).count();
+		assertThat(actorProfileCount).isEqualTo(0l);
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("admin"))).isNull();		
+		__inject__(ActorBusiness.class).createProfiles(List.of(__inject__(ActorPersistence.class).readByBusinessIdentifier("admin"))
+				,List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1")));
+		assertThat(__inject__(ActorProfilePersistence.class).count()).isEqualTo(actorProfileCount+1);
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("admin")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactly("P1");
+		
+		__inject__(ActorBusiness.class).deleteProfiles(List.of(__inject__(ActorPersistence.class).readByBusinessIdentifier("admin"))
+				,List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1")));
+		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("admin"))).isNull();
 	}
 	
 	@Test

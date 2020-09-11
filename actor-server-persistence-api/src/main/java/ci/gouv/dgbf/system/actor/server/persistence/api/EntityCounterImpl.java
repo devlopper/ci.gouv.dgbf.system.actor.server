@@ -10,12 +10,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 
@@ -38,11 +39,6 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			return ScopeOfTypeImputationQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
-			if(FunctionQuerier.QUERY_IDENTIFIER_COUNT_WITH_PROFILES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier())) {
-				arguments.getQuery().setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES);
-				return super.count(tupleClass, arguments);
-			}
-			
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return ScopeQuerier.getInstance().countWhereFilter(arguments);
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -60,6 +56,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return RejectedAccountRequestQuerier.getInstance().countWhereFilter(arguments);
+			
+			if(Boolean.TRUE.equals(ProfileQuerier.getInstance().isOwner(arguments)))
+				return ProfileQuerier.getInstance().count(arguments);
 			
 			if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
 				return FunctionQuerier.getInstance().count(arguments);

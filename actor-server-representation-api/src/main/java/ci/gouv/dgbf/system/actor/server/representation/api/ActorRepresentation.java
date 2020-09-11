@@ -26,6 +26,20 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@ApiOperation(value = "Créer des privilèges à partir de fonctions",tags = {TAG})
 	Response createPrivilegesFromFunctions(Collection<ActorDto> actors);
 	
+	@POST
+	@Path(PATH_CREATE_PROFILES)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Créer des profiles",tags = {TAG})
+	Response createProfiles(Collection<ActorDto> actors);
+	
+	@POST
+	@Path(PATH_DELETE_PROFILES)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Supprimer des profiles",tags = {TAG})
+	Response deleteProfiles(Collection<ActorDto> actors);
+	
 	@GET
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -58,6 +72,8 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	//String PATH_SAVE_PREFERENCES = "savePreferences";
 	//String PATH_SAVE_PROFILE = "saveProfile";
 	String PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS = "create_privileges_from_functions";
+	String PATH_CREATE_PROFILES = "create_profiles";
+	String PATH_DELETE_PROFILES = "delete_profiles";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	
