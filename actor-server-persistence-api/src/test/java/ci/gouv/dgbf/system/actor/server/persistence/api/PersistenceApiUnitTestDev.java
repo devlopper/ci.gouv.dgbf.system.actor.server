@@ -34,6 +34,12 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(){
+		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		System.out.println(AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier("D_yy@y.com"));
+	}
+	
+	@Test
 	public void counts(){
 		System.out.println("--------------------- Counts ---------------------");
 		System.out.println("Actors : "+EntityCounter.getInstance().count(Actor.class, ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER));
