@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
@@ -19,6 +20,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetS
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Serializable {
@@ -65,6 +67,12 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			
 			if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
 				return BudgetaryFunctionQuerier.getInstance().count(arguments);
+			
+			if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
+				return SectionQuerier.getInstance().count(arguments);
+			
+			if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
+				return BudgetSpecializationUnitQuerier.getInstance().count(arguments);
 			
 			if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
 				return AdministrativeUnitQuerier.getInstance().count(arguments);

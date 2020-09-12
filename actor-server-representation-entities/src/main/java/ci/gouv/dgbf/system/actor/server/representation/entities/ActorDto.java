@@ -48,7 +48,8 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private ArrayList<PrivilegeDto> visibleModules;
 	private ArrayList<ScopeDto> scopes;
 	private ArrayList<ScopeDto> visibleSections;
-
+	private ArrayList<String> sectionsIdentifiers;
+	
 	@Override
 	public ActorDto setIdentifier(String identifier) {
 		return (ActorDto) super.setIdentifier(identifier);

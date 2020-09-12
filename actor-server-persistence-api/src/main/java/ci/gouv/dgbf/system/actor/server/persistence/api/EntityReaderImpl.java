@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
@@ -21,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetS
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends EntityReader.AbstractImpl implements Serializable {
@@ -69,6 +71,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
 		
+		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) SectionQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) BudgetSpecializationUnitQuerier.getInstance().readMany(arguments);
+		
 		if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) AdministrativeUnitQuerier.getInstance().readMany(arguments);
 		
@@ -98,7 +106,6 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
-			
 			
 		}
 		return super.readMany(tupleClass, arguments);

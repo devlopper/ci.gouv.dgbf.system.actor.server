@@ -35,6 +35,8 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	String CREATE_PRIVILEGES_FROM_FUNCTIONS = "Actor.createPrivilegesFromFunctions";
 	String CREATE_PROFILES = "Actor.createProfiles";
 	String DELETE_PROFILES = "Actor.deleteProfiles";
+	String CREATE_SCOPES = "Actor.createScopes";
+	String DELETE_SCOPES = "Actor.deleteScopes";
 	String SAVE_PREFERENCES = "Actor.savePreferences";
 	String SAVE_PROFILE = "Actor.saveProfile";
 	
