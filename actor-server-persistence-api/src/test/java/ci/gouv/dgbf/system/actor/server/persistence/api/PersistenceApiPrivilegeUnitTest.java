@@ -16,7 +16,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 
-public class PersistencePrivilegeApiUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceApiPrivilegeUnitTest extends AbstractPersistenceUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

@@ -18,6 +18,7 @@ import org.junit.Test;
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
@@ -138,7 +139,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	}
 	
 	@Test
-	public void actor_editActorProfiles() throws Exception{
+	public void actor_editProfiles() throws Exception{
 		createData();
 		EntityCreator.getInstance().createMany(new Profile().setCode("P1").setName("1").setTypeFromIdentifier(ProfileType.CODE_UTILISATEUR));
 		
@@ -153,6 +154,51 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		__inject__(ActorBusiness.class).deleteProfiles(List.of(__inject__(ActorPersistence.class).readByBusinessIdentifier("admin"))
 				,List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1")));
 		assertThat(ProfileQuerier.getInstance().readByActorsCodes(List.of("admin"))).isNull();
+	}
+	
+	@Test
+	public void profile_editPrivileges() throws Exception{
+		createData();
+		EntityCreator.getInstance().createMany(new Profile().setCode("P1").setName("1").setTypeFromIdentifier(ProfileType.CODE_UTILISATEUR));
+		EntityCreator.getInstance().createMany(
+				new Privilege().setCode("M1").setTypeFromIdentifier(PrivilegeType.CODE_MODULE)
+				);
+		EntityCreator.getInstance().createMany(
+				new Privilege().setCode("S1").setTypeFromIdentifier(PrivilegeType.CODE_SERVICE).setParentIdentifier("M1")
+				,new Privilege().setCode("S2").setTypeFromIdentifier(PrivilegeType.CODE_SERVICE).setParentIdentifier("M1")
+				);
+		
+		EntityCreator.getInstance().createMany(
+				new Privilege().setCode("ME1").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("S1")
+				,new Privilege().setCode("ME1.1").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("ME1")
+				,new Privilege().setCode("ME1.2").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("ME1")
+				,new Privilege().setCode("ME2").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("S1")
+				,new Privilege().setCode("ME2.1").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("ME2")
+				,new Privilege().setCode("ME2.2").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("ME2")
+				,new Privilege().setCode("ME2.3").setTypeFromIdentifier(PrivilegeType.CODE_MENU).setParentIdentifier("ME2")
+				);
+		
+		Long profilePrivilegeCount = __inject__(ProfilePrivilegePersistence.class).count();
+		assertThat(profilePrivilegeCount).isEqualTo(0l);
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("admin"))).isNull();		
+		__inject__(ProfileBusiness.class).savePrivileges(List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1"))
+				,__inject__(PrivilegePersistence.class).readByBusinessIdentifiers(CollectionHelper.cast(Object.class, List.of("M1","S1","ME1","ME1.1"))),null);
+		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount+1);
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("P1")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactlyInAnyOrder("ME1.1");
+		assertThat(PrivilegeQuerier.getInstance().readVisibleByProfilesCodes(List.of("P1")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactlyInAnyOrder("M1","S1","ME1","ME1.1");
+		
+		__inject__(ProfileBusiness.class).savePrivileges(List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1"))
+				,null,List.of(__inject__(PrivilegePersistence.class).readByBusinessIdentifier("ME1.1")));
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("P1"))).isNull();
+		
+		__inject__(ProfileBusiness.class).savePrivileges(List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1"))
+				,__inject__(PrivilegePersistence.class).readByBusinessIdentifiers(CollectionHelper.cast(Object.class, List.of("M1","S1","ME1","ME1.1","ME1.2"))),null);
+		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount+2);
+		__inject__(ProfileBusiness.class).savePrivileges(List.of(__inject__(ProfilePersistence.class).readByBusinessIdentifier("P1"))
+				,null,List.of(__inject__(PrivilegePersistence.class).readByBusinessIdentifier("ME1.1")));
+		
+		assertThat(PrivilegeQuerier.getInstance().readByProfilesCodes(List.of("P1")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactlyInAnyOrder("ME1.2");
+		assertThat(PrivilegeQuerier.getInstance().readVisibleByProfilesCodes(List.of("P1")).stream().map(x->x.getCode()).collect(Collectors.toList())).containsExactlyInAnyOrder("M1","S1","ME1","ME1.2");
 	}
 	
 	@Test
@@ -296,13 +342,14 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)3)
 				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)4)
 				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)5)
-				);
-		
-		EntityCreator.getInstance().createMany(
-				new ProfileType().setCode(ProfileType.CODE_SYSTEME)
+				,new ProfileType().setCode(ProfileType.CODE_SYSTEME)
 				,new ProfileType().setCode(ProfileType.CODE_UTILISATEUR)
+				,new PrivilegeType().setCode(PrivilegeType.CODE_MODULE).setOrderNumber((byte)0)
+				,new PrivilegeType().setCode(PrivilegeType.CODE_SERVICE).setOrderNumber((byte)0)
+				,new PrivilegeType().setCode(PrivilegeType.CODE_MENU).setOrderNumber((byte)0)
+				,new PrivilegeType().setCode(PrivilegeType.CODE_ACTION).setOrderNumber((byte)0)
 				);
-		
+				
 		//Sections
 		createSection("s1");
 		createSection("s2");

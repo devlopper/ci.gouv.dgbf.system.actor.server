@@ -17,4 +17,7 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private ProfileTypeDto type;
 	private ArrayList<String> privilegesAsStrings;
 	private String profileIdentifier;
+	
+	private ArrayList<String> creatablePrivilegesIdentifiers;
+	private ArrayList<String> deletablePrivilegesIdentifiers;
 }

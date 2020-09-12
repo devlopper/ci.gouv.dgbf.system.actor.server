@@ -20,7 +20,7 @@
 			<artifactId>jee-utility-server-persistence</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+				
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-envers</artifactId>
@@ -52,14 +52,7 @@
 			<version>11.2.0.4</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.cyk.jee.utility.server.persistence.impl</groupId>
-			<artifactId>jee-utility-server-persistence-impl</artifactId>
-			<version>0.1.0</version>
-			<scope>test</scope>
-		</dependency>
-		
+				
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
