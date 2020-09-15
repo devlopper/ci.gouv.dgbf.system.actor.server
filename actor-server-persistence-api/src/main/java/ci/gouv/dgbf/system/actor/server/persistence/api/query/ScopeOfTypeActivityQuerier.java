@@ -10,111 +10,72 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Select.selec
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public interface ScopeOfTypeActivityQuerier extends Querier {
+public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 
+	Class<?> CLASS = Activity.class;
 	String SCOPE_TYPE = ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_ACTIVITE;
 	
-	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
-	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
-	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER = ScopeOfTypeQuerier.buildReadWhereFilter(CLASS);	
+	@Override
+	default java.lang.String getQueryIdentifierReadWhereFilter() {
+		return QUERY_IDENTIFIER_READ_WHERE_FILTER;
+	}
 	
-	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
+	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = ScopeOfTypeQuerier.buildCountWhereFilter(CLASS);
+	@Override
+	default java.lang.String getQueryIdentifierCountWhereFilter() {
+		return QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+	}
 	
-	Collection<Scope> readMany(QueryExecutorArguments arguments);
-	Long count(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = ScopeOfTypeQuerier.buildReadVisibleWhereFilter(CLASS);	
+	@Override
+	default java.lang.String getQueryIdentifierReadVisibleWhereFilter() {
+		return QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER;
+	}
 	
-	/* read where filter order by code ascending */
-	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readActivitiesWhereFilter");
-	Collection<Scope> readWhereFilter(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER = ScopeOfTypeQuerier.buildCountVisibleWhereFilter(CLASS);
+	@Override
+	default java.lang.String getQueryIdentifierCountVisibleWhereFilter() {
+		return QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER;
+	}
 	
-	/* count where filter */
-	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
-	Long countWhereFilter(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = ScopeOfTypeQuerier.buildReadInvisibleWhereFilter(CLASS);	
+	@Override
+	default java.lang.String getQueryIdentifierReadInvisibleWhereFilter() {
+		return QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER;
+	}
 	
-	/* read visible where filter order by code ascending */
-	String QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readVisibleActivitiesWhereFilter");
-	Collection<Scope> readVisibleWhereFilter(QueryExecutorArguments arguments);
-	
-	/* count visible where filter */
-	String QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
-	Long countVisibleWhereFilter(QueryExecutorArguments arguments);
-
-	/* read invisible where filter order by code ascending */
-	String QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Scope.class, "readInvisibleActivitiesWhereFilter");
-	Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments);
-	
-	/* count invisible where filter */
-	String QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER);
-	Long countInvisibleWhereFilter(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER = ScopeOfTypeQuerier.buildCountInvisibleWhereFilter(CLASS);
+	@Override
+	default String getQueryIdentifierCountInvisibleWhereFilter() {
+		return QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER;
+	}
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeActivityQuerier,Serializable {
+	public static abstract class AbstractImpl extends ScopeOfTypeQuerier.AbstractImpl implements ScopeOfTypeActivityQuerier,Serializable {
 		
-		@Override
-		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readVisibleWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readInvisibleWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilter(arguments);
-			throw new RuntimeException("Query <<"+arguments.getQuery().getIdentifier()+">> not readable by "+getClass());
-		}
-		
-		@Override
-		public Long count(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countVisibleWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countInvisibleWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countWhereFilter(arguments);
-			throw new RuntimeException("Query <<"+arguments.getQuery().getIdentifier()+">> not countable by "+getClass());
-		}
-		
-		@Override
-		public Collection<Scope> readWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
-			prepareWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
-		}
-		
-		@Override
-		public Long countWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
-			prepareWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
+		protected void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
@@ -124,23 +85,7 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 			arguments.setFilter(filter);
 		}
 		
-		@Override
-		public Collection<Scope> readVisibleWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER);
-			prepareVisibleWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
-		}
-		
-		@Override
-		public Long countVisibleWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER);
-			prepareVisibleWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private static void prepareVisibleWhereFilter(QueryExecutorArguments arguments) {
+		protected void prepareVisibleWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
@@ -150,23 +95,7 @@ public interface ScopeOfTypeActivityQuerier extends Querier {
 			arguments.setFilter(filter);
 		}
 		
-		@Override
-		public Collection<Scope> readInvisibleWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER);
-			prepareInvisibleWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
-		}
-		
-		@Override
-		public Long countInvisibleWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER);
-			prepareInvisibleWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private static void prepareInvisibleWhereFilter(QueryExecutorArguments arguments) {
+		protected void prepareInvisibleWhereFilter(QueryExecutorArguments arguments) {
 			prepareVisibleWhereFilter(arguments);
 		}
 	}

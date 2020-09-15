@@ -3,11 +3,14 @@ package ci.gouv.dgbf.system.actor.server.representation.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
@@ -27,6 +30,64 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public Response createByActorsByScopes(Collection<ActorDto> actors, Collection<ScopeDto> scopes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {				
+					@Override
+					public void run() {
+						__inject__(ActorScopeBusiness.class).createByActorsByScopes(
+								EntityFinder.getInstance().findMany(Actor.class, FieldHelper.readSystemIdentifiersAsStrings(actors))
+								, EntityFinder.getInstance().findMany(Scope.class, FieldHelper.readSystemIdentifiersAsStrings(scopes)));
+					}
+				};
+			}			
+		});
+	}
+	
+	@Override
+	public Response createByActors(Collection<ActorDto> actors) {
+		Collection<ScopeDto> scopes = null;
+		if(CollectionHelper.isNotEmpty(actors))
+			for(ActorDto actor : actors)
+				if(scopes == null && CollectionHelper.isNotEmpty(actor.getScopesIdentifiers())) {
+					scopes = actor.getScopesIdentifiers().stream().map(scopeIdentifier -> new ScopeDto().setIdentifier(scopeIdentifier)).collect(Collectors.toList());
+					break;
+				}
+		return createByActorsByScopes(actors, scopes);
+	}
+	
+	@Override
+	public Response deleteByActorsByScopes(Collection<ActorDto> actors, Collection<ScopeDto> scopes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {				
+					@Override
+					public void run() {
+						__inject__(ActorScopeBusiness.class).deleteByActorsByScopes(
+								EntityFinder.getInstance().findMany(Actor.class, FieldHelper.readSystemIdentifiersAsStrings(actors))
+								, EntityFinder.getInstance().findMany(Scope.class, FieldHelper.readSystemIdentifiersAsStrings(scopes)));
+					}
+				};
+			}			
+		});
+	}
+	
+	@Override
+	public Response deleteByActors(Collection<ActorDto> actors) {
+		Collection<ScopeDto> scopes = null;
+		if(CollectionHelper.isNotEmpty(actors))
+			for(ActorDto actor : actors)
+				if(scopes == null && CollectionHelper.isNotEmpty(actor.getScopesIdentifiers())) {
+					scopes = actor.getScopesIdentifiers().stream().map(scopeIdentifier -> new ScopeDto().setIdentifier(scopeIdentifier)).collect(Collectors.toList());
+					break;
+				}
+		return deleteByActorsByScopes(actors, scopes);
+	}
+	
+	@Override
 	public Response createByScopes(Collection<ScopeDto> scopes) {
 		if(CollectionHelper.isEmpty(scopes))
 			return null;
@@ -36,55 +97,7 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 				actor = index.getActor();
 				break;
 			}
-		return createByActorByScopes(actor, scopes);
-	}
-	
-	@Override
-	public Response createByActorByScopes(ActorDto actor, Collection<ScopeDto> scopes) {
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
-			@Override
-			public Runnable getRunnable() {
-				return new Runnable() {				
-					@Override
-					public void run() {
-						Actor __actor__ = EntityFinder.getInstance().find(Actor.class, actor.getIdentifier());
-						Collection<Scope> __scopes__ = null;
-						for(ScopeDto index : scopes) {
-							Scope scope = EntityFinder.getInstance().find(Scope.class, index.getIdentifier());
-							if(scope != null) {
-								if(__scopes__ == null)
-									__scopes__ = new ArrayList<>();
-								__scopes__.add(scope);
-							}
-						}
-						__inject__(ActorScopeBusiness.class).createByActorByScopes(__actor__, __scopes__);
-					}
-				};
-			}			
-		});
-	}
-	
-	@Override
-	public Response deleteByActorByScopes(ActorDto actor, Collection<ScopeDto> scopes) {
-		if(actor == null)
-			return Response.serverError().entity("Actor required").build();
-		if(CollectionHelper.isEmpty(scopes))
-			return Response.serverError().entity("Scopes required").build();
-		Actor __actor__ = EntityFinder.getInstance().find(Actor.class, actor.getCode());
-		Collection<Scope> __scopes__ = new ArrayList<>();
-		scopes.forEach(scopeDto -> {
-			__scopes__.add(EntityFinder.getInstance().find(Scope.class, scopeDto.getCode()));
-		});
-		Runner.Arguments runnerArguments = new Runner.Arguments().addRunnables(new Runnable() {				
-			@Override
-			public void run() {
-				__inject__(ActorScopeBusiness.class).deleteByActorByScopes(__actor__, __scopes__);
-			}
-		});
-		Runner.getInstance().run(runnerArguments);
-		if(runnerArguments.getThrowable() == null)
-			return Response.ok(/*ProfilePrivileges.size()+" funding source lessors has been processed"*/).build();
-		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
+		return createByActorsByScopes(List.of(actor), scopes);
 	}
 	
 	@Override

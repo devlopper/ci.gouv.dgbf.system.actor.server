@@ -11,9 +11,11 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -21,13 +23,17 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -43,24 +49,106 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	}
 	
 	@Override @Transactional
+	public void createByActorsByScopes(Collection<Actor> actors, Collection<Scope> scopes) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopes", scopes);
+		for(Actor actor : actors)
+			createByActorByScopes(actor, scopes);
+	}
+	
+	@Override @Transactional
+	public void createByActorIdentifierByScopesIdentifier(String actorIdentifier, String... scopesIdentifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actorIdentifier", actorIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopesIdentifiers", scopesIdentifiers);
+		Actor actor = EntityFinder.getInstance().find(Actor.class, actorIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		Collection<Scope> scopes = null;
+		for(String scopeIdentifier : scopesIdentifiers) {
+			Scope scope = EntityFinder.getInstance().find(Scope.class, scopeIdentifier);
+			if(scope == null)
+				continue;
+			if(scopes == null)
+				scopes = new ArrayList<>();
+			scopes.add(scope);
+		}
+		createByActorsByScopes(List.of(actor), scopes);
+	}
+	
+	@Override
+	public void deleteByActorsByScopes(Collection<Actor> actors, Collection<Scope> scopes) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopes", scopes);
+		for(Actor actor : actors)
+			deleteByActorByScopes(actor, scopes);
+	}
+	
+	@Override
+	public void deleteByActorIdentifierByScopesIdentifiers(String actorIdentifier, String... scopesIdentifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actorIdentifier", actorIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopesIdentifiers", scopesIdentifiers);
+		Actor actor = EntityFinder.getInstance().find(Actor.class, actorIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		Collection<Scope> scopes = null;
+		for(String scopeIdentifier : scopesIdentifiers) {
+			Scope scope = EntityFinder.getInstance().find(Scope.class, scopeIdentifier);
+			if(scope == null)
+				continue;
+			if(scopes == null)
+				scopes = new ArrayList<>();
+			scopes.add(scope);
+		}
+		deleteByActorsByScopes(List.of(actor), scopes);
+	}
+	
+	@Override @Transactional
 	public void createByActorByScopes(Actor actor, Collection<Scope> scopes) {
-		if(actor == null || CollectionHelper.isEmpty(scopes))
-			throw new RuntimeException("acteur et domaine(s) obligatoires");
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopes", scopes);		
+		Collection<Scope> invisibleScopes = null;
+		for(Scope scope : scopes) {		
+			if(scope.getType().getCode().equals(ScopeType.CODE_SECTION)) {
+				if(ScopeOfTypeSectionQuerier.getInstance().isVisible(scope.getCode(), actor.getCode()))
+					continue;				
+			}else if(scope.getType().getCode().equals(ScopeType.CODE_USB)) {
+				if(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().isVisible(scope.getCode(), actor.getCode()))
+					continue;
+			}else if(scope.getType().getCode().equals(ScopeType.CODE_ACTION)) {
+				if(ScopeOfTypeActionQuerier.getInstance().isVisible(scope.getCode(), actor.getCode()))
+					continue;
+			}else if(scope.getType().getCode().equals(ScopeType.CODE_ACTIVITE)) {
+				if(ScopeOfTypeActivityQuerier.getInstance().isVisible(scope.getCode(), actor.getCode()))
+					continue;
+			}//else
+			//	throw new RuntimeException("Visibility checker of Scope of type <<"+scope.getType().getCode()+">> not yet implemented");
+			if(invisibleScopes == null)
+				invisibleScopes = new ArrayList<>();
+			invisibleScopes.add(scope);
+		}		
+		if(CollectionHelper.isEmpty(invisibleScopes))
+			return;
 		Collection<ActorScope> actorScopes = new ArrayList<>();
-		scopes.forEach(scope -> {
+		for(Scope scope : invisibleScopes) {		
 			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(), scope.getCode());
 			if(actorScope == null)
 				actorScope = new ActorScope().setActor(actor).setScope(scope);
-			actorScope.setVisible(Boolean.TRUE);
-			actorScopes.add(actorScope);
-		});
+			else {
+				if(actorScope.getVisible() == null || actorScope.getVisible())
+					throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actor.getCode()+","+scope.getCode()+")");				
+				actorScope.setVisible(null);// make it visible						
+			}
+			if(actorScopes == null)
+				actorScopes = new ArrayList<>();
+			actorScopes.add(actorScope);	
+		}
+		LogHelper.logInfo(String.format("Giving visibilities to <<%s>> on %s scope(s)", actor.getCode(),CollectionHelper.getSize(actorScopes)), getClass());
 		saveMany(actorScopes);
 	}
 	
 	@Override @Transactional
 	public void deleteByActorByScopes(Actor actor,Collection<Scope> scopes) {
-		if(actor == null || CollectionHelper.isEmpty(scopes))
-			return;
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopes", scopes);
+		LogHelper.logInfo(String.format("Removing visibilities from <<%s>> on %s scope(s)", actor.getCode(),scopes), getClass());
 		Collection<Scope> sections = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_SECTION)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(sections))
 			deleteSections(actor,sections.stream().map(x -> x.getCode()).collect(Collectors.toList()));

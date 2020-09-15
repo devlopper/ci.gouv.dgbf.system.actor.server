@@ -34,6 +34,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeImputationQuerier extends Querier {
 
+	Class<?> CLASS = Imputation.class;
 	String SCOPE_TYPE = ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType.CODE_IMPUTATION;
 	
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";

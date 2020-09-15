@@ -24,6 +24,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusin
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorProfilePersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ActorScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.IdentityPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.PrivilegePersistence;
@@ -93,6 +94,98 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		assertThat(__inject__(ProfilePersistence.class).count()).isEqualTo(profileCount);
 		assertThat(__inject__(ActorProfilePersistence.class).count()).isEqualTo(actorProfileCount);
 		assertThat(__inject__(ProfilePrivilegePersistence.class).count()).isEqualTo(profilePrivilegeCount);
+	}
+	
+	@Test
+	public void actor_createActorScope_section() throws Exception{
+		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
+				,new ScopeType().setCode(ScopeType.CODE_ACTION));
+		
+		EntityCreator.getInstance().createMany(
+				new Scope().setCode("101").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("102").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+			);
+		
+		__inject__(ActorBusiness.class).createMany(List.of(
+				new Actor().setIdentifier("u01").setCode("u01").setFirstName("yao").setLastNames("yves").setElectronicMailAddress("u01@m.com").setKeycloakUserCreatable(Boolean.FALSE)
+					.setEmailSendableAfterCreation(Boolean.FALSE)
+				,new Actor().setIdentifier("u02").setCode("u02").setFirstName("yao").setLastNames("yves").setElectronicMailAddress("u02@m.com").setKeycloakUserCreatable(Boolean.FALSE)
+					.setEmailSendableAfterCreation(Boolean.FALSE)
+			));
+		
+		Long actorScopeCount = __inject__(ActorScopePersistence.class).count();
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "101");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+1);
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101");
+		String identifier = actorScope.getIdentifier();
+		assertThat(actorScope.getVisible()).isNull();
+		
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "101");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+1);
+		actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101");
+		assertThat(actorScope.getIdentifier()).isEqualTo(identifier);
+		assertThat(actorScope.getVisible()).isNull();
+	}
+	
+	@Test
+	public void actor_createActorScope_usb() throws Exception{
+		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
+				,new ScopeType().setCode(ScopeType.CODE_ACTION));
+		
+		EntityCreator.getInstance().createMany(
+				new Scope().setCode("101").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("102").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("101P01").setTypeFromIdentifier(ScopeType.CODE_USB)
+				,new Scope().setCode("102P01").setTypeFromIdentifier(ScopeType.CODE_USB)
+			);
+		
+		EntityCreator.getInstance().createMany(
+				new Section().setCode("101")
+				,new Section().setCode("102")
+			);
+		
+		EntityCreator.getInstance().createMany(
+				new BudgetSpecializationUnit().setCode("101P01").setSectionFromIdentifier("101").setSectionCodeName("101")
+				,new BudgetSpecializationUnit().setCode("102P01").setSectionFromIdentifier("102").setSectionCodeName("102")
+			);
+		
+		__inject__(ActorBusiness.class).createMany(List.of(
+				new Actor().setIdentifier("u01").setCode("u01").setFirstName("yao").setLastNames("yves").setElectronicMailAddress("u01@m.com").setKeycloakUserCreatable(Boolean.FALSE)
+					.setEmailSendableAfterCreation(Boolean.FALSE)
+				,new Actor().setIdentifier("u02").setCode("u02").setFirstName("yao").setLastNames("yves").setElectronicMailAddress("u02@m.com").setKeycloakUserCreatable(Boolean.FALSE)
+					.setEmailSendableAfterCreation(Boolean.FALSE)
+			));
+		
+		Long actorScopeCount = __inject__(ActorScopePersistence.class).count();
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "101P01");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+1);
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101P01");
+		String usbIdentifier = actorScope.getIdentifier();
+		assertThat(actorScope.getVisible()).isNull();
+		assertThat(ScopeOfTypeSectionQuerier.getInstance().isVisible("101", "u01")).as("section 101 is not visible").isTrue();
+		assertThat(ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().isVisible("101P01", "u01")).as("usb 101P01 is not visible").isTrue();
+		
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "101P01");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+1);
+		actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101P01");
+		assertThat(actorScope.getIdentifier()).isEqualTo(usbIdentifier);
+		assertThat(actorScope.getVisible()).isNull();
+		
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "101");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+1);
+		actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101P01");
+		assertThat(actorScope.getIdentifier()).isEqualTo(usbIdentifier);
+		assertThat(actorScope.getVisible()).isNull();
+		actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "101");
+		assertThat(actorScope).isNull();
+		
+		__inject__(ActorScopeBusiness.class).createByActorIdentifierByScopesIdentifier("u01", "102");
+		assertThat(__inject__(ActorScopePersistence.class).count()).isEqualTo(actorScopeCount+2);
+		//actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "102P01");
+		//assertThat(actorScope.getIdentifier()).isEqualTo(usbIdentifier);
+		//assertThat(actorScope.getVisible()).isNull();
+		actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode("u01", "102");
+		assertThat(actorScope).isNotNull();
 	}
 	
 	@Test
@@ -496,7 +589,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 			createActorScopes(actorCode, code);
 			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
 			assertThat(actorScope).isNotNull();
-			assertThat(actorScope.getVisible()).isTrue();		
+			assertThat(actorScope.getVisible()).isNull();
 			assertVisibleSectionsByFilter(actorCode, null, null, codes);
 		}
 	}
@@ -518,7 +611,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 			createActorScopes(actorCode, code);
 			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
 			assertThat(actorScope).isNotNull();
-			assertThat(actorScope.getVisible()).isTrue();		
+			assertThat(actorScope.getVisible()).isNull();		
 			assertVisibleBudgetSpecializationUnitsByFilter(actorCode, null, null, codes);
 		}
 	}
@@ -540,7 +633,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 			createActorScopes(actorCode, code);
 			actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actorCode, code);
 			assertThat(actorScope).isNotNull();
-			assertThat(actorScope.getVisible()).isTrue();		
+			assertThat(actorScope.getVisible()).isNull();		
 			assertVisibleActivitiesByFilter(actorCode, null, null, codes);
 		}
 	}
