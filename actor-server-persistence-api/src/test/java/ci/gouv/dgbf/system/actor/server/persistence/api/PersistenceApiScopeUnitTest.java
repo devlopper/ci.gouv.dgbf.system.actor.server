@@ -22,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -486,7 +487,8 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 				,new ScopeType().setCode(ScopeType.CODE_ACTION).setOrderNumber((byte)3)
 				,new ScopeType().setCode(ScopeType.CODE_ACTIVITE).setOrderNumber((byte)4)
 				,new ScopeType().setCode(ScopeType.CODE_IMPUTATION).setOrderNumber((byte)5)
-				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)6));
+				,new ScopeType().setCode(ScopeType.CODE_UA).setOrderNumber((byte)6)
+				,new ActivityCategory().setCode("C1"));
 		
 		//Sections
 		createSection("s1");
@@ -507,12 +509,12 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		createAction("action4", "usb5");
 		
 		//Activities
-		createActivity("a1", "action1");
-		createActivity("a2", "action2");
-		createActivity("a3", "action3");
-		createActivity("a4", "action3");
-		createActivity("a5", "action3");
-		createActivity("a6", "action4");
+		createActivity("a1", "action1","C1");
+		createActivity("a2", "action2","C1");
+		createActivity("a3", "action3","C1");
+		createActivity("a4", "action3","C1");
+		createActivity("a5", "action3","C1");
+		createActivity("a6", "action4","C1");
 		
 		//Imputations
 		createImputation("i1", "a1");
@@ -578,15 +580,16 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(actionScope,action);	
 	}
 	
-	private void createActivity(String code,String actionIdentifier) {
+	private void createActivity(String code,String actionIdentifier,String categoryIdentifier) {
 		Scope activityScope = new Scope().setCode(code).setTypeFromIdentifier(ScopeType.CODE_ACTIVITE);
 		Activity activity = new Activity().setIdentifier(activityScope.getIdentifier()).setCode(activityScope.getCode())
-				.setActionFromIdentifier(actionIdentifier);
+				.setActionFromIdentifier(actionIdentifier).setCategoryFromIdentifier(categoryIdentifier);
 		activity.setActionCodeName(activity.getAction().toString());
 		activity.setBudgetSpecializationUnit(activity.getAction().getBudgetSpecializationUnit());
 		activity.setBudgetSpecializationUnitCodeName(activity.getBudgetSpecializationUnit().toString());
 		activity.setSection(activity.getBudgetSpecializationUnit().getSection());
 		activity.setSectionCodeName(activity.getSection().toString());
+		activity.setCategoryCodeName(activity.getCategory().toString());
 		EntityCreator.getInstance().createManyInTransaction(activityScope,activity);	
 	}
 	

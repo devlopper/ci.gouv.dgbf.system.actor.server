@@ -13,6 +13,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 		
@@ -71,6 +72,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 
@@ -128,6 +130,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 
@@ -185,6 +188,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
 

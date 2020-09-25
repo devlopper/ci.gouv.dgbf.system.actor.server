@@ -1,20 +1,33 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.AbstractObject;
+import org.cyk.utility.__kernel__.persistence.query.Language;
+import org.cyk.utility.__kernel__.persistence.query.Language.Select;
+import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
+import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeOfTypeQuerier extends Querier {
 
@@ -23,6 +36,8 @@ public interface ScopeOfTypeQuerier extends Querier {
 	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
 	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
+	
+	Class<?> getKlass();
 	
 	Collection<Scope> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);
@@ -71,6 +86,32 @@ public interface ScopeOfTypeQuerier extends Querier {
 	
 	Collection<String> getInvisibles(Collection<String> codes,String actorCode);
 	
+	/**/
+	
+	String buildQueryValueReadWhereFilterFromWhere();
+	
+	String buildQueryValueReadVisibleWhereFilterWherePredicateVisible(String parameterNameActorCode);
+	String buildQueryValueReadVisibleWhereFilterWherePredicateVisible();
+	
+	String buildQueryValueReadVisibleWhereFilterPredicateVisible();
+	String buildQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName,String parameterNameActorCode);
+	String buildQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName);
+	String buildQueryValueReadVisibleWhereFilterWherePredicate();
+	
+	String buildQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName,String parameterNameActorCode);
+	String buildQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName);	
+	String buildQueryValueReadVisibleWhereFilterWhere();
+	String buildQueryValueReadVisibleWhereFilterFromWhere();
+	
+	String buildQueryValueReadInvisibleWhereFilterWhere();
+	String buildQueryValueReadInvisibleWhereFilterFromWhere();
+	
+	/**/
+	
+	void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter,String parameterNameCode,String parameterNameName);
+	
+	/**/
+	
 	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeQuerier,Serializable {
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
@@ -114,19 +155,20 @@ public interface ScopeOfTypeQuerier extends Querier {
 			prepareVisibleWhereFilterStatic(arguments);
 		}
 		
-		public static void prepareVisibleWhereFilterStatic(QueryExecutorArguments arguments) {
+		protected void prepareVisibleWhereFilterStatic(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldsEquals(arguments,PARAMETER_NAME_ACTOR_CODE);
 			prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter);
 			arguments.setFilter(filter);
 		}
 		
-		public static void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter,String parameterNameCode,String parameterNameName) {
+		@Override
+		public void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter,String parameterNameCode,String parameterNameName) {
 			filter.addFieldsContains(arguments,parameterNameCode);
 			filter.addFieldContainsStringOrWords(parameterNameName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		}
 		
-		public static void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter) {
+		protected void prepareVisibleWhereFilterAddFieldsCodeAndName(QueryExecutorArguments arguments,Filter filter) {
 			prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter, PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
 		}
 		
@@ -150,7 +192,7 @@ public interface ScopeOfTypeQuerier extends Querier {
 			prepareInvisibleWhereFilterStatic(arguments);
 		}
 		
-		public static void prepareInvisibleWhereFilterStatic(QueryExecutorArguments arguments) {
+		protected void prepareInvisibleWhereFilterStatic(QueryExecutorArguments arguments) {
 			prepareVisibleWhereFilterStatic(arguments);
 		}
 		
@@ -210,5 +252,101 @@ public interface ScopeOfTypeQuerier extends Querier {
 				return null;
 			return codes.stream().filter(code -> isInvisible(code,actorCode)).collect(Collectors.toList());
 		}
+	
+		/**/
+		
+		@Override
+		public String buildQueryValueReadWhereFilterFromWhere() {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterPredicateVisible() {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWherePredicateVisible(String parameterNameActorCode) {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWherePredicateVisible() {
+			return buildQueryValueReadVisibleWhereFilterWherePredicateVisible(Language.formatParameter(PARAMETER_NAME_ACTOR_CODE));
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName,String parameterNameActorCode) {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWherePredicate(String parameterNameCode,String parameterNameName) {
+			return buildQueryValueReadVisibleWhereFilterWherePredicate(parameterNameCode, parameterNameName, Language.formatParameter(PARAMETER_NAME_ACTOR_CODE));
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWherePredicate() {
+			return buildQueryValueReadVisibleWhereFilterWherePredicate(PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName,String parameterNameActorCode) {
+			return Where.of(buildQueryValueReadVisibleWhereFilterWherePredicate(parameterNameCode,parameterNameName,parameterNameActorCode));
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWhere(String parameterNameCode,String parameterNameName) {
+			return buildQueryValueReadVisibleWhereFilterWhere(parameterNameCode, parameterNameName, Language.formatParameter(PARAMETER_NAME_ACTOR_CODE));
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterWhere() {
+			return buildQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_CODE, PARAMETER_NAME_NAME);
+		}
+		
+		@Override
+		public String buildQueryValueReadVisibleWhereFilterFromWhere() {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadInvisibleWhereFilterWhere() {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public String buildQueryValueReadInvisibleWhereFilterFromWhere() {
+			throw new RuntimeException("Not yet implemented");
+		}
+		
+		@Override
+		public Class<?> getKlass() {
+			throw new RuntimeException("Not yet implemented");
+		}
+	}
+	
+	static void initialize(ScopeOfTypeQuerier querier) {
+		QueryHelper.addQueries(
+			Query.buildSelect(Scope.class,querier.getQueryIdentifierReadVisibleWhereFilter()
+					,jpql(select("scope"),from("Scope scope"),querier.buildQueryValueReadVisibleWhereFilterWhere(),order(asc("scope","code"))))
+			
+			,Query.buildCount(querier.getQueryIdentifierCountVisibleWhereFilter()
+			,jpql(select("COUNT(scope.identifier)"),from("Scope scope"),querier.buildQueryValueReadVisibleWhereFilterWhere()))
+			
+			,Query.buildSelect(Scope.class,querier.getQueryIdentifierReadInvisibleWhereFilter()
+			,jpql(select("scope"),from("Scope scope"),querier.buildQueryValueReadInvisibleWhereFilterWhere(),order(asc("scope","code"))))
+			
+			,Query.buildCount(querier.getQueryIdentifierCountInvisibleWhereFilter()
+			,jpql(select("COUNT(scope.identifier)"),from("Scope scope"),querier.buildQueryValueReadInvisibleWhereFilterWhere()))
+			
+			,Query.buildSelect(Scope.class, querier.getQueryIdentifierReadWhereFilter()
+					, jpql(select(Select.fields("t", Section.FIELD_IDENTIFIER,Section.FIELD_CODE,Section.FIELD_NAME))
+							, querier.buildQueryValueReadWhereFilterFromWhere()
+							,order(asc("t",Section.FIELD_CODE)))
+					,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME))
+			
+			,Query.buildCount(querier.getQueryIdentifierCountWhereFilter(), jpql(select("COUNT(t.identifier)"),querier.buildQueryValueReadWhereFilterFromWhere()))
+		);
 	}
 }

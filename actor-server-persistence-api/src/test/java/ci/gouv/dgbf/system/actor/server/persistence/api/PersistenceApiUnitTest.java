@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -53,8 +54,7 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
-		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		SecurityHelper.PRINCIPALABLE.set(Boolean.FALSE);
 	}
 	
 	@Override

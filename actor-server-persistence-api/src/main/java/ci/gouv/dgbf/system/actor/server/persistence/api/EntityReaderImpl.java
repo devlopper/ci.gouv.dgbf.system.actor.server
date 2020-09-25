@@ -7,6 +7,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
@@ -16,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
@@ -58,7 +60,11 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(ScopeOfTypeActionQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeActionQuerier.getInstance().readMany(arguments);
 		if(ScopeOfTypeActivityQuerier.isProcessable(arguments))
-			return (Collection<T>) ScopeOfTypeActivityQuerier.getInstance().readMany(arguments);		
+			return (Collection<T>) ScopeOfTypeActivityQuerier.getInstance().readMany(arguments);
+		
+		if(ScopeOfTypeActivityCategoryQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeActivityCategoryQuerier.getInstance().readMany(arguments);	
+		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
 		
@@ -73,6 +79,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) SectionQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ActivityCategoryQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ActivityCategoryQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) BudgetSpecializationUnitQuerier.getInstance().readMany(arguments);

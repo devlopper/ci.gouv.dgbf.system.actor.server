@@ -45,6 +45,7 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 
 	public static final String CODE_AB = "AB";
 	public static final String CODE_SECTION = "SECTION";
+	public static final String CODE_CATEGORIE_ACTIVITE = "CATEGORIE_ACTIVITE";
 	
 	// Chaine programmatique
 	public static final String CODE_USB = "USB";

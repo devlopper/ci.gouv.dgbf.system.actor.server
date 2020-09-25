@@ -27,6 +27,9 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_CATEGORY) private ActivityCategory category;
+	@Column(name = COLUMN_CATEGORY_CODE_NAME) private String categoryCodeName;
+	
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
@@ -67,6 +70,14 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return this;
 	}
 	
+	public Activity setCategoryFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setCategory(null);
+		else
+			setCategory(EntityFinder.getInstance().find(ActivityCategory.class, identifier));
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		return code+" "+name;
@@ -74,6 +85,8 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
+	public static final String FIELD_CATEGORY = "category";
+	public static final String FIELD_CATEGORY_CODE_NAME = "categoryCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 	public static final String FIELD_ACTION = "action";
@@ -83,6 +96,8 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
+	public static final String COLUMN_CATEGORY = "CATEGORIE";
+	public static final String COLUMN_CATEGORY_CODE_NAME = "CATEGORIE_CODE_LIBELLE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
 	public static final String COLUMN_ACTION = "ACTION";

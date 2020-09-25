@@ -142,6 +142,25 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	}
 	
 	@Override
+	public Integer updateToKeycloak() {
+		Collection<Actor> actors = __inject__(ActorPersistence.class).read();
+		if(CollectionHelper.isEmpty(actors))
+			return null;
+		Collection<User> users = UserManager.getInstance().readAll();
+		Actor.setKeycloakUsers(actors, users);
+		actors = actors.stream().filter(actor -> Boolean.TRUE.equals(actor.isHasChangedFromKeycloakUser())).collect(Collectors.toList());
+		if(CollectionHelper.isEmpty(actors))
+			return null;
+		Actor.applyActorsPropertiesToUsersProperties(actors);		
+		Integer count = CollectionHelper.getSize(actors);
+		LogHelper.logInfo("Number of actors to update in keycloak is "+count,getClass());
+		users = actors.stream().map(actor -> actor.getKeycloakUser()).collect(Collectors.toList());
+		if(count != null && count > 0)
+			UserManager.getInstance().update(users,List.of(UserManager.Property.ELECTRONIC_MAIL_ADDRESS,UserManager.Property.FIRST_NAME,UserManager.Property.LAST_NAMES));
+		return count;
+	}
+	
+	@Override
 	public void sendUpdatePasswordEmail(Actor actor) {
 		if(actor == null)
 			return;

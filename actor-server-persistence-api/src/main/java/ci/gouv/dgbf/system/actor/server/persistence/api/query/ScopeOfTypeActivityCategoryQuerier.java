@@ -15,17 +15,15 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public interface ScopeOfTypeSectionQuerier extends ScopeOfTypeQuerier {
+public interface ScopeOfTypeActivityCategoryQuerier extends ScopeOfTypeQuerier {
 
-	Class<?> CLASS = Section.class;
-	String SCOPE_TYPE = ScopeType.CODE_SECTION;
+	Class<?> CLASS = ActivityCategory.class;
+	String SCOPE_TYPE = ScopeType.CODE_CATEGORIE_ACTIVITE;
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = ScopeOfTypeQuerier.buildReadWhereFilter(CLASS);	
 	@Override
@@ -65,14 +63,14 @@ public interface ScopeOfTypeSectionQuerier extends ScopeOfTypeQuerier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends ScopeOfTypeQuerier.AbstractImpl implements ScopeOfTypeSectionQuerier,Serializable {
+	public static abstract class AbstractImpl extends ScopeOfTypeQuerier.AbstractImpl implements ScopeOfTypeActivityCategoryQuerier,Serializable {
 		
 		@Override
 		public String buildQueryValueReadWhereFilterFromWhere() {
-			return jpql(from("Section t")
+			return jpql(from("ActivityCategory t")
 					,Where.of(Where.and(				
-							Where.like("t", Section.FIELD_CODE, PARAMETER_NAME_CODE)
-							,Where.like("t", Section.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+							Where.like("t", ActivityCategory.FIELD_CODE, PARAMETER_NAME_CODE)
+							,Where.like("t", ActivityCategory.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 						))
 					);
 		}
@@ -81,8 +79,6 @@ public interface ScopeOfTypeSectionQuerier extends ScopeOfTypeQuerier {
 		public String buildQueryValueReadVisibleWhereFilterWherePredicateVisible(String parameterNameActorCode) {
 			return parenthesis(or(
 					ScopeQuerier.getPredicateHasBeenMarkedVisible(parameterNameActorCode)
-					,getPredicateHasVisibleChild(AdministrativeUnit.class,parameterNameActorCode)
-					,getPredicateHasVisibleChild(BudgetSpecializationUnit.class,parameterNameActorCode)
 					,getPredicateHasVisibleChild(Activity.class,parameterNameActorCode)
 					,getPredicateHasVisibleChild(Imputation.class,parameterNameActorCode)
 				));
@@ -107,8 +103,8 @@ public interface ScopeOfTypeSectionQuerier extends ScopeOfTypeQuerier {
 	
 	/**/
 	
-	static ScopeOfTypeSectionQuerier getInstance() {
-		return Helper.getInstance(ScopeOfTypeSectionQuerier.class, INSTANCE);
+	static ScopeOfTypeActivityCategoryQuerier getInstance() {
+		return Helper.getInstance(ScopeOfTypeActivityCategoryQuerier.class, INSTANCE);
 	}
 	
 	Value INSTANCE = new Value();

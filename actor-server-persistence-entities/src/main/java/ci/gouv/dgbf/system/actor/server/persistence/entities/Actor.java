@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -16,12 +17,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.AuditOverrides;
@@ -91,6 +94,8 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private Boolean keycloakUserCreatable;
 	@Transient private Boolean emailSendableAfterCreation;
 	
+	@Transient private User keycloakUser;
+	
 	@Override
 	public Actor setIdentifier(String identifier) {
 		return (Actor) super.setIdentifier(identifier);
@@ -132,6 +137,40 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 		else
 			setIdentity(EntityFinder.getInstance().find(Identity.class, identifier));
 		return this;
+	}
+	
+	public static void setKeycloakUsers(Collection<Actor> actors,Collection<User> users) {
+		if(CollectionHelper.isEmpty(actors) || CollectionHelper.isEmpty(users))
+			return;
+		actors.forEach(actor -> {
+			actor.setKeycloakUser(CollectionHelper.getFirst(users.stream().filter(user -> actor.getCode().equals(user.getName())).collect(Collectors.toList())));
+		});
+	}
+	
+	public Boolean isHasChangedFromKeycloakUser() {
+		if(identity == null || keycloakUser == null)
+			return null;
+		if(!StringUtils.equals(identity.getElectronicMailAddress(), keycloakUser.getElectronicMailAddress())
+			|| !StringUtils.equals(identity.getFirstName(), keycloakUser.getFirstName())
+			|| !StringUtils.equals(identity.getLastNames(), keycloakUser.getLastNames())
+		)
+			return Boolean.TRUE;
+		return Boolean.FALSE;
+	}
+	
+	public static void applyActorsPropertiesToUsersProperties(Collection<Actor> actors) {
+		if(CollectionHelper.isEmpty(actors))
+			return;
+		actors.forEach(actor -> {
+			if(actor != null && Boolean.TRUE.equals(actor.isHasChangedFromKeycloakUser())) {
+				if(!StringUtils.equals(actor.getIdentity().getElectronicMailAddress(), actor.getKeycloakUser().getElectronicMailAddress()))
+					actor.getKeycloakUser().setElectronicMailAddress(actor.getIdentity().getElectronicMailAddress());
+				if(!StringUtils.equals(actor.getIdentity().getFirstName(), actor.getKeycloakUser().getFirstName()))
+					actor.getKeycloakUser().setFirstName(actor.getIdentity().getFirstName());
+				if(!StringUtils.equals(actor.getIdentity().getLastNames(), actor.getKeycloakUser().getLastNames()))
+					actor.getKeycloakUser().setLastNames(actor.getIdentity().getLastNames());	
+			}
+		});
 	}
 	
 	public static final String FIELD_IDENTITY = "identity";

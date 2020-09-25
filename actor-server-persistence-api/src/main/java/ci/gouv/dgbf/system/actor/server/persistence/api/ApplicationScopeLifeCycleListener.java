@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
@@ -64,6 +65,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		ScopeTypeQuerier.initialize();
 		SectionQuerier.initialize();
 		BudgetSpecializationUnitQuerier.initialize();
+		ActivityCategoryQuerier.initialize();
 		
 		PrivilegeQuerier.initialize();
 		PrivilegeTypeQuerier.initialize();

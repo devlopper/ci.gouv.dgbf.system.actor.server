@@ -79,6 +79,7 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 			Filter filter = new Filter();
 			filter.addFieldsContains(arguments,PARAMETER_NAME_CODE);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
@@ -92,6 +93,9 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			
 			ScopeQuerier.addParentCodeNameContains(arguments, filter, Section.class,BudgetSpecializationUnit.class,Action.class);
+			filter.addFieldsContains(arguments,ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME);
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
+			
 			arguments.setFilter(filter);
 		}
 		
@@ -111,9 +115,9 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 	static void initialize() {		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
-				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a",Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
+				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a",Activity.FIELD_CATEGORY_CODE_NAME,Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
 				,getQueryValueReadVisibleWhereFilterFromWhere(), order(asc("scope","code")))
-				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING)
+				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -123,9 +127,9 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 	
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
-				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a",Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
+				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a",Activity.FIELD_CATEGORY_CODE_NAME,Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
 				,getQueryValueReadInvisibleWhereFilterFromWhere(),order(asc("scope","code")))
-				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING)
+				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING)
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -136,10 +140,10 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 		QueryHelper.addQueries(
 				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 						, jpql(select(Select.fields("t", Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME
-								, Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
+								,Activity.FIELD_CATEGORY_CODE_NAME, Activity.FIELD_SECTION_CODE_NAME,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,Activity.FIELD_ACTION_CODE_NAME))
 								, getQueryValueReadWhereFilterFromWhere()
 								,order(asc("t",Activity.FIELD_CODE)))
-						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING
+						,MapHelper.instantiateStringIntegerByStrings(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_ACTIVITY_CATEGORY_AS_STRING,Scope.FIELD_SECTION_AS_STRING
 								,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Scope.FIELD_ACTION_AS_STRING))
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 						, jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereFilterFromWhere()))
@@ -151,6 +155,7 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 			,Language.Where.of(Language.Where.and(				
 					Language.Where.like("t", Activity.FIELD_CODE, PARAMETER_NAME_CODE)
 					,Language.Where.like("t", Activity.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,Language.Where.like("t", Activity.FIELD_CATEGORY_CODE_NAME, ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,Language.Where.like("t", Activity.FIELD_ACTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,Language.Where.like("t", Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,Language.Where.like("t", Activity.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
@@ -173,6 +178,7 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 				,getQueryValueReadVisibleWhereFilterPredicateVisible()
 				,Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
 				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,Where.like("a", Activity.FIELD_CATEGORY_CODE_NAME, ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_ACTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
@@ -188,6 +194,7 @@ public interface ScopeOfTypeActivityQuerier extends ScopeOfTypeQuerier {
 				,"NOT "+getQueryValueReadVisibleWhereFilterPredicateVisible()
 				,Language.Where.like("scope", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
 				,Language.Where.like("scope", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,Where.like("a", Activity.FIELD_CATEGORY_CODE_NAME, ScopeQuerier.PARAMETER_NAME_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_SECTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, ScopeQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,Where.like("a", Activity.FIELD_ACTION_CODE_NAME, ScopeQuerier.PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)

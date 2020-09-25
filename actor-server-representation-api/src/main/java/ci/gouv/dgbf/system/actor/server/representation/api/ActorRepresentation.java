@@ -49,7 +49,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak",tags = {TAG})
+	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak pour les création",tags = {TAG})
 	Response importFromKeycloak();
 	
 	@POST
@@ -57,6 +57,12 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@ApiOperation(value = "Exporter les acteurs vers keycloak",tags = {TAG})
 	Response exportToKeycloak();
+	
+	@POST
+	@Path(PATH_UPDATE_TO_KEYCLOAK)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Mettre à jour les utilisateurs de keycloak",tags = {TAG})
+	Response updateToKeycloak();
 	
 	@POST
 	@Path(PATH_SEND_UPDATE_PASSWORD_EMAIL)
@@ -68,6 +74,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_GET_PROFILE_INFORMATIONS_BY_CODE = "informations-profile-par-acteur";
 	String PATH_IMPORT_FROM_KEYCLOAK = "importFromKeycloak";
 	String PATH_EXPORT_TO_KEYCLOAK = "exportToKeycloak";
+	String PATH_UPDATE_TO_KEYCLOAK = "updateToKeycloak";
 	String PATH_SEND_UPDATE_PASSWORD_EMAIL = "sendUpdatePasswordEmail";
 	//String PATH_SAVE_PREFERENCES = "savePreferences";
 	//String PATH_SAVE_PROFILE = "saveProfile";

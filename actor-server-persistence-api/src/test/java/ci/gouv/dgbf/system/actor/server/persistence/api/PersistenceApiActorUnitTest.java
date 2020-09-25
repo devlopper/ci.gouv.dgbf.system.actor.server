@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -21,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
@@ -51,17 +53,33 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode(){
+		assertThat(ActorQuerier.getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode()).doesNotContain(":actorCode");
+	}
+	
+	@Test
+	public void getQueryValueReadWhereFilterAdditionalPredicateHasVisibleBudgetSpecializationUnitCode(){
+		assertThat(ActorQuerier.getQueryValueReadWhereFilterAdditionalPredicateHasVisibleBudgetSpecializationUnitCode()).doesNotContain(":actorCode");
+	}
+	
+	@Test
 	public void readWhereFilter(){
-		assertReadWhereFilter(null, null, null, null,null, "admin","u01","u02","u03");
-		assertReadWhereFilter("admin", null, null, null,null, "admin");
-		assertReadWhereFilter("u", null, null, null,null, "u01","u02","u03");
-		assertReadWhereFilter("1", null, null, null,null, "u01");
-		assertReadWhereFilter(null, "user", null, null,null, "u01","u02","u03");
-		assertReadWhereFilter(null, null, null, "P1",null, "u01","u03");
+		assertReadWhereFilter(null, null, null, null,null,null, "admin","u01","u02","u03");
+		assertReadWhereFilter("admin", null, null, null,null,null, "admin");
+		assertReadWhereFilter("u", null, null, null,null,null, "u01","u02","u03");
+		assertReadWhereFilter("1", null, null, null,null,null, "u01");
+		assertReadWhereFilter(null, "user", null, null,null,null, "u01","u02","u03");
+		assertReadWhereFilter(null, null, null, "P1",null,null, "u01","u03");
 		
-		assertReadWhereFilter(null, null, null, null,"101", "u01","u03");
-		assertReadWhereFilter(null, null, null, null,"327", "admin","u03");
-		assertReadWhereFilter(null, null, null, null,"323", "u01","u02","u03");
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		
+		assertReadWhereFilter(null, null, null, null,"101",null, "u01","u03");
+		assertReadWhereFilter(null, null, null, null,"327",null, "admin","u03");
+		assertReadWhereFilter(null, null, null, null,"323",null, "u01","u02","u03");
+		
+		assertReadWhereFilter(null, null, null, null,null,"22001", "u01","u03");
+		assertReadWhereFilter(null, null, null, null,null,"22002", "u01","u03");
+		assertReadWhereFilter(null, null, null, null,null,"22003", "admin","u03");
 	}
 	
 	@Test
@@ -121,6 +139,11 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		createSection("327","Ministère du Budget");
 		createSection("323","Ministère de l'intérieur");
 		
+		//USBs
+		createBudgetSpecializationUnit("22001", "Prog 001", EntityFinder.getInstance().find(Section.class, "101"));
+		createBudgetSpecializationUnit("22002", "Prog 002", EntityFinder.getInstance().find(Section.class, "101"));
+		createBudgetSpecializationUnit("22003", "Prog 003", EntityFinder.getInstance().find(Section.class, "327"));
+		
 		//UAs
 		createAdministrativeUnit("1022","DTI", "101");
 		
@@ -159,6 +182,15 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(sectionScope);
 		Section section = new Section().setCode(sectionScope.getIdentifier()).setName(name);
 		EntityCreator.getInstance().createManyInTransaction(section);
+	}
+	
+	private void createBudgetSpecializationUnit(String code,String name,Section section) {
+		Scope budgetSpecializationUnitScope = new Scope().setCode(code).setName(name).setTypeFromIdentifier(ScopeType.CODE_USB);
+		EntityCreator.getInstance().createManyInTransaction(budgetSpecializationUnitScope);
+		BudgetSpecializationUnit budgetSpecializationUnit = new BudgetSpecializationUnit().setCode(budgetSpecializationUnitScope.getIdentifier()).setName(name);
+		budgetSpecializationUnit.setSection(section);
+		budgetSpecializationUnit.setSectionCodeName(section.toString());
+		EntityCreator.getInstance().createManyInTransaction(budgetSpecializationUnit);
 	}
 	
 	private void createAdministrativeUnit(String code,String name,String sectionIdentifier) {
@@ -215,19 +247,23 @@ public class PersistenceApiActorUnitTest extends AbstractPersistenceUnitTest {
 	
 	/**/
 	
-	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String profileCode,String visibleSectionCode ,String...expectedCodes) {
+	private void assertReadWhereFilter(String actorCode,String firstName,String lastNames,String profileCode,String visibleSectionCode
+			,String visibleBudgetSpecializationUnitCode ,String...expectedCodes) {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().addFilterFieldsValues(
 				IdentityQuerier.PARAMETER_NAME_CODE,actorCode,IdentityQuerier.PARAMETER_NAME_FIRST_NAME,firstName,IdentityQuerier.PARAMETER_NAME_LAST_NAMES,lastNames);
 		if(StringHelper.isNotBlank(profileCode))
 			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_PROFILE_CODE,profileCode);
 		if(StringHelper.isNotBlank(visibleSectionCode))
 			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_VISIBLE_SECTION_CODE,visibleSectionCode);
+		if(StringHelper.isNotBlank(visibleBudgetSpecializationUnitCode))
+			arguments.addFilterField(ActorQuerier.PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE,visibleBudgetSpecializationUnitCode);
 		Collection<Actor> actors = ActorQuerier.getInstance().readWhereFilter(arguments);
 		if(ArrayHelper.isEmpty(expectedCodes)) {
 			assertThat(actors).as("actors found").isNull();
 		}else {
-			assertThat(actors).as("actors not found for parameters AC="+actorCode+", FN="+firstName+", LN="+lastNames+", PC="+profileCode+", VSC="+visibleSectionCode).isNotNull()
-;			assertThat(actors.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+			assertThat(actors).as("actors not found for parameters AC="+actorCode+", FN="+firstName+", LN="+lastNames+", PC="+profileCode+", VSC="+visibleSectionCode
+					+", VUSB="+visibleBudgetSpecializationUnitCode).isNotNull();
+			assertThat(actors.stream().map(x -> x.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
 		}
 	}
 }

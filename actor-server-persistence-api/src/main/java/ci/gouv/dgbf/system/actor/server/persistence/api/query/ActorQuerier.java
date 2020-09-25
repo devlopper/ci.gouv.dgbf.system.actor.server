@@ -41,6 +41,7 @@ import org.cyk.utility.__kernel__.value.Value;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
@@ -64,6 +65,26 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE = "visibleBudgetSpecializationUnitCode";
 	String PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_NAME = "visibleBudgetSpecializationUnitName";
+	
+	String PARAMETER_NAME_VISIBLE_ACTION_CODE = "visibleActionCode";
+	String PARAMETER_NAME_VISIBLE_ACTION_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ACTION_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_ACTION_NAME = "visibleActionName";
+	
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_CODE = "visibleActivityCode";
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ACTIVITY_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_NAME = "visibleActivityName";
+	
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE = "visibleActivityCategoryCode";
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_NAME = "visibleActivityCategoryName";
+	
+	String PARAMETER_NAME_VISIBLE_IMPUTATION_CODE = "visibleImputationCode";
+	String PARAMETER_NAME_VISIBLE_IMPUTATION_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_IMPUTATION_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_IMPUTATION_NAME = "visibleImputationName";
+	
+	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE = "visibleAdministrativeUnitCode";
+	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE+"Nullable";
+	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_NAME = "visibleAdministrativeUnitName";
 	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
@@ -132,9 +153,14 @@ public interface ActorQuerier extends Querier {
 			//filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
 			//filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_CODE);
 			filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_SECTION_CODE);
-			ScopeOfTypeSectionQuerier.AbstractImpl.prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_SECTION_CODE,PARAMETER_NAME_VISIBLE_SECTION_NAME);
-			//filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE);
-			//ScopeOfTypeSectionQuerier.AbstractImpl.prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_NAME);
+			ScopeOfTypeSectionQuerier.getInstance().prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_SECTION_CODE,PARAMETER_NAME_VISIBLE_SECTION_NAME);
+			
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE);
+			ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance().prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_NAME);
+			
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE);
+			ScopeOfTypeActivityCategoryQuerier.getInstance().prepareVisibleWhereFilterAddFieldsCodeAndName(arguments, filter,PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE,PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_NAME);
+			
 			arguments.setFilter(filter);
 		}
 		
@@ -398,25 +424,21 @@ public interface ActorQuerier extends Querier {
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalJoins() {
-		return /*jpql(
-				"LEFT JOIN ActorProfile ap ON ap.actor = t" // filter by profile
-				)*/null;
+		return null;
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicates() {
 		return and(
-				/*getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode()
-				,*/
 				like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
 				,getQueryValueReadWhereFilterAdditionalPredicateHasProfileCode()
 				,getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode()
+				,getQueryValueReadWhereFilterAdditionalPredicateHasVisibleBudgetSpecializationUnitCode()
+				,getQueryValueReadWhereFilterAdditionalPredicateHasVisibleActivityCategoryCode()
 			);
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicateHasFunctionCode() {
-		return and(
-				/*like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
-				,*/parenthesis(or(
+		return parenthesis(or(
 					":"+PARAMETER_NAME_FUNCTION_CODE_NULLABLE+" = true"
 					,exists(
 						select("pf")
@@ -424,37 +446,44 @@ public interface ActorQuerier extends Querier {
 						,where(and("pf.profile = ap.profile",Where.equals("pf", FieldHelper.join(ProfileFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)))
 					)
 				))
-			);
+			;
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicateHasProfileCode() {
-		return and(
-				/*like("t", Actor.FIELD_CODE, PARAMETER_NAME_CODE)
-				,*/parenthesis(or(
+		return parenthesis(or(
 					":"+PARAMETER_NAME_PROFILE_CODE_NULLABLE+" = true"
 					,exists(
 						select("ap")
 						,from("ActorProfile ap")
 						,where(and("ap.actor = t",Where.equals("ap", FieldHelper.join(ActorProfile.FIELD_PROFILE,Function.FIELD_CODE), PARAMETER_NAME_PROFILE_CODE)))
 					)
-				))
-			);
+				));
 	}
 	
 	static String getQueryValueReadWhereFilterAdditionalPredicateHasVisibleSectionCode() {
 		return parenthesis(or(
 				":"+PARAMETER_NAME_VISIBLE_SECTION_CODE_NULLABLE+" = true"
-				,exists("SELECT scope FROM Scope scope " + ScopeOfTypeSectionQuerier.getQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_VISIBLE_SECTION_CODE
-				,PARAMETER_NAME_VISIBLE_SECTION_NAME,"t.code"))
+				,exists(jpql("SELECT scope FROM Scope scope",ScopeOfTypeSectionQuerier.getInstance().buildQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_VISIBLE_SECTION_CODE
+				,PARAMETER_NAME_VISIBLE_SECTION_NAME,"t.code")))
 			));
 	}
 	
-	/*static String getQueryValueReadWhereFilterAdditionalPredicateHasVisibleBudgetSpecializationUnitCode() {
+	static String getQueryValueReadWhereFilterAdditionalPredicateHasVisibleBudgetSpecializationUnitCode() {
 		return parenthesis(or(
 				":"+PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE_NULLABLE+" = true"
-				,exists("SELECT scope FROM Scope scope " + ScopeOfTypeBudgetSpecializationUnitQuerier.getQueryValueReadVisibleWhereFilterWhere(
-						PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE
-				,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_NAME,"t.code"))
+				,exists(jpql("SELECT scope"
+						, ScopeQuerier.getFromWhere(BudgetSpecializationUnit.class, "b", ScopeOfTypeBudgetSpecializationUnitQuerier.getInstance()
+								.buildQueryValueReadVisibleWhereFilterWhere(
+								PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_CODE
+								,PARAMETER_NAME_VISIBLE_BUDGET_SPECIALIZATION_UNIT_NAME,"t.code"))))
 			));
-	}*/
+	}
+	
+	static String getQueryValueReadWhereFilterAdditionalPredicateHasVisibleActivityCategoryCode() {
+		return parenthesis(or(
+				":"+PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE_NULLABLE+" = true"
+				,exists(jpql("SELECT scope FROM Scope scope",ScopeOfTypeSectionQuerier.getInstance().buildQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE
+				,PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_NAME,"t.code")))
+			));
+	}
 }

@@ -32,7 +32,7 @@
 		<security.single.sign.on.system.keycloak.dev.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.dev.url>
 		<security.single.sign.on.system.keycloak.dev.realm.name>SIIB</security.single.sign.on.system.keycloak.dev.realm.name>
 		<security.single.sign.on.system.keycloak.dev.client.identifier>admin-cli</security.single.sign.on.system.keycloak.dev.client.identifier>
-		<security.single.sign.on.system.keycloak.dev.client.secret>913c69e7-e82d-41d7-a197-d97b5c761548</security.single.sign.on.system.keycloak.dev.client.secret>
+		<security.single.sign.on.system.keycloak.dev.client.secret>ebe335e9-c747-46f0-91f2-929325132782</security.single.sign.on.system.keycloak.dev.client.secret>
 		<security.single.sign.on.system.keycloak.dev.credential.username>admin</security.single.sign.on.system.keycloak.dev.credential.username>
 		<security.single.sign.on.system.keycloak.dev.credential.password>admin</security.single.sign.on.system.keycloak.dev.credential.password>
 		<!--
