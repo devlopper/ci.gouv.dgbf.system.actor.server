@@ -3,6 +3,9 @@
     	<jta-data-source>java:/actor/server/dataSource</jta-data-source>
     	
     	<!-- Read -->
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		

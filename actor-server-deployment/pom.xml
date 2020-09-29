@@ -32,9 +32,9 @@
 		<security.single.sign.on.system.keycloak.dev.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.dev.url>
 		<security.single.sign.on.system.keycloak.dev.realm.name>SIIB</security.single.sign.on.system.keycloak.dev.realm.name>
 		<security.single.sign.on.system.keycloak.dev.client.identifier>admin-cli</security.single.sign.on.system.keycloak.dev.client.identifier>
-		<security.single.sign.on.system.keycloak.dev.client.secret>ebe335e9-c747-46f0-91f2-929325132782</security.single.sign.on.system.keycloak.dev.client.secret>
-		<security.single.sign.on.system.keycloak.dev.credential.username>admin</security.single.sign.on.system.keycloak.dev.credential.username>
-		<security.single.sign.on.system.keycloak.dev.credential.password>admin</security.single.sign.on.system.keycloak.dev.credential.password>
+		<security.single.sign.on.system.keycloak.dev.client.secret>ee334d25-4f98-4a42-a1e5-6097e7494fb7</security.single.sign.on.system.keycloak.dev.client.secret>
+		<security.single.sign.on.system.keycloak.dev.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.dev.credential.username>
+		<security.single.sign.on.system.keycloak.dev.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.dev.credential.password>
 		<!--
 		<data.base.management.system.oracle.dev.sid>${SIIB_DB_SID}</data.base.management.system.oracle.dev.sid>
 		-->

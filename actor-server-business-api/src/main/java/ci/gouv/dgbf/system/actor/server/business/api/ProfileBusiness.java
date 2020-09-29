@@ -20,6 +20,12 @@ public interface ProfileBusiness extends BusinessEntity<Profile> {
 	@Transactional
 	void savePrivileges(Collection<Profile> profiles,Collection<Privilege> creatablePrivileges,Collection<Privilege> deletablePrivileges);
 	
+	@Transactional
+	void importFormKeycloakRoles();
+	
+	@Transactional
+	void exportToKeycloakRoles();
+	
 	String CREATE_PRIVILEGES = "Profile.createPrivileges";
 	String DELETE_PRIVILEGES = "Profile.deletePrivileges";
 	String SAVE_PRIVILEGES = "Profile.savePrivileges";

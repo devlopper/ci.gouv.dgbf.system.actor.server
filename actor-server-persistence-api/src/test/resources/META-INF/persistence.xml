@@ -5,6 +5,9 @@
 
 	<persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
 		<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
@@ -64,6 +67,9 @@
 	
 	<persistence-unit name="dev" transaction-type="RESOURCE_LOCAL">
 		<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
@@ -122,6 +128,9 @@
 	
 	<persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
 		<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
@@ -180,6 +189,9 @@
 	
 	<persistence-unit name="prod" transaction-type="RESOURCE_LOCAL">
 		<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		

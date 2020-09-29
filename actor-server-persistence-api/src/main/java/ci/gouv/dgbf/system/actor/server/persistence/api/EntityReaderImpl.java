@@ -13,6 +13,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
@@ -25,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputat
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends EntityReader.AbstractImpl implements Serializable {
@@ -67,6 +69,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ServiceQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ServiceQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(MenuQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) MenuQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);

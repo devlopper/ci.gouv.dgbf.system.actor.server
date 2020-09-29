@@ -26,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
@@ -36,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountReq
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -67,6 +69,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		BudgetSpecializationUnitQuerier.initialize();
 		ActivityCategoryQuerier.initialize();
 		
+		MenuQuerier.initialize();
+		ServiceQuerier.initialize();
 		PrivilegeQuerier.initialize();
 		PrivilegeTypeQuerier.initialize();
 		

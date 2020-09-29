@@ -4,13 +4,12 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import ci.gouv.dgbf.system.actor.server.representation.api.ServiceRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
-import ci.gouv.dgbf.system.actor.server.representation.api.FunctionRepresentation;
-import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
-
 @ApplicationScoped
-public class FunctionRepresentationImpl extends AbstractRepresentationEntityImpl<FunctionDto> implements FunctionRepresentation,Serializable {
+public class ServiceRepresentationImpl extends AbstractRepresentationEntityImpl<ServiceDto> implements ServiceRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 }

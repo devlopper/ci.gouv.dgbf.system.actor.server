@@ -24,7 +24,21 @@ public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> 
 	@ApiOperation(value = "Enregistrer des privilèges",tags = {TAG})
 	Response savePrivileges(Collection<ProfileDto> profiles);
 	
+	@POST
+	@Path(PATH_IMPORT_FROM_KEYCLOAK_ROLES)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Importer les profiles à partir des roles de keycloak",tags = {TAG})
+	Response importFromKeycloakRoles();
+	
+	@POST
+	@Path(PATH_EXPORT_TO_KEYCLOAK_ROLES)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Exporter les profiles vers les roles de keycloak",tags = {TAG})
+	Response exportToKeycloakRoles();
+	
 	String PATH_SAVE_PRIVILEGES = "save_privileges";
+	String PATH_IMPORT_FROM_KEYCLOAK_ROLES = "importFromKeycloakRoles";
+	String PATH_EXPORT_TO_KEYCLOAK_ROLES = "exportToKeycloakRoles";
 	String PATH = "profile";
 
 	String TAG = "Profiles";

@@ -59,4 +59,34 @@ public class ProfileRepresentationImpl extends AbstractRepresentationEntityImpl<
 			}
 		});
 	}	
+	
+	@Override
+	public Response importFromKeycloakRoles() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ProfileBusiness.class).importFormKeycloakRoles();
+					}
+				};
+			}
+		});
+	}
+
+	@Override
+	public Response exportToKeycloakRoles() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ProfileBusiness.class).exportToKeycloakRoles();
+					}
+				};
+			}
+		});
+	}
 }

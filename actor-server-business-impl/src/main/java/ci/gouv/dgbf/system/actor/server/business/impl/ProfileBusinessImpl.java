@@ -11,7 +11,10 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.security.keycloak.Role;
+import org.cyk.utility.__kernel__.security.keycloak.RoleManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -24,6 +27,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
@@ -146,6 +150,33 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		Collection<ProfileFunction> profileFunctions = ProfileFunctionQuerier.getInstance().readByProfilesCodes(List.of(profile.getCode()));
 		if(CollectionHelper.isNotEmpty(profileFunctions))
 			__inject__(ProfileFunctionBusiness.class).deleteMany(profileFunctions);
+	}
+	
+	@Override @Transactional
+	public void importFormKeycloakRoles() {
+		Collection<Role> roles = RoleManager.getInstance().read();
+		if(CollectionHelper.isEmpty(roles))
+			return;
+		Collection<Profile> profiles = null;
+		for(Role role : roles) {
+			Profile profile = __inject__(ProfilePersistence.class).readByBusinessIdentifier(role.getName());
+			if(profile != null)
+				continue;
+			if(profiles == null)
+				profiles = new ArrayList<Profile>();
+			profiles.add(new Profile().setCode(role.getName()).setName(role.getName()));			
+		}
+		if(CollectionHelper.isEmpty(profiles))
+			return;
+		createMany(profiles);
+	}
+
+	@Override @Transactional
+	public void exportToKeycloakRoles() {
+		Collection<Profile> profiles = EntityReader.getInstance().readMany(Profile.class,ProfileQuerier.QUERY_IDENTIFIER_READ);
+		if(CollectionHelper.isEmpty(profiles))
+			return;
+		RoleManager.getInstance().saveByNames(profiles.stream().map(x -> x.getCode()).collect(Collectors.toList()));
 	}
 	
 	@Override

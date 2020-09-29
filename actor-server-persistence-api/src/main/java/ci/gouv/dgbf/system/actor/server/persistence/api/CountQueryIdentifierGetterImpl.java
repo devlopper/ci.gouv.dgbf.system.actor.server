@@ -6,12 +6,18 @@ import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.AbstractImpl implements Serializable {
 
 	@Override
 	protected String __get__(String readQueryIdentifier) {
+		if(ServiceQuerier.QUERY_IDENTIFIER_READ_WITH_EXTERNAL_INFOS.equals(readQueryIdentifier))
+			return ServiceQuerier.QUERY_IDENTIFIER_COUNT;
+		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))
+			return MenuQuerier.QUERY_IDENTIFIER_COUNT;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(readQueryIdentifier))
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(readQueryIdentifier))
