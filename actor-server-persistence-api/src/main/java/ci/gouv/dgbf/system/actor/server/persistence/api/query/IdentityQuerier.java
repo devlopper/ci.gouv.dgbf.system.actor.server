@@ -16,7 +16,6 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Order;
@@ -44,7 +43,7 @@ public interface IdentityQuerier extends Querier {
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_FIRST_NAME = 2;
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_LAST_NAMES = 4;
 	
-	public static abstract class AbstractImpl extends AbstractObject implements IdentityQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements IdentityQuerier,Serializable {
 		
 		@Override
 		public Collection<Identity> readWhereFilter(QueryExecutorArguments arguments) {

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -70,7 +69,7 @@ public interface ProfilePrivilegeQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ProfilePrivilegeQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ProfilePrivilegeQuerier,Serializable {
 		@Override
 		public Collection<ProfilePrivilege> readByProfilesCodes(Collection<String> profilesCodes) {
 			return EntityReader.getInstance().readMany(ProfilePrivilege.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, PARAMETER_NAME_PROFILES_CODES,profilesCodes);

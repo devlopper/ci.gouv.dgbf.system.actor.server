@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -45,7 +44,7 @@ public interface ActorProfileQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ActorProfileQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ActorProfileQuerier,Serializable {
 		@Override
 		public Collection<ActorProfile> readByActorsCodes(Collection<String> actorsCodes) {
 			return EntityReader.getInstance().readMany(ActorProfile.class, QUERY_IDENTIFIER_READ_BY_ACTORS_CODES, PARAMETER_NAME_ACTORS_CODES,actorsCodes);

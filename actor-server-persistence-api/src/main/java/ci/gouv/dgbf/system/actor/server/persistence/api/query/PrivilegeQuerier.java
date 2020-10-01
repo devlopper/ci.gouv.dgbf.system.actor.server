@@ -16,7 +16,6 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -31,6 +30,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM Privilege t ORDER BY t.code ASC")
+		,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_BY_SYSTEM_IDENTIFIERS
+			,value = "SELECT t FROM Privilege t WHERE t.identifier IN :identifiers ORDER BY t.code ASC")
 })
 public interface PrivilegeQuerier extends Querier {
 
@@ -41,6 +42,8 @@ public interface PrivilegeQuerier extends Querier {
 	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_CHILDREN_CODES = "childrenCodes";
 	String PARAMETER_NAME_CHILDREN_IDENTIFIERS = "childrenIdentifiers";
+	
+	String QUERY_NAME_READ_BY_SYSTEM_IDENTIFIERS = "readBySystemIdentifiers";
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
@@ -116,7 +119,7 @@ public interface PrivilegeQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements PrivilegeQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements PrivilegeQuerier,Serializable {
 		@Override
 		public Collection<Privilege> readByProfilesTypesCodesByFunctionsCodes(Collection<String> profilesTypesCodes,Collection<String> functionsCodes) {
 			return QueryExecutor.getInstance().executeReadMany(Privilege.class, QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
@@ -189,12 +192,12 @@ public interface PrivilegeQuerier extends Querier {
 				return null;
 			Collection<Privilege> children = readByProfilesCodes(profilesCodes);
 			if(CollectionHelper.isEmpty(children))
-				return null;			
+				return null;
 			Collection<Privilege> privileges = new HashSet<>();
-			privileges.addAll(children);			
+			privileges.addAll(children);
 			Collection<Privilege> parents = readParentsByChildrenCodes(children.stream().map(child -> child.getCode()).collect(Collectors.toSet()));
 			if(CollectionHelper.isNotEmpty(parents))
-				privileges.addAll(parents);			
+				privileges.addAll(parents);
 			return privileges;
 		}
 		

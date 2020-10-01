@@ -27,6 +27,13 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	Response record(Collection<AccountRequestDto> accountRequests);
 	
 	@POST
+	@Path(PATH_RECORD_ONE)
+	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Enregistrer une demande de compte",tags = {TAG})
+	Response record(AccountRequestDto accountRequest);
+	
+	@POST
 	@Path(PATH_SUBMIT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -58,6 +65,7 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	
 	String PATH = "accountrequest";
 	String PATH_RECORD = "record";
+	String PATH_RECORD_ONE = "recordone";
 	String PATH_SUBMIT = "submit";
 	String PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES = "notifyAccessTokenByElectronicMailAddresses";	
 	String PATH_ACCEPT = "accept";

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -84,7 +83,7 @@ public interface ProfileFunctionQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ProfileFunctionQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ProfileFunctionQuerier,Serializable {
 		@Override
 		public ProfileFunction readByProfileCodeByFunctionCode(String profileCode, String functionCode) {
 			return QueryExecutor.getInstance().executeReadOne(ProfileFunction.class, new QueryExecutorArguments()

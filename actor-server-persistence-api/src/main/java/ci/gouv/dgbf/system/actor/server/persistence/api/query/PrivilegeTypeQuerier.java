@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
@@ -30,7 +29,7 @@ public interface PrivilegeTypeQuerier extends Querier {
 		
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements PrivilegeTypeQuerier,Serializable {	
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements PrivilegeTypeQuerier,Serializable {	
 		@Override
 		public Collection<PrivilegeType> readOrderByCodeAscending() {
 			return EntityReader.getInstance().readMany(PrivilegeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);

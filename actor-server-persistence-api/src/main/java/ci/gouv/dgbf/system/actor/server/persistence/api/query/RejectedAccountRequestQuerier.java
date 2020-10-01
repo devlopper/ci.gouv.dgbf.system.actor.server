@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Order;
@@ -33,7 +32,7 @@ public interface RejectedAccountRequestQuerier extends Querier {
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_FIRST_NAME = 2;
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_LAST_NAMES = 4;
 	
-	public static abstract class AbstractImpl extends AbstractObject implements RejectedAccountRequestQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RejectedAccountRequestQuerier,Serializable {
 		
 		@Override
 		public Collection<RejectedAccountRequest> readWhereFilter(QueryExecutorArguments arguments) {

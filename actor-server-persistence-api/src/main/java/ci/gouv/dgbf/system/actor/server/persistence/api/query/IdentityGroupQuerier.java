@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 import java.io.Serializable;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
@@ -22,7 +21,7 @@ public interface IdentityGroupQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements IdentityGroupQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements IdentityGroupQuerier,Serializable {
 		
 
 	}

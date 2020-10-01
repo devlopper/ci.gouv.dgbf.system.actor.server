@@ -29,7 +29,7 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 	@Override
 	public Response record(Collection<AccountRequestDto> accountRequests) {
 		if(CollectionHelper.isEmpty(accountRequests))
-			return ResponseBuilder.getInstance().buildRuntimeException(null, "Veuillez fournir les demandes de comptes");
+			return ResponseBuilder.getInstance().buildRuntimeException(null, "Veuillez fournir au moins une demande de compte");
 		Collection<AccountRequest> persistences = MappingHelper.getDestinations(accountRequests, AccountRequest.class); 
 		Runner.Arguments runnerArguments = new Runner.Arguments().addRunnables(new Runnable() {				
 			@Override
@@ -41,6 +41,11 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 		if(runnerArguments.getThrowable() == null)
 			return Response.ok(persistences.size()+" demande(s) de compte(s) enregistrée(s)").build();
 		return ResponseBuilder.getInstance().build(runnerArguments.getThrowable());
+	}
+	
+	@Override
+	public Response record(AccountRequestDto accountRequest) {
+		return record(accountRequest == null ? null : List.of(accountRequest));
 	}
 	
 	@Override

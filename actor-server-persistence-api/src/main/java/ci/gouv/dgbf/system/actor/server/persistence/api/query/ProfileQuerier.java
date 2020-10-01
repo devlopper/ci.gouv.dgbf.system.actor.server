@@ -7,9 +7,13 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Select.selec
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -22,7 +26,9 @@ import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME
@@ -35,6 +41,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
+	String PARAMETER_NAME_SERVICES_IDENTIFIERS = "servicesIdentifiers";
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME = "readWhereTypeIsSystemeOrderByCodeAscending";
@@ -65,6 +72,10 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	/* read by functions codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().build(Profile.class, "readByFunctionsCodes");
 	Collection<Profile> readByFunctionsCodes(Collection<String> functionsCodes);
+	
+	/* read by services identifiers order by code ascending */
+	String QUERY_IDENTIFIER_READ_BY_SERVICES_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(Service.class, "readByServicesIdentifiers");
+	Collection<Profile> readByServicesIdentifiers(Collection<String> servicesIdentifiers);
 	
 	/**/
 	
@@ -105,6 +116,31 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 			return QueryExecutor.getInstance().executeReadMany(Profile.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES, PARAMETER_NAME_FUNCTIONS_CODES,functionsCodes);
 		}
 		
+		@Override
+		public Collection<Profile> readByServicesIdentifiers(Collection<String> servicesIdentifiers) {
+			if(CollectionHelper.isEmpty(servicesIdentifiers))
+				return null;
+			//services are privileges
+			Collection<Privilege> servicesAsPrivileges = PrivilegeQuerier.getInstance().readBySystemIdentifiers(Privilege.class, servicesIdentifiers);
+			if(CollectionHelper.isEmpty(servicesAsPrivileges))
+				return null;
+			Collection<Profile> profiles = ProfileQuerier.getInstance().read();
+			if(CollectionHelper.isEmpty(profiles))
+				return null;
+			Collection<Profile> result = null;
+			for(Profile profile : profiles) {
+				Collection<Privilege> visibles = PrivilegeQuerier.getInstance().readVisibleByProfilesCodes(List.of(profile.getCode()));
+				if(CollectionHelper.isEmpty(visibles))
+					continue;
+				if(visibles.stream().filter(servicesAsPrivileges::contains).collect(Collectors.toList()).isEmpty())
+					continue;
+				if(result == null)
+					result = new ArrayList<>();
+				result.add(profile);
+			}
+			return result;
+		}
+		
 		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<Profile> readMany(QueryExecutorArguments arguments) {
@@ -118,7 +154,9 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 				return readByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
 			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
 				return readByTypesCodesByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES)
-						,(Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));		
+						,(Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
+			if(QUERY_IDENTIFIER_READ_BY_SERVICES_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
+				return readByServicesIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SERVICES_IDENTIFIERS));
 			return super.readMany(arguments);
 		}
 		

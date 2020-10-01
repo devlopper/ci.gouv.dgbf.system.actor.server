@@ -1,22 +1,22 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.not;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -124,7 +124,7 @@ public interface ScopeOfTypeAdministrativeUnitQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeAdministrativeUnitQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeOfTypeAdministrativeUnitQuerier,Serializable {
 		
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {

@@ -18,6 +18,10 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return ServiceQuerier.QUERY_IDENTIFIER_COUNT;
 		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))
 			return MenuQuerier.QUERY_IDENTIFIER_COUNT;
+		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_SERVICE_IDENTIFIER.equals(readQueryIdentifier))
+			return MenuQuerier.QUERY_IDENTIFIER_COUNT_BY_SERVICE_IDENTIFIER;
+		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_SERVICE_CODE.equals(readQueryIdentifier))
+			return MenuQuerier.QUERY_IDENTIFIER_COUNT_BY_SERVICE_CODE;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(readQueryIdentifier))
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(readQueryIdentifier))

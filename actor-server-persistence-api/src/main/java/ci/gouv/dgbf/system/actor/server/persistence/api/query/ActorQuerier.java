@@ -21,7 +21,6 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
@@ -91,7 +90,7 @@ public interface ActorQuerier extends Querier {
 	Actor readOne(QueryExecutorArguments arguments);
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ActorQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ActorQuerier,Serializable {
 		
 		@Override
 		public Actor readOne(QueryExecutorArguments arguments) {

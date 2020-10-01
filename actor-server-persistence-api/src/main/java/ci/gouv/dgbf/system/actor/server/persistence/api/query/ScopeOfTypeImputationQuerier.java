@@ -14,7 +14,6 @@ import java.util.Collection;
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -27,8 +26,8 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
@@ -108,7 +107,7 @@ public interface ScopeOfTypeImputationQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeImputationQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeOfTypeImputationQuerier,Serializable {
 		
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {

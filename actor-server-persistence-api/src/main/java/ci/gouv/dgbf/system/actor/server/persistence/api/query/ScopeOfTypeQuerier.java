@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
@@ -112,7 +111,7 @@ public interface ScopeOfTypeQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeOfTypeQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeOfTypeQuerier,Serializable {
 		@Override
 		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
 			if(getQueryIdentifierReadWhereFilter().equals(arguments.getQuery().getIdentifier()))

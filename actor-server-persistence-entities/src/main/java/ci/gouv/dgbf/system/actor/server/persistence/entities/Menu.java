@@ -34,6 +34,7 @@ public class Menu extends AbstractIdentifiableSystemScalarStringIdentifiableBusi
 	@Transient private String status;
 	@Transient private String serviceAsString;
 	@Transient private String moduleAsString;
+	@Transient private String profilesAsString;
 	
 	@Override
 	public Menu setIdentifier(String identifier) {
@@ -47,6 +48,7 @@ public class Menu extends AbstractIdentifiableSystemScalarStringIdentifiableBusi
 	public static final String FIELD_UNIFORM_RESOURCE_IDENTIFIER = "uniformResourceIdentifier";
 	public static final String FIELD_DEFINED = "defined";
 	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_PROFILES_AS_STRING = "profilesAsString";
 	
 	public static final String COLUMN_UNIFORM_RESOURCE_IDENTIFIER = "URL";
 	public static final String COLUMN_SERVICE = "SERVICE";

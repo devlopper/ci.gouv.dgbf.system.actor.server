@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
@@ -30,7 +29,7 @@ public interface ScopeTypeQuerier extends Querier {
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ScopeTypeQuerier,Serializable {	
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeTypeQuerier,Serializable {	
 		@Override
 		public Collection<ScopeType> readOrderByCodeAscending() {
 			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);

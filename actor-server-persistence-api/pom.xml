@@ -41,5 +41,11 @@
 			<version>11.2.0.4</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

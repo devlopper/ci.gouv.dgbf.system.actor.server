@@ -20,6 +20,7 @@ public class MenuDto extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	private String uniformResourceIdentifier;
 	private Boolean defined;
 	private String status;
+	private String profilesAsString;
 	
 	@Override
 	public MenuDto setIdentifier(String identifier) {

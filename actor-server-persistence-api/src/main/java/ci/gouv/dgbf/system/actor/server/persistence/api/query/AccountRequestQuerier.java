@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
@@ -37,7 +36,7 @@ public interface AccountRequestQuerier extends Querier {
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_FIRST_NAME = 2;
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_LAST_NAMES = 4;
 	
-	public static abstract class AbstractImpl extends AbstractObject implements AccountRequestQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AccountRequestQuerier,Serializable {
 		
 		@Override
 		public AccountRequest readByElectronicMailAddress(String electronicMailAddress) {

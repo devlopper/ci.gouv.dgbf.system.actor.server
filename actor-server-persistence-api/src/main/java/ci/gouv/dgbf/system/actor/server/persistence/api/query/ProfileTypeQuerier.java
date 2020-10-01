@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
@@ -25,7 +24,7 @@ public interface ProfileTypeQuerier extends Querier {
 		
 	/**/
 	
-	public static abstract class AbstractImpl extends AbstractObject implements ProfileTypeQuerier,Serializable {	
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ProfileTypeQuerier,Serializable {	
 		@Override
 		public Collection<ProfileType> readOrderByCodeAscending() {
 			return EntityReader.getInstance().readMany(ProfileType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
