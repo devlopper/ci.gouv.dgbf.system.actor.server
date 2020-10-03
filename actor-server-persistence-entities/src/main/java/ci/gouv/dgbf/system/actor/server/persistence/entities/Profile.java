@@ -89,4 +89,5 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String TABLE_NAME = "PROFILE";
 	
 	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
+	public static final String CODE_UTILISATEUR = "UTILISATEUR";
 }

@@ -24,7 +24,7 @@ public abstract class AbstractPersistenceApiUnitTestValidateKeycloak extends org
 	
 	@Test
 	public void serviceQuerier_read(){
-		Collection<Service> services = ServiceQuerier.getInstance().read();
+		Collection<Service> services = ServiceQuerier.getInstance().read(null);
 		assertThat(services).isNotNull();
 		assertThat(services.stream().map(Service::getCode).collect(Collectors.toList())).contains("mic-acteur");
 		assertThat(CollectionHelper.getFirst(services.stream().filter(x -> x.getCode().equals("mic-acteur")).collect(Collectors.toList())).getSecured()).isNull();
@@ -32,7 +32,7 @@ public abstract class AbstractPersistenceApiUnitTestValidateKeycloak extends org
 	
 	@Test
 	public void serviceQuerier_readWithExternalInfos(){
-		Collection<Service> services = ServiceQuerier.getInstance().readWithExternalInfos();
+		Collection<Service> services = ServiceQuerier.getInstance().readWithAll(null);
 		assertThat(services).isNotNull();
 		assertThat(services.stream().map(Service::getCode).collect(Collectors.toList())).contains("mic-acteur");
 		assertThat(CollectionHelper.getFirst(services.stream().filter(x -> x.getCode().equals("mic-acteur")).collect(Collectors.toList())).getSecured()).isNull();

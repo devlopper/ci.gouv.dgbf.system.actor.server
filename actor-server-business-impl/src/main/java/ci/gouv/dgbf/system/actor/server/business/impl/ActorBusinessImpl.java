@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
@@ -184,6 +185,9 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	protected void __listenExecuteCreateBefore__(Actor actor, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(actor, properties, function);
 		//we create identity first
+		actor.setCode(StringUtils.stripToNull(actor.getCode()));
+		actor.setElectronicMailAddress(StringUtils.stripToNull(actor.getElectronicMailAddress()));	
+		
 		if(actor.getIdentity() == null)
 			actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
 		if(StringHelper.isBlank(actor.getCode()))

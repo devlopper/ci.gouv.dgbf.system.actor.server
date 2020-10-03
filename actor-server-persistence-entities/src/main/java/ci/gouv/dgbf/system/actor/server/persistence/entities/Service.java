@@ -25,11 +25,15 @@ public class Service extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@ManyToOne @JoinColumn(name = COLUMN_MODULE) private Module module;
 	@Column(name = COLUMN_MODULE_CODE_NAME) private String moduleCodeName;
+	@Column(name = COLUMN_NUMBER_OF_MENU) private Integer numberOfMenus;
 	
 	@Transient private String moduleAsString;
 	@Transient private Boolean defined;
 	@Transient private Boolean secured;
+	@Transient private String securedAsString;
 	@Transient private String status;
+	@Transient private Integer numberOfMenusSecured;
+	@Transient private String numberOfMenusSecuredAsString;
 	
 	@Override
 	public Service setIdentifier(String identifier) {
@@ -43,13 +47,20 @@ public class Service extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	public static final String FIELD_MODULE = "module";
 	public static final String FIELD_MODULE_CODE_NAME = "moduleCodeName";
+	public static final String FIELD_NUMBER_OF_MENUS = "numberOfMenus";
 	public static final String FIELD_MODULE_AS_STRING = "moduleAsString";
 	public static final String FIELD_DEFINED = "defined";
 	public static final String FIELD_SECURED = "secured";
+	public static final String FIELD_SECURED_AS_STRING = "securedAsString";
 	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_NUMBER_OF_MENUS_SECURED = "numberOfMenusSecured";
+	public static final String FIELD_NUMBER_OF_MENUS_SECURED_AS_STRING = "numberOfMenusSecuredAsString";
 	
 	public static final String COLUMN_MODULE = "MODULE";
 	public static final String COLUMN_MODULE_CODE_NAME = "MODULE_CODE_LIBELLE";
+	public static final String COLUMN_NUMBER_OF_MENU = "NOMBRE_DE_MENUS";
 	
-	public static final String TABLE_NAME = "VM_APP_SERVICE";	
+	public static final String TABLE_NAME = "VM_APP_SERVICE";
+	
+	public static final String CODE_MIC_ACTEUR = "mic-acteur";
 }

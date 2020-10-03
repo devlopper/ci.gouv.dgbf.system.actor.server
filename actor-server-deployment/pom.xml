@@ -105,6 +105,7 @@
 			<id>docker.prod</id>
 			<properties>
 				<deployment.standalone.port.offset>0</deployment.standalone.port.offset>
+				<cyk.variable.protocol.simple.mail.transfer.enabled>true</cyk.variable.protocol.simple.mail.transfer.enabled>
 			</properties>
 		</profile>
 	</profiles>

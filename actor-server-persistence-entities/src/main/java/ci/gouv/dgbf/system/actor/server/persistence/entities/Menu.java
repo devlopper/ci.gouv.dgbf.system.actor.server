@@ -55,5 +55,8 @@ public class Menu extends AbstractIdentifiableSystemScalarStringIdentifiableBusi
 	public static final String COLUMN_SERVICE_CODE_NAME = "SERVICE_CODE_LIBELLE";
 	public static final String COLUMN_MODULE_CODE_NAME = "MODULE_CODE_LIBELLE";
 	
-	public static final String TABLE_NAME = "VM_APP_MENU";	
+	public static final String TABLE_NAME = "VM_APP_MENU";
+	
+	public static final String __ROOT__NAME = "__root__";
+	public static final String __ROOT__URL = "/*";
 }

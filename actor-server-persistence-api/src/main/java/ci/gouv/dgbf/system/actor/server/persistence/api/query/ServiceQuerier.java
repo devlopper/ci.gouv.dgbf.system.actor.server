@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
@@ -27,19 +28,21 @@ public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Service.class, QUERY_NAME_READ);
-	Collection<Service> read();
+	Collection<Service> read(QueryExecutorArguments arguments);
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	Long count();
 	
-	/* read with external infos order by code ascending */
-	String QUERY_IDENTIFIER_READ_WITH_EXTERNAL_INFOS = QueryIdentifierBuilder.getInstance().build(Service.class, "readWithExternalInfos");
-	Collection<Service> readWithExternalInfos();
+	/* read with all order by code ascending */
+	String QUERY_IDENTIFIER_READ_WITH_ALL = QueryIdentifierBuilder.getInstance().build(Service.class, "readWithAll");
+	Collection<Service> readWithAll(QueryExecutorArguments arguments);
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Service> implements ServiceQuerier,Serializable {
 		
 		@Override
-		public Collection<Service> read() {
-			return QueryExecutor.getInstance().executeReadMany(Service.class,QUERY_IDENTIFIER_READ);
+		public Collection<Service> read(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ);
+			return QueryExecutor.getInstance().executeReadMany(Service.class,arguments);
 		}
 		
 		@Override
@@ -48,20 +51,20 @@ public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 		}
 		
 		@Override
-		public Collection<Service> readWithExternalInfos() {
-			Collection<Service> services = read();
+		public Collection<Service> readWithAll(QueryExecutorArguments arguments) {
+			Collection<Service> services = read(arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ));
 			if(CollectionHelper.isEmpty(services))
 				return null;
-			__setExternalInfos__(services);
+			__setAll__(services);
 			return services;
 		}
 		
 		@Override
 		public Collection<Service> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
-				return read();
-			if(QUERY_IDENTIFIER_READ_WITH_EXTERNAL_INFOS.equals(arguments.getQuery().getIdentifier()))
-				return readWithExternalInfos();
+				return read(arguments);
+			if(QUERY_IDENTIFIER_READ_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
+				return readWithAll(arguments);
 			return super.readMany(arguments);
 		}
 		
@@ -77,7 +80,7 @@ public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 			return Service.class;
 		}
 		
-		private static void __setExternalInfos__(Collection<Service> services) {
+		private static void __setAll__(Collection<Service> services) {
 			if(CollectionHelper.isEmpty(services))
 				return;
 			Collection<Client> clients = ClientManager.getInstance().getByIdentifiers(FieldHelper.readBusinessIdentifiersAsStrings(services));
@@ -95,6 +98,9 @@ public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 				}else {
 					service.setDefined(Boolean.TRUE);
 					service.setSecured(client.getSecured());
+					service.setStatus(Boolean.TRUE.equals(service.getSecured()) ? "Privé" : "Public");
+					service.setNumberOfMenusSecured(CollectionHelper.getSize(client.getResources()));
+					service.setNumberOfMenusSecuredAsString(NumberHelper.getInteger(service.getNumberOfMenusSecured())+"/"+NumberHelper.getInteger(service.getNumberOfMenus()));
 				}
 			}
 		}

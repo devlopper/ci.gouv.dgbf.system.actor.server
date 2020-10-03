@@ -14,7 +14,7 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 
 	@Override
 	protected String __get__(String readQueryIdentifier) {
-		if(ServiceQuerier.QUERY_IDENTIFIER_READ_WITH_EXTERNAL_INFOS.equals(readQueryIdentifier))
+		if(ServiceQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))
 			return ServiceQuerier.QUERY_IDENTIFIER_COUNT;
 		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))
 			return MenuQuerier.QUERY_IDENTIFIER_COUNT;

@@ -18,6 +18,10 @@ public class ServiceDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private Boolean defined;
 	private Boolean secured;
 	private String status;
+	private Integer numberOfMenus;
+	private String securedAsString;
+	private Integer numberOfMenusSecured;
+	private String numberOfMenusSecuredAsString;
 	
 	@Override
 	public ServiceDto setIdentifier(String identifier) {

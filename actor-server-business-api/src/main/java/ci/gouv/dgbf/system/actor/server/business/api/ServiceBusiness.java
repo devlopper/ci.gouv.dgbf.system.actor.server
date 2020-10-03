@@ -9,10 +9,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 public interface ServiceBusiness extends BusinessEntity<Service> {
 
 	String DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES = "deleteAllKeycloakAuthorizationPolicies";
-	void deleteAllKeycloakAuthorizationPolicies(Collection<Service> services);
+	Integer deleteAllKeycloakAuthorizationPolicies(Collection<Service> services);
 	
 	String DELETE_ALL_KEYCLOAK_AUTHORIZATION_RESOURCES = "deleteAllKeycloakAuthorizationResources";
-	void deleteAllKeycloakAuthorizationResources(Collection<Service> services);
+	Integer deleteAllKeycloakAuthorizationResources(Collection<Service> services);
 	
 	String DELETE_KEYCLOAK_AUTHORIZATIONS = "deleteKeycloakAuthorizations";
 	void deleteKeycloakAuthorizations(Collection<Service> services);
@@ -25,14 +25,17 @@ public interface ServiceBusiness extends BusinessEntity<Service> {
 	//void deleteAllKeycloakAuthorizationPermissions(Collection<Service> services);
 	
 	String DERIVE_KEYCLOAK_AUTHORIZATION_POLICIES = "deriveKeycloakAuthorizationPolicies";
-	void deriveKeycloakAuthorizationPolicies(Collection<Service> services);
+	Integer deriveKeycloakAuthorizationPolicies(Collection<Service> services);
 	
 	String DERIVE_KEYCLOAK_AUTHORIZATION_RESOURCES = "deriveKeycloakAuthorizationResources";
-	void deriveKeycloakAuthorizationResources(Collection<Service> services);
+	Integer deriveKeycloakAuthorizationResources(Collection<Service> services);
 	
 	String DERIVE_KEYCLOAK_AUTHORIZATION_PERMISSIONS = "deriveKeycloakAuthorizationPermissions";
-	void deriveKeycloakAuthorizationPermissions(Collection<Service> services);
+	Integer deriveKeycloakAuthorizationPermissions(Collection<Service> services);
 	
 	String DERIVE_KEYCLOAK_AUTHORIZATIONS = "deriveKeycloakAuthorizations";
 	void deriveKeycloakAuthorizations(Collection<Service> services);
+	
+	String DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveKeycloakAuthorizationsFromScratch";
+	void deriveKeycloakAuthorizationsFromScratch(Collection<Service> services);
 }

@@ -40,7 +40,6 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 	@Override
 	public void deriveKeycloakAuthorizations(Collection<Service> services) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
-		//deleteKeycloakAuthorizations(services);
 		deriveKeycloakAuthorizationPolicies(services);
 		deriveKeycloakAuthorizationResources(services);
 		deriveKeycloakAuthorizationPermissions(services);
@@ -49,55 +48,71 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 	}
 	
 	@Override
-	public void deleteAllKeycloakAuthorizationPolicies(Collection<Service> services) {
+	public void deriveKeycloakAuthorizationsFromScratch(Collection<Service> services) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
-		ClientManager.getInstance().deleteAllAuthorizationPolicies(FieldHelper.readBusinessIdentifiersAsStrings(services));
-		LogHelper.logInfo(String.format("Keycloak authorizations policies has been deleted for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
-				, getClass());
-	}
-
-	@Override
-	public void deleteAllKeycloakAuthorizationResources(Collection<Service> services) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
-		ClientManager.getInstance().deleteAllAuthorizationResources(FieldHelper.readBusinessIdentifiersAsStrings(services));
-		LogHelper.logInfo(String.format("Keycloak authorizations resources has been deleted for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
-				, getClass());
+		deleteKeycloakAuthorizations(services);
+		deriveKeycloakAuthorizations(services);
 	}
 	
 	@Override
-	public void deriveKeycloakAuthorizationPolicies(Collection<Service> services) {
+	public Integer deleteAllKeycloakAuthorizationPolicies(Collection<Service> services) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
-		Collection<Profile> profiles = ProfileQuerier.getInstance().read();
-		if(CollectionHelper.isEmpty(profiles))
-			return;
-		ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
-				, FieldHelper.readBusinessIdentifiersAsStrings(profiles));
-		LogHelper.logInfo(String.format("Keycloak authorizations policies has been derived for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
+		Integer count = ClientManager.getInstance().deleteAllAuthorizationPolicies(FieldHelper.readBusinessIdentifiersAsStrings(services));
+		LogHelper.logInfo(String.format("Keycloak authorizations policies (%s) has been deleted for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
+		return count;
 	}
 
 	@Override
-	public void deriveKeycloakAuthorizationResources(Collection<Service> services) {
+	public Integer deleteAllKeycloakAuthorizationResources(Collection<Service> services) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
+		Integer count = ClientManager.getInstance().deleteAllAuthorizationResources(FieldHelper.readBusinessIdentifiersAsStrings(services));
+		LogHelper.logInfo(String.format("Keycloak authorizations resources (%s) has been deleted for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
+				, getClass());
+		return count;
+	}
+	
+	@Override
+	public Integer deriveKeycloakAuthorizationPolicies(Collection<Service> services) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
+		Collection<Profile> profiles = ProfileQuerier.getInstance().readByServicesIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(services));
+		if(CollectionHelper.isEmpty(profiles))
+			return null;
+		Integer count = ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
+				, List.of(Profile.CODE_UTILISATEUR));
+		count = count + ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
+				, FieldHelper.readBusinessIdentifiersAsStrings(profiles));
+		LogHelper.logInfo(String.format("Keycloak authorizations policies (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
+				, getClass());
+		return count;
+	}
+
+	@Override
+	public Integer deriveKeycloakAuthorizationResources(Collection<Service> services) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
+		Integer count = 0;
 		for(Service service : services) {
 			Collection<Menu> menus = MenuQuerier.getInstance().readByServiceCode(service.getCode());
 			if(CollectionHelper.isEmpty(menus))
 				continue;
-			Collection<Resource> resources = menus.stream()
+			List<Resource> resources = menus.stream()
 				.filter(menu -> StringHelper.isNotBlank(menu.getUniformResourceIdentifier()))
 				.map(menu -> Resource.build(menu.getName(),menu.getUniformResourceIdentifier()))
 				.collect(Collectors.toList());
 			if(CollectionHelper.isEmpty(resources))
-				return;
-			ClientManager.getInstance().createAuthorizationResources(List.of(service.getCode()), resources);
+				return null;
+			resources.add(new Resource().setName(getRootName(service)).setUniformResourceIdentifiers(List.of(getRootUrl(service))));
+			count = count + ClientManager.getInstance().createAuthorizationResources(List.of(service.getCode()), resources);
 		}
-		LogHelper.logInfo(String.format("Keycloak authorizations resources has been derived for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
+		LogHelper.logInfo(String.format("Keycloak authorizations resources (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
+		return count;
 	}
 
 	@Override
-	public void deriveKeycloakAuthorizationPermissions(Collection<Service> services) {
+	public Integer deriveKeycloakAuthorizationPermissions(Collection<Service> services) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
+		Integer count = 0;
 		for(Service service : services) {
 			Collection<Profile> profiles = ProfileQuerier.getInstance().readByServicesIdentifiers(List.of(service.getIdentifier()));
 			if(CollectionHelper.isEmpty(profiles))
@@ -105,10 +120,27 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 			Collection<Menu> menus = MenuQuerier.getInstance().readByServiceIdentifier(service.getIdentifier());
 			if(CollectionHelper.isEmpty(menus))
 				continue;
-			ClientManager.getInstance().createAuthorizationPermissionFromRolesNamesAndResourcesNames(List.of(service.getCode())
-					, FieldHelper.readBusinessIdentifiersAsStrings(profiles), menus.stream().map(menu -> menu.getName()).collect(Collectors.toList()));
+			Collection<String> servicesCodes = List.of(service.getCode());
+			ClientManager.getInstance().createAuthorizationPermissionFromRolesNamesAndResourcesNames(servicesCodes,List.of(Profile.CODE_UTILISATEUR),List.of(getRootName(service)));
+			count++;
+			for(Menu menu : menus) {
+				profiles = ProfileQuerier.getInstance().readByMenus(menu);
+				if(CollectionHelper.isEmpty(profiles))
+					continue;
+				count = count + ClientManager.getInstance().createAuthorizationPermissionFromRolesNamesAndResourcesNames(servicesCodes
+						,FieldHelper.readBusinessIdentifiersAsStrings(profiles),List.of(menu.getName()));
+			}			
 		}
-		LogHelper.logInfo(String.format("Keycloak authorizations permissions has been derived for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
+		LogHelper.logInfo(String.format("Keycloak authorizations permissions (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
+		return count;
+	}
+	
+	private static String getRootName(Service service) {
+		return StringHelper.isBlank(service.getCode()) ? Menu.__ROOT__NAME : service.getCode();
+	}
+	
+	private static String getRootUrl(Service service) {
+		return Menu.__ROOT__URL;
 	}
 }

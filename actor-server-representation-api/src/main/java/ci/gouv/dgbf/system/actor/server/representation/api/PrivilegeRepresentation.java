@@ -17,18 +17,18 @@ public interface PrivilegeRepresentation extends RepresentationEntity<PrivilegeD
 	@GET
 	@Path(PATH_GET_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les privilèges d'un compte utilisateur",tags = {TAG_PRIVILEGES})
+	@ApiOperation(value = "Obtenir les privilèges d'un compte utilisateur",tags = {TAG})
 	Response getByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_FOR_SERVICE_MANAGER_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les privilèges d'un compte utilisateur pour la gestion des services",tags = {TAG_PRIVILEGES})
+	@ApiOperation(value = "Obtenir les privilèges d'un compte utilisateur pour la gestion des services",tags = {TAG})
 	Response getForServiceManagerByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	String PATH = "privilege";
 	String PATH_GET_BY_ACTOR_CODE = "privileges-par-acteur";
 	String PATH_GET_FOR_SERVICE_MANAGER_BY_ACTOR_CODE = "privileges-par-acteur-pour-gestion-services";
 	
-	String TAG_PRIVILEGES = "Privilèges";
+	String TAG = "Privilèges";
 }

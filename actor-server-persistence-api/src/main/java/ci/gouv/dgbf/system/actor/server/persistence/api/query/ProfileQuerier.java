@@ -9,11 +9,14 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -26,6 +29,7 @@ import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Menu;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
@@ -76,6 +80,9 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	/* read by services identifiers order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_SERVICES_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(Service.class, "readByServicesIdentifiers");
 	Collection<Profile> readByServicesIdentifiers(Collection<String> servicesIdentifiers);
+	
+	Collection<Profile> readByMenus(Collection<Menu> menus);
+	Collection<Profile> readByMenus(Menu...menus);
 	
 	/**/
 	
@@ -139,6 +146,39 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 				result.add(profile);
 			}
 			return result;
+		}
+		
+		@Override
+		public Collection<Profile> readByMenus(Collection<Menu> menus) {
+			if(CollectionHelper.isEmpty(menus))
+				return null;
+			Collection<Privilege> menuAsPrivileges = PrivilegeQuerier.getInstance().readBySystemIdentifiers(Privilege.class, FieldHelper.readSystemIdentifiersAsStrings(menus));
+			if(CollectionHelper.isEmpty(menuAsPrivileges))
+				return null;
+			Collection<Profile> profiles = ProfileQuerier.getInstance().read();
+			if(CollectionHelper.isEmpty(profiles))
+				return null;
+			profiles.forEach(profile -> {
+				profile.setPrivileges(PrivilegeQuerier.getInstance().readVisibleByProfilesCodes(List.of(profile.getCode())));
+			});
+			Collection<Profile> menusProfiles = null;
+			for(Menu menu : menus) {
+				Privilege privilege = CollectionHelper.getFirst(menuAsPrivileges.stream()
+						.filter(menuAsPrivilege -> menuAsPrivilege.getIdentifier().equals(menu.getIdentifier())).collect(Collectors.toList()));
+				if(privilege == null)
+					continue;
+				if(menusProfiles == null)
+					menusProfiles = new LinkedHashSet<>();
+				menusProfiles.addAll(profiles.stream().filter(profile -> CollectionHelper.contains(profile.getPrivileges(), privilege)).collect(Collectors.toList()));				
+			}
+			return menusProfiles;
+		}
+		
+		@Override
+		public Collection<Profile> readByMenus(Menu... menus) {
+			if(ArrayHelper.isEmpty(menus))
+				return null;
+			return readByMenus(CollectionHelper.listOf(menus));
 		}
 		
 		@SuppressWarnings("unchecked")
