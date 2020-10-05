@@ -164,4 +164,34 @@ public class ServiceRepresentationImpl extends AbstractRepresentationEntityImpl<
 			}
 		});
 	}
+
+	@Override
+	public Response deriveAllKeycloakAuthorizations() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ServiceBusiness.class).deriveAllKeycloakAuthorizations();
+					}
+				};
+			}
+		});
+	}
+
+	@Override
+	public Response deriveAllKeycloakAuthorizationsFromScratch() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ServiceBusiness.class).deriveAllKeycloakAuthorizationsFromScratch();
+					}
+				};
+			}
+		});
+	}
 }

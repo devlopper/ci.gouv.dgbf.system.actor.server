@@ -38,4 +38,10 @@ public interface ServiceBusiness extends BusinessEntity<Service> {
 	
 	String DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveKeycloakAuthorizationsFromScratch";
 	void deriveKeycloakAuthorizationsFromScratch(Collection<Service> services);
+	
+	String DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS = "deriveAllKeycloakAuthorizations";
+	void deriveAllKeycloakAuthorizations();
+	
+	String DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveAllKeycloakAuthorizationsFromScratch";
+	void deriveAllKeycloakAuthorizationsFromScratch();
 }

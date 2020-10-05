@@ -39,6 +39,13 @@ public class PersistenceApiProfileUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void profileQuerier_readWhereTypeIsSysteme(){
+		assertThat(ProfileQuerier.getInstance().readWhereTypeIsSystemeOrderByCodeAscending().stream().map(Profile::getCode)
+				.collect(Collectors.toList())).containsExactly("Sys01");
+		assertThat(ProfileQuerier.getInstance().countWhereTypeIsSystemeOrderByCodeAscending()).isEqualTo(1l);
+	}
+	
+	@Test
 	public void profileQuerier_readByTypesCodesByFunctionsCodes(){
 		assertThat(ProfileQuerier.getInstance().readByTypesCodesByFunctionsCodes(List.of("1"), List.of("1")).stream().map(Profile::getCode)
 				.collect(Collectors.toList())).containsExactly("1");
@@ -96,13 +103,15 @@ public class PersistenceApiProfileUnitTest extends AbstractPersistenceUnitTest {
 		EntityCreator.getInstance().createManyInTransaction(new Function().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Function().setCode("2").setName("2").setTypeFromIdentifier("1"));
 		
-		EntityCreator.getInstance().createManyInTransaction(new ProfileType().setCode("1").setName("1"),new ProfileType().setCode("2").setName("2"));
+		EntityCreator.getInstance().createManyInTransaction(new ProfileType().setCode("1").setName("1"),new ProfileType().setCode("2").setName("2")
+				,new ProfileType().setCode(ProfileType.CODE_SYSTEME));
 		EntityCreator.getInstance().createManyInTransaction(
 				new Profile().setCode("1").setName("1").setTypeFromIdentifier("1")
 				,new Profile().setCode("2").setName("2").setTypeFromIdentifier("1")
 				,new Profile().setCode("3").setName("3").setTypeFromIdentifier("1")
 				,new Profile().setCode("4").setName("3").setTypeFromIdentifier("1")
-				,new Profile().setCode("5").setName("3").setTypeFromIdentifier("1"));
+				,new Profile().setCode("5").setName("3").setTypeFromIdentifier("1")
+				,new Profile().setCode("Sys01").setTypeFromIdentifier(ProfileType.CODE_SYSTEME));
 		
 		EntityCreator.getInstance().createManyInTransaction(new ProfileFunction().setProfileFromIdentifier("1").setFunctionFromIdentifier("1")
 				,new ProfileFunction().setProfileFromIdentifier("2").setFunctionFromIdentifier("2"),new ProfileFunction().setProfileFromIdentifier("3").setFunctionFromIdentifier("2"));

@@ -73,6 +73,20 @@ public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> 
 	@ApiOperation(value = "Dériver les autorisations de keycloak à partir de zéro",tags = {TAG})
 	Response deriveKeycloakAuthorizationsFromScratch(Collection<ServiceDto> services);
 	
+	@POST
+	@Path(PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Dériver toutes les autorisations de keycloak",tags = {TAG})
+	Response deriveAllKeycloakAuthorizations();
+	
+	@POST
+	@Path(PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Dériver toutes les autorisations de keycloak à partir de zéro",tags = {TAG})
+	Response deriveAllKeycloakAuthorizationsFromScratch();
+	
 	String PATH = "service";
 	String PATH_CREATE_KEYCLOAK_AUTHORIZATION_POLICIES = "deriveKeycloakAuthorizationPolicies";
 	String PATH_DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES = "deleteAllKeycloakAuthorizationPolicies";
@@ -82,6 +96,8 @@ public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> 
 	String PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS = "deriveKeycloakAuthorizations";
 	String PATH_DELETE_KEYCLOAK_AUTHORIZATIONS = "deleteKeycloakAuthorizations";
 	String PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveKeycloakAuthorizationsFromScratch";
+	String PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS = "deriveAllKeycloakAuthorizations";
+	String PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveAllKeycloakAuthorizationsFromScratch";
 	
 	String TAG = PrivilegeRepresentation.TAG;
 	

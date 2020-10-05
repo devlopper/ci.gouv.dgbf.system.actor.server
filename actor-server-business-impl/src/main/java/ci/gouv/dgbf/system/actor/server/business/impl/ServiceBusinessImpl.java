@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.security.keycloak.ClientManager;
 import org.cyk.utility.__kernel__.security.keycloak.Resource;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -20,6 +21,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ServicePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Menu;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
@@ -45,6 +47,22 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 		deriveKeycloakAuthorizationPermissions(services);
 		LogHelper.logInfo(String.format("Keycloak authorizations has been derived for services : %s", services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
+	}
+	
+	@Override
+	public void deriveAllKeycloakAuthorizations() {
+		Collection<Service> services = ServiceQuerier.getInstance().read(null);
+		if(CollectionHelper.isEmpty(services))
+			return;
+		deriveKeycloakAuthorizations(services);
+	}
+
+	@Override
+	public void deriveAllKeycloakAuthorizationsFromScratch() {
+		Collection<Service> services = ServiceQuerier.getInstance().read(null);
+		if(CollectionHelper.isEmpty(services))
+			return;
+		deriveKeycloakAuthorizationsFromScratch(services);
 	}
 	
 	@Override
@@ -80,8 +98,8 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 			return null;
 		Integer count = ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
 				, List.of(Profile.CODE_UTILISATEUR));
-		count = count + ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
-				, FieldHelper.readBusinessIdentifiersAsStrings(profiles));
+		count = NumberHelper.getInteger(NumberHelper.add(count,ClientManager.getInstance().createAuthorizationPoliciesFromRolesNames(FieldHelper.readBusinessIdentifiersAsStrings(services)
+				, FieldHelper.readBusinessIdentifiersAsStrings(profiles))));
 		LogHelper.logInfo(String.format("Keycloak authorizations policies (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
 		return count;
@@ -102,7 +120,7 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 			if(CollectionHelper.isEmpty(resources))
 				return null;
 			resources.add(new Resource().setName(getRootName(service)).setUniformResourceIdentifiers(List.of(getRootUrl(service))));
-			count = count + ClientManager.getInstance().createAuthorizationResources(List.of(service.getCode()), resources);
+			count = NumberHelper.getInteger(NumberHelper.add(count,ClientManager.getInstance().createAuthorizationResources(List.of(service.getCode()), resources)));
 		}
 		LogHelper.logInfo(String.format("Keycloak authorizations resources (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))
 				, getClass());
@@ -127,8 +145,8 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 				profiles = ProfileQuerier.getInstance().readByMenus(menu);
 				if(CollectionHelper.isEmpty(profiles))
 					continue;
-				count = count + ClientManager.getInstance().createAuthorizationPermissionFromRolesNamesAndResourcesNames(servicesCodes
-						,FieldHelper.readBusinessIdentifiersAsStrings(profiles),List.of(menu.getName()));
+				count = NumberHelper.getInteger(NumberHelper.add(count,ClientManager.getInstance().createAuthorizationPermissionFromRolesNamesAndResourcesNames(servicesCodes
+						,FieldHelper.readBusinessIdentifiersAsStrings(profiles),List.of(menu.getName()))));
 			}			
 		}
 		LogHelper.logInfo(String.format("Keycloak authorizations permissions (%s) has been derived for services : %s", count,services.stream().map(x->x.getCode()).collect(Collectors.toList()))

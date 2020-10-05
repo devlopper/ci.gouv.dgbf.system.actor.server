@@ -32,12 +32,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Menu;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME
-				,value = "SELECT t FROM Profile t WHERE t.type.code = 'SYSTEME' ORDER BY t.code ASC")
-		,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
+		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
 				,value = "SELECT t FROM Profile t ORDER BY t.code ASC")
 })
 public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
@@ -48,9 +47,11 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String PARAMETER_NAME_SERVICES_IDENTIFIERS = "servicesIdentifiers";
 	
 	/* read order by code ascending */
-	String QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME = "readWhereTypeIsSystemeOrderByCodeAscending";
-	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, QUERY_NAME_READ_WHERE_TYPE_IS_SYSTEME);
+	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, "readWhereTypeIsSystemeOrderByCodeAscending");
 	Collection<Profile> readWhereTypeIsSystemeOrderByCodeAscending();
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME);
+	Long countWhereTypeIsSystemeOrderByCodeAscending();
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
@@ -90,6 +91,11 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 		@Override
 		public Collection<Profile> readWhereTypeIsSystemeOrderByCodeAscending() {
 			return QueryExecutor.getInstance().executeReadMany(Profile.class, QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME);
+		}
+		
+		@Override
+		public Long countWhereTypeIsSystemeOrderByCodeAscending() {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME);
 		}
 		
 		@Override
@@ -186,6 +192,8 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 		public Collection<Profile> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
 				return read();
+			if(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
+				return readWhereTypeIsSystemeOrderByCodeAscending();
 			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
 				return readByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
 			if(QUERY_IDENTIFIER_READ_BY_ACTORS_CODES.equals(arguments.getQuery().getIdentifier()))
@@ -203,8 +211,10 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
+				return countWhereTypeIsSystemeOrderByCodeAscending();	
 			if(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
-				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));			
+				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));	
 			return super.count(arguments);
 		}
 		
@@ -224,6 +234,16 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Profile.class);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME
+				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
+				,Query.FIELD_VALUE,"SELECT t FROM Profile t WHERE t.type.code = '"+ProfileType.CODE_SYSTEME+"' ORDER BY t.code ASC")
+			);
+		
+		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME
+				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Long.class
+				,Query.FIELD_VALUE,"SELECT COUNT(t) FROM Profile t WHERE t.type.code = '"+ProfileType.CODE_SYSTEME+"'")
+			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
