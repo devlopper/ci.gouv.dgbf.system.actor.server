@@ -52,4 +52,23 @@ public class AccountRequestDto extends AbstractIdentifiableSystemScalarStringImp
 	public AccountRequestDto setIdentifier(String identifier) {
 		return (AccountRequestDto) super.setIdentifier(identifier);
 	}
+	
+	/**/
+	
+	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
+	public static class AccountRequestCreationDto {
+		
+		private String firstName;
+		private String lastNames;
+		private String electronicMailAddress;	
+		private String registrationNumber;
+		private String postalBoxAddress;
+		private String mobilePhoneNumber;
+		private String officePhoneNumber;
+		private String officePhoneExtension;
+		private String administrativeUnitIdentifier;
+		private String administrativeFunction;
+		private String civilityIdentfier;
+		private String identityGroupIdentifier;
+	}
 }

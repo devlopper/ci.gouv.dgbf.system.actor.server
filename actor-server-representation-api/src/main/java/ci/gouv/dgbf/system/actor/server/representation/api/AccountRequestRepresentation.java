@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto.AccountRequestCreationDto;
 import io.swagger.annotations.ApiOperation;
 
 @Path(AccountRequestRepresentation.PATH)
@@ -32,6 +33,13 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@ApiOperation(value = "Enregistrer une demande de compte",tags = {TAG})
 	Response record(AccountRequestDto accountRequest);
+	
+	@POST
+	@Path(PATH_RECORD_ONE_FOR_EXTERNAL)
+	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Enregistrer une demande de compte",tags = {TAG})
+	Response record(AccountRequestCreationDto accountRequest);
 	
 	@POST
 	@Path(PATH_SUBMIT)
@@ -66,10 +74,11 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	String PATH = "accountrequest";
 	String PATH_RECORD = "record";
 	String PATH_RECORD_ONE = "recordone";
+	String PATH_RECORD_ONE_FOR_EXTERNAL = "recordoneforexternal";
 	String PATH_SUBMIT = "submit";
 	String PATH_NOTIFY_ACCESS_TOKEN_BY_ELECTRONIC_MAIL_ADDRESSES = "notifyAccessTokenByElectronicMailAddresses";	
 	String PATH_ACCEPT = "accept";
 	String PATH_REJECT = "reject";
 	
-	String TAG = "demande de compte";
+	String TAG = "Demande de compte";
 }

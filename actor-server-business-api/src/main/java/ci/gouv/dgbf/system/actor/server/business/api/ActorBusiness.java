@@ -44,6 +44,6 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	/**/
 	
 	static String generatePassword() {
-		return RandomHelper.getAlphanumeric(6);
+		return RandomHelper.getAlphabetic(8);
 	}
 }

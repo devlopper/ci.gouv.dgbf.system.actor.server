@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
@@ -21,6 +22,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuer
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.representation.api.AccountRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto.AccountRequestCreationDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.AdministrativeUnitDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.CivilityDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.IdentityGroupDto;
 
 @ApplicationScoped
 public class AccountRequestRepresentationImpl extends AbstractRepresentationEntityImpl<AccountRequestDto> implements AccountRequestRepresentation,Serializable {
@@ -46,6 +51,32 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 	@Override
 	public Response record(AccountRequestDto accountRequest) {
 		return record(accountRequest == null ? null : List.of(accountRequest));
+	}
+	
+	@Override
+	public Response record(AccountRequestCreationDto accountRequest) {
+		AccountRequestDto dto;
+		if(accountRequest == null)
+			dto = null;
+		else {
+			dto = new AccountRequestDto();
+			if(StringHelper.isNotBlank(accountRequest.getCivilityIdentfier()))
+				dto.setCivility(new CivilityDto().setIdentifier(accountRequest.getCivilityIdentfier()));
+			dto.setFirstName(accountRequest.getFirstName());
+			dto.setLastNames(accountRequest.getLastNames());
+			if(StringHelper.isNotBlank(accountRequest.getIdentityGroupIdentifier()))
+				dto.setGroup(new IdentityGroupDto().setIdentifier(accountRequest.getIdentityGroupIdentifier()));
+			dto.setRegistrationNumber(accountRequest.getRegistrationNumber());
+			dto.setElectronicMailAddress(accountRequest.getElectronicMailAddress());
+			dto.setPostalBoxAddress(accountRequest.getPostalBoxAddress());
+			dto.setMobilePhoneNumber(accountRequest.getMobilePhoneNumber());
+			dto.setOfficePhoneNumber(accountRequest.getOfficePhoneNumber());
+			dto.setOfficePhoneExtension(accountRequest.getOfficePhoneExtension());
+			if(StringHelper.isNotBlank(accountRequest.getAdministrativeUnitIdentifier()))
+				dto.setAdministrativeUnit(new AdministrativeUnitDto().setIdentifier(accountRequest.getAdministrativeUnitIdentifier()));
+			dto.setAdministrativeFunction(accountRequest.getAdministrativeFunction());
+		}
+		return record(dto);
 	}
 	
 	@Override
