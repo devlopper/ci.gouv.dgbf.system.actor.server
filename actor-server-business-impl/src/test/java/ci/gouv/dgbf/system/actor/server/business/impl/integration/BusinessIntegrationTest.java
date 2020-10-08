@@ -21,6 +21,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorProfilePersistence;
@@ -31,6 +32,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.PrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RejectedAccountRequestPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
@@ -57,12 +59,55 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
 	
 	/* Create */
+	
+	@Test
+	public void scopeFunction_createFromAllScopesFromAllFunctions() throws Exception{
+		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
+				,new ScopeType().setCode(ScopeType.CODE_UA),new ScopeType().setCode(ScopeType.CODE_ACTION),new FunctionType().setCode("BUDGETAIRE"));
+		EntityCreator.getInstance().createMany(
+				new Function().setCode("GC").setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("ORDP").setName("Ordonnateur principal").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("ORD").setName("Ordonnateur").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("CF").setName("Contrôleur financier").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("CPT").setName("Comptable").setTypeFromIdentifier("BUDGETAIRE"));
+		EntityCreator.getInstance().createMany(
+				new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("CF")
+				//,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("ORDP")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_USB).setFunctionFromIdentifier("ORD")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier("GC")
+				);
+		
+		Long count = __inject__(ScopeFunctionPersistence.class).count();
+		__inject__(ScopeFunctionBusiness.class).deriveAll();
+		assertThat(__inject__(ScopeFunctionPersistence.class).count()).isEqualTo(count);
+		
+		EntityCreator.getInstance().createMany(
+				new Scope().setCode("101").setName("Réprésentation Nationale").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("327").setName("Ministère du budget").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("22086").setName("Programme budget").setTypeFromIdentifier(ScopeType.CODE_USB)
+				,new Scope().setCode("11025124").setName("Direction des traitements").setTypeFromIdentifier(ScopeType.CODE_UA)
+				,new Scope().setCode("1102512401").setName("Action 01").setTypeFromIdentifier(ScopeType.CODE_ACTION)
+		);
+		
+		__inject__(ScopeFunctionBusiness.class).deriveAll();
+		assertThat(__inject__(ScopeFunctionPersistence.class).count()).isEqualTo(count+4);
+		
+		__inject__(ScopeFunctionBusiness.class).deriveAll();
+		assertThat(__inject__(ScopeFunctionPersistence.class).count()).isEqualTo(count+4);
+		
+		__inject__(ScopeFunctionBusiness.class).codifyAll();
+		assertThat(__inject__(ScopeFunctionPersistence.class).count()).isEqualTo(count+4);
+		
+		__inject__(ScopeFunctionBusiness.class).codifyAll();
+		assertThat(__inject__(ScopeFunctionPersistence.class).count()).isEqualTo(count+4);
+	}
 	
 	@Test
 	public void actor_create() throws Exception{

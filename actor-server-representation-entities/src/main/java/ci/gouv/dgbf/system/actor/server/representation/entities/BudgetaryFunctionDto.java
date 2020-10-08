@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 public class BudgetaryFunctionDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private Integer numberOfOccurence;
+	
 	@Override
 	public BudgetaryFunctionDto setIdentifier(String identifier) {
 		return (BudgetaryFunctionDto) super.setIdentifier(identifier);

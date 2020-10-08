@@ -4,6 +4,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
+
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -30,6 +38,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 
 	String PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER = "accountRequestIdentifier";
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
+	String PARAMETER_NAME_SCOPE_TYPE_CODES = "scopeTypeCodes";
 	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
@@ -41,8 +50,16 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	/* read by types codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readByTypesCodes");
 	Collection<Function> readByTypesCodes(Collection<String> typesCodes);
+	/* count by types codes */
 	String QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
 	Long countByTypesCodes(Collection<String> typesCodes);
+	
+	/* read by scope type codes order by code ascending */
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readByScopeTypeCodes");
+	Collection<Function> readByScopeTypeCodes(Collection<String> scopeTypeCodes);
+	/* count by scope type codes */
+	String QUERY_IDENTIFIER_COUNT_BY_SCOPE_TYPE_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES);
+	Long countByScopeTypeCodes(Collection<String> scopeTypeCodes);
 	
 	/* read with profiles order by code ascending */
 	String QUERY_IDENTIFIER_READ_WITH_PROFILES = QueryIdentifierBuilder.getInstance().build(Function.class, "readWithProfiles");
@@ -68,6 +85,16 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		@Override
 		public Long count() {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT);
+		}
+		
+		@Override
+		public Collection<Function> readByScopeTypeCodes(Collection<String> scopeTypesCodes) {
+			return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES, PARAMETER_NAME_SCOPE_TYPE_CODES,scopeTypesCodes);
+		}
+		
+		@Override
+		public Long countByScopeTypeCodes(Collection<String> scopeTypesCodes) {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_SCOPE_TYPE_CODES,PARAMETER_NAME_SCOPE_TYPE_CODES,scopeTypesCodes);
 		}
 		
 		@Override
@@ -157,6 +184,14 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Function.class);
+		
+		QueryHelper.addQueries(
+				Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES, jpql(select("t"),from("Function t")
+				,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t AND stf.scopeType.code IN :"+PARAMETER_NAME_SCOPE_TYPE_CODES))
+				,order(asc("t", "code"))))
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_SCOPE_TYPE_CODES, jpql(select("COUNT(t)"),from("Function t")
+						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t AND stf.scopeType.code IN :"+PARAMETER_NAME_SCOPE_TYPE_CODES))))
+			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Function.class

@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
@@ -69,6 +70,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ScopeFunctionQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(ServiceQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ServiceQuerier.getInstance().readMany(arguments);

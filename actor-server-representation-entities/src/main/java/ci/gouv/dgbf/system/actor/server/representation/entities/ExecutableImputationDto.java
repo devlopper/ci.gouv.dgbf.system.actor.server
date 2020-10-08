@@ -10,14 +10,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class ScopeTypeFunctionDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class ExecutableImputationDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private ScopeTypeDto scopeType;
-	private FunctionDto function;
-	
 	@Override
-	public ScopeTypeFunctionDto setIdentifier(String identifier) {
-		return (ScopeTypeFunctionDto) super.setIdentifier(identifier);
+	public ExecutableImputationDto setIdentifier(String identifier) {
+		return (ExecutableImputationDto) super.setIdentifier(identifier);
 	}
+
 }

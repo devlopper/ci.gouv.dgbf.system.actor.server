@@ -19,7 +19,8 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
-
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
+		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
@@ -47,7 +48,8 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>   	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutableImputation</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
@@ -81,6 +83,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
 		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
@@ -110,6 +113,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutableImputation</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
@@ -142,7 +146,8 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
-
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
+		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
@@ -171,6 +176,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutableImputation</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
@@ -203,7 +209,8 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
-
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
+		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
@@ -232,6 +239,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutableImputation</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		

@@ -4,6 +4,9 @@
     	<jta-data-source>java:/actor/server/dataSource</jta-data-source>
     	
     	<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
 		
@@ -15,6 +18,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
 		
     	<!-- Transaction -->
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
@@ -44,6 +48,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutableImputation</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>

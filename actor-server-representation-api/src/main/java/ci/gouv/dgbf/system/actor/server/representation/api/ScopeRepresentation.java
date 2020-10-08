@@ -23,37 +23,37 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	@GET
 	@Path(PATH_GET_SECTIONS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les sections d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les sections d'un compte utilisateur",tags = {TAG})
 	Response getSectionsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_ADMINISTRATIVE_UNITS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les unités administratives d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les unités administratives d'un compte utilisateur",tags = {TAG})
 	Response getAdministrativeUnitsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_BUDGET_SPECIALIZATION_UNITS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les unités de spécialisation du budget d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les unités de spécialisation du budget d'un compte utilisateur",tags = {TAG})
 	Response getBudgetSpecializationUnitsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_ACTIONS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les actions d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les actions d'un compte utilisateur",tags = {TAG})
 	Response getActionsByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_ACTIVITIES_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les activités d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les activités d'un compte utilisateur",tags = {TAG})
 	Response getActivitiesByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_LINES_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Obtenir les lignes d'un compte utilisateur",tags = {TAG_VISIBILITIES})
+	@ApiOperation(value = "Obtenir les lignes d'un compte utilisateur",tags = {TAG})
 	Response getLinesByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	
 	String PATH = "domaine";
@@ -65,5 +65,5 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String PATH_GET_ACTIVITIES_BY_ACTOR_CODE = "activites-par-acteur";
 	String PATH_GET_LINES_BY_ACTOR_CODE = "lignes-par-acteur";
 	
-	String TAG_VISIBILITIES = "Visibilités";
+	String TAG = "Visibilités";
 }

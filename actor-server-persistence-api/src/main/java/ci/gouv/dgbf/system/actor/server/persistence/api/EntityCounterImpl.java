@@ -13,6 +13,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
@@ -21,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputat
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Serializable {
@@ -58,6 +60,12 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return RejectedAccountRequestQuerier.getInstance().countWhereFilter(arguments);
+			
+			if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
+				return ScopeFunctionQuerier.getInstance().count(arguments);
+			
+			if(Boolean.TRUE.equals(ServiceQuerier.getInstance().isOwner(arguments)))
+				return ServiceQuerier.getInstance().count(arguments);
 			
 			if(Boolean.TRUE.equals(ProfileQuerier.getInstance().isOwner(arguments)))
 				return ProfileQuerier.getInstance().count(arguments);

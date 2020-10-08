@@ -9,7 +9,6 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,6 @@ public class PersistenceApiScopeUnitTest extends AbstractPersistenceUnitTest {
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
-		SecurityHelper.PRINCIPALABLE.set(Boolean.FALSE);
 	}
 	
 	@Override

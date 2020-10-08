@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implements Serializable {
@@ -30,6 +33,13 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 			}
 			if(AccountRequest.FIELD_SUBMISSION_DATE_AS_STRING.equals(fieldName) && value != null) {
 				accountRequest.setSubmissionDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
+				return;
+			}
+		}else if(instance instanceof ScopeFunction) {
+			if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
+				ScopeFunction scopeFunction = (ScopeFunction) instance;
+				Boolean shared = Boolean.TRUE.equals(NumberHelper.compare(scopeFunction.getNumberOfActor(),1,ComparisonOperator.GT));
+				scopeFunction.setSharedAsString(shared ? "Oui" : "Non");
 				return;
 			}
 		}
