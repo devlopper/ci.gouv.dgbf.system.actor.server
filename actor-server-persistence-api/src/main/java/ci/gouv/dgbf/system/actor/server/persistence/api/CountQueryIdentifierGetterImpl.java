@@ -26,6 +26,8 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT;
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(readQueryIdentifier))
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES;
+		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER.equals(readQueryIdentifier))
+			return FunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER;
 		if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER.equals(readQueryIdentifier))
 			return ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
 		if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER.equals(readQueryIdentifier))

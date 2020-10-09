@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiOperation;
 public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeFunctionDto> {
 
 	@POST
-	@Path(PATH_DERIVE_ALL)
+	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@ApiOperation(value = "Enregistrer des postes",tags = {TAG})

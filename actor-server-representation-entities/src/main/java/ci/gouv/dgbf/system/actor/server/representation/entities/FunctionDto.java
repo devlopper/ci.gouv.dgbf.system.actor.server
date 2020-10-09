@@ -16,8 +16,15 @@ public class FunctionDto extends AbstractIdentifiableSystemScalarStringIdentifia
 	
 	private FunctionTypeDto type;
 	private String profileIdentifier;
+	private Integer numberOfActorPerScope;
+	private String profilesAsString;
+	private String scopesAsString;
+	private Integer numberOfScopes;
+	private String scopeTypesAsString;
 	private ArrayList<String> profilesAsStrings;
 	private ArrayList<ScopeTypeDto> scopeTypes;
+	private Boolean shared;
+	private String sharedAsString;
 	
 	@Override
 	public FunctionDto setIdentifier(String identifier) {

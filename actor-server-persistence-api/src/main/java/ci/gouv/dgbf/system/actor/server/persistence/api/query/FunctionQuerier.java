@@ -10,10 +10,12 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
@@ -39,6 +41,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 
 	String PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER = "accountRequestIdentifier";
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
+	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
 	String PARAMETER_NAME_SCOPE_TYPE_CODES = "scopeTypeCodes";
 	
 	/* read order by code ascending */
@@ -55,6 +58,13 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_TYPES_CODES);
 	Long countByTypesCodes(Collection<String> typesCodes);
 	
+	/* read by type identifier order by code ascending */
+	String QUERY_IDENTIFIER_READ_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Function.class, "readByTypeIdentifier");
+	Collection<Function> readByTypeIdentifier(String typeIdentifier);
+	/* count by type identifier */
+	String QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_TYPE_IDENTIFIER);
+	Long countByTypeIdentifier(String typeIdentifier);
+	
 	/* read by scope type codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readByScopeTypeCodes");
 	Collection<Function> readByScopeTypeCodes(Collection<String> scopeTypeCodes);
@@ -69,6 +79,10 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	/* read with profiles by types codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readWithProfilesByTypesCodes");
 	Collection<Function> readWithProfilesByTypesCodes(Collection<String> typesCodes);
+	
+	/* read with all by type identifier order by code ascending */
+	String QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Function.class, "readWithAllByTypeIdentifier");
+	Collection<Function> readWithAllByTypeIdentifier(String typeIdentifier);
 	
 	/*read by account request identifier*/
 	String QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER = Querier.buildIdentifier(Function.class,"readByAccountRequestIdentifier");
@@ -136,6 +150,16 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		}
 		
 		@Override
+		public Collection<Function> readByTypeIdentifier(String typeIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_BY_TYPE_IDENTIFIER, PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
+		}
+		
+		@Override
+		public Long countByTypeIdentifier(String typeIdentifier) {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER,PARAMETER_NAME_TYPE_IDENTIFIER,typeIdentifier);
+		}
+		
+		@Override
 		public Collection<Function> readByAccountRequestIdentifier(String accountRequestIdentifier) {
 			return QueryExecutor.getInstance().executeReadMany(Function.class,QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER, PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER, accountRequestIdentifier);
 		}
@@ -158,6 +182,21 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 			return functions;
 		}
 		
+		@Override
+		public Collection<Function> readWithAllByTypeIdentifier(String typeIdentifier) {
+			Collection<Function> functions = readByTypeIdentifier(typeIdentifier);
+			if(CollectionHelper.isEmpty(functions))
+				return null;
+			__setAll__(functions);
+			return functions;
+		}
+		
+		private static void __setAll__(Collection<Function> functions) {
+			__setProfiles__(functions);
+			__setScopes__(functions);
+			__setScopeTypes__(functions);
+		}
+		
 		private static void __setProfiles__(Collection<Function> functions) {
 			if(CollectionHelper.isEmpty(functions))
 				return;
@@ -166,7 +205,34 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				functions.forEach(function -> {
 					Collection<ProfileFunction> __profileFunctions__ = profileFunctions.stream().filter(profileFunction -> profileFunction.getFunction().equals(function)).collect(Collectors.toList());
 					if(CollectionHelper.isNotEmpty(__profileFunctions__))
-						function.setProfilesAsStrings(__profileFunctions__.stream().map(profileFunction -> profileFunction.getProfile().getName()).collect(Collectors.toList()));
+						function.setProfilesAsString(__profileFunctions__.stream().map(profileFunction -> profileFunction.getProfile().getName()).collect(Collectors.joining(",")));
+				});
+		}
+		
+		private static void __setScopes__(Collection<Function> functions) {
+			if(CollectionHelper.isEmpty(functions))
+				return;
+			functions.forEach(function -> {
+				function.setNumberOfScopes(NumberHelper.getInteger(ScopeFunctionQuerier.getInstance().countByFunctionsIdentifiers(List.of(function.getIdentifier()))));
+			});
+			/*Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readByFunctionsIdentifiers(functions.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(scopeFunctions))
+				functions.forEach(function -> {
+					Collection<ScopeFunction> __scopeFunctions__ = scopeFunctions.stream().filter(scopeFunction -> scopeFunction.getFunction().equals(function)).collect(Collectors.toList());
+					if(CollectionHelper.isNotEmpty(__scopeFunctions__))
+						function.setScopesAsString(__scopeFunctions__.stream().map(scopeFunction -> scopeFunction.getScope().getName()).collect(Collectors.joining(",")));
+				});*/
+		}
+		
+		private static void __setScopeTypes__(Collection<Function> functions) {
+			if(CollectionHelper.isEmpty(functions))
+				return;
+			Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(functions.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()));
+			if(CollectionHelper.isNotEmpty(scopeTypeFunctions))
+				functions.forEach(function -> {
+					Collection<ScopeTypeFunction> __scopeTypeFunctions__ = scopeTypeFunctions.stream().filter(scopeTypeFunction -> scopeTypeFunction.getFunction().equals(function)).collect(Collectors.toList());
+					if(CollectionHelper.isNotEmpty(__scopeTypeFunctions__))
+						function.setScopeTypesAsString(__scopeTypeFunctions__.stream().map(scopeTypeFunction -> scopeTypeFunction.getScopeType().getName()).collect(Collectors.joining(",")));
 				});
 		}
 		
@@ -175,6 +241,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		public Collection<Function> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
 				return read();
+			if(QUERY_IDENTIFIER_READ_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return readByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
 			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
 				return readByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
 			if(QUERY_IDENTIFIER_READ_WITH_PROFILES.equals(arguments.getQuery().getIdentifier()))
@@ -187,6 +255,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return readWhereAssociatedToScopeType(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return readWhereAssociatedToScopeTypeWithAll(arguments);
+			if(QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return readWithAllByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
 			return super.readMany(arguments);
 		}
 		
@@ -196,7 +266,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 			if(QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier()))
 				return count();
 			if(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
-				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));			
+				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
+			if(QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return countByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
 			return super.count(arguments);
 		}
 		
@@ -228,13 +300,18 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 						,order(asc("t", "code"))))
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
+		QueryHelper.addQueries(
+				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Function.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Function t")			
 						,Language.Where.of("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES)
 						,Language.Order.of("t.code ASC"))
 				)
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_TYPE_IDENTIFIER, jpql(select("t"),From.ofTuple(Function.class)
+						,where("t.type.identifier = :"+PARAMETER_NAME_TYPE_IDENTIFIER),order(asc("t",Function.FIELD_CODE))))
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER, jpql(select("COUNT(t)"),From.ofTuple(Function.class)
+						,where("t.type.identifier = :"+PARAMETER_NAME_TYPE_IDENTIFIER)))
 			);
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Long.class
