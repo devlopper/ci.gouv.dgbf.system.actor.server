@@ -1,16 +1,16 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -29,6 +29,7 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 @Queries(value = {
 	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
@@ -73,9 +74,36 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER = Querier.buildIdentifier(Function.class,"readByAccountRequestIdentifier");
 	Collection<Function> readByAccountRequestIdentifier(String accountRequestIdentifier);
 	
+	/*read where associated to scope type */
+	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeType");
+	Collection<Function> readWhereAssociatedToScopeType(QueryExecutorArguments arguments);
+	
+	/*read where associated to scope type with all */
+	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeTypeWithAll");
+	Collection<Function> readWhereAssociatedToScopeTypeWithAll(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Function> implements FunctionQuerier,Serializable {
+		
+		@Override
+		public Collection<Function> readWhereAssociatedToScopeType(QueryExecutorArguments arguments) {
+			return QueryExecutor.getInstance().executeReadMany(Function.class,QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE);
+		}
+		
+		@Override
+		public Collection<Function> readWhereAssociatedToScopeTypeWithAll(QueryExecutorArguments arguments) {
+			Collection<Function> functions = readWhereAssociatedToScopeType(arguments);
+			if(CollectionHelper.isEmpty(functions))
+				return null;
+			Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().read();
+			if(CollectionHelper.isNotEmpty(scopeTypeFunctions))
+				functions.forEach(function -> {
+					function.setScopeTypes(scopeTypeFunctions.stream().filter(scopeTypeFunction -> scopeTypeFunction.getFunction().equals(function))
+							.map(scopeTypeFunction -> scopeTypeFunction.getScopeType()).collect(Collectors.toList()));
+				});	
+			return functions;
+		}
 		
 		@Override
 		public Collection<Function> read() {
@@ -154,7 +182,11 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 			if(QUERY_IDENTIFIER_READ_WITH_PROFILES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
 				return readWithProfilesByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
 			if(QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return readByAccountRequestIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER));		
+				return readByAccountRequestIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE.equals(arguments.getQuery().getIdentifier()))
+				return readWhereAssociatedToScopeType(arguments);
+			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
+				return readWhereAssociatedToScopeTypeWithAll(arguments);
 			return super.readMany(arguments);
 		}
 		
@@ -191,6 +223,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,order(asc("t", "code"))))
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_SCOPE_TYPE_CODES, jpql(select("COUNT(t)"),from("Function t")
 						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t AND stf.scopeType.code IN :"+PARAMETER_NAME_SCOPE_TYPE_CODES))))
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE, jpql(select("t"),from("Function t")
+						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t"))
+						,order(asc("t", "code"))))
 			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES

@@ -24,8 +24,6 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.value.Value;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFunction> {
@@ -121,7 +119,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 					,"LEFT JOIN Function function ON function = t.function"
 				)
 				,getQueryValueReadWhereFilterWhere()
-				,order(Order.join(asc(ScopeFunction.FIELD_SCOPE, Scope.FIELD_CODE),asc(ScopeFunction.FIELD_FUNCTION, Function.FIELD_CODE)))
+				,order(Order.join(asc("t",ScopeFunction.FIELD_CODE)))
 			);
 	}
 	

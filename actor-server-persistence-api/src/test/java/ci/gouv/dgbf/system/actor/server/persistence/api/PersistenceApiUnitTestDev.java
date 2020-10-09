@@ -1,21 +1,24 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.util.Collection;
-import java.util.logging.Level;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -35,8 +38,29 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(){
-		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		System.out.println(AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier("D_yy@y.com"));
+	}
+	
+	@Test
+	public void showFunctionWithAll(){
+		System.out.println("--------------------- Function with all ---------------------");
+		Collection<Function> functions = EntityReader.getInstance().readMany(Function.class, new QueryExecutorArguments().setQuery(new Query()
+				.setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL)));
+		if(CollectionHelper.isNotEmpty(functions))
+			functions.forEach(function -> {
+				System.out.println(function+" : "+function.getScopeTypes());
+			});
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(
+				new QueryExecutorArguments().setQueryFromIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"CF",ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"SECTION"));
+		if(CollectionHelper.isNotEmpty(scopes)) {
+			System.out.println(scopes.size());
+			//scopes.forEach(scope -> {
+			//	System.out.println(scope);
+			//});
+		}
 	}
 	
 	@Test
@@ -79,7 +103,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void scopeQuerier_readInvisibleSectionsWhereFilter(){
 		//assertInvisibleSectionsWhereFilter("kycdev@gmail.com",null,new String[] {"101","102"});
 		//assertInvisibleSectionsWhereFilter("kb@m.com",null,new String[] {"102","103","103"});
-		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		assertInvisibleSectionsWhereFilter("kb@m.com","102",new String[] {});
 	}
 	

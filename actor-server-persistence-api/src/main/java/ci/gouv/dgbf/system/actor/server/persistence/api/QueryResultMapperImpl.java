@@ -38,7 +38,7 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 		}else if(instance instanceof ScopeFunction) {
 			if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
 				ScopeFunction scopeFunction = (ScopeFunction) instance;
-				Boolean shared = Boolean.TRUE.equals(NumberHelper.compare(scopeFunction.getNumberOfActor(),1,ComparisonOperator.GT));
+				Boolean shared = Boolean.TRUE.equals(NumberHelper.compare(NumberHelper.getInteger(value),1,ComparisonOperator.NEQ));
 				scopeFunction.setSharedAsString(shared ? "Oui" : "Non");
 				return;
 			}

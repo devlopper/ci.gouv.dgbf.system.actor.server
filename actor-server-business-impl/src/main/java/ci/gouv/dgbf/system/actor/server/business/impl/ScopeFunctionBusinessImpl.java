@@ -12,8 +12,11 @@ import javax.transaction.Transactional;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
+import org.cyk.utility.server.business.BusinessFunctionCreator;
+import org.cyk.utility.server.business.BusinessFunctionModifier;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
@@ -29,7 +32,29 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 @ApplicationScoped
 public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeFunction, ScopeFunctionPersistence> implements ScopeFunctionBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
+	@Override
+	protected void __listenExecuteCreateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
+		super.__listenExecuteCreateBefore__(scopeFunction, properties, function);
+		__setNumberOfActor__(scopeFunction);
+		__codify__(List.of(scopeFunction));
+	}
+	
+	@Override
+	protected void __listenExecuteUpdateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionModifier function) {
+		super.__listenExecuteUpdateBefore__(scopeFunction, properties, function);
+		__setNumberOfActor__(scopeFunction);
+		__codify__(List.of(scopeFunction));
+	}
+	
+	private void __setNumberOfActor__(ScopeFunction scopeFunction) {
+		if(Boolean.TRUE.equals(scopeFunction.getShared())) {
+			scopeFunction.setNumberOfActor(0);
+		}else {
+			scopeFunction.setNumberOfActor(1);
+		}
+	}
+	
 	@Override @Transactional
 	public void deriveFromScopesFromFunctions(Collection<Scope> scopes, Collection<Function> functions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopes", scopes);

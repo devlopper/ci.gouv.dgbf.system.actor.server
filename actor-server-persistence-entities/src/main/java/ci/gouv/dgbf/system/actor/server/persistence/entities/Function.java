@@ -29,6 +29,8 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private FunctionType type;
 	@Transient private Collection<String> profilesAsStrings;
 	
+	@Transient private Collection<ScopeType> scopeTypes;
+	
 	@Override
 	public Function setIdentifier(String identifier) {
 		return (Function) super.setIdentifier(identifier);
@@ -54,6 +56,7 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
+	public static final String FIELD_SCOPE_TYPES = "scopeTypes";
 	
 	public static final String COLUMN_TYPE = "type";
 	

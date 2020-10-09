@@ -1,4 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
+import java.util.Collection;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,6 +21,13 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	@Path(PATH_DERIVE_ALL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Enregistrer des postes",tags = {TAG})
+	Response save(Collection<ScopeFunctionDto> scopeFunctionDtos);
+	
+	@POST
+	@Path(PATH_DERIVE_ALL)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@ApiOperation(value = "Dériver tous les postes",tags = {TAG})
 	Response deriveAll();
 	
@@ -29,6 +38,7 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	@ApiOperation(value = "Codifier tous les postes",tags = {TAG})
 	Response codifyAll();
 	
+	String PATH_SAVE = "save";
 	String PATH_DERIVE_ALL = "deriveAll";
 	String PATH_CODIFY_ALL = "codifyAll";
 	String PATH = "scopefunction";
