@@ -7,5 +7,4 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 public interface FunctionBusiness extends BusinessEntity<Function> {
 
 	String SAVE = "Function.save";
-	
 }

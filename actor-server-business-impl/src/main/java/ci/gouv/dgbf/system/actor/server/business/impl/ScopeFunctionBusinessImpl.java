@@ -36,23 +36,18 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	@Override
 	protected void __listenExecuteCreateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(scopeFunction, properties, function);
-		__setNumberOfActor__(scopeFunction);
-		__codify__(List.of(scopeFunction));
+		__listenExecuteCreateOrUpdateBefore__(scopeFunction);		
 	}
 	
 	@Override
 	protected void __listenExecuteUpdateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionModifier function) {
 		super.__listenExecuteUpdateBefore__(scopeFunction, properties, function);
-		__setNumberOfActor__(scopeFunction);
-		__codify__(List.of(scopeFunction));
+		__listenExecuteCreateOrUpdateBefore__(scopeFunction);
 	}
 	
-	private void __setNumberOfActor__(ScopeFunction scopeFunction) {
-		if(Boolean.TRUE.equals(scopeFunction.getShared())) {
-			scopeFunction.setNumberOfActor(0);
-		}else {
-			scopeFunction.setNumberOfActor(1);
-		}
+	private void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
+		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
+		__codify__(List.of(scopeFunction));
 	}
 	
 	@Override @Transactional
