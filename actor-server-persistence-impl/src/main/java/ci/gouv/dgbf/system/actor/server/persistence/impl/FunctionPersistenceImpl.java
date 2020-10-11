@@ -17,7 +17,6 @@ public class FunctionPersistenceImpl extends AbstractPersistenceEntityImpl<Funct
 	@Override
 	protected void __listenExecuteReadAfter__(Function function, Properties properties) {
 		super.__listenExecuteReadAfter__(function, properties);
-		if(function.getShared() != null)
-			function.setShared(ScopeFunctionPersistence.computeShared(function.getNumberOfActorPerScope()));
+		function.setShared(ScopeFunctionPersistence.computeShared(function.getNumberOfActorPerScope()));
 	}
 }

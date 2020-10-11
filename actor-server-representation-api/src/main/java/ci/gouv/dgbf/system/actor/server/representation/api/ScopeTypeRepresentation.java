@@ -8,5 +8,6 @@ import org.cyk.utility.server.representation.RepresentationEntity;
 public interface ScopeTypeRepresentation extends RepresentationEntity<ScopeTypeDto> {
 	
 	String PATH = "scopetype";
-	
+
+	String TAG = ScopeRepresentation.TAG;
 }

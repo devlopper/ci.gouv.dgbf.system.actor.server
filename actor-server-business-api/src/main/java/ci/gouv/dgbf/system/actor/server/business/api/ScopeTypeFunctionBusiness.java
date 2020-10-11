@@ -5,4 +5,6 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 public interface ScopeTypeFunctionBusiness extends BusinessEntity<ScopeTypeFunction> {
 
+	String SAVE = "ScopeTypeFunction.save";
+	
 }

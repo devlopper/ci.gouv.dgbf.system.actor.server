@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
@@ -38,8 +37,7 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 		}else if(instance instanceof ScopeFunction) {
 			if(ScopeFunction.FIELD_SHARED_AS_STRING.equals(fieldName)) {
 				ScopeFunction scopeFunction = (ScopeFunction) instance;
-				Boolean shared = Boolean.TRUE.equals(NumberHelper.compare(NumberHelper.getInteger(value),1,ComparisonOperator.NEQ));
-				scopeFunction.setSharedAsString(shared ? "Oui" : "Non");
+				scopeFunction.setSharedAsString(ScopeFunctionPersistence.computeSharedAsString( ScopeFunctionPersistence.computeShared(NumberHelper.getInteger(value)) ));
 				return;
 			}
 		}

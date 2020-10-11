@@ -20,4 +20,9 @@ public class ScopeTypeFunctionDto extends AbstractIdentifiableSystemScalarString
 	public ScopeTypeFunctionDto setIdentifier(String identifier) {
 		return (ScopeTypeFunctionDto) super.setIdentifier(identifier);
 	}
+	
+	@Override
+	public ScopeTypeFunctionDto set__deletable__(Boolean __deletable__) {
+		return (ScopeTypeFunctionDto) super.set__deletable__(__deletable__);
+	}
 }

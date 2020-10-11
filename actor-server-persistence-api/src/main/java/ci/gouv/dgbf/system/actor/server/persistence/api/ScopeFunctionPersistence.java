@@ -12,5 +12,9 @@ public interface ScopeFunctionPersistence extends PersistenceEntity<ScopeFunctio
 	
 	static Boolean computeShared(Integer numberOfActor) {
 		return FunctionPersistence.computeShared(numberOfActor);
-	}	
+	}
+	
+	static String computeSharedAsString(Boolean shared) {
+		return FunctionPersistence.computeSharedAsString(shared);
+	}
 }

@@ -21,7 +21,7 @@ public interface ProfileFunctionRepresentation extends RepresentationEntity<Prof
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "save",tags = {"save"})
+	@ApiOperation(value = "Associer des profiles et des fonctions",tags = {ProfileRepresentation.TAG})
 	Response save(Collection<ProfileFunctionDto> profileFunctionDtos);
 	
 	static ProfileFunctionRepresentation getProxy() {

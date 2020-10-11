@@ -65,5 +65,5 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String PATH_GET_ACTIVITIES_BY_ACTOR_CODE = "activites-par-acteur";
 	String PATH_GET_LINES_BY_ACTOR_CODE = "lignes-par-acteur";
 	
-	String TAG = "Visibilités";
+	String TAG = "Domaines";
 }

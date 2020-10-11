@@ -29,6 +29,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
@@ -192,9 +193,14 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		}
 		
 		private static void __setAll__(Collection<Function> functions) {
+			if(CollectionHelper.isEmpty(functions))
+				return;
 			__setProfiles__(functions);
 			__setScopes__(functions);
 			__setScopeTypes__(functions);
+			functions.forEach(function -> {
+				function.setSharedAsString(FunctionPersistence.computeSharedAsString(function.getNumberOfActorPerScope()));
+			});
 		}
 		
 		private static void __setProfiles__(Collection<Function> functions) {

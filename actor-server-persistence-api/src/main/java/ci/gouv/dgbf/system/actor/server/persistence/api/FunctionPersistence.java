@@ -16,4 +16,11 @@ public interface FunctionPersistence extends PersistenceEntity<Function> {
 		return NumberHelper.compare(numberOfActor, 1, ComparisonOperator.NEQ);
 	}
 	
+	static String computeSharedAsString(Boolean shared) {
+		return Boolean.TRUE.equals(shared) ? "Oui" : "Non";
+	}
+	
+	static String computeSharedAsString(Integer numberOfActor) {
+		return computeSharedAsString(computeShared(numberOfActor));
+	}
 }
