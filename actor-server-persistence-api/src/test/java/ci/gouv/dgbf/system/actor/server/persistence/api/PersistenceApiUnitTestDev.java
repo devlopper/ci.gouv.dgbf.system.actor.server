@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
@@ -8,16 +9,20 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
@@ -40,6 +45,48 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		System.out.println(AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier("D_yy@y.com"));
+	}
+	
+	@Test
+	public void scopeFunction_readByFunctionCodes(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		ScopeFunctionQuerier.getInstance().readByFunctionsCodes(Function.CODE_FINANCIAL_CONTROLLER_HOLDER).forEach(x -> {System.out.println(x);});
+	}
+	
+	@Test
+	public void function_readByBusinessIdentifiers(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		FunctionQuerier.getInstance().readByBusinessIdentifiers(Function.class,List.of(Function.CODE_CREDIT_MANAGER_HOLDER
+				,Function.CODE_AUTHORIZING_OFFICER_HOLDER,Function.CODE_FINANCIAL_CONTROLLER_HOLDER,Function.CODE_ACCOUNTING_HOLDER))
+			.forEach(x -> {System.out.println(x);});
+	}
+	
+	@Test
+	public void executionImputation_readWhereFilter(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		ExecutionImputationQuerier.getInstance().readWhereFilter(QueryExecutorArguments
+				.instantiate(ExecutionImputation.class, QueryName.READ_WHERE_FILTER).setNumberOfTuples(3)).forEach(x -> {
+					System.out.println(x.getIdentifier()+" - "+ x.getActivityCodeName()+" : "+x.getEconomicNatureCodeName());
+				});
+	}
+	
+	@Test
+	public void executionImputation_readWhereFilterAll(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL))
+				.setNumberOfTuples(3)).forEach(x -> {
+					System.out.println(x.getIdentifier()+" - "+ x.getCreditManager()+" : "+x.getAuthorizingOfficer()+" : "+x.getFinancialController()+" : "+x.getAccounting());
+				});
+	}
+	
+	@Test
+	public void executionImputation_readForEdit(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		ExecutionImputation executionImputation = EntityReader.getInstance().readOne(ExecutionImputation.class,new QueryExecutorArguments()
+				.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT)
+				.addFilterFieldsValues(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER,"IMPUTATION11018010005BF1E3A5D576B48E1B5DC3D4FDA69A2CF"));
+		System.out.println(executionImputation.getName());
+		System.out.println(executionImputation.getFunctions());
 	}
 	
 	@Test

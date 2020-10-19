@@ -8,10 +8,8 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
-import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
@@ -22,7 +20,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ExecutableImputation.TABLE_NAME)
+//@Entity @Table(name=ExecutableImputation.TABLE_NAME)
 @AttributeOverrides(value = {
 		@AttributeOverride(name=ExecutableImputation.FIELD_IDENTIFIER,column = @Column(name="LDEP_ID"))
 	})

@@ -9,4 +9,5 @@ public interface ImputationRepresentation extends RepresentationEntity<Imputatio
 	
 	String PATH = "imputation";
 	
+	String TAG = "Imputations";
 }

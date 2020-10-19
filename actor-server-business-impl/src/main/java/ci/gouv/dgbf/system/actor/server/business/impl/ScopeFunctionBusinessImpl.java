@@ -70,6 +70,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		LogHelper.logInfo(String.format(CollectionHelper.getSize(scopeFunctions)+" poste(s) à créer"), getClass());
 		if(CollectionHelper.isNotEmpty(scopeFunctions)) {
 			__codify__(scopeFunctions);
+			scopeFunctions.forEach(scopeFunction -> {
+				scopeFunction.setIdentifier(scopeFunction.getCode());
+			});
 			createMany(scopeFunctions);
 		}		
 		Long duration = System.currentTimeMillis() - t0;

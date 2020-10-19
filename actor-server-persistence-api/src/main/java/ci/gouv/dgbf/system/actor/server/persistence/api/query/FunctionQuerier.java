@@ -26,6 +26,8 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -304,6 +306,12 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE, jpql(select("t"),from("Function t")
 						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t"))
 						,order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_BY_SYSTEM_IDENTIFIERS)
+						, jpql(select("t"),from("Function t"),where("t.identifier IN :"+PARAMETER_NAME_IDENTIFIERS),order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_BY_BUSINESS_IDENTIFIERS)
+						, jpql(select("t"),from("Function t"),where("t.code IN :"+PARAMETER_NAME_IDENTIFIERS),order(asc("t", "code"))))
 			);
 		
 		QueryHelper.addQueries(

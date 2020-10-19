@@ -40,7 +40,13 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 				scopeFunction.setSharedAsString(ScopeFunctionPersistence.computeSharedAsString( ScopeFunctionPersistence.computeShared(NumberHelper.getInteger(value)) ));
 				return;
 			}
-		}
+		}//else if(instance instanceof ExecutionImputation) {
+			//if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName)) {
+				//ExecutionImputation executionImputation = (ExecutionImputation) instance;
+				//executionImputation.getCreditManager(Boolean.TRUE).set
+				//return;
+			//}
+		//}
 		super.write(instance, fieldName, value);
 	}
 	

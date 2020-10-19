@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
@@ -29,9 +30,11 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 		if(FunctionQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER.equals(readQueryIdentifier))
 			return FunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER;
 		if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_FUNCTIONS_WHERE_FILTER.equals(readQueryIdentifier))
-			return ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			return ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER.equals(readQueryIdentifier))
-			return ActorQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER;
+			return ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL.equals(readQueryIdentifier))
+			return ExecutionImputationQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		return super.__get__(readQueryIdentifier);
 	}
 }

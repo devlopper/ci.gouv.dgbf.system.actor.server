@@ -82,4 +82,12 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String TABLE_NAME = "FONCTION";	
 	
 	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
+	public static final String CODE_CREDIT_MANAGER_HOLDER = "GC";
+	public static final String CODE_CREDIT_MANAGER_ASSISTANT = "AGC";
+	public static final String CODE_AUTHORIZING_OFFICER_HOLDER = "ORD";
+	public static final String CODE_AUTHORIZING_OFFICER_ASSISTANT = "AORD";
+	public static final String CODE_FINANCIAL_CONTROLLER_HOLDER = "CF";
+	public static final String CODE_FINANCIAL_CONTROLLER_ASSISTANT = "ACF";
+	public static final String CODE_ACCOUNTING_HOLDER = "CPT";
+	public static final String CODE_ACCOUNTING_ASSISTANT = "ACPT";
 }

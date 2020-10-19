@@ -18,6 +18,7 @@ import org.junit.Test;
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusiness;
@@ -32,9 +33,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.PrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePrivilegePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RejectedAccountRequestPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionExecutionImputationPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
@@ -47,6 +50,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
@@ -66,7 +70,127 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
 	
-	/* Create */
+	@Test
+	public void executionImputation_saveScopeFunctions() throws Exception {
+		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
+				,new ScopeType().setCode(ScopeType.CODE_UA),new ScopeType().setCode(ScopeType.CODE_ACTION),new FunctionType().setCode("BUDGETAIRE"));
+		EntityCreator.getInstance().createMany(
+				new Function().setCode("GC").setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("ORDP").setName("Ordonnateur principal").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("ORD").setName("Ordonnateur").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("CF").setName("Contrôleur financier").setTypeFromIdentifier("BUDGETAIRE")
+				,new Function().setCode("CPT").setName("Comptable").setTypeFromIdentifier("BUDGETAIRE"));
+		EntityCreator.getInstance().createMany(
+				new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("CF")
+				//,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("ORDP")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_USB).setFunctionFromIdentifier("ORD")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier("GC")
+				);
+		
+		EntityCreator.getInstance().createMany(
+				new Scope().setCode("101").setName("Réprésentation Nationale").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("327").setName("Ministère du budget").setTypeFromIdentifier(ScopeType.CODE_SECTION)
+				,new Scope().setCode("22086").setName("Programme budget").setTypeFromIdentifier(ScopeType.CODE_USB)
+				,new Scope().setCode("11025124").setName("Direction des traitements").setTypeFromIdentifier(ScopeType.CODE_UA)
+				,new Scope().setCode("11025125").setName("Direction des DOT").setTypeFromIdentifier(ScopeType.CODE_UA)
+				,new Scope().setCode("1102512401").setName("Action 01").setTypeFromIdentifier(ScopeType.CODE_ACTION)
+		);
+		
+		EntityCreator.getInstance().createMany(
+				new ExecutionImputation().setCode("i01"),new ExecutionImputation().setCode("i02"),new ExecutionImputation().setCode("i03")
+		);
+		
+		__inject__(ScopeFunctionBusiness.class).deriveAll();
+		
+		Long count = __inject__(ScopeFunctionExecutionImputationPersistence.class).count();
+		
+		ExecutionImputation executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNull();
+		assertThat(executionImputation.getAccounting()).isNull();		
+		executionImputation.setCreditManagerHolderFromIdentifier("GC11025125");
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+		
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count+1l);		
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder().getIdentifier()).isEqualTo("GC11025125");
+		assertThat(executionImputation.getCreditManager().getAssistant()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNull();
+		assertThat(executionImputation.getAccounting()).isNull();
+		executionImputation.setCreditManagerHolderFromIdentifier("GC11025124");
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+		
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count+1l);
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder().getIdentifier()).isEqualTo("GC11025124");
+		assertThat(executionImputation.getCreditManager().getAssistant()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNull();
+		assertThat(executionImputation.getAccounting()).isNull();
+		executionImputation.setFinancialControllerHolderFromIdentifier("CF327");
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+		
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count+2l);		
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder().getIdentifier()).isEqualTo("GC11025124");
+		assertThat(executionImputation.getCreditManager().getAssistant()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder().getIdentifier()).isEqualTo("CF327");
+		assertThat(executionImputation.getFinancialController().getAssistant()).isNull();	
+		assertThat(executionImputation.getAccounting()).isNull();
+		executionImputation.setFinancialControllerHolderFromIdentifier("CF101");
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+		
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count+2l);
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder().getIdentifier()).isEqualTo("GC11025124");
+		assertThat(executionImputation.getCreditManager().getAssistant()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder().getIdentifier()).isEqualTo("CF101");
+		assertThat(executionImputation.getFinancialController().getAssistant()).isNull();	
+		assertThat(executionImputation.getAccounting()).isNull();
+		executionImputation.setCreditManagerHolderFromIdentifier("GC11025125");
+		executionImputation.setFinancialControllerHolderFromIdentifier("CF327");
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+		
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count+2l);
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder()).isNotNull();
+		assertThat(executionImputation.getCreditManager().getHolder().getIdentifier()).isEqualTo("GC11025125");
+		assertThat(executionImputation.getCreditManager().getAssistant()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder()).isNotNull();
+		assertThat(executionImputation.getFinancialController().getHolder().getIdentifier()).isEqualTo("CF327");
+		assertThat(executionImputation.getFinancialController().getAssistant()).isNull();	
+		assertThat(executionImputation.getAccounting()).isNull();
+		executionImputation.setCreditManagerHolderFromIdentifier(null);
+		executionImputation.setFinancialControllerHolderFromIdentifier(null);
+		__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(List.of(executionImputation));
+				
+		assertThat(__inject__(ScopeFunctionExecutionImputationPersistence.class).count()).isEqualTo(count);
+		executionImputation = ExecutionImputationQuerier.getInstance().readBySystemIdentifierWithAll(ExecutionImputation.class, "i02");
+		assertThat(executionImputation.getCreditManager()).isNull();
+		assertThat(executionImputation.getAuthorizingOfficer()).isNull();
+		assertThat(executionImputation.getFinancialController()).isNull();
+		assertThat(executionImputation.getAccounting()).isNull();	
+		
+	}
 	
 	@Test
 	public void scopeFunction_createFromAllScopesFromAllFunctions() throws Exception{

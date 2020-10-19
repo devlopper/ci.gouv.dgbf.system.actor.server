@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -22,7 +23,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ScopeFunction.TABLE_NAME)
+@Entity @Table(name=ScopeFunction.TABLE_NAME,uniqueConstraints = {
+		@UniqueConstraint(name=ScopeFunction.TABLE_NAME+"_"+ScopeFunction.COLUMN_SCOPE+"_"+ScopeFunction.COLUMN_FUNCTION+"_UK"
+				,columnNames = {ScopeFunction.COLUMN_SCOPE,ScopeFunction.COLUMN_FUNCTION})
+})
 public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -73,6 +77,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			if(scope.getCode().equals(scopeFunction.getScopeAsString()) && function.getCode().equals(scopeFunction.getFunctionAsString()))
 				return Boolean.TRUE;
 		return Boolean.FALSE;
+	}
+	
+	@Override
+	public String toString() {
+		return function+"-"+scope;
 	}
 	
 	public static final String FIELD_SCOPE = "scope";
