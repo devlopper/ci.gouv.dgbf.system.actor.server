@@ -8,6 +8,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -35,6 +36,10 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL.equals(readQueryIdentifier))
 			return ExecutionImputationQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		if(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI_BY_FUNCTIONS_IDENTIFIERS.equals(readQueryIdentifier))
+			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS;
+		if(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(readQueryIdentifier))
+			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT;
 		return super.__get__(readQueryIdentifier);
 	}
 }

@@ -20,6 +20,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountReq
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -27,6 +28,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
 	private static final long serialVersionUID = 1L;
@@ -51,6 +53,15 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void scopeFunction_readByFunctionCodes(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		ScopeFunctionQuerier.getInstance().readByFunctionsCodes(Function.CODE_FINANCIAL_CONTROLLER_HOLDER).forEach(x -> {System.out.println(x);});
+	}
+	
+	@Test
+	public void scopeTypeFunction_read(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		System.out.println(EntityReader.getInstance().readMany(ScopeTypeFunction.class,ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ));
+		System.out.println(EntityReader.getInstance().readMany(ScopeTypeFunction.class,ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI));
+		System.out.println(EntityCounter.getInstance().count(ScopeTypeFunction.class,ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT));
+		System.out.println(ScopeTypeFunctionQuerier.getInstance().readWhereScopeFunctionDerivableIsTrue());
 	}
 	
 	@Test

@@ -77,7 +77,7 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
 	
 	public static final String COLUMN_TYPE = "type";
-	public static final String COLUMN_NUMBER_OF_ACTOR_PER_SCOPE = "nombre_acteur_par_poste";
+	public static final String COLUMN_NUMBER_OF_ACTOR_PER_SCOPE = "NOMBRE_ACTEUR_PAR_POSTE";
 	
 	public static final String TABLE_NAME = "FONCTION";	
 	

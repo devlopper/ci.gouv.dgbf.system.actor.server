@@ -27,6 +27,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetS
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
@@ -74,6 +75,15 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
+			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
+		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(arguments.getQuery().getIdentifier())))
+			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUI();
+		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
+			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(arguments);
+		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
+			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUIByFunctionsIdentifiers(arguments);
 		
 		if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ScopeFunctionQuerier.getInstance().readMany(arguments);

@@ -84,9 +84,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	public void deriveAll() {
 		LogHelper.logInfo(String.format("Dérivation de tous les postes en cours"), getClass());
 		Long t0 = System.currentTimeMillis();
-		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().read();
-		LogHelper.logInfo(String.format(CollectionHelper.getSize(scopeTypeFunctions)+" association(s) de type de domaine et de fonction trouvée(s)"), getClass());
-		if(CollectionHelper.isEmpty(scopeTypeFunctions))			
+		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readWhereScopeFunctionDerivableIsTrue();
+		LogHelper.logInfo(String.format(CollectionHelper.getSize(scopeTypeFunctions)+" association(s) de type de domaine et de fonction avec l'option dérivable à vrai trouvée(s)"), getClass());
+		if(CollectionHelper.isEmpty(scopeTypeFunctions))
 			return;
 		Collection<ScopeType> scopeTypes = scopeTypeFunctions.stream().map(x -> x.getScopeType()).collect(Collectors.toSet());
 		if(CollectionHelper.isEmpty(scopeTypes))
@@ -107,15 +107,15 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	private void __codify__(Collection<ScopeFunction> scopeFunctions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("postes", scopeFunctions);
-		Long t0 = System.currentTimeMillis();
-		LogHelper.logInfo(String.format("Codification de "+CollectionHelper.getSize(scopeFunctions)+" poste(s) en cours"), getClass());
+		//Long t0 = System.currentTimeMillis();
+		//LogHelper.logInfo(String.format("Codification de "+CollectionHelper.getSize(scopeFunctions)+" poste(s) en cours"), getClass());
 		scopeFunctions.forEach(scopeFunction -> {
 			Scope scope = scopeFunction.getScope();
 			Function function = scopeFunction.getFunction();
 			scopeFunction.setCode(generateCode(scope,function)).setName(generateName(scope,function));
 		});
-		Long duration = System.currentTimeMillis() - t0;
-		LogHelper.logInfo(String.format("%s poste(s) codifié(s) en %s", CollectionHelper.getSize(scopeFunctions),duration), getClass());
+		//Long duration = System.currentTimeMillis() - t0;
+		//LogHelper.logInfo(String.format("%s poste(s) codifié(s) en %s", CollectionHelper.getSize(scopeFunctions),duration), getClass());
 	}
 	
 	@Override @Transactional

@@ -22,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetS
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
@@ -64,6 +65,11 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 				return AccountRequestQuerier.getInstance().countWhereFilter(arguments);
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return RejectedAccountRequestQuerier.getInstance().countWhereFilter(arguments);
+			
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier())))
+				return ScopeTypeFunctionQuerier.getInstance().count();
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
+				return ScopeTypeFunctionQuerier.getInstance().countByFunctionsIdentifiers(arguments);
 			
 			if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
 				return ScopeFunctionQuerier.getInstance().count(arguments);

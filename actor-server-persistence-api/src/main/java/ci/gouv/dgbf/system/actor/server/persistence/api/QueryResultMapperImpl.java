@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implements Serializable {
@@ -40,13 +41,13 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 				scopeFunction.setSharedAsString(ScopeFunctionPersistence.computeSharedAsString( ScopeFunctionPersistence.computeShared(NumberHelper.getInteger(value)) ));
 				return;
 			}
-		}//else if(instance instanceof ExecutionImputation) {
-			//if(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName)) {
-				//ExecutionImputation executionImputation = (ExecutionImputation) instance;
-				//executionImputation.getCreditManager(Boolean.TRUE).set
-				//return;
-			//}
-		//}
+		}else if(instance instanceof ScopeTypeFunction) {
+			if(ScopeTypeFunction.FIELD_SCOPE_FUNCTION_DERIVABLE_AS_STRING.equals(fieldName)) {
+				ScopeTypeFunction scopeTypeFunction = (ScopeTypeFunction) instance;
+				scopeTypeFunction.setScopeFunctionDerivableAsString(ScopeTypeFunctionPersistence.computeScopeFunctionDerivableAsString((Boolean)value));
+				return;
+			}
+		}
 		super.write(instance, fieldName, value);
 	}
 	

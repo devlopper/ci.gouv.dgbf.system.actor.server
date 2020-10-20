@@ -14,7 +14,11 @@ public class ScopeTypeFunctionDto extends AbstractIdentifiableSystemScalarString
 	private static final long serialVersionUID = 1L;
 	
 	private ScopeTypeDto scopeType;
+	private String scopeTypeAsString;
 	private FunctionDto function;
+	private String functionAsString;
+	private Boolean scopeFunctionDerivable;	
+	private String scopeFunctionDerivableAsString;
 	
 	@Override
 	public ScopeTypeFunctionDto setIdentifier(String identifier) {
