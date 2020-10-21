@@ -20,6 +20,7 @@ public class ExecutionImputationDto extends AbstractIdentifiableSystemScalarStri
 	private String actionCodeName;
 	private String activityCodeName;
 	private String economicNatureCodeName;
+	private String administrativeUnitCodeName;
 	
 	private ExecutionImputationScopeFunctionDto creditManager;	
 	private ExecutionImputationScopeFunctionDto authorizingOfficer;	

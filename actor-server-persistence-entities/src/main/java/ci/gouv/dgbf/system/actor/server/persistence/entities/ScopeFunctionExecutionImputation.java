@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +32,9 @@ public class ScopeFunctionExecutionImputation extends AbstractIdentifiableSystem
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE_FUNCTION) @NotNull private ScopeFunction scopeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_EXECUTION_IMPUTATION) @NotNull private ExecutionImputation executionImputation;
+	
+	@Transient private String scopeFunctionIdentifier;
+	@Transient private String executionImputationIdentifier;
 	
 	@Override
 	public ScopeFunctionExecutionImputation setIdentifier(String identifier) {
@@ -70,7 +74,9 @@ public class ScopeFunctionExecutionImputation extends AbstractIdentifiableSystem
 	
 	public static final String FIELD_SCOPE_FUNCTION = "scopeFunction";
 	public static final String FIELD_EXECUTION_IMPUTATION = "executionImputation";
-	
+	public static final String FIELD_SCOPE_FUNCTION_IDENTIFIER = "scopeFunctionIdentifier";
+	public static final String FIELD_EXECUTION_IMPUTATION_IDENTIFIER = "executionImputationIdentifier";
+		
 	public static final String TABLE_NAME = "POSTE_IMPUTATION";
 	
 	public static final String COLUMN_SCOPE_FUNCTION = "POSTE";

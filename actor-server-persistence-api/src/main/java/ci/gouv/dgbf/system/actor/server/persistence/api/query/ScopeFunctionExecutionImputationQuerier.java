@@ -24,6 +24,9 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 	Collection<ScopeFunctionExecutionImputation> readByExecutionImputationIdentifiers(Collection<String> executionImputationIdentifiers);
 	Collection<ScopeFunctionExecutionImputation> readByExecutionImputations(Collection<ExecutionImputation> executionImputations);
 	
+	String QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "readAllWithIdentifiersOnly");
+	Collection<ScopeFunctionExecutionImputation> readAllWithIdentifiersOnly();
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeFunctionExecutionImputationQuerier,Serializable {		
@@ -41,6 +44,11 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 				return null;
 			return readByExecutionImputationIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(executionImputations));
 		}
+		
+		@Override
+		public Collection<ScopeFunctionExecutionImputation> readAllWithIdentifiersOnly() {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY);
+		}
 	}
 	
 	/**/
@@ -55,6 +63,10 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 		QueryHelper.addQueries(
 			Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_EXECUTION_IMPUTATION_IDENTIFIERS
 			, "SELECT sfei FROM ScopeFunctionExecutionImputation sfei WHERE sfei.executionImputation.identifier IN :"+PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIERS)
+			,Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY
+					, "SELECT t.identifier,t.scopeFunction.identifier,t.executionImputation.identifier FROM ScopeFunctionExecutionImputation t")
+			.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunctionExecutionImputation.FIELD_IDENTIFIER,ScopeFunctionExecutionImputation.FIELD_SCOPE_FUNCTION_IDENTIFIER
+					,ScopeFunctionExecutionImputation.FIELD_EXECUTION_IMPUTATION_IDENTIFIER)
 		);
 	}
 }

@@ -20,6 +20,9 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	void codify(Collection<ScopeFunction> scopeFunctions);
 	void codifyAll();
 	
+	String computeCode(String scopeCode,String functionCode);
+	String computeCode(Scope scope,Function function);
+	
 	String SAVE = "ScopeFunction.save";
 	
 	String DERIVE_FROM_SCOPES_FROM_FUNCTIONS = "ScopeFunction.deriveFromScopesFromFunctions";

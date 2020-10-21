@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
@@ -112,7 +113,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		scopeFunctions.forEach(scopeFunction -> {
 			Scope scope = scopeFunction.getScope();
 			Function function = scopeFunction.getFunction();
-			scopeFunction.setCode(generateCode(scope,function)).setName(generateName(scope,function));
+			scopeFunction.setCode(computeCode(scope,function)).setName(generateName(scope,function));
 		});
 		//Long duration = System.currentTimeMillis() - t0;
 		//LogHelper.logInfo(String.format("%s poste(s) codifié(s) en %s", CollectionHelper.getSize(scopeFunctions),duration), getClass());
@@ -136,10 +137,18 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		LogHelper.logInfo(String.format("Codification de tous les postes terminé en %s", duration), getClass());
 	}
 	
-	private String generateCode(Scope scope,Function function) {
+	@Override
+	public String computeCode(String scopeCode, String functionCode) {
+		if(StringHelper.isBlank(scopeCode) || StringHelper.isBlank(functionCode))
+			return null;
+		return functionCode+scopeCode;
+	}
+	
+	@Override
+	public String computeCode(Scope scope, Function function) {
 		if(scope == null || function == null)
 			return null;
-		return function.getCode()+scope.getCode();
+		return computeCode(function.getCode(),scope.getCode());
 	}
 	
 	private String generateName(Scope scope,Function function) {

@@ -35,8 +35,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecut
 
 public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<ExecutionImputation> {
 
+	String PARAMETER_NAME_SECTION_CODE_NAME = "sectionCodeName";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
+	String PARAMETER_NAME_ACTION_CODE_NAME = "actionCodeName";
 	String PARAMETER_NAME_ACTIVITY_CODE_NAME = "activityCodeName";
 	String PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
 	
 	String QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readBySystemIdentifierForEdit");
 	ExecutionImputation readBySystemIdentifierForEdit(String identifier);
@@ -151,8 +155,12 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			Filter filter = new Filter();
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);			
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -206,6 +214,12 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.READ_BY_SYSTEM_IDENTIFIERS)
 			, "SELECT ei FROM ExecutionImputation ei WHERE ei.identifier IN :"+PARAMETER_NAME_IDENTIFIERS)
 			
+			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.READ)
+					, "SELECT t FROM ExecutionImputation t")
+			
+			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.COUNT)
+					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t")
+			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT
 					, jpql(select("t"),From.ofTuple(ExecutionImputation.class),where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER)))
 			
@@ -213,14 +227,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					, jpql(
 							select("DISTINCT(t."+ExecutionImputation.FIELD_IDENTIFIER+")",fields("t"
 									,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
-									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
+									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME))
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",ExecutionImputation.FIELD_ACTIVITY_CODE_NAME)+","+asc("t",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
 						)
 					)
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER
 						,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
-						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 						)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 					, jpql(
@@ -235,16 +249,20 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		return jpql(
 				from(
 					"ExecutionImputation t"
-					,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_CREDIT_MANAGER_HOLDER)
-					,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_AUTHORIZING_OFFICER_HOLDER)
-					,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_FINANCIAL_CONTROLLER_HOLDER)
-					,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_ACCOUNTING_HOLDER)
+					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_CREDIT_MANAGER_HOLDER)
+					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_AUTHORIZING_OFFICER_HOLDER)
+					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_FINANCIAL_CONTROLLER_HOLDER)
+					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_ACCOUNTING_HOLDER)
 				)
 				,where(and(
 					like("t", ExecutionImputation.FIELD_CODE, PARAMETER_NAME_CODE)
 					,like("t", ExecutionImputation.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_SECTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_ACTION_CODE_NAME, PARAMETER_NAME_ACTION_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ACTIVITY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME, PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
 			);
 	}

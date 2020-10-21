@@ -83,11 +83,23 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void executionImputation_readWhereFilterAll(){
-		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
-		EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL))
-				.setNumberOfTuples(3)).forEach(x -> {
-					System.out.println(x.getIdentifier()+" - "+ x.getCreditManager()+" : "+x.getAuthorizingOfficer()+" : "+x.getFinancialController()+" : "+x.getAccounting());
+		org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		Long t = System.currentTimeMillis();
+		System.out.println("STARTS");
+		Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL))
+				.setNumberOfTuples(20));
+		executionImputations.forEach(x -> {
+					System.out.println(x.getIdentifier()+" - "+ x.getCreditManager().getHolder().getCode()+" : "+x.getAuthorizingOfficer().getHolder().getCode()
+							+" : "+x.getFinancialController().getHolder().getCode()+" : "+x.getAccounting().getHolder().getCode());
 				});
+		System.out.println((System.currentTimeMillis() - t)/1000);
+	}
+	
+	@Test
+	public void executionImputation_readAll(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		ExecutionImputationQuerier.getInstance().read();
+		//__inject__(ExecutionImputationPersistence.class).read();
 	}
 	
 	@Test
