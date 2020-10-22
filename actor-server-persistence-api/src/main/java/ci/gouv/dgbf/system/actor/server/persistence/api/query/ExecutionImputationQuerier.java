@@ -61,6 +61,17 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_ALL = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL);
 	Long countWhereFilterWithAll(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readAllWithReferencesOnly");
+	Collection<ExecutionImputation> readAllWithReferencesOnly(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class
+			, "readWhereScopeFunctionDoesNotExistWithReferencesOnly");
+	Collection<ExecutionImputation> readWhereScopeFunctionDoesNotExistWithReferencesOnly(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance()
+			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY);
+	Long countWhereScopeFunctionDoesNotExistWithReferencesOnly();
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ExecutionImputation> implements ExecutionImputationQuerier,Serializable {		
@@ -195,6 +206,25 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		}
 		
 		@Override
+		public Collection<ExecutionImputation> readAllWithReferencesOnly(QueryExecutorArguments arguments) {
+			if(arguments != null && arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY);
+			return QueryExecutor.getInstance().executeReadMany(ExecutionImputation.class, arguments);
+		}
+		
+		@Override
+		public Collection<ExecutionImputation> readWhereScopeFunctionDoesNotExistWithReferencesOnly(QueryExecutorArguments arguments) {
+			if(arguments != null && arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY);
+			return QueryExecutor.getInstance().executeReadMany(ExecutionImputation.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereScopeFunctionDoesNotExistWithReferencesOnly() {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY);
+		}
+		
+		@Override
 		protected Class<ExecutionImputation> getKlass() {
 			return ExecutionImputation.class;
 		}
@@ -217,6 +247,27 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.READ)
 					, "SELECT t FROM ExecutionImputation t")
 			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
+					, "SELECT t.identifier,t.section.code,t.budgetSpecializationUnit.code,t.administrativeUnit.code FROM ExecutionImputation t")
+				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
+						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
+			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
+					, "SELECT t.identifier,t.section.code,t.budgetSpecializationUnit.code,t.administrativeUnit.code "
+							+ "FROM ExecutionImputation t "
+							+ "WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t)"
+							)
+				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
+					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)	
+			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
+					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t "
+							+ "WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t) "
+							+ "ORDER BY t.identifier ASC"
+							)
+				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
+					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)		
+				
 			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.COUNT)
 					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t")
 			

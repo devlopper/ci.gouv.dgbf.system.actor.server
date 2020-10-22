@@ -39,6 +39,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	
+	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");
+	Collection<ScopeFunction> readAllWithReferencesOnly();
+	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
@@ -207,6 +210,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		}
 		
 		@Override
+		public Collection<ScopeFunction> readAllWithReferencesOnly() {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY);
+		}
+		
+		@Override
 		protected Class<ScopeFunction> getKlass() {
 			return ScopeFunction.class;
 		}
@@ -257,6 +265,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT sf FROM ScopeFunction sf ORDER BY sf.code ASC")
 				,Query.buildCount(QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.COUNT)
 						, "SELECT COUNT(sf.identifier) FROM ScopeFunction sf")
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
+						, "SELECT t.identifier,t.code FROM ScopeFunction t").setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE)
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)

@@ -57,7 +57,8 @@
 			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
 			
 			<!-- tuning -->
-			<property name="hibernate.jdbc.batch_size" value="25"/> 
+			<property name="hibernate.jdbc.batch_size" value="50"/> 
+			<property name="hibernate.cache.use_second_level_cache" value="false" />
 			<property name="hibernate.order_inserts" value="true"/>
 			<property name="hibernate.order_updates" value="true"/>
 			

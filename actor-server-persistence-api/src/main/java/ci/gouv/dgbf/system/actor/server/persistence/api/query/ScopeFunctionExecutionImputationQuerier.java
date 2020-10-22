@@ -6,26 +6,36 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 
 public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 
 	String PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIERS = "executionImputationIdentifiers";
+	String PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER = "scopeFunctionIdentifier";
+	String PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIER = "executionImputationIdentifier";
 	
 	String QUERY_IDENTIFIER_READ_BY_EXECUTION_IMPUTATION_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "readByExecutionImputationIdentifiers");
 	Collection<ScopeFunctionExecutionImputation> readByExecutionImputationIdentifiers(Collection<String> executionImputationIdentifiers);
 	Collection<ScopeFunctionExecutionImputation> readByExecutionImputations(Collection<ExecutionImputation> executionImputations);
 	
-	String QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "readAllWithIdentifiersOnly");
-	Collection<ScopeFunctionExecutionImputation> readAllWithIdentifiersOnly();
+	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "readAllWithReferencesOnly");
+	Collection<ScopeFunctionExecutionImputation> readAllWithReferencesOnly();
+	
+	String QUERY_IDENTIFIER_EXIST_BY_SCOPE_FUNCTION_IDENTIFIER_BY_EXECUTION_IMPUTATION_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class
+			, "existByScopeFunctionIdentifierByExecutionImputationIdentifier");
+	Boolean exist(String scopeFunctionIdentifier,String executionImputationIdentifier);
+	Boolean exist(ScopeFunction scopeFunction,ExecutionImputation executionImputation);
 	
 	/**/
 	
@@ -46,8 +56,23 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 		}
 		
 		@Override
-		public Collection<ScopeFunctionExecutionImputation> readAllWithIdentifiersOnly() {
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY);
+		public Collection<ScopeFunctionExecutionImputation> readAllWithReferencesOnly() {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY);
+		}
+		
+		@Override
+		public Boolean exist(String scopeFunctionIdentifier, String executionImputationIdentifier) {
+			if(StringHelper.isBlank(scopeFunctionIdentifier) || StringHelper.isBlank(executionImputationIdentifier))
+				return null;
+			return NumberHelper.isGreaterThanZero(QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_EXIST_BY_SCOPE_FUNCTION_IDENTIFIER_BY_EXECUTION_IMPUTATION_IDENTIFIER
+					,PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER,scopeFunctionIdentifier,PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIER,executionImputationIdentifier));
+		}
+		
+		@Override
+		public Boolean exist(ScopeFunction scopeFunction, ExecutionImputation executionImputation) {
+			if(scopeFunction == null || executionImputation == null)
+				return null;
+			return exist(scopeFunction.getIdentifier(), executionImputation.getIdentifier());
 		}
 	}
 	
@@ -63,10 +88,13 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 		QueryHelper.addQueries(
 			Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_EXECUTION_IMPUTATION_IDENTIFIERS
 			, "SELECT sfei FROM ScopeFunctionExecutionImputation sfei WHERE sfei.executionImputation.identifier IN :"+PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIERS)
-			,Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_IDENTIFIERS_ONLY
+			,Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
 					, "SELECT t.identifier,t.scopeFunction.identifier,t.executionImputation.identifier FROM ScopeFunctionExecutionImputation t")
 			.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunctionExecutionImputation.FIELD_IDENTIFIER,ScopeFunctionExecutionImputation.FIELD_SCOPE_FUNCTION_IDENTIFIER
 					,ScopeFunctionExecutionImputation.FIELD_EXECUTION_IMPUTATION_IDENTIFIER)
+			,Query.buildCount(QUERY_IDENTIFIER_EXIST_BY_SCOPE_FUNCTION_IDENTIFIER_BY_EXECUTION_IMPUTATION_IDENTIFIER
+					, "SELECT COUNT(t.identifier) FROM ScopeFunctionExecutionImputation t WHERE t.scopeFunction.identifier = :"+PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER
+					+" AND t.executionImputation.identifier = :"+PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIER)
 		);
 	}
 }
