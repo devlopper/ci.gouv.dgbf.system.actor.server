@@ -74,51 +74,53 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	
 	/**/
 	
+	static void setScopeFunctionExecutionImputations(Collection<ExecutionImputation> executionImputations) {
+		if(CollectionHelper.isEmpty(executionImputations))
+			return;
+		Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations = ScopeFunctionExecutionImputationQuerier.getInstance()
+				.readByExecutionImputations(executionImputations);
+		if(CollectionHelper.isEmpty(scopeFunctionExecutionImputations))
+			return;
+		for(ExecutionImputation executionImputation : executionImputations) {
+			Collection<ScopeFunctionExecutionImputation> collection = scopeFunctionExecutionImputations.stream()
+					.filter(x -> x.getExecutionImputation().equals(executionImputation)).collect(Collectors.toList());
+			if(CollectionHelper.isEmpty(collection))
+				continue;
+			for(ScopeFunctionExecutionImputation index : collection) {
+				//if(!index.getExecutionImputation().equals(executionImputation))
+				//	continue;
+				if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
+					executionImputation.getCreditManager(Boolean.TRUE).setHolder(index.getScopeFunction());
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_ASSISTANT))
+					executionImputation.getCreditManager(Boolean.TRUE).setAssistant(index.getScopeFunction());
+				
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER))
+					executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolder(index.getScopeFunction());
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_ASSISTANT))
+					executionImputation.getAuthorizingOfficer(Boolean.TRUE).setAssistant(index.getScopeFunction());
+				
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER))
+					executionImputation.getFinancialController(Boolean.TRUE).setHolder(index.getScopeFunction());
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT))
+					executionImputation.getFinancialController(Boolean.TRUE).setAssistant(index.getScopeFunction());
+				
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_HOLDER))
+					executionImputation.getAccounting(Boolean.TRUE).setHolder(index.getScopeFunction());
+				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_ASSISTANT))
+					executionImputation.getAccounting(Boolean.TRUE).setAssistant(index.getScopeFunction());
+			}
+		}
+	}
+	
+	/**/
+	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ExecutionImputation> implements ExecutionImputationQuerier,Serializable {		
 		@Override
 		protected void ____setAll____(Collection<?> collection) {
 			if(CollectionHelper.isEmpty(collection))
 				return;
 			Collection<ExecutionImputation> executionImputations = CollectionHelper.cast(ExecutionImputation.class, collection);
-			__setScopeFunctionExecutionImputations__(executionImputations);			
-		}
-		
-		protected void __setScopeFunctionExecutionImputations__(Collection<ExecutionImputation> executionImputations) {
-			if(CollectionHelper.isEmpty(executionImputations))
-				return;
-			Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations = ScopeFunctionExecutionImputationQuerier.getInstance()
-					.readByExecutionImputations(executionImputations);
-			if(CollectionHelper.isEmpty(scopeFunctionExecutionImputations))
-				return;
-			for(ExecutionImputation executionImputation : executionImputations) {
-				Collection<ScopeFunctionExecutionImputation> collection = scopeFunctionExecutionImputations.stream()
-						.filter(x -> x.getExecutionImputation().equals(executionImputation)).collect(Collectors.toList());
-				if(CollectionHelper.isEmpty(collection))
-					continue;
-				for(ScopeFunctionExecutionImputation index : collection) {
-					//if(!index.getExecutionImputation().equals(executionImputation))
-					//	continue;
-					if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
-						executionImputation.getCreditManager(Boolean.TRUE).setHolder(index.getScopeFunction());
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_ASSISTANT))
-						executionImputation.getCreditManager(Boolean.TRUE).setAssistant(index.getScopeFunction());
-					
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER))
-						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolder(index.getScopeFunction());
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_ASSISTANT))
-						executionImputation.getAuthorizingOfficer(Boolean.TRUE).setAssistant(index.getScopeFunction());
-					
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER))
-						executionImputation.getFinancialController(Boolean.TRUE).setHolder(index.getScopeFunction());
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT))
-						executionImputation.getFinancialController(Boolean.TRUE).setAssistant(index.getScopeFunction());
-					
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_HOLDER))
-						executionImputation.getAccounting(Boolean.TRUE).setHolder(index.getScopeFunction());
-					else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_ASSISTANT))
-						executionImputation.getAccounting(Boolean.TRUE).setAssistant(index.getScopeFunction());
-				}
-			}
+			setScopeFunctionExecutionImputations(executionImputations);			
 		}
 		
 		@Override
@@ -197,7 +199,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			ExecutionImputation executionImputation = QueryExecutor.getInstance().executeReadOne(ExecutionImputation.class, arguments);
 			if(executionImputation == null)
 				return null;
-			__setScopeFunctionExecutionImputations__(List.of(executionImputation));
+			setScopeFunctionExecutionImputations(List.of(executionImputation));
 			
 			executionImputation.setFunctions(FunctionQuerier.getInstance().readByBusinessIdentifiers(Function.class,
 				List.of(Function.CODE_CREDIT_MANAGER_HOLDER,Function.CODE_AUTHORIZING_OFFICER_HOLDER,Function.CODE_FINANCIAL_CONTROLLER_HOLDER

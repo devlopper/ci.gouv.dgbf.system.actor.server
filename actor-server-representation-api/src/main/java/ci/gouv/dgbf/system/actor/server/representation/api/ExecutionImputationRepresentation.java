@@ -21,11 +21,19 @@ public interface ExecutionImputationRepresentation extends RepresentationEntity<
 	@Path(PATH_SAVE_SCOPE_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Enregistrer les fonctions",tags = {TAG})
+	@ApiOperation(value = "Enregistrer les postes",tags = {TAG})
 	Response saveScopeFunctions(Collection<ExecutionImputationDto> executionImputationDtos);
+	
+	@POST
+	@Path(PATH_DERIVE_SCOPE_FUNCTIONS_FROM_MODEL)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Dériver les postes à partir d'un modèle",tags = {TAG})
+	Response deriveScopeFunctionsFromModel(ExecutionImputationDto executionImputationDto);
 	
 	String PATH = "executionimputation";
 	String PATH_SAVE_SCOPE_FUNCTIONS = "saveScopeFunctions";
+	String PATH_DERIVE_SCOPE_FUNCTIONS_FROM_MODEL = "deriveScopeFunctionsFromModel";
 	
 	String TAG = ImputationRepresentation.TAG;
 	

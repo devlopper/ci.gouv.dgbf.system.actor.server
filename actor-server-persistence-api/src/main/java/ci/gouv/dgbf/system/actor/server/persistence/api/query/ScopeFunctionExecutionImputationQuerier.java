@@ -37,6 +37,9 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 	Boolean exist(String scopeFunctionIdentifier,String executionImputationIdentifier);
 	Boolean exist(ScopeFunction scopeFunction,ExecutionImputation executionImputation);
 	
+	String QUERY_IDENTIFIER_COUNT_ALL = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "countAll");
+	Long count();
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeFunctionExecutionImputationQuerier,Serializable {		
@@ -74,6 +77,11 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 				return null;
 			return exist(scopeFunction.getIdentifier(), executionImputation.getIdentifier());
 		}
+		
+		@Override
+		public Long count() {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_ALL);
+		}
 	}
 	
 	/**/
@@ -95,6 +103,8 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 			,Query.buildCount(QUERY_IDENTIFIER_EXIST_BY_SCOPE_FUNCTION_IDENTIFIER_BY_EXECUTION_IMPUTATION_IDENTIFIER
 					, "SELECT COUNT(t.identifier) FROM ScopeFunctionExecutionImputation t WHERE t.scopeFunction.identifier = :"+PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER
 					+" AND t.executionImputation.identifier = :"+PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIER)
+			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_ALL, "SELECT COUNT(t.identifier) FROM ScopeFunctionExecutionImputation t")
 		);
 	}
 }

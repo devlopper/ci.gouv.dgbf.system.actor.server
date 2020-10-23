@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.business.TransactionResult;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -22,6 +23,9 @@ public interface ExecutionImputationBusiness extends BusinessEntity<ExecutionImp
 	
 	String DERIVE_FROM_ALL_SCOPE_FUNCTIONS = "ExecutionImputation.deriveFromAllScopeFunctions";
 	TransactionResult deriveFromAllScopeFunctions();
+	
+	String DERIVE_SCOPE_FUNCTIONS_FROM_MODEL = "ExecutionImputation.deriveScopeFunctionsFromModel";
+	TransactionResult deriveScopeFunctionsFromModel(ExecutionImputation executionImputation,Filter filter);
 	
 	String DELETE_ALL = "ExecutionImputation.deleteAll";
 }

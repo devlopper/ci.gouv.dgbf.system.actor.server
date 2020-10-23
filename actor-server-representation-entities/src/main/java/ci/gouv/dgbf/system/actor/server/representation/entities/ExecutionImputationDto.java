@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import lombok.Getter;
@@ -28,6 +29,8 @@ public class ExecutionImputationDto extends AbstractIdentifiableSystemScalarStri
 	private ExecutionImputationScopeFunctionDto accounting;
 	
 	private ArrayList<Function> functions;
+	
+	private Filter.Dto filter;
 	
 	@Override
 	public ExecutionImputationDto setIdentifier(String identifier) {

@@ -11,7 +11,6 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.runnable.RunnableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessServiceProvider;
@@ -51,31 +50,40 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		Long t0 = System.currentTimeMillis();
 		Long count0 = __persistence__.count();
 		LogHelper.logInfo(String.format("Création de toutes les assignations en cours"), getClass());
-		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly();
-		LogHelper.logInfo(String.format("%s poste(s) trouvé(s)",scopeFunctions.size()), getClass());
-		if(CollectionHelper.isEmpty(scopeFunctions))
+		//load scopeFunctions
+		Long numberOfScopeFunctions = ScopeFunctionQuerier.getInstance().count();
+		if(NumberHelper.isEqualToZero(numberOfScopeFunctions))
+			return;		
+		LogHelper.logInfo(String.format("Chargement de %s poste(s) en cours...",numberOfScopeFunctions), getClass());
+		List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly();
+		LogHelper.logInfo(String.format("%s poste(s) chargé",scopeFunctions.size()), getClass());
+		//load executionImputations
+		Long numberOfExecutionImputations = ExecutionImputationQuerier.getInstance().countWhereScopeFunctionDoesNotExistWithReferencesOnly();
+		if(NumberHelper.isEqualToZero(numberOfExecutionImputations))
 			return;
-		Long count = ExecutionImputationQuerier.getInstance().countWhereScopeFunctionDoesNotExistWithReferencesOnly();
-		LogHelper.logInfo(String.format("%s imputation(s) à traiter",count), getClass());
-		if(NumberHelper.isEqualToZero(count))
-			return;
+		LogHelper.logInfo(String.format("Chargement de %s imputation(s) en cours...",numberOfExecutionImputations), getClass());
+		List<ExecutionImputation> executionImputations = (List<ExecutionImputation>) ExecutionImputationQuerier.getInstance().readWhereScopeFunctionDoesNotExistWithReferencesOnly(new QueryExecutorArguments());
+		LogHelper.logInfo(String.format("%s imputation(s) chargée(s)",numberOfExecutionImputations), getClass());
+		//processing
 		Integer batchSize = 10000;
-		Integer numberOfBatches = (int) (count / batchSize) + (count % batchSize == 0 ? 0 : 1);
+		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());		
 		Collection<ScopeFunctionExecutionImputation> existingScopeFunctionExecutionImputations = ScopeFunctionExecutionImputationQuerier.getInstance().readAllWithReferencesOnly();
 		LogHelper.logInfo(String.format("%s assignation(s) existante(s) chargée(s) en mémoire",CollectionHelper.getSize(existingScopeFunctionExecutionImputations)), getClass());
 		ScopeFunctionBusiness scopeFunctionBusiness = __inject__(ScopeFunctionBusiness.class);
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
 			Integer from = index * batchSize;
-			LogHelper.logInfo(String.format("Chargement du lot %s à partir de l'index %s en mémoire.",index+1,from), getClass());
-			Collection<ExecutionImputation> executionImputations = ExecutionImputationQuerier.getInstance().readWhereScopeFunctionDoesNotExistWithReferencesOnly(
-					new QueryExecutorArguments().setFirstTupleIndex(from).setNumberOfTuples(batchSize));
-			LogHelper.logInfo(String.format("%s imputation(s) trouvée(s)",CollectionHelper.getSize(executionImputations)), getClass());
-			if(CollectionHelper.isEmpty(executionImputations))
+			Integer to = from + batchSize;
+			if(to > executionImputations.size())
+				to = executionImputations.size();
+			LogHelper.logInfo(String.format("Lecture du lot %s à partir de l'index %s(%s).",index+1,from,executionImputations.size()), getClass());
+			Collection<ExecutionImputation> executionImputationsBatch = executionImputations.subList(from, to);
+			LogHelper.logInfo(String.format("%s imputation(s) lue(s)",CollectionHelper.getSize(executionImputationsBatch)), getClass());
+			if(CollectionHelper.isEmpty(executionImputationsBatch))
 				continue;
-			deriveFromExecutionImputations(scopeFunctionBusiness,executionImputations, scopeFunctions,existingScopeFunctionExecutionImputations);
-			executionImputations.clear();
-			executionImputations = null;
+			deriveFromExecutionImputations(scopeFunctionBusiness,executionImputationsBatch, scopeFunctions,existingScopeFunctionExecutionImputations);
+			//executionImputationsBatch.clear();
+			//executionImputationsBatch = null;
 		}
 		/*
 		Collection<Runnable> runnables = new ArrayList<>();
@@ -100,6 +108,18 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		Long duration = System.currentTimeMillis() - t0;
 		Long numberOfElements = __persistence__.count() - count0;
 		LogHelper.logInfo(String.format("%s assignation(s) crée(s) en %s", numberOfElements,duration), getClass());
+		if(scopeFunctions != null) {
+			scopeFunctions.clear();
+			scopeFunctions = null;
+		}
+		if(executionImputations != null) {
+			executionImputations.clear();
+			executionImputations = null;
+		}
+		if(existingScopeFunctionExecutionImputations != null) {
+			existingScopeFunctionExecutionImputations.clear();
+			existingScopeFunctionExecutionImputations = null;
+		}
 		System.gc();
 	}
 	
@@ -196,8 +216,12 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 			return Boolean.FALSE;
 		for(ScopeFunctionExecutionImputation scopeFunctionExecutionImputation : scopeFunctionExecutionImputations)
 			if(scopeFunctionExecutionImputation.getScopeFunctionIdentifier().equals(scopeFunction.getIdentifier()) 
-					&& scopeFunctionExecutionImputation.getExecutionImputationIdentifier().equals(executionImputation.getIdentifier()))
+					&& scopeFunctionExecutionImputation.getExecutionImputationIdentifier().equals(executionImputation.getIdentifier())) {
+				//System.out.println("ScopeFunctionExecutionImputationBusinessImpl.isExist() : "+scopeFunctionExecutionImputation.getIdentifier()
+				//		+" - "+scopeFunctionExecutionImputation.getScopeFunctionIdentifier()+" - "
+				//		+scopeFunctionExecutionImputation.getExecutionImputationIdentifier());
 				return Boolean.TRUE;
-		return Boolean.TRUE;
+			}
+		return Boolean.FALSE;
 	}
 }

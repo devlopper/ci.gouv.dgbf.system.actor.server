@@ -38,6 +38,10 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return this;
 	}
 	
+	public ScopeFunction getCreditManagerHolder() {
+		return creditManager == null ? null : creditManager.getHolder();
+	}
+	
 	public ExecutionImputation setCreditManagerAssistantFromIdentifier(String identifier) {
 		getCreditManager(Boolean.TRUE).setAssistantFromIdentifier(identifier);
 		return this;
@@ -47,6 +51,10 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		if(authorizingOfficer == null && Boolean.TRUE.equals(instantiateIfNull))
 			authorizingOfficer = new ExecutionImputationScopeFunction();
 		return authorizingOfficer;
+	}
+	
+	public ScopeFunction getAuthorizingOfficerHolder() {
+		return authorizingOfficer == null ? null : authorizingOfficer.getHolder();
 	}
 	
 	public ExecutionImputation setAuthorizingOfficerHolderFromIdentifier(String identifier) {
@@ -65,6 +73,10 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return financialController;
 	}
 	
+	public ScopeFunction getFinancialControllerHolder() {
+		return financialController == null ? null : financialController.getHolder();
+	}
+	
 	public ExecutionImputation setFinancialControllerHolderFromIdentifier(String identifier) {
 		getFinancialController(Boolean.TRUE).setHolderFromIdentifier(identifier);
 		return this;
@@ -79,6 +91,10 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		if(accounting == null && Boolean.TRUE.equals(instantiateIfNull))
 			accounting = new ExecutionImputationScopeFunction();
 		return accounting;
+	}
+	
+	public ScopeFunction getAccountingHolder() {
+		return accounting == null ? null : accounting.getHolder();
 	}
 	
 	public ExecutionImputation setAccountingHolderFromIdentifier(String identifier) {

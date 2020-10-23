@@ -10,4 +10,7 @@ public class ExecutionImputationScopeFunctionDto implements Serializable {
 
 	private ScopeFunctionDto holder;
 	private ScopeFunctionDto assistant;
+	
+	private Boolean holderOverridable;
+	private Boolean assistantOverridable;
 }
