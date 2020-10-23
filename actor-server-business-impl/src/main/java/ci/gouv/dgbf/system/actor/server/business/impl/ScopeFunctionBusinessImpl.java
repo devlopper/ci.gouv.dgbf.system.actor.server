@@ -148,7 +148,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	public String computeCode(Scope scope, Function function) {
 		if(scope == null || function == null)
 			return null;
-		return computeCode(function.getCode(),scope.getCode());
+		return computeCode(scope.getCode(),function.getCode());
 	}
 	
 	private String generateName(Scope scope,Function function) {
