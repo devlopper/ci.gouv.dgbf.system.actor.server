@@ -111,9 +111,11 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	public TransactionResult deriveScopeFunctionsFromModel(ExecutionImputation executionImputationModel,Filter filter) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("executionImputationModel", executionImputationModel);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
+		/*
 		if(executionImputationModel.getCreditManagerHolder() == null && executionImputationModel.getAuthorizingOfficerHolder() == null 
 				&& executionImputationModel.getFinancialControllerHolder() == null && executionImputationModel.getAccountingHolder() == null)
 			throw new RuntimeException("Valeur modèle obligatoire");
+		*/
 		TransactionResult result = new TransactionResult();
 		LogHelper.logInfo(String.format("Modèle : CM=%s|AO=%s|FC=%s|A=%s , filtre : %s", executionImputationModel.getCreditManager()
 				,executionImputationModel.getAuthorizingOfficer(),executionImputationModel.getFinancialController(),executionImputationModel.getAccounting(),filter), getClass());

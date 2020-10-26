@@ -1,7 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -47,8 +49,18 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 		public Collection<ScopeFunctionExecutionImputation> readByExecutionImputationIdentifiers(Collection<String> executionImputationIdentifiers) {
 			if(CollectionHelper.isEmpty(executionImputationIdentifiers))
 				return null;
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_EXECUTION_IMPUTATION_IDENTIFIERS
-					,PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIERS,executionImputationIdentifiers);
+			Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations = null;
+			List<List<String>> batches = CollectionHelper.getBatches((List<String>)executionImputationIdentifiers, 999);
+			for(List<String> batch : batches) {
+				Collection<ScopeFunctionExecutionImputation> result = QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_EXECUTION_IMPUTATION_IDENTIFIERS
+						,PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIERS,batch);
+				if(CollectionHelper.isEmpty(result))
+					continue;
+				if(scopeFunctionExecutionImputations == null)
+					scopeFunctionExecutionImputations = new ArrayList<>();
+				scopeFunctionExecutionImputations.addAll(result);
+			}
+			return scopeFunctionExecutionImputations;
 		}
 		
 		@Override

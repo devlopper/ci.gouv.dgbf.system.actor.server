@@ -41,6 +41,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String PARAMETER_NAME_ACTIVITY_CODE_NAME = "activityCodeName";
 	String PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
+	String PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
+	String PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
 	String QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readBySystemIdentifierForEdit");
 	ExecutionImputation readBySystemIdentifierForEdit(String identifier);
@@ -174,6 +176,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -280,7 +284,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					, jpql(
 							select("DISTINCT(t."+ExecutionImputation.FIELD_IDENTIFIER+")",fields("t"
 									,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
-									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME))
+									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+									,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME))
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",ExecutionImputation.FIELD_ACTIVITY_CODE_NAME)+","+asc("t",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
 						)
@@ -288,6 +293,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER
 						,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
 						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+						,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
 						)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 					, jpql(
@@ -316,6 +322,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					,like("t", ExecutionImputation.FIELD_ACTIVITY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME, PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
 			);
 	}

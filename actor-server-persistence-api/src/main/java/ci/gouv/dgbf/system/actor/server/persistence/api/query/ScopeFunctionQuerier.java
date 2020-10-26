@@ -17,6 +17,7 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Order;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
@@ -31,6 +32,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFunction> {
@@ -38,6 +40,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
+	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
 	
 	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");
 	Collection<ScopeFunction> readAllWithReferencesOnly();
@@ -206,6 +209,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			Filter filter = new Filter();
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -234,6 +238,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		return where(and(
 				like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
 				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,like("t", FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)
 			));
 	}
 	

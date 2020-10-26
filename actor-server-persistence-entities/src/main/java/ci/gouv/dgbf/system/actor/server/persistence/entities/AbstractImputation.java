@@ -38,6 +38,9 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
 	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME) private String administrativeUnitCodeName;
 	
+	@Column(name = COLUMN_ACTIVITY_CATEGORY_CODE_NAME) private String activityCategoryCodeName;
+	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE_NAME) private String expenditureNatureCodeName;
+	
 	@Override
 	public AbstractImputation setIdentifier(String identifier) {
 		return (AbstractImputation) super.setIdentifier(identifier);
@@ -88,6 +91,8 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
+	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
+	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
@@ -100,4 +105,7 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_ECONOMIC_NATURE_CODE_NAME = "NATURE_ECONOMIQUE_CODE_LIBELLE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UA";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME = "UA_CODE_LIBELLE";
+	
+	public static final String COLUMN_ACTIVITY_CATEGORY_CODE_NAME = "CA_CODE_LIBELLE";
+	public static final String COLUMN_EXPENDITURE_NATURE_CODE_NAME = "ND_CODE_LIBELLE";
 }
