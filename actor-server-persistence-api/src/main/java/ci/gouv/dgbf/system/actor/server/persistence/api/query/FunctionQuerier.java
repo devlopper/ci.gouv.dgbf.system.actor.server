@@ -99,6 +99,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeTypeWithAll");
 	Collection<Function> readWhereAssociatedToScopeTypeWithAll(QueryExecutorArguments arguments);
 	
+	/*read where associated to scope for UI */
+	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeForUI");
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Function> implements FunctionQuerier,Serializable {
@@ -265,6 +268,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return readWhereAssociatedToScopeTypeWithAll(arguments);
 			if(QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readWithAllByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI);
 			return super.readMany(arguments);
 		}
 		
@@ -306,6 +311,11 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE, jpql(select("t"),from("Function t")
 						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t"))
 						,order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI, jpql(
+						select("t.identifier,t.code,t.name"),from("Function t")
+						,where(exists("SELECT sf FROM ScopeFunction sf WHERE sf.function = t"))
+						,order(asc("t", "code")))).setTupleFieldsNamesIndexesFromFieldsNames(Function.FIELD_IDENTIFIER,Function.FIELD_CODE,Function.FIELD_NAME)
 				
 				,Query.buildSelect(Function.class, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_BY_SYSTEM_IDENTIFIERS)
 						, jpql(select("t"),from("Function t"),where("t.identifier IN :"+PARAMETER_NAME_IDENTIFIERS),order(asc("t", "code"))))

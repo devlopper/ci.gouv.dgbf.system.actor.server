@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -32,18 +33,24 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	@Override @Transactional
 	public TransactionResult saveScopeFunctions(Collection<ExecutionImputation> executionImputations) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("execution imputations", executionImputations);
-		LogHelper.logInfo(String.format("Enregistrement des affectations de %s imputation(s) en cours",executionImputations.size()), getClass());
+		LogHelper.logInfo(String.format("Enregistrement des affectations de %s imputation(s) en cours...",executionImputations.size()), getClass());
 		TransactionResult result = new TransactionResult().setTupleName("affectation");
-		Collection<ScopeFunctionExecutionImputation> savables = new ArrayList<>();
-		Collection<ScopeFunctionExecutionImputation> deletables = new ArrayList<>();
+		List<ScopeFunctionExecutionImputation> savables = new ArrayList<>();
+		List<ScopeFunctionExecutionImputation> deletables = new ArrayList<>();
+		LogHelper.logInfo(String.format("Chargement des affectations existantes des imputations en cours..."), getClass());
 		Collection<ScopeFunctionExecutionImputation> database = ScopeFunctionExecutionImputationQuerier.getInstance().readByExecutionImputations(executionImputations);
+		LogHelper.logInfo(String.format("Collecte des instances a créer et a supprimer en cours..."), getClass());
 		for(ExecutionImputation executionImputation : executionImputations)
 			process(executionImputation,ScopeFunctionExecutionImputation.filterBy(executionImputation, database),savables,deletables);
-		result.setFromSavables(savables).setNumberOfDeletionFromCollection(deletables);		
+		LogHelper.logInfo(String.format("Création et suppression en cours..."), getClass());
+		result.setFromSavables(savables).setNumberOfDeletionFromCollection(deletables);				
 		if(CollectionHelper.isNotEmpty(savables))
-			__inject__(ScopeFunctionExecutionImputationBusiness.class).saveMany(savables);				
-		if(CollectionHelper.isNotEmpty(deletables))
-			__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteMany(deletables);		
+			__inject__(ScopeFunctionExecutionImputationBusiness.class).saveMany(savables);		
+		if(CollectionHelper.isNotEmpty(deletables)) {
+			List<List<ScopeFunctionExecutionImputation>> batches = CollectionHelper.getBatches(deletables, 999);
+			for(List<ScopeFunctionExecutionImputation> batch : batches)
+				__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteMany(batch);
+		}
 		result.log(getClass());
 		return result;
 	}
@@ -143,7 +150,7 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 			LogHelper.logInfo(String.format("Chargement des affectations liées aux %s imputation(s)",executionImputations.size()), getClass());
 			ExecutionImputationQuerier.setScopeFunctionExecutionImputations(executionImputations);
 			LogHelper.logInfo(String.format("Application du modèle"), getClass());
-			executionImputations.forEach(executionImputation -> {
+			executionImputations.parallelStream().forEach(executionImputation -> {
 				if(executionImputationModel.getCreditManager() != null)
 					executionImputation.getCreditManager(Boolean.TRUE).copy(executionImputationModel.getCreditManager());
 				if(executionImputationModel.getAuthorizingOfficer() != null)
@@ -153,7 +160,7 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 				if(executionImputationModel.getAccounting() != null)
 					executionImputation.getAccounting(Boolean.TRUE).copy(executionImputationModel.getAccounting());
 			});
-			saveScopeFunctions(executionImputations);
+			result.add(saveScopeFunctions(executionImputations));
 		}
 		result.log(getClass());
 		return result;

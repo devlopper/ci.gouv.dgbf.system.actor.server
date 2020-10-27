@@ -53,7 +53,7 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		//load scopeFunctions
 		Long numberOfScopeFunctions = ScopeFunctionQuerier.getInstance().count();
 		if(NumberHelper.isEqualToZero(numberOfScopeFunctions))
-			return;		
+			return;
 		LogHelper.logInfo(String.format("Chargement de %s poste(s) en cours...",numberOfScopeFunctions), getClass());
 		List<ScopeFunction> scopeFunctions = (List<ScopeFunction>) ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly();
 		LogHelper.logInfo(String.format("%s poste(s) chargé",scopeFunctions.size()), getClass());

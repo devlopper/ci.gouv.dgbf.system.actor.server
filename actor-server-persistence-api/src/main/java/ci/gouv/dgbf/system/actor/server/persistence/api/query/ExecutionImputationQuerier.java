@@ -44,6 +44,15 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
 	String PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME = "creditManagerHolderCodeName";
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_CODE_NAME = "creditManagerAssistantCodeName";
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME = "authorizingOfficerHolderCodeName";
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_CODE_NAME = "authorizingOfficerAssistantCodeName";
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME = "financialControllerHolderCodeName";
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_CODE_NAME = "financialControllerAssistantCodeName";
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME = "accountingHolderCodeName";
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_CODE_NAME = "accountingAssistantCodeName";
+	
 	String QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readBySystemIdentifierForEdit");
 	ExecutionImputation readBySystemIdentifierForEdit(String identifier);
 	
@@ -134,7 +143,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		
 		@Override
 		public Collection<ExecutionImputation> readMany(QueryExecutorArguments arguments) {
-			if(QueryIdentifierGetter.getInstance().get(getKlass(), QueryName.READ_WHERE_FILTER).equals(arguments.getQuery().getIdentifier()))
+			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilter(arguments);			
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilterWithAll(arguments);
@@ -143,7 +152,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
-			if(QueryIdentifierGetter.getInstance().get(getKlass(), QueryName.COUNT_WHERE_FILTER).equals(arguments.getQuery().getIdentifier()))
+			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return countWhereFilterWithAll(arguments);
@@ -178,6 +187,10 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -259,12 +272,16 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
-					, "SELECT t.identifier,t.section.code,t.budgetSpecializationUnit.code,t.administrativeUnit.code "
-							+ "FROM ExecutionImputation t "
-							+ "WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t)"
-							)
+					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER))
+							,"FROM ExecutionImputation t"
+							,"WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t)"
+							))
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
-					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)	
+					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+					,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+					,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER)	
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
 					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t "
@@ -285,7 +302,12 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 							select("DISTINCT(t."+ExecutionImputation.FIELD_IDENTIFIER+")",fields("t"
 									,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
 									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
-									,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME))
+									,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
+									,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_CODE_NAME
+									,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_CODE_NAME
+									,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_CODE_NAME
+									,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_CODE_NAME
+									))
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",ExecutionImputation.FIELD_ACTIVITY_CODE_NAME)+","+asc("t",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
 						)
@@ -294,6 +316,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 						,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
 						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 						,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME
 						)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 					, jpql(
@@ -324,6 +348,10 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					,like("t", ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME, PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME, PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
 			);
 	}

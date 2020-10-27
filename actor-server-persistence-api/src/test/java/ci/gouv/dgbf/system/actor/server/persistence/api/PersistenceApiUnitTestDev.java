@@ -9,7 +9,6 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
@@ -75,10 +74,17 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void executionImputation_readWhereFilter(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
-		ExecutionImputationQuerier.getInstance().readWhereFilter(QueryExecutorArguments
-				.instantiate(ExecutionImputation.class, QueryName.READ_WHERE_FILTER).setNumberOfTuples(3)).forEach(x -> {
-					System.out.println(x.getIdentifier()+" - "+ x.getActivityCodeName()+" : "+x.getEconomicNatureCodeName());
+		org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		Long t = System.currentTimeMillis();
+		System.out.println("STARTS");
+		Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments()
+				.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER)
+				.setNumberOfTuples(20));
+		executionImputations.forEach(x -> {
+					System.out.println(x.getIdentifier()+" - "+ x.getCreditManagerHolderCodeName()+" : "+x.getAuthorizingOfficerHolderCodeName()
+							+" : "+x.getFinancialControllerHolderCodeName()+" : "+x.getAccountingHolderCodeName());
 				});
+		System.out.println((System.currentTimeMillis() - t)/1000);
 	}
 	
 	@Test

@@ -76,15 +76,6 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
 		
-		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
-			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
-		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(arguments.getQuery().getIdentifier())))
-			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUI();
-		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
-			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(arguments);
-		if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
-			return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUIByFunctionsIdentifiers(arguments);
-		
 		if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ScopeFunctionQuerier.getInstance().readMany(arguments);
 		
@@ -119,6 +110,15 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			return (Collection<T>) ExecutionImputationQuerier.getInstance().readMany(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
+				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(arguments.getQuery().getIdentifier())))
+				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUI();
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
+				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(arguments);
+			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI_BY_FUNCTIONS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier())))
+				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().readForUIByFunctionsIdentifiers(arguments);
+			
 			if(PrivilegeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) PrivilegeQuerier.getInstance().readVisibleByActorCode((String)arguments.getFilterFieldValue(PrivilegeQuerier.PARAMETER_NAME_ACTOR_CODE));
 			
