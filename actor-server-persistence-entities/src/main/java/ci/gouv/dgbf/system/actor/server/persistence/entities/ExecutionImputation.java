@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -148,6 +149,15 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 				scopeFunctions.add(executionImputationScopeFunction.getAssistant());
 		}
 		return scopeFunctions;
+	}
+	
+	public Boolean hasScopeFunction(ScopeFunction scopeFunction) {
+		if(scopeFunction == null || StringHelper.isBlank(scopeFunction.getIdentifier()))
+			return Boolean.FALSE;
+		if(scopeFunction.getIdentifier().equals(creditManagerHolderIdentifier) || scopeFunction.getIdentifier().equals(authorizingOfficerHolderIdentifier)
+				 || scopeFunction.getIdentifier().equals(financialControllerHolderIdentifier) || scopeFunction.getIdentifier().equals(accountingHolderIdentifier))
+			return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 	
 	public static final String FIELD_CREDIT_MANAGER = "creditManager";

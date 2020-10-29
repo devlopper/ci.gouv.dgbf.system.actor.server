@@ -53,7 +53,12 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 	
 	@Test
 	public void scopeFunctionExecutionImputation_deriveAll() throws Exception {
-		__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();
+		try {
+			__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	//@Test

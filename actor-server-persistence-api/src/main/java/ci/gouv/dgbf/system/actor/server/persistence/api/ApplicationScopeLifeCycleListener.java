@@ -2,15 +2,21 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
+import org.cyk.utility.__kernel__.annotation.Oracle;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.EntitySaver;
+import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
 import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.__kernel__.persistence.query.NativeQueryStringBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 
@@ -42,6 +48,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -59,6 +66,18 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		ci.gouv.dgbf.system.actor.server.persistence.entities.ApplicationScopeLifeCycleListener.initialize();
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
 				,EntitySaver.class,CountQueryIdentifierGetter.class);
+		DependencyInjection.setQualifierClassTo(Oracle.class,NativeQueryStringBuilder.class);
+		PersistenceHelper.CLASS_COLUMNS_NAMES.put(ScopeFunctionExecutionImputation.class, Set.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
+				,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION
+				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION));
+		PersistenceHelper.COLUMN_NAME_FIELD.put(ScopeFunctionExecutionImputation.class, Map.of(
+				ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
+				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_IDENTIFIER)
+				,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION
+				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_SCOPE_FUNCTION)
+				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION
+				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_EXECUTION_IMPUTATION)
+				));
 		
 		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 		

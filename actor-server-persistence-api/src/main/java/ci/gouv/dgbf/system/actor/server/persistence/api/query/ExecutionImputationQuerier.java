@@ -267,9 +267,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					, "SELECT t FROM ExecutionImputation t")
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
-					, "SELECT t.identifier,t.section.code,t.budgetSpecializationUnit.code,t.administrativeUnit.code FROM ExecutionImputation t")
+					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER))
+							,"FROM ExecutionImputation t"))
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
-						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
+						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER)
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
 					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"

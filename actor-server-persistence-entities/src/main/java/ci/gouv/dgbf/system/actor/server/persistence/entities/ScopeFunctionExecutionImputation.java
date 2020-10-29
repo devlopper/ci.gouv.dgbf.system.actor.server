@@ -79,6 +79,7 @@ public class ScopeFunctionExecutionImputation extends AbstractIdentifiableSystem
 		
 	public static final String TABLE_NAME = "POSTE_IMPUTATION";
 	
+	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_SCOPE_FUNCTION = "POSTE";
 	public static final String COLUMN_EXECUTION_IMPUTATION = "IMPUTATION";
 }
