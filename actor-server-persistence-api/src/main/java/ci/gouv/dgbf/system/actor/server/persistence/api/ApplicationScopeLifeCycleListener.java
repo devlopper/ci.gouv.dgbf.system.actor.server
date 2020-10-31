@@ -67,6 +67,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
 				,EntitySaver.class,CountQueryIdentifierGetter.class);
 		DependencyInjection.setQualifierClassTo(Oracle.class,NativeQueryStringBuilder.class);
+		PersistenceHelper.CLASS_PRIMARY_KEY_COLUMN_NAME.put(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER);
 		PersistenceHelper.CLASS_COLUMNS_NAMES.put(ScopeFunctionExecutionImputation.class, Set.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
 				,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION
 				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION));

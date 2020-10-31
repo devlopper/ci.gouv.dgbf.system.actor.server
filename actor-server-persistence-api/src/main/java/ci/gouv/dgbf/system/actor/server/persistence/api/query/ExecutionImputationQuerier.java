@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
+import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -64,13 +65,21 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
-	/* Read where filter */
+	/* Read where filter with all */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, QueryName.READ_WHERE_FILTER.getValue()+"WithAll");
 	Collection<ExecutionImputation> readWhereFilterWithAll(QueryExecutorArguments arguments);
 	
-	/* count where filter */
+	/* count where filter with all */
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_ALL = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL);
 	Long countWhereFilterWithAll(QueryExecutorArguments arguments);
+	
+	/* Read where filter with scope function identifiers only*/
+	//String QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_SCOPE_FUNCTION_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_FILTER+"WithScopeFunctionIdentifiersOnly");
+	//Collection<ExecutionImputation> readWhereFilterWithScopeFunctionIdentifiersOnly(QueryExecutorArguments arguments);
+	
+	/* count where filter with scope function identifiers only*/
+	//String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_SCOPE_FUNCTION_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_SCOPE_FUNCTION_IDENTIFIERS_ONLY);
+	//Long countWhereFilterWithScopeFunctionIdentifiersOnly(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readAllWithReferencesOnly");
 	Collection<ExecutionImputation> readAllWithReferencesOnly(QueryExecutorArguments arguments);
@@ -268,30 +277,29 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
 					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
-							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER))
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER))
 							,"FROM ExecutionImputation t"))
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
 						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
-						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER)
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER)
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
 					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
-							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER))
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER))
 							,"FROM ExecutionImputation t"
 							,"WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t)"
 							))
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
 					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
-					,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-					,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_IDENTIFIER)	
+					,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+					,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER)	
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
 					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t "
 							+ "WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t) "
-							+ "ORDER BY t.identifier ASC"
 							)
 				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
 					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)		
@@ -304,14 +312,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 					, jpql(
-							select("DISTINCT(t."+ExecutionImputation.FIELD_IDENTIFIER+")",fields("t"
+							select(fields("t",ExecutionImputation.FIELD_IDENTIFIER
 									,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
 									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 									,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-									,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_CODE_NAME
-									,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_CODE_NAME
-									,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_CODE_NAME
-									,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME//,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_CODE_NAME
+									,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+									,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+									,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+									,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME
 									))
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",ExecutionImputation.FIELD_ACTIVITY_CODE_NAME)+","+asc("t",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
@@ -321,15 +329,12 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 						,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
 						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 						,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME
-						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME
+						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+						,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME
 						)
-			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
-					, jpql(
-							select("COUNT(DISTINCT t.identifier)")
-							,getReadWhereFilterFromWhere()
-						)
-				)
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
 		);
 	}
 	
@@ -337,10 +342,6 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		return jpql(
 				from(
 					"ExecutionImputation t"
-					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_CREDIT_MANAGER_HOLDER)
-					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_AUTHORIZING_OFFICER_HOLDER)
-					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_FINANCIAL_CONTROLLER_HOLDER)
-					//,getReadWhereFilterFromWhereLeftJoinFunction(Function.CODE_ACCOUNTING_HOLDER)
 				)
 				,where(and(
 					like("t", ExecutionImputation.FIELD_CODE, PARAMETER_NAME_CODE)
@@ -353,10 +354,10 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					,like("t", ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t", ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t", ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_CODE_NAME, PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t", ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t", ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t", ExecutionImputation.FIELD_ACCOUNTING_HOLDER_CODE_NAME, PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME, PARAMETER_NAME_CREDIT_MANAGER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					,like("t", ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME, PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				))
 			);
 	}
@@ -366,5 +367,11 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					,String.format("LEFT JOIN ScopeFunction sf%1$s ON sf%1$s = sfei%1$s.scopeFunction",functionCode)
 					,String.format("LEFT JOIN Function f%1$s ON f%1$s = sf%1$s.function",functionCode)
 				);
+	}
+	
+	/**/
+	
+	static void refreshMaterializedView(){
+		ProcedureExecutor.getInstance().executeRefreshMaterializedView(ExecutionImputation.class);
 	}
 }

@@ -45,6 +45,7 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("executionImputations", executionImputations);
 		LogHelper.logInfo(String.format("Création des assignations à partir de %s imputation(s) en cours",executionImputations.size()), getClass());
 		Long t0 = System.currentTimeMillis();
+		ExecutionImputationQuerier.refreshMaterializedView();
 		Long count0 = __persistence__.count();
 		/**/
 		//deriveFromExecutionImputations(executionImputations, scopeFunctions, existingScopeFunctionExecutionImputations);
@@ -52,12 +53,14 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		Long duration = System.currentTimeMillis() - t0;
 		Long numberOfElements = __persistence__.count() - count0;
 		LogHelper.logInfo(String.format("%s assignation(s) crée(s) en %s", numberOfElements,duration), getClass());
+		ExecutionImputationQuerier.refreshMaterializedView();
 	}
 
 	@Override
 	public void deriveAll() {
 		System.gc();
 		Long t0 = System.currentTimeMillis();
+		ExecutionImputationQuerier.refreshMaterializedView();
 		Long count0 = __persistence__.count();
 		LogHelper.logInfo(String.format("Création de toutes les assignations en cours"), getClass());
 		
@@ -127,6 +130,7 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 			executionImputations.clear();
 			executionImputations = null;
 		}
+		ExecutionImputationQuerier.refreshMaterializedView();
 		System.gc();
 	}
 	
@@ -166,13 +170,6 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		//Long numberOfElements = __persistence__.count() - count0;
 		//System.gc();
 		//return queryString;
-	}
-	
-	@Override
-	public BusinessServiceProvider<ScopeFunctionExecutionImputation> createMany(Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctionExecutionImputations", scopeFunctionExecutionImputations);
-		__persistence__.createMany(scopeFunctionExecutionImputations);
-		return this;
 	}
 	
 	private static void add(String scopeFunctionCode,ExecutionImputation executionImputation,Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations

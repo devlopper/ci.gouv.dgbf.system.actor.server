@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 
+import org.cyk.utility.__kernel__.business.NativeQueryStringExecutor;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -52,6 +54,38 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 	}
 	
 	@Test
+	public void executionImputation_deriveScopeFunctionsFromModel() throws Exception {
+		try {
+			__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+					.addQueriesStrings("DELETE FROM POSTE_IMPUTATION"));
+			__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();			
+			ExecutionImputation executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getFinancialController(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getAccounting(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			Filter filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030040");
+			filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030041").setHolderOverridable(Boolean.TRUE);
+			filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
 	public void scopeFunctionExecutionImputation_deriveAll() throws Exception {
 		try {
 			__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();
@@ -62,9 +96,31 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 	}
 	
 	//@Test
-	public void executionImputation_deriveAll() throws Exception {
+	public void executionImputation_deriveScopeFunctionsFromModel_create_gc_holder() throws Exception {
+		ExecutionImputation executionImputation = new ExecutionImputation();
+		executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030040");
+		Filter filter = new Filter();
+		filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+		__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+	}
+	
+	//@Test
+	public void executionImputation_deriveScopeFunctionsFromModel_update_gc_holder() throws Exception {
+		ExecutionImputation executionImputation = new ExecutionImputation();
+		executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030041").setHolderOverridable(Boolean.TRUE);
+		Filter filter = new Filter();
+		filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+		__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+	}
+	
+	//@Test
+	public void executionImputation_deriveScopeFunctionsFromModel_delete() throws Exception {
+		__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();
 		ExecutionImputation executionImputation = new ExecutionImputation();
 		executionImputation.getCreditManager(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+		executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+		executionImputation.getFinancialController(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+		executionImputation.getAccounting(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
 		Filter filter = new Filter();
 		filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
 		__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);

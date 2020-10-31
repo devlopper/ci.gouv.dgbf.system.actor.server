@@ -14,7 +14,12 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 	protected String getPersistenceUnitName() {
 		return "default";
 	}
-		
+	
+	@Test
+	public void buildFieldNames(){
+		assertThat(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER).isEqualTo("creditManagerHolderScopeFunctionIdentifier");
+	}
+	
 	@Test
 	public void privilege_getParent(){
 		Collection<Privilege> privileges = CollectionHelper.listOf(

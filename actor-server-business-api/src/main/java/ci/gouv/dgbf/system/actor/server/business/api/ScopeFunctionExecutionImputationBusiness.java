@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -15,6 +16,12 @@ public interface ScopeFunctionExecutionImputationBusiness extends BusinessEntity
 	void deriveFromExecutionImputations(Collection<ExecutionImputation> executionImputations);
 	
 	void deriveAll();
+	
+	static String identify(String scopeFunctionIdentifier,String executionImputationIdentifier) {
+		//if(StringHelper.isBlank(scopeFunctionIdentifier) || StringHelper.isBlank(executionImputationIdentifier))
+			return IdentifiableSystem.generateRandomly();
+		//return scopeFunctionIdentifier+executionImputationIdentifier;
+	}
 	
 	String SAVE = "ScopeFunctionExecutionImputation.save";
 	

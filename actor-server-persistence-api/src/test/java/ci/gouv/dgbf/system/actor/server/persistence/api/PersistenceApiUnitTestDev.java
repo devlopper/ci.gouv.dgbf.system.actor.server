@@ -57,6 +57,11 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void executionImputation_refreshMaterializedView(){
+		ExecutionImputationQuerier.refreshMaterializedView();
+	}
+	
+	@Test
 	public void readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		System.out.println(AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByIdentifier("D_yy@y.com"));
@@ -95,8 +100,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER)
 				.setNumberOfTuples(20));
 		executionImputations.forEach(x -> {
-					System.out.println(x.getIdentifier()+" - "+ x.getCreditManagerHolderCodeName()+" : "+x.getAuthorizingOfficerHolderCodeName()
-							+" : "+x.getFinancialControllerHolderCodeName()+" : "+x.getAccountingHolderCodeName());
+					System.out.println(x.getIdentifier()+" - "+ x.getCreditManagerHolderScopeFunctionCodeName()+" : "+x.getAuthorizingOfficerHolderScopeFunctionCodeName()
+							+" : "+x.getFinancialControllerHolderScopeFunctionCodeName()+" : "+x.getAccountingHolderScopeFunctionCodeName());
 				});
 		System.out.println((System.currentTimeMillis() - t)/1000);
 	}
