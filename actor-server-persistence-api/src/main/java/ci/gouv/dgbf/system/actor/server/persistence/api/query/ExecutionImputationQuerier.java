@@ -12,13 +12,13 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.Language.From;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
+import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -28,11 +28,13 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputationScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<ExecutionImputation> {
 
@@ -65,6 +67,10 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
+	/* Read where filter */
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT = QUERY_IDENTIFIER_COUNT_WHERE_FILTER+"ForEdit";
+	Collection<ExecutionImputation> readWhereFilterForEdit(QueryExecutorArguments arguments);
+	
 	/* Read where filter with all */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, QueryName.READ_WHERE_FILTER.getValue()+"WithAll");
 	Collection<ExecutionImputation> readWhereFilterWithAll(QueryExecutorArguments arguments);
@@ -94,44 +100,6 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	
 	/**/
 	
-	static void setScopeFunctionExecutionImputations(Collection<ExecutionImputation> executionImputations) {
-		if(CollectionHelper.isEmpty(executionImputations))
-			return;
-		Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations = ScopeFunctionExecutionImputationQuerier.getInstance()
-				.readByExecutionImputations(executionImputations);
-		if(CollectionHelper.isEmpty(scopeFunctionExecutionImputations))
-			return;
-		for(ExecutionImputation executionImputation : executionImputations) {
-			Collection<ScopeFunctionExecutionImputation> collection = scopeFunctionExecutionImputations.stream()
-					.filter(x -> x.getExecutionImputation().equals(executionImputation)).collect(Collectors.toList());
-			if(CollectionHelper.isEmpty(collection))
-				continue;
-			for(ScopeFunctionExecutionImputation index : collection) {
-				//if(!index.getExecutionImputation().equals(executionImputation))
-				//	continue;
-				if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
-					executionImputation.getCreditManager(Boolean.TRUE).setHolder(index.getScopeFunction());
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_ASSISTANT))
-					executionImputation.getCreditManager(Boolean.TRUE).setAssistant(index.getScopeFunction());
-				
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER))
-					executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolder(index.getScopeFunction());
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_AUTHORIZING_OFFICER_ASSISTANT))
-					executionImputation.getAuthorizingOfficer(Boolean.TRUE).setAssistant(index.getScopeFunction());
-				
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER))
-					executionImputation.getFinancialController(Boolean.TRUE).setHolder(index.getScopeFunction());
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT))
-					executionImputation.getFinancialController(Boolean.TRUE).setAssistant(index.getScopeFunction());
-				
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_HOLDER))
-					executionImputation.getAccounting(Boolean.TRUE).setHolder(index.getScopeFunction());
-				else if(index.getScopeFunction().getFunction().getCode().equals(Function.CODE_ACCOUNTING_ASSISTANT))
-					executionImputation.getAccounting(Boolean.TRUE).setAssistant(index.getScopeFunction());
-			}
-		}
-	}
-	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ExecutionImputation> implements ExecutionImputationQuerier,Serializable {		
@@ -139,8 +107,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		protected void ____setAll____(Collection<?> collection) {
 			if(CollectionHelper.isEmpty(collection))
 				return;
-			Collection<ExecutionImputation> executionImputations = CollectionHelper.cast(ExecutionImputation.class, collection);
-			setScopeFunctionExecutionImputations(executionImputations);			
+			//Collection<ExecutionImputation> executionImputations = CollectionHelper.cast(ExecutionImputation.class, collection);		
 		}
 		
 		@Override
@@ -153,7 +120,9 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		@Override
 		public Collection<ExecutionImputation> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilter(arguments);			
+				return readWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilterForEdit(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilterWithAll(arguments);
 			return super.readMany(arguments);
@@ -219,18 +188,46 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		}
 		
 		@Override
+		public Collection<ExecutionImputation> readWhereFilterForEdit(QueryExecutorArguments arguments) {
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
+			Collection<ExecutionImputation> executionImputations = readWhereFilter(arguments);
+			if(CollectionHelper.isNotEmpty(executionImputations)) {
+				Collection<Function> functions = FunctionQuerier.getInstance().readByBusinessIdentifiers(Function.class,Function.EXECUTION_CODES);
+				executionImputations.forEach(executionImputation -> {
+					prepareForEdit(executionImputation, functions);
+				});
+			}
+			return executionImputations;
+		}
+		
+		@Override
 		public ExecutionImputation readBySystemIdentifierForEdit(String identifier) {
 			QueryExecutorArguments arguments = new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT)
 					.addFilterField(PARAMETER_NAME_IDENTIFIER, identifier);
 			ExecutionImputation executionImputation = QueryExecutor.getInstance().executeReadOne(ExecutionImputation.class, arguments);
 			if(executionImputation == null)
 				return null;
-			setScopeFunctionExecutionImputations(List.of(executionImputation));
-			
-			executionImputation.setFunctions(FunctionQuerier.getInstance().readByBusinessIdentifiers(Function.class,
-				List.of(Function.CODE_CREDIT_MANAGER_HOLDER,Function.CODE_AUTHORIZING_OFFICER_HOLDER,Function.CODE_FINANCIAL_CONTROLLER_HOLDER
-						,Function.CODE_ACCOUNTING_HOLDER)));
+			prepareForEdit(executionImputation,FunctionQuerier.getInstance().readByBusinessIdentifiers(Function.class,Function.EXECUTION_CODES));
 			return executionImputation;
+		}
+		
+		private void prepareForEdit(ExecutionImputation executionImputation,Collection<Function> functions) {
+			for(String functionFieldName : ExecutionImputation.FUNCTIONS_FIELDS_NAMES)
+				for(String functionFieldNameType : ExecutionImputation.FUNCTIONS_FIELDS_NAMES_TYPES)
+					setScopeFunction(executionImputation, functionFieldName, functionFieldNameType);							
+			executionImputation.setFunctions(functions);
+		}
+		
+		private void setScopeFunction(ExecutionImputation executionImputation,String functionFieldName,String functionFieldNameType) {
+			String identifier = (String) FieldHelper.read(executionImputation, ExecutionImputation.buildScopeFunctionIdentifierFieldName(functionFieldName, functionFieldNameType));
+			if(StringHelper.isBlank(identifier))
+				return;
+			String codeName = (String) FieldHelper.read(executionImputation, ExecutionImputation.buildScopeFunctionCodeNameFieldName(functionFieldName, functionFieldNameType));
+			ExecutionImputationScopeFunction executionImputationScopeFunction = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputation, functionFieldName);
+			if(executionImputationScopeFunction == null)
+				FieldHelper.write(executionImputation, functionFieldName, executionImputationScopeFunction = new ExecutionImputationScopeFunction());
+			executionImputationScopeFunction.setHolder(new ScopeFunction()
+					.setIdentifier(identifier).setCode(StringUtils.substringBefore(codeName, " ")).setName(StringUtils.substringAfter(codeName, " ")));
 		}
 		
 		@Override

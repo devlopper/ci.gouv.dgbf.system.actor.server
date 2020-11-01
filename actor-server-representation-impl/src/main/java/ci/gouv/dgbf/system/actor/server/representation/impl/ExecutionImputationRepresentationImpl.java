@@ -61,7 +61,7 @@ public class ExecutionImputationRepresentationImpl extends AbstractRepresentatio
 						ThrowableHelper.throwIllegalArgumentExceptionIfNull("executionImputationDto", executionImputationDto);	
 						ExecutionImputation executionImputation = MappingHelper.getDestination(executionImputationDto,ExecutionImputation.class);
 						ThrowableHelper.throwIllegalArgumentExceptionIfNull("executionImputation", executionImputation);
-						setScopeFunctions(executionImputation, executionImputationDto);
+						//setScopeFunctions(executionImputation, executionImputationDto);
 						Filter filter = MappingHelper.getDestination(executionImputationDto.getFilter(), Filter.class);
 						__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
 					}
@@ -72,28 +72,20 @@ public class ExecutionImputationRepresentationImpl extends AbstractRepresentatio
 	
 	private static void setScopeFunctions(ExecutionImputation executionImputation,ExecutionImputationDto executionImputationDto) {
 		if(executionImputationDto.getCreditManager() != null) {
-			if(executionImputationDto.getCreditManager().getHolder() != null)
-				executionImputation.setCreditManagerHolderFromIdentifier(executionImputationDto.getCreditManager().getHolder().getIdentifier());
-			if(executionImputationDto.getCreditManager().getAssistant() != null)
-				executionImputation.setCreditManagerAssistantFromIdentifier(executionImputationDto.getCreditManager().getAssistant().getIdentifier());
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier(executionImputationDto.getCreditManager().getHolderIdentifier());
+			executionImputation.getCreditManager(Boolean.TRUE).setAssistantIdentifier(executionImputationDto.getCreditManager().getAssistantIdentifier());
 		}
 		if(executionImputationDto.getAuthorizingOfficer() != null) {
-			if(executionImputationDto.getAuthorizingOfficer().getHolder() != null)
-				executionImputation.setAuthorizingOfficerHolderFromIdentifier(executionImputationDto.getAuthorizingOfficer().getHolder().getIdentifier());
-			if(executionImputationDto.getAuthorizingOfficer().getAssistant() != null)
-				executionImputation.setAuthorizingOfficerAssistantFromIdentifier(executionImputationDto.getAuthorizingOfficer().getAssistant().getIdentifier());
+			executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier(executionImputationDto.getAuthorizingOfficer().getHolderIdentifier());
+			executionImputation.getAuthorizingOfficer(Boolean.TRUE).setAssistantIdentifier(executionImputationDto.getAuthorizingOfficer().getAssistantIdentifier());
 		}
 		if(executionImputationDto.getFinancialController() != null) {
-			if(executionImputationDto.getFinancialController().getHolder() != null)
-				executionImputation.setFinancialControllerHolderFromIdentifier(executionImputationDto.getFinancialController().getHolder().getIdentifier());
-			if(executionImputationDto.getFinancialController().getAssistant() != null)
-				executionImputation.setFinancialControllerAssistantFromIdentifier(executionImputationDto.getFinancialController().getAssistant().getIdentifier());
+			executionImputation.getFinancialController(Boolean.TRUE).setHolderIdentifier(executionImputationDto.getFinancialController().getHolderIdentifier());
+			executionImputation.getFinancialController(Boolean.TRUE).setAssistantIdentifier(executionImputationDto.getFinancialController().getAssistantIdentifier());
 		}
 		if(executionImputationDto.getAccounting() != null) {
-			if(executionImputationDto.getAccounting().getHolder() != null)
-				executionImputation.setAccountingHolderFromIdentifier(executionImputationDto.getAccounting().getHolder().getIdentifier());
-			if(executionImputationDto.getAccounting().getAssistant() != null)
-				executionImputation.setAccountingAssistantFromIdentifier(executionImputationDto.getAccounting().getAssistant().getIdentifier());
+			executionImputation.getAccounting(Boolean.TRUE).setHolderIdentifier(executionImputationDto.getAccounting().getHolderIdentifier());
+			executionImputation.getAccounting(Boolean.TRUE).setAssistantIdentifier(executionImputationDto.getAccounting().getAssistantIdentifier());
 		}
 	}
 }

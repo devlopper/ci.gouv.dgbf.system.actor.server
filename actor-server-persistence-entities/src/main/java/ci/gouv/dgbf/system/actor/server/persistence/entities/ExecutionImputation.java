@@ -75,17 +75,27 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return creditManager;
 	}
 	
-	public ExecutionImputation setCreditManagerHolderFromIdentifier(String identifier) {
-		getCreditManager(Boolean.TRUE).setHolderFromIdentifier(identifier);
+	public ExecutionImputation setCreditManagerHolderIdentifier(String identifier) {
+		getCreditManager(Boolean.TRUE).setHolderIdentifier(identifier);
 		return this;
 	}
 	
-	public ScopeFunction getCreditManagerHolder() {
-		return creditManager == null ? null : creditManager.getHolder();
+	public ExecutionImputation setCreditManagerHolder(ScopeFunction scopeFunction) {
+		getCreditManager(Boolean.TRUE).setHolder(scopeFunction);
+		return this;
 	}
 	
-	public ExecutionImputation setCreditManagerAssistantFromIdentifier(String identifier) {
-		getCreditManager(Boolean.TRUE).setAssistantFromIdentifier(identifier);
+	public String getCreditManagerHolderIdentifier() {
+		return creditManager == null ? null : creditManager.getHolderIdentifier();
+	}
+	
+	public ExecutionImputation setCreditManagerAssistantIdentifier(String identifier) {
+		getCreditManager(Boolean.TRUE).setAssistantIdentifier(identifier);
+		return this;
+	}
+	
+	public ExecutionImputation setCreditManagerAssistant(ScopeFunction scopeFunction) {
+		getCreditManager(Boolean.TRUE).setAssistant(scopeFunction);
 		return this;
 	}
 	
@@ -95,17 +105,27 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return authorizingOfficer;
 	}
 	
-	public ScopeFunction getAuthorizingOfficerHolder() {
-		return authorizingOfficer == null ? null : authorizingOfficer.getHolder();
+	public String getAuthorizingOfficerHolderIdentifier() {
+		return authorizingOfficer == null ? null : authorizingOfficer.getHolderIdentifier();
 	}
 	
-	public ExecutionImputation setAuthorizingOfficerHolderFromIdentifier(String identifier) {
-		getAuthorizingOfficer(Boolean.TRUE).setHolderFromIdentifier(identifier);
+	public ExecutionImputation setAuthorizingOfficerHolderIdentifier(String identifier) {
+		getAuthorizingOfficer(Boolean.TRUE).setHolderIdentifier(identifier);
 		return this;
 	}
 	
-	public ExecutionImputation setAuthorizingOfficerAssistantFromIdentifier(String identifier) {
-		getAuthorizingOfficer(Boolean.TRUE).setAssistantFromIdentifier(identifier);
+	public ExecutionImputation setAuthorizingOfficerHolder(ScopeFunction scopeFunction) {
+		getAuthorizingOfficer(Boolean.TRUE).setHolder(scopeFunction);
+		return this;
+	}
+	
+	public ExecutionImputation setAuthorizingOfficerAssistantIdentifier(String identifier) {
+		getAuthorizingOfficer(Boolean.TRUE).setAssistantIdentifier(identifier);
+		return this;
+	}
+	
+	public ExecutionImputation setAuthorizingOfficerAssistant(ScopeFunction scopeFunction) {
+		getAuthorizingOfficer(Boolean.TRUE).setAssistant(scopeFunction);
 		return this;
 	}
 	
@@ -115,17 +135,27 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return financialController;
 	}
 	
-	public ScopeFunction getFinancialControllerHolder() {
-		return financialController == null ? null : financialController.getHolder();
+	public String getFinancialControllerHolderIdentifier() {
+		return financialController == null ? null : financialController.getHolderIdentifier();
 	}
 	
-	public ExecutionImputation setFinancialControllerHolderFromIdentifier(String identifier) {
-		getFinancialController(Boolean.TRUE).setHolderFromIdentifier(identifier);
+	public ExecutionImputation setFinancialControllerHolderIdentifier(String identifier) {
+		getFinancialController(Boolean.TRUE).setHolderIdentifier(identifier);
 		return this;
 	}
 	
-	public ExecutionImputation setFinancialControllerAssistantFromIdentifier(String identifier) {
-		getFinancialController(Boolean.TRUE).setAssistantFromIdentifier(identifier);
+	public ExecutionImputation setFinancialControllerHolder(ScopeFunction scopeFunction) {
+		getFinancialController(Boolean.TRUE).setHolder(scopeFunction);
+		return this;
+	}
+	
+	public ExecutionImputation setFinancialControllerAssistantIdentifier(String identifier) {
+		getFinancialController(Boolean.TRUE).setAssistantIdentifier(identifier);
+		return this;
+	}
+	
+	public ExecutionImputation setFinancialControllerAssistant(ScopeFunction scopeFunction) {
+		getFinancialController(Boolean.TRUE).setAssistant(scopeFunction);
 		return this;
 	}
 	
@@ -135,20 +165,67 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return accounting;
 	}
 	
-	public ScopeFunction getAccountingHolder() {
-		return accounting == null ? null : accounting.getHolder();
+	public String getAccountingHolderIdentifier() {
+		return accounting == null ? null : accounting.getHolderIdentifier();
 	}
 	
-	public ExecutionImputation setAccountingHolderFromIdentifier(String identifier) {
-		getAccounting(Boolean.TRUE).setHolderFromIdentifier(identifier);
+	public ExecutionImputation setAccountingHolderIdentifier(String identifier) {
+		getAccounting(Boolean.TRUE).setHolderIdentifier(identifier);
 		return this;
 	}
 	
-	public ExecutionImputation setAccountingAssistantFromIdentifier(String identifier) {
-		getAccounting(Boolean.TRUE).setAssistantFromIdentifier(identifier);
+	public ExecutionImputation setAccountingHolder(ScopeFunction scopeFunction) {
+		getAccounting(Boolean.TRUE).setHolder(scopeFunction);
 		return this;
 	}
 	
+	public ExecutionImputation setAccountingAssistantIdentifier(String identifier) {
+		getAccounting(Boolean.TRUE).setAssistantIdentifier(identifier);
+		return this;
+	}
+	
+	public ExecutionImputation setAccountingAssistant(ScopeFunction scopeFunction) {
+		getAccounting(Boolean.TRUE).setAssistant(scopeFunction);
+		return this;
+	}
+	
+	public Collection<String> getScopeFunctionExecutionImputationIdentifiers() {
+		Collection<String> scopeFunctionExecutionImputationIdentifiers = null;
+		scopeFunctionExecutionImputationIdentifiers = addScopeFunctionExecutionImputationIdentifier(creditManagerHolderScopeFunctionExecutionImputationIdentifier, scopeFunctionExecutionImputationIdentifiers);
+		scopeFunctionExecutionImputationIdentifiers = addScopeFunctionExecutionImputationIdentifier(authorizingOfficerHolderScopeFunctionExecutionImputationIdentifier, scopeFunctionExecutionImputationIdentifiers);
+		scopeFunctionExecutionImputationIdentifiers = addScopeFunctionExecutionImputationIdentifier(financialControllerHolderScopeFunctionExecutionImputationIdentifier, scopeFunctionExecutionImputationIdentifiers);
+		scopeFunctionExecutionImputationIdentifiers = addScopeFunctionExecutionImputationIdentifier(accountingHolderScopeFunctionExecutionImputationIdentifier, scopeFunctionExecutionImputationIdentifiers);
+		return scopeFunctionExecutionImputationIdentifiers;
+	}
+	
+	public Collection<String> addScopeFunctionExecutionImputationIdentifier(String identifier,Collection<String> scopeFunctionExecutionImputationIdentifiers) {
+		if(StringHelper.isNotBlank(identifier)) {
+			if(scopeFunctionExecutionImputationIdentifiers == null)
+				scopeFunctionExecutionImputationIdentifiers = new ArrayList<>();
+			scopeFunctionExecutionImputationIdentifiers.add(identifier);
+		}
+		return scopeFunctionExecutionImputationIdentifiers;
+	}
+	
+	public Collection<String> getScopeFunctionIdentifiers() {
+		Collection<String> scopeFunctionIdentifiers = null;
+		scopeFunctionIdentifiers = addScopeFunctionIdentifier(creditManagerHolderScopeFunctionIdentifier, scopeFunctionIdentifiers);
+		scopeFunctionIdentifiers = addScopeFunctionIdentifier(authorizingOfficerHolderScopeFunctionIdentifier, scopeFunctionIdentifiers);
+		scopeFunctionIdentifiers = addScopeFunctionIdentifier(financialControllerHolderScopeFunctionIdentifier, scopeFunctionIdentifiers);
+		scopeFunctionIdentifiers = addScopeFunctionIdentifier(accountingHolderScopeFunctionIdentifier, scopeFunctionIdentifiers);
+		return scopeFunctionIdentifiers;
+	}
+	
+	public Collection<String> addScopeFunctionIdentifier(String identifier,Collection<String> scopeFunctionIdentifiers) {
+		if(StringHelper.isNotBlank(identifier)) {
+			if(scopeFunctionIdentifiers == null)
+				scopeFunctionIdentifiers = new ArrayList<>();
+			scopeFunctionIdentifiers.add(identifier);
+		}
+		return scopeFunctionIdentifiers;
+	}
+	
+	/*
 	public Collection<ScopeFunction> computeScopeFunctions() {
 		Collection<ScopeFunction> scopeFunctions = null;
 		for(ExecutionImputationScopeFunction executionImputationScopeFunction : new ExecutionImputationScopeFunction[] {creditManager,authorizingOfficer,financialController,accounting}) {
@@ -163,7 +240,7 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		}
 		return scopeFunctions;
 	}
-	
+	*/
 	public Boolean hasScopeFunction(ScopeFunction scopeFunction) {
 		if(scopeFunction == null || StringHelper.isBlank(scopeFunction.getIdentifier()))
 			return Boolean.FALSE;

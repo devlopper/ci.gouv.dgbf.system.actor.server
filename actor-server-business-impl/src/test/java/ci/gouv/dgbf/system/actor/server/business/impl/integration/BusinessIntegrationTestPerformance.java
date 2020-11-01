@@ -1,6 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 
+import java.util.Collection;
+
 import org.cyk.utility.__kernel__.business.NativeQueryStringExecutor;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -23,7 +26,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -56,6 +58,7 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 	@Test
 	public void executionImputation_deriveScopeFunctionsFromModel() throws Exception {
 		try {
+			
 			__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
 					.addQueriesStrings("DELETE FROM POSTE_IMPUTATION"));
 			__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();			
@@ -79,6 +82,17 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 			filter = new Filter();
 			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
 			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			Collection<ExecutionImputation> executionImputations = ExecutionImputationQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+					.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(10));
+			executionImputations.forEach(index -> index.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030043"));
+			__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(executionImputations);
+			
+			executionImputations = ExecutionImputationQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+					.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(5));
+			executionImputations.forEach(index -> index.getCreditManager(Boolean.TRUE).setHolderIdentifier(null));
+			__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(executionImputations);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

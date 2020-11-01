@@ -31,7 +31,6 @@ import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ExecutionImputationPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputationScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -48,84 +47,16 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	public TransactionResult saveScopeFunctions(Collection<ExecutionImputation> executionImputations) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("execution imputations", executionImputations);
 		LogHelper.logInfo(String.format("Enregistrement des affectations de %s imputation(s) en cours...",executionImputations.size()), getClass());
+		ExecutionImputationQuerier.refreshMaterializedView();
 		TransactionResult result = new TransactionResult().setTupleName("affectation");
-		List<ScopeFunctionExecutionImputation> savables = new ArrayList<>();
-		List<ScopeFunctionExecutionImputation> deletables = new ArrayList<>();
-		
-		LogHelper.logInfo(String.format("Chargement des affectations existantes des imputations en cours..."), getClass());
-		Long t = System.currentTimeMillis();
-		Collection<ScopeFunctionExecutionImputation> database = ScopeFunctionExecutionImputationQuerier.getInstance().readByExecutionImputations(executionImputations);
-		LogHelper.logInfo(String.format("Chargement des affectations existantes des imputations en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
-		
-		LogHelper.logInfo(String.format("Collecte des instances a créer et a supprimer en cours..."), getClass());
-		t = System.currentTimeMillis();
-		for(ExecutionImputation executionImputation : executionImputations)
-			process(executionImputation,ScopeFunctionExecutionImputation.filterBy(executionImputation, database),savables,deletables);
-		LogHelper.logInfo(String.format("Collecte des instances a créer et a supprimer en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
-		
-		LogHelper.logInfo(String.format("Création et suppression en cours..."), getClass());
-		t = System.currentTimeMillis();
-		result.setFromSavables(savables).setNumberOfDeletionFromCollection(deletables);				
-		if(CollectionHelper.isNotEmpty(savables))
-			;//__inject__(ScopeFunctionExecutionImputationBusiness.class).saveMany(savables);		
-		if(CollectionHelper.isNotEmpty(deletables)) {
-			List<List<ScopeFunctionExecutionImputation>> batches = CollectionHelper.getBatches(deletables, 999);
-			for(List<ScopeFunctionExecutionImputation> batch : batches)
-				;//__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteMany(batch);
-		}
-		LogHelper.logInfo(String.format("Création et suppression en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
-		
+		new Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor>().setName("Générateur et exécuteur de requête SQL").setNumberOfRunnablesToBeExecuted(1)
+		.addRunnables(new SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor().setExecutionImputations(executionImputations))
+		.run();
+		ExecutionImputationQuerier.refreshMaterializedView();
 		result.log(getClass());
 		return result;
 	}
 	
-	private static void process(ExecutionImputation executionImputation
-			,Collection<ScopeFunctionExecutionImputation> database,Collection<ScopeFunctionExecutionImputation> savables,Collection<ScopeFunctionExecutionImputation> deletables) {
-		if(executionImputation == null)
-			return;
-		process(executionImputation, executionImputation.computeScopeFunctions(),database,savables,deletables);
-	}
-	
-	private static void process(ExecutionImputation executionImputation,Collection<ScopeFunction> scopeFunctions
-			,Collection<ScopeFunctionExecutionImputation> database,Collection<ScopeFunctionExecutionImputation> savables,Collection<ScopeFunctionExecutionImputation> deletables) {
-		if(executionImputation == null)
-			return;
-		Collection<ScopeFunctionExecutionImputation> undeletables = null;
-		if(CollectionHelper.isEmpty(scopeFunctions)) {
-			
-		}else {
-			ScopeFunctionExecutionImputation scopeFunctionExecutionImputation;
-			for(ScopeFunction scopeFunction : scopeFunctions) {
-				//if function identifier exists then go to next
-				if((scopeFunctionExecutionImputation = ScopeFunctionExecutionImputation.find(scopeFunction, executionImputation, database)) != null) {
-					if(undeletables == null)
-						undeletables = new ArrayList<>();
-					undeletables.add(scopeFunctionExecutionImputation);
-					continue;
-				}
-				//find by function code
-				scopeFunctionExecutionImputation = ScopeFunctionExecutionImputation.find(scopeFunction.getFunction().getCode(), database);
-				if(scopeFunctionExecutionImputation == null) {
-					//new instance to create
-					scopeFunctionExecutionImputation = new ScopeFunctionExecutionImputation().setScopeFunction(scopeFunction).setExecutionImputation(executionImputation);
-				}else {
-					//existing instance where function to be updated
-					scopeFunctionExecutionImputation.setScopeFunction(scopeFunction);
-				}					
-				savables.add(scopeFunctionExecutionImputation);
-				if(undeletables == null)
-					undeletables = new ArrayList<>();
-				undeletables.add(scopeFunctionExecutionImputation);
-			}
-		}
-		if(CollectionHelper.isNotEmpty(database)) {
-			for(ScopeFunctionExecutionImputation index : database) {
-				if(CollectionHelper.contains(database, index) && !CollectionHelper.contains(undeletables, index))
-					deletables.add(index);
-			}
-		}
-	}
-
 	@Override @Transactional
 	public TransactionResult deriveFromScopeFunctions(Collection<ScopeFunction> scopeFunctions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scope functions", scopeFunctions);
@@ -142,19 +73,13 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	public TransactionResult deriveScopeFunctionsFromModel(ExecutionImputation executionImputationModel,Filter filter) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("executionImputationModel", executionImputationModel);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
-		/*
-		if(executionImputationModel.getCreditManagerHolder() == null && executionImputationModel.getAuthorizingOfficerHolder() == null 
-				&& executionImputationModel.getFinancialControllerHolder() == null && executionImputationModel.getAccountingHolder() == null)
-			throw new RuntimeException("Valeur modèle obligatoire");
-		*/
 		ExecutionImputationQuerier.refreshMaterializedView();
 		TransactionResult result = new TransactionResult();
 		LogHelper.logInfo(String.format("Modèle : CM=%s|AO=%s|FC=%s|A=%s , filtre : %s", executionImputationModel.getCreditManager()
 				,executionImputationModel.getAuthorizingOfficer(),executionImputationModel.getFinancialController(),executionImputationModel.getAccounting(),filter), getClass());
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setFilter(filter);
-		queryExecutorArguments.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
-		
+		queryExecutorArguments.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER);		
 		LogHelper.logInfo(String.format("Compte des imputations à traiter en cours..."), getClass());
 		Long t = System.currentTimeMillis();
 		Long numberOfExecutionImputations = ExecutionImputationQuerier.getInstance().countWhereFilter(queryExecutorArguments);
@@ -171,27 +96,10 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);		
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());				
 		
-		Executor<DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder> producer = new Executor<DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder>()
+		Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor> producer = new Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor>()
 				.setName("Génération de requête SQL").setNumberOfRunnablesToBeExecuted(numberOfBatches)
-				.setExecutorService(RunnableHelper.instantiateExecutorService(3,5,1l,TimeUnit.MINUTES,null,numberOfBatches,null,null))
-				.setListener(new Executor.Listener.AbstractImpl<DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder>() {
-					@Override
-					public void listenCompletion(Executor<DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder> executor, DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder runnable) {
-						super.listenCompletion(executor, runnable);
-						//System.out.println("DEL : "+((DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder)runnable).getDelete());
-						if(StringHelper.isNotBlank(runnable.getDelete()))
-							NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
-									.setAction(Action.DELETE).addQueriesStrings(runnable.getDelete()));
-						if(StringHelper.isNotBlank(runnable.getUpdate()))
-							NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
-									.setAction(Action.UPDATE).addQueriesStrings(runnable.getUpdate()));
-						if(StringHelper.isNotBlank(runnable.getCreate()))
-							NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
-									.setAction(Action.CREATE).addQueriesStrings(runnable.getCreate()));
-					}
-				});				
-		//producer.start();
-		
+				.setExecutorService(RunnableHelper.instantiateExecutorService(3,5,1l,TimeUnit.MINUTES,null,numberOfBatches,null,null));				
+		producer.start();		
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
 			Integer from = index * batchSize;
 			Integer to = from + batchSize;
@@ -200,21 +108,19 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 			Collection<ExecutionImputation> executionImputationsBatch = executionImputations.subList(from, to);			
 			if(CollectionHelper.isEmpty(executionImputationsBatch))
 				continue;	
-			producer.addRunnables(new DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder().setExecutionImputationModel(executionImputationModel)
+			producer.addRunnables(new SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor().setExecutionImputationModel(executionImputationModel)
 					.setExecutionImputations(executionImputationsBatch));			
-			//TransactionResult transactionResult = saveScopeFunctions(executionImputations);
-			//result.add(transactionResult);
-			//break;
 		}
-		producer.run();
-		//producer.join();
+		producer.join();
 		ExecutionImputationQuerier.refreshMaterializedView();
+		executionImputations.clear();
+		executionImputations = null;
 		result.log(getClass());
 		return result;
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
-	public static class DeriveScopeFunctionsFromModelNativeQueryStringManyBuilder implements Runnable,Serializable {
+	public static class SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor implements Runnable,Serializable {
 		private Collection<ExecutionImputation> executionImputations;
 		private ExecutionImputation executionImputationModel;
 		private String create,update,delete;
@@ -238,12 +144,23 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 					}
 				}
 			}
-			if(CollectionHelper.isNotEmpty(creatables))
-				create = __inject__(NativeQueryStringBuilder.class).buildInsertManyFromMaps(ScopeFunctionExecutionImputation.class, creatables);
-			if(CollectionHelper.isNotEmpty(updatables))
-				update = __inject__(NativeQueryStringBuilder.class).buildUpdateManyFromMaps(ScopeFunctionExecutionImputation.class, updatables);
+			
 			if(CollectionHelper.isNotEmpty(deletablesIdentifiers))
-				delete = __inject__(NativeQueryStringBuilder.class).buildDeleteManyByIdentifiers(ScopeFunctionExecutionImputation.class, deletablesIdentifiers);			
+				NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+						.setAction(Action.DELETE).addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildDeleteManyByIdentifiers(ScopeFunctionExecutionImputation.class, deletablesIdentifiers)));
+			
+			//System.out.println("UPDATE : "+__inject__(NativeQueryStringBuilder.class).buildUpdateManyFromMaps(ScopeFunctionExecutionImputation.class, updatables));
+			
+			if(CollectionHelper.isNotEmpty(updatables))
+				NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+						.setAction(Action.UPDATE)
+						.addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildUpdateManyFromMaps(ScopeFunctionExecutionImputation.class, updatables)));
+			
+			if(CollectionHelper.isNotEmpty(creatables))
+				NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+						.setAction(Action.CREATE)
+						.addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildInsertManyFromMaps(ScopeFunctionExecutionImputation.class, creatables)));
+			
 		}
 		
 		private Boolean addIfCreatable(ExecutionImputation executionImputation,String functionFieldName,String type,Collection<Map<String,String>> creatables) {
@@ -251,7 +168,7 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 					, ExecutionImputation.buildScopeFunctionExecutionImputationIdentifierFieldName(functionFieldName, type));
 			if(StringHelper.isNotBlank(scopeFunctionExecutionImputationIdentifier))
 				return Boolean.FALSE;
-			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputationModel, functionFieldName);
+			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(computeModel(executionImputation), functionFieldName);
 			if(executionImputationScopeFunctionModel != null && StringHelper.isNotBlank(executionImputationScopeFunctionModel.getHolderIdentifier())) {
 				creatables.add(Map.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
 						,"'"+ScopeFunctionExecutionImputationBusiness.identify(executionImputationScopeFunctionModel.getHolderIdentifier(), executionImputation.getIdentifier())+"'"
@@ -268,13 +185,13 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 					, ExecutionImputation.buildScopeFunctionExecutionImputationIdentifierFieldName(functionFieldName, type));
 			if(StringHelper.isBlank(scopeFunctionExecutionImputationIdentifier))
 				return Boolean.FALSE;
-			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputationModel, functionFieldName);
+			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(computeModel(executionImputation), functionFieldName);
 			if(executionImputationScopeFunctionModel != null && StringHelper.isNotBlank(executionImputationScopeFunctionModel.getHolderIdentifier())
-					&& Boolean.TRUE.equals(executionImputationScopeFunctionModel.getHolderOverridable())) {
+					&& (executionImputationModel == null || Boolean.TRUE.equals(executionImputationScopeFunctionModel.getHolderOverridable()))) {
 				updatables.add(Map.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
 						,"'"+scopeFunctionExecutionImputationIdentifier+"'"
 						,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION,"'"+executionImputationScopeFunctionModel.getHolderIdentifier()+"'"
-						,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION,"'"+executionImputation.getIdentifier()+"'"
+						//,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION,"'"+executionImputation.getIdentifier()+"'"
 						));
 					return Boolean.TRUE;
 			}
@@ -286,13 +203,19 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 					, ExecutionImputation.buildScopeFunctionExecutionImputationIdentifierFieldName(functionFieldName, type));
 			if(StringHelper.isBlank(scopeFunctionExecutionImputationIdentifier))
 				return Boolean.FALSE;
-			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputationModel, functionFieldName);
+			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(computeModel(executionImputation), functionFieldName);
 			if(executionImputationScopeFunctionModel != null && StringHelper.isBlank(executionImputationScopeFunctionModel.getHolderIdentifier()) 
-						&& Boolean.TRUE.equals(executionImputationScopeFunctionModel.getHolderOverridable())) {
+						&& (executionImputationModel == null || Boolean.TRUE.equals(executionImputationScopeFunctionModel.getHolderOverridable()))) {
 					deletablesIdentifiers.add(scopeFunctionExecutionImputationIdentifier);
 					return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
+		}
+		
+		private ExecutionImputation computeModel(ExecutionImputation executionImputation) {
+			if(executionImputationModel == null)
+				return executionImputation;
+			return executionImputationModel;
 		}
 	}
 }

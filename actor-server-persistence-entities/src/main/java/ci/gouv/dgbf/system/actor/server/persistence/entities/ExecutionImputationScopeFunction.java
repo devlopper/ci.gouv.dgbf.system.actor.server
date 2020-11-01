@@ -2,9 +2,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.string.StringHelper;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +18,7 @@ public class ExecutionImputationScopeFunction implements Serializable {
 	
 	private Boolean holderOverridable;
 	private Boolean assistantOverridable;
-	
+	/*
 	public ExecutionImputationScopeFunction setHolderFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			holder = null;
@@ -52,14 +49,23 @@ public class ExecutionImputationScopeFunction implements Serializable {
 			assistantIdentifier = source.assistantIdentifier;
 		return this;
 	}
+	*/
 	
 	@Override
 	public String toString() {
-		return "H:"+(holder == null ? holderIdentifier : holder.getCode())+"/A:"+(assistant == null ? assistantIdentifier : assistant.getCode());
+		return "H:"+holderIdentifier+"(O:"+holderOverridable+")"+"/A:"+assistantIdentifier+"(O:"+assistantOverridable+")";
 	}
 	
-	public static final String FIELD_HOLDER = "holder";
-	public static final String FIELD_ASSISTANT = "assistant";
+	/*@Override
+	public String toString() {
+		return "H:"+(holder == null ? holderIdentifier : holder.getCode())+"/A:"+(assistant == null ? assistantIdentifier : assistant.getCode());
+	}*/
+	
+	public static final String FIELD_HOLDER_IDENTIFIER = "holderIdentifier";
+	public static final String FIELD_ASSISTANT_IDENTIFIER = "assistantIdentifier";
+	
+	//public static final String FIELD_HOLDER = "holder";
+	//public static final String FIELD_ASSISTANT = "assistant";
 	
 	public static final String FIELD_HOLDER_OVERRIDABLE = "holderOverridable";
 	public static final String FIELD_ASSISTANT_OVERRIDABLE = "assistantOverridable";

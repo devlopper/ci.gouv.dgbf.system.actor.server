@@ -42,6 +42,9 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_ALL = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "countAll");
 	Long count();
 	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(ScopeFunctionExecutionImputation.class, "readByIdentifiers");
+	Collection<ScopeFunctionExecutionImputation> readByIdentifiers(Collection<String> identifiers);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeFunctionExecutionImputationQuerier,Serializable {		
@@ -94,6 +97,13 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 		public Long count() {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_ALL);
 		}
+		
+		@Override
+		public Collection<ScopeFunctionExecutionImputation> readByIdentifiers(Collection<String> identifiers) {
+			if(CollectionHelper.isEmpty(identifiers))
+				return null;
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIERS,PARAMETER_NAME_IDENTIFIERS,identifiers);
+		}
 	}
 	
 	/**/
@@ -117,6 +127,9 @@ public interface ScopeFunctionExecutionImputationQuerier extends Querier {
 					+" AND t.executionImputation.identifier = :"+PARAMETER_NAME_EXECUTION_IMPUTATION_IDENTIFIER)
 			
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_ALL, "SELECT COUNT(t.identifier) FROM ScopeFunctionExecutionImputation t")
+			
+			,Query.buildSelect(ScopeFunctionExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIERS
+					, "SELECT t FROM ScopeFunctionExecutionImputation t WHERE t.identifier IN :"+PARAMETER_NAME_IDENTIFIERS)
 		);
 	}
 }

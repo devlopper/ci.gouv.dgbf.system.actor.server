@@ -16,6 +16,8 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 
 	@Override
 	protected String __get__(String readQueryIdentifier) {
+		if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(readQueryIdentifier))
+			return ExecutionImputationQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		if(ServiceQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))
 			return ServiceQuerier.QUERY_IDENTIFIER_COUNT;
 		if(MenuQuerier.QUERY_IDENTIFIER_READ_WITH_ALL.equals(readQueryIdentifier))

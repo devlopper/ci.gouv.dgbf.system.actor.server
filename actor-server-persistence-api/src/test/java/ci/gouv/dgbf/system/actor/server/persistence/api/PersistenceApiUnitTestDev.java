@@ -105,7 +105,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				});
 		System.out.println((System.currentTimeMillis() - t)/1000);
 	}
-	
+	/*
 	@Test
 	public void executionImputation_readWhereFilterAll(){
 		org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
@@ -119,7 +119,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				});
 		System.out.println((System.currentTimeMillis() - t)/1000);
 	}
-	
+	*/
 	@Test
 	public void executionImputation_readAll(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
