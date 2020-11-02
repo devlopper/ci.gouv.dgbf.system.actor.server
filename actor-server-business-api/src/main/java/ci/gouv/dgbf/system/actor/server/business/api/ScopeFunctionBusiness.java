@@ -6,30 +6,28 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.server.business.BusinessEntity;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 
-	@Transactional
-	void deriveFromScopesFromFunctions(Collection<Scope> scopes,Collection<Function> functions);
-	void deriveAll();
-	
-	@Transactional
-	void codify(Collection<ScopeFunction> scopeFunctions);
-	void codifyAll();
-	
-	String computeCode(String scopeCode,String functionCode);
-	String computeCode(Scope scope,Function function);
-	
-	String SAVE = "ScopeFunction.save";
-	
-	String DERIVE_FROM_SCOPES_FROM_FUNCTIONS = "ScopeFunction.deriveFromScopesFromFunctions";
 	String DERIVE_ALL = "ScopeFunction.deriveAll";
+	void deriveAll();
+	String DERIVE_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deriveByFunctionsIdentifiers";
+	void deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	String CODIFY = "ScopeFunction.codify";
-	String CODIFY_ALL = "ScopeFunction.codifyAll";
+	@Transactional
+	void codify(Collection<ScopeFunction> scopeFunctions);
 	
+	String CODIFY_ALL = "ScopeFunction.codifyAll";
+	void codifyAll();
+	String CODIFY_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.codifyByFunctionsIdentifiers";
+	void codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
+	String DELETE_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deleteByFunctionsIdentifiers";
+	void deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
+	String SAVE = "ScopeFunction.save";
+		
 	String DELETE_ALL = "ScopeFunction.deleteAll";	
 }

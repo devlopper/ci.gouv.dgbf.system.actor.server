@@ -19,6 +19,8 @@ public class ScopeTypeFunctionDto extends AbstractIdentifiableSystemScalarString
 	private String functionAsString;
 	private Boolean scopeFunctionDerivable;	
 	private String scopeFunctionDerivableAsString;
+	private String scopeFunctionCodeScript;
+	private String scopeFunctionNameScript;
 	
 	@Override
 	public ScopeTypeFunctionDto setIdentifier(String identifier) {

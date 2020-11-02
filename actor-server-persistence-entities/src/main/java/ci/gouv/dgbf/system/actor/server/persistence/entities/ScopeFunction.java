@@ -15,7 +15,9 @@ import javax.validation.constraints.NotNull;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.script.ScriptExecutor;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +40,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private String functionAsString;
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
+	@Transient private ScopeTypeFunction scopeTypeFunction;
 	
 	@Override
 	public ScopeFunction setIdentifier(String identifier) {
@@ -69,7 +72,96 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			setFunction(EntityFinder.getInstance().find(Function.class, identifier));
 		return this;
 	}
+	
+	public ScopeFunction setCodeFromScript() {
+		return setCodeFromScript(scopeTypeFunction.getScopeFunctionCodeScript());
+	}
 
+	public ScopeFunction setNameFromScript() {
+		return setNameFromScript(scopeTypeFunction.getScopeFunctionNameScript());
+	}
+	
+	public ScopeFunction computeAndSetCode(String script,String scopeTypeCode,String scopeCode,String functionCode) {
+		code = computeCode(script, scopeTypeCode, scopeCode, functionCode);
+		return this;
+	}
+	
+	public ScopeFunction setCodeFromScript(String script) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("script", script);
+		code = ScriptExecutor.getInstance().execute(String.class, script,getScriptVariables(this));
+		return this;
+	}
+	
+	public ScopeFunction computeAndSetName(String script,String scopeTypeCode,String scopeName,String functionName) {
+		name = computeName(script, scopeTypeCode, scopeName, functionName);
+		return this;
+	}
+	
+	public ScopeFunction setNameFromScript(String script) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("script", script);
+		name = ScriptExecutor.getInstance().execute(String.class, script,getScriptVariables(this));
+		return this;
+	}
+	
+	public static Object[] getScriptVariables(ScopeFunction scopeFunction) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopeFunction", scopeFunction);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scope", scopeFunction.scope);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopeType", scopeFunction.scope.getType());
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("function", scopeFunction.function);
+		return new Object[] {
+				getScriptVariableNameScopeCode(scopeFunction.scope.getType().getCode()),scopeFunction.scope.getCode()
+			,getScriptVariableNameScopeName(scopeFunction.scope.getType().getCode()),scopeFunction.scope.getName()
+			,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE,scopeFunction.function.getCode()
+			,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME,scopeFunction.function.getName()
+		};
+	}
+	
+	public static String[] getScriptVariablesNames(ScopeFunction scopeFunction) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopeFunction", scopeFunction);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scope", scopeFunction.scope);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopeType", scopeFunction.scope.getType());
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("function", scopeFunction.function);
+		return new String[] {getScriptVariableNameScopeCode(scopeFunction.scope.getType().getCode())
+			,getScriptVariableNameScopeName(scopeFunction.scope.getType().getCode())
+			,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE
+			,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME
+		};
+	}
+	
+	public static String getScriptVariableNameScopeCode(String scopeTypeCode) {
+		if(StringHelper.isBlank(scopeTypeCode))
+			return null;
+		return String.format(CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT, scopeTypeCode.toLowerCase());
+	}
+	
+	public static String getScriptVariableNameScopeName(String scopeTypeCode) {
+		if(StringHelper.isBlank(scopeTypeCode))
+			return null;
+		return String.format(CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT, scopeTypeCode.toLowerCase());
+	}
+	
+	public static String computeCode(String script,String scopeTypeCode,String scopeCode,String functionCode) {
+		if(StringHelper.isBlank(script))
+			return functionCode+scopeCode;
+		return ScriptExecutor.getInstance().execute(String.class, script, getScriptVariableNameScopeCode(scopeTypeCode),scopeCode
+				,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE,functionCode);
+	}
+	
+	public static String computeCode(String script,String scopeTypeCode,Scope scope,Function function) {
+		return computeCode(script, scopeTypeCode, scope == null ? null : scope.getCode(), function == null ? null : function.getCode());
+	}
+	
+	public static String computeName(String script,String scopeTypeCode,String scopeName,String functionName) {
+		if(StringHelper.isBlank(script))
+			return functionName+" "+scopeName;
+		return ScriptExecutor.getInstance().execute(String.class, script, getScriptVariableNameScopeName(scopeTypeCode),scopeName
+				,CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME,functionName);
+	}
+	
+	public static String computeName(String script,String scopeTypeCode,Scope scope,Function function) {
+		return computeName(script, scopeTypeCode, scope == null ? null : scope.getName(), function == null ? null : function.getName());
+	}
+	
 	public static Boolean isExistsByCodesOnly(Collection<ScopeFunction> scopeFunctions,Scope scope,Function function) {
 		if(CollectionHelper.isEmpty(scopeFunctions) || scope == null || function == null)
 			return null;
@@ -77,6 +169,15 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			if(scope.getCode().equals(scopeFunction.getScopeAsString()) && function.getCode().equals(scopeFunction.getFunctionAsString()))
 				return Boolean.TRUE;
 		return Boolean.FALSE;
+	}
+	
+	public static ScopeFunction find(String scopeCode,String functionCode,Collection<ScopeFunction> scopeFunctions) {
+		if(StringHelper.isBlank(scopeCode) || StringHelper.isBlank(functionCode) || CollectionHelper.isEmpty(scopeFunctions))
+			return null;
+		for(ScopeFunction scopeFunction : scopeFunctions)
+			if(scopeFunction.getScope().getCode().equals(scopeCode) && scopeFunction.getFunction().getCode().equals(functionCode))
+				return scopeFunction;
+		return null;
 	}
 	
 	@Override
@@ -97,4 +198,10 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_SCOPE = "domaine";
 	public static final String COLUMN_FUNCTION = "fonction";
 	public static final String COLUMN_NUMBER_OF_ACTOR = "nombre_acteur";
+	
+	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT = "code_%s";
+	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT = "libelle_%s";
+	
+	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE = "code_fonction";
+	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME = "libelle_fonction";
 }

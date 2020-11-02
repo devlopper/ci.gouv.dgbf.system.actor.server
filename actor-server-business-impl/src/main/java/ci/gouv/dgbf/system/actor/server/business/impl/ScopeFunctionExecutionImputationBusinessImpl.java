@@ -22,7 +22,6 @@ import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
-import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionExecutionImputationPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -98,12 +97,10 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 					public void listenCompletion(Executor<DeriveAllNativeQueryStringInsertManyBuilder> producerConsumer, DeriveAllNativeQueryStringInsertManyBuilder runnable) {
 						super.listenCompletion(producerConsumer, runnable);
 						consumer.addRunnables(new DeriveAllNativeQueryStringInsertManyExecutor().setQueryString(runnable.getResult()));	
-						//queriesStrings.add(runnable.getResult());
 					}
 				});				
 		producer.start();
 									
-		ScopeFunctionBusiness scopeFunctionBusiness = __inject__(ScopeFunctionBusiness.class);
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {			
 			Integer from = index * batchSize;
 			Integer to = from + batchSize;
@@ -112,8 +109,7 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 			Collection<ExecutionImputation> executionImputationsBatch = executionImputations.subList(from, to);
 			if(CollectionHelper.isEmpty(executionImputationsBatch))
 				continue;
-			producer.addRunnables(new DeriveAllNativeQueryStringInsertManyBuilder().setExecutionImputations(executionImputationsBatch)
-					.setScopeFunctionBusiness(scopeFunctionBusiness).setScopeFunctions(scopeFunctions));
+			producer.addRunnables(new DeriveAllNativeQueryStringInsertManyBuilder().setExecutionImputations(executionImputationsBatch).setScopeFunctions(scopeFunctions));
 		}
 		producer.join();		
 		consumer.join();
@@ -133,75 +129,53 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		System.gc();
 	}
 	
-	private static String getNativeQueryStringInsertMany(ScopeFunctionBusiness scopeFunctionBusiness,Collection<ExecutionImputation> executionImputations,Collection<ScopeFunction> scopeFunctions) {
+	private static String getNativeQueryStringInsertMany(Collection<ExecutionImputation> executionImputations,Collection<ScopeFunction> scopeFunctions) {
 		if(CollectionHelper.isEmpty(executionImputations))
 			return null;		
-		//System.gc();		
-		//Long t0 = System.currentTimeMillis();
-		//Long count0 = __persistence__.count();
-		//LogHelper.logInfo(String.format("\tGénération de la requête SQL d'insertion multiple de %s probable affectation(s) en cours",executionImputations.size()*4), ScopeFunctionExecutionImputationBusinessImpl.class);
 		List<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations = new ArrayList<>();
-		
 		for(ExecutionImputation executionImputation : executionImputations) {
-			add(scopeFunctionBusiness.computeCode(executionImputation.getAdministrativeUnitCodeName(), Function.CODE_CREDIT_MANAGER_HOLDER)
-					, executionImputation, scopeFunctionExecutionImputations, scopeFunctions);
-			
-			add(scopeFunctionBusiness.computeCode(executionImputation.getBudgetSpecializationUnitCodeName(), Function.CODE_AUTHORIZING_OFFICER_HOLDER)
-					, executionImputation, scopeFunctionExecutionImputations, scopeFunctions);
-			
-			add(scopeFunctionBusiness.computeCode(executionImputation.getSectionCodeName()
-					, Function.CODE_FINANCIAL_CONTROLLER_HOLDER), executionImputation, scopeFunctionExecutionImputations, scopeFunctions);
-			
-			add(scopeFunctionBusiness.computeCode(executionImputation.getSectionCodeName()
-					, Function.CODE_ACCOUNTING_HOLDER), executionImputation, scopeFunctionExecutionImputations, scopeFunctions);
-		}	
+			add(executionImputation.getAdministrativeUnitCodeName(), Function.CODE_CREDIT_MANAGER_HOLDER, executionImputation, scopeFunctions, scopeFunctionExecutionImputations);			
+			add(executionImputation.getBudgetSpecializationUnitCodeName(), Function.CODE_AUTHORIZING_OFFICER_HOLDER, executionImputation, scopeFunctions, scopeFunctionExecutionImputations);		
+			add(executionImputation.getSectionCodeName(), Function.CODE_FINANCIAL_CONTROLLER_HOLDER, executionImputation, scopeFunctions, scopeFunctionExecutionImputations);		
+			add(executionImputation.getSectionCodeName(), Function.CODE_ACCOUNTING_HOLDER, executionImputation, scopeFunctions, scopeFunctionExecutionImputations);
+		}
 		if(CollectionHelper.isEmpty(scopeFunctionExecutionImputations))
 			return null;
 		IdentifiableSystem.setManyIfNull(scopeFunctionExecutionImputations);
 		return __inject__(NativeQueryStringBuilder.class).buildInsertMany(ScopeFunctionExecutionImputation.class, scopeFunctionExecutionImputations);
-		//if(StringHelper.isBlank(queryString))
-		//	return null;
-		//System.out.println(__inject__(NativeQueryStringBuilder.class).buildInsertMany(ScopeFunctionExecutionImputation.class, scopeFunctionExecutionImputations));
-		//EntityCreator.getInstance().createMany(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, scopeFunctionExecutionImputations))
-		//		.setIsNative(Boolean.TRUE));
-		//createByBatch(scopeFunctionExecutionImputations, batchSize);		
-		//Long duration = System.currentTimeMillis() - t0;
-		//Long numberOfElements = __persistence__.count() - count0;
-		//System.gc();
-		//return queryString;
 	}
 	
-	private static void add(String scopeFunctionCode,ExecutionImputation executionImputation,Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations
-			,Collection<ScopeFunction> scopeFunctions) {
-		ScopeFunction scopeFunction = getScopeFunctionByCode(scopeFunctionCode,scopeFunctions);
+	private static void add(String scopeCode,String functionCode,ExecutionImputation executionImputation
+			,Collection<ScopeFunction> scopeFunctions,Collection<ScopeFunctionExecutionImputation> scopeFunctionExecutionImputations) {
+		ScopeFunction scopeFunction = CollectionHelper.isEmpty(scopeFunctions) ? null : findScopeFunction(scopeCode,functionCode,scopeFunctions);
 		if(scopeFunction == null) {
-			LogHelper.logWarning(String.format("poste %s inexistant", scopeFunctionCode), ScopeFunctionExecutionImputationBusinessImpl.class);
+			LogHelper.logWarning(String.format("poste (%s,%s) inexistant", functionCode,scopeCode), ScopeFunctionExecutionImputationBusinessImpl.class);
 			return;
 		}
-		if(Boolean.TRUE.equals(executionImputation.hasScopeFunction(scopeFunction)))
+		if(Boolean.TRUE.equals(executionImputation.hasScopeFunction(scopeFunction))) {
 			return;
+		}
 		scopeFunctionExecutionImputations.add(new ScopeFunctionExecutionImputation().setScopeFunction(scopeFunction).setExecutionImputation(executionImputation));
 	}
-	
-	private static ScopeFunction getScopeFunctionByCode(String scopeFunctionCode,Collection<ScopeFunction> scopeFunctions) {
+
+	public static ScopeFunction findScopeFunction(String scopeCode,String functionCode,Collection<ScopeFunction> scopeFunctions) {
 		for(ScopeFunction scopeFunction : scopeFunctions)
-			if(scopeFunction.getCode().equals(scopeFunctionCode))
+			if(scopeFunction.getScopeAsString().equals(scopeCode) && scopeFunction.getFunctionAsString().equals(functionCode))
 				return scopeFunction;
 		return null;
 	}
-
+	
 	/**/
 
 	@Getter @Setter @Accessors(chain=true)
 	public static class DeriveAllNativeQueryStringInsertManyBuilder implements Runnable,Serializable {
 		private Collection<ScopeFunction> scopeFunctions;
 		private Collection<ExecutionImputation> executionImputations;
-		private ScopeFunctionBusiness scopeFunctionBusiness;
 		private String result;
 			
 		@Override
 		public void run() {
-			result = getNativeQueryStringInsertMany(scopeFunctionBusiness,executionImputations, scopeFunctions);		
+			result = getNativeQueryStringInsertMany(executionImputations, scopeFunctions);		
 		}		
 	}
 	

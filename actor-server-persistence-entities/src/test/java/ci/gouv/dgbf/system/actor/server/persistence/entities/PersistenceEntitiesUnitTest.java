@@ -16,6 +16,17 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void scopeFunction_setCodeFromScript(){
+		String codeScript = "code_fonction+code_ua";
+		String nameScript = "libelle_fonction+' '+libelle_ua";
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode("GC").setName("Gestionnaire de crédits"));
+		assertThat(scopeFunction.getCode()).isNull();
+		assertThat(scopeFunction.setCodeFromScript(codeScript).getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.setNameFromScript(nameScript).getName()).isEqualTo("Gestionnaire de crédits DTI");
+	}
+	
+	@Test
 	public void buildFieldNames(){
 		assertThat(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER).isEqualTo("creditManagerHolderScopeFunctionIdentifier");
 	}

@@ -9,6 +9,7 @@ import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArq
 import org.junit.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
@@ -55,10 +56,31 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		//super.__listenBefore__();
 	}
 	
-	@Test
-	public void executionImputation_deriveScopeFunctionsFromModel() throws Exception {
+	//@Test
+	public void scopeFunction_deriveAll() throws Exception {
 		try {
-			
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void scopeFunction_codifyAll() throws Exception {
+		try {
+			__inject__(ScopeFunctionBusiness.class).codifyAll();
+			//__inject__(ScopeFunctionBusiness.class).codifyAll();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	public void executionImputation_deriveScopeFunctionsFromModel() throws Exception {
+		try {			
 			__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
 					.addQueriesStrings("DELETE FROM POSTE_IMPUTATION"));
 			__inject__(ScopeFunctionExecutionImputationBusiness.class).deriveAll();			
