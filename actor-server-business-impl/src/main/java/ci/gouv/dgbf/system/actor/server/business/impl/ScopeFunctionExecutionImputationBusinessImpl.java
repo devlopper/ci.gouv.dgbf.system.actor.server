@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.runnable.RunnableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
+import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionExecutionImputationPersistence;
@@ -163,6 +164,14 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 			if(scopeFunction.getScopeAsString().equals(scopeCode) && scopeFunction.getFunctionAsString().equals(functionCode))
 				return scopeFunction;
 		return null;
+	}
+	
+	@Override
+	public BusinessEntity<ScopeFunctionExecutionImputation> deleteAll() {
+		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+				.addQueriesStrings("DELETE FROM POSTE_IMPUTATION"));
+		ExecutionImputationQuerier.refreshMaterializedView();
+		return this;
 	}
 	
 	/**/

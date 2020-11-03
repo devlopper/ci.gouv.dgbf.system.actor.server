@@ -37,10 +37,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFunction> {
 
+	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
 	
 	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");
 	Collection<ScopeFunction> readAllWithReferencesOnly();
@@ -50,6 +53,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	String QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS);
 	Long countByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByScopeTypesIdentifiersByFunctionsIdentifiers");
+	Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
 	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsCodes");
 	Collection<ScopeFunction> readByFunctionsCodes(QueryExecutorArguments arguments);
@@ -123,6 +129,12 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Long countByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS
 					,PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers);
+		}
+		
+		@Override
+		public Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers, Collection<String> functionsIdentifiers) {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+					,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS,scopeTypesIdentifiers,PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers);
 		}
 		
 		@Override
@@ -207,6 +219,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		
 		private void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
+			filter.addFieldsEquals(arguments, PARAMETER_NAME_FUNCTION_IDENTIFIER);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_IDENTIFIER);			
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
@@ -236,7 +250,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	static String getQueryValueReadWhereFilterWhere() {
 		return where(and(
-				like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
+				String.format("(:%s = true OR t.function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
+				,like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
 				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				,like("t", FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)
 			));
@@ -280,6 +295,10 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT COUNT(sf) FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+						, String.format("SELECT t FROM ScopeFunction t WHERE t.scope.type.identifier IN :%s AND t.function.identifier IN :%s"
+								,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS))
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)

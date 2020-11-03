@@ -89,6 +89,21 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 	}
 	
 	@Override
+	public Response deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).deriveByFunctionsIdentifiers(functionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response codifyAll() {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
@@ -97,6 +112,36 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 					@Override
 					public void run() {
 						__inject__(ScopeFunctionBusiness.class).codifyAll();
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).codifyByFunctionsIdentifiers(functionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).deleteByFunctionsIdentifiers(functionsIdentifiers);
 					}
 				};
 			}

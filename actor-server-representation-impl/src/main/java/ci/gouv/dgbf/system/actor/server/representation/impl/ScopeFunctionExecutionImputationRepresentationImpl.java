@@ -29,5 +29,20 @@ public class ScopeFunctionExecutionImputationRepresentationImpl extends Abstract
 				};
 			}
 		});
+	}
+	
+	@Override
+	public Response deleteAll() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteAll();
+					}
+				};
+			}
+		});
 	}	
 }

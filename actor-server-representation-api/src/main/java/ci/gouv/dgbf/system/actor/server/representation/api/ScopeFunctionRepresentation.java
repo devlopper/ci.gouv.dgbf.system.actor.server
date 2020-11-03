@@ -32,15 +32,39 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	Response deriveAll();
 	
 	@POST
+	@Path(PATH_DERIVE_BY_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Dériver les postes par fonctions",tags = {TAG})
+	Response deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
+	@POST
 	@Path(PATH_CODIFY_ALL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@ApiOperation(value = "Codifier tous les postes",tags = {TAG})
 	Response codifyAll();
 	
+	@POST
+	@Path(PATH_CODIFY_BY_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Codifier les postes par fonctions",tags = {TAG})
+	Response codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
+	@POST
+	@Path(PATH_DELETE_BY_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Supprimer les postes par fonctions",tags = {TAG})
+	Response deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	
 	String PATH_SAVE = "save";
 	String PATH_DERIVE_ALL = "deriveAll";
+	String PATH_DERIVE_BY_FUNCTIONS_IDENTIFIERS = "deriveByFunctionsIdentifiers";
 	String PATH_CODIFY_ALL = "codifyAll";
+	String PATH_CODIFY_BY_FUNCTIONS_IDENTIFIERS = "codifyByFunctionsIdentifiers";
+	String PATH_DELETE_BY_FUNCTIONS_IDENTIFIERS = "deleteByFunctionsIdentifiers";
 	String PATH = "scopefunction";
 
 	String TAG = ScopeRepresentation.TAG;

@@ -46,6 +46,7 @@ public interface ScopeQuerier extends Querier {
 	String PARAMETER_NAME_TYPE_CODE = "typeCode";
 	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_TYPE_NAME = "typeName";
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_TYPES_IDENTIFIERS = "typesIdentifiers";
@@ -238,6 +239,10 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(Scope.class, "readWhereFunctionDoesNotExistByTypesIdentifiers");
 	Collection<Scope> readWhereFunctionDoesNotExistByTypesIdentifiers(Collection<String> typesIdentifiers);
 	
+	/* read where function does not exist by functions identifier by types identifiers order by code ascending */
+	String QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(Scope.class, "readWhereFunctionDoesNotExistByTypesIdentifiersByFunctionsIdentifiers");
+	Collection<Scope> readWhereFunctionDoesNotExistByTypesIdentifiersByFunctionsIdentifiers(Collection<String> typesIdentifiers,Collection<String> functionsIdentifiers);
+	
 	/* read where type is ua order by code ascending */
 	String QUERY_NAME_READ_WHERE_TYPE_IS_UA = "readWhereTypeIsUA";
 	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA = QueryIdentifierBuilder.getInstance().build(Scope.class, QUERY_NAME_READ_WHERE_TYPE_IS_UA);
@@ -408,6 +413,12 @@ public interface ScopeQuerier extends Querier {
 		}
 		
 		@Override
+		public Collection<Scope> readWhereFunctionDoesNotExistByTypesIdentifiersByFunctionsIdentifiers(Collection<String> typesIdentifiers,Collection<String> functionsIdentifiers) {
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+					, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers, PARAMETER_NAME_TYPES_IDENTIFIERS,typesIdentifiers);
+		}
+		
+		@Override
 		public Collection<Scope> readVisibleByActorCode(String actorCode) {
 			Collection<Scope> scopes = null;
 			Collection<Scope> sections = ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
@@ -506,6 +517,9 @@ public interface ScopeQuerier extends Querier {
 				,Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS
 						, "SELECT t FROM Scope t WHERE t.type.identifier IN :"+PARAMETER_NAME_TYPES_IDENTIFIERS
 						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t)")
+				,Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+						, "SELECT t FROM Scope t WHERE t.type.identifier IN :"+PARAMETER_NAME_TYPES_IDENTIFIERS
+						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t AND sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS+")")
 			);		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_ALL_01
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class,Query.FIELD_VALUE,QUERY_VALUE_COUNT_ALL_01));

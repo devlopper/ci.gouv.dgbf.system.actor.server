@@ -12,6 +12,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ExecutionImputationBusiness
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionExecutionImputationBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
@@ -56,6 +57,75 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		//super.__listenBefore__();
 	}
 	
+	@Test
+	public void all() throws Exception {
+		try {
+			__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteAll();
+			__inject__(ScopeFunctionBusiness.class).deleteAll();
+			
+			__inject__(ScopeFunctionBusiness.class).deleteByFunctions(FunctionQuerier.getInstance().read());
+			__inject__(ScopeFunctionBusiness.class).codifyAll();
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+			__inject__(ScopeFunctionBusiness.class).codifyAll();
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+			__inject__(ScopeFunctionBusiness.class).deleteByFunctions(FunctionQuerier.getInstance().read());
+			
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+				
+			ExecutionImputation executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getAuthorizingOfficer(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getFinancialController(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			executionImputation.getAccounting(Boolean.TRUE).setHolderOverridable(Boolean.TRUE);
+			Filter filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030040");
+			filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			executionImputation = new ExecutionImputation();
+			executionImputation.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030041").setHolderOverridable(Boolean.TRUE);
+			filter = new Filter();
+			filter.addField(ExecutionImputationQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME, "0");
+			__inject__(ExecutionImputationBusiness.class).deriveScopeFunctionsFromModel(executionImputation, filter);
+			
+			Collection<ExecutionImputation> executionImputations = ExecutionImputationQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+					.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(10));
+			executionImputations.forEach(index -> index.getCreditManager(Boolean.TRUE).setHolderIdentifier("GC11030043"));
+			__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(executionImputations);
+			
+			executionImputations = ExecutionImputationQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
+					.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(5));
+			executionImputations.forEach(index -> index.getCreditManager(Boolean.TRUE).setHolderIdentifier(null));
+			__inject__(ExecutionImputationBusiness.class).saveScopeFunctions(executionImputations);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	public void scopeFunction_all() throws Exception {
+		try {
+			__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteAll();
+			__inject__(ScopeFunctionBusiness.class).deleteAll();			
+			__inject__(ScopeFunctionBusiness.class).deleteByFunctions(FunctionQuerier.getInstance().read());
+			__inject__(ScopeFunctionBusiness.class).codifyAll();
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+			__inject__(ScopeFunctionBusiness.class).codifyAll();
+			__inject__(ScopeFunctionBusiness.class).deriveAll();
+			__inject__(ScopeFunctionBusiness.class).deleteByFunctions(FunctionQuerier.getInstance().read());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	//@Test
 	public void scopeFunction_deriveAll() throws Exception {
 		try {
@@ -67,7 +137,7 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		}
 	}
 	
-	@Test
+	//@Test
 	public void scopeFunction_codifyAll() throws Exception {
 		try {
 			__inject__(ScopeFunctionBusiness.class).codifyAll();

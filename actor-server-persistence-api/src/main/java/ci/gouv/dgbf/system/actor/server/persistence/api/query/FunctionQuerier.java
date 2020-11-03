@@ -5,6 +5,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
@@ -94,10 +95,18 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	/*read where associated to scope type */
 	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeType");
 	Collection<Function> readWhereAssociatedToScopeType(QueryExecutorArguments arguments);
+	Collection<Function> readWhereAssociatedToScopeType();
+	
+	/*read where associated to scope type for UI */
+	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI = QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE+"ForUI";
 	
 	/*read where associated to scope type with all */
 	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeTypeWithAll");
 	Collection<Function> readWhereAssociatedToScopeTypeWithAll(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI_CREATE_SCOPE_FUNCTION = QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE
+			+"ForUICreateScopeFunction";
+	Collection<Function> readWhereAssociatedToScopeTypeForUICreateScopeFunction(QueryExecutorArguments arguments);
 	
 	/*read where associated to scope for UI */
 	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeForUI");
@@ -108,12 +117,35 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		
 		@Override
 		public Collection<Function> readWhereAssociatedToScopeType(QueryExecutorArguments arguments) {
-			return QueryExecutor.getInstance().executeReadMany(Function.class,QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE);
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE);
+			return QueryExecutor.getInstance().executeReadMany(Function.class,arguments);
+		}
+		
+		@Override
+		public Collection<Function> readWhereAssociatedToScopeType() {
+			return readWhereAssociatedToScopeType(new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE));
 		}
 		
 		@Override
 		public Collection<Function> readWhereAssociatedToScopeTypeWithAll(QueryExecutorArguments arguments) {
-			Collection<Function> functions = readWhereAssociatedToScopeType(arguments);
+			Collection<Function> functions = readWhereAssociatedToScopeType(arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE));
+			if(CollectionHelper.isEmpty(functions))
+				return null;
+			Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().read();
+			if(CollectionHelper.isNotEmpty(scopeTypeFunctions))
+				functions.forEach(function -> {
+					function.setScopeTypes(scopeTypeFunctions.stream().filter(scopeTypeFunction -> scopeTypeFunction.getFunction().equals(function))
+							.map(scopeTypeFunction -> scopeTypeFunction.getScopeType()).collect(Collectors.toList()));
+				});	
+			return functions;
+		}
+		
+		@Override
+		public Collection<Function> readWhereAssociatedToScopeTypeForUICreateScopeFunction(QueryExecutorArguments arguments) {
+			Collection<Function> functions = readWhereAssociatedToScopeType(arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE));
 			if(CollectionHelper.isEmpty(functions))
 				return null;
 			Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().read();
@@ -266,10 +298,14 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return readWhereAssociatedToScopeType(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return readWhereAssociatedToScopeTypeWithAll(arguments);
+			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI_CREATE_SCOPE_FUNCTION.equals(arguments.getQuery().getIdentifier()))
+				return readWhereAssociatedToScopeTypeForUICreateScopeFunction(arguments);
 			if(QUERY_IDENTIFIER_READ_WITH_ALL_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readWithAllByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
 			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI);
+			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
 			return super.readMany(arguments);
 		}
 		
@@ -311,6 +347,11 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE, jpql(select("t"),from("Function t")
 						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t"))
 						,order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI, jpql(select(fields("t",Function.FIELD_IDENTIFIER
+						,Function.FIELD_CODE,Function.FIELD_NAME)),from("Function t")
+						,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t"))
+						,order(asc("t", "code")))).setTupleFieldsNamesIndexesFromFieldsNames(Function.FIELD_IDENTIFIER,Function.FIELD_CODE,Function.FIELD_NAME)
 				
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI, jpql(
 						select("t.identifier,t.code,t.name"),from("Function t")

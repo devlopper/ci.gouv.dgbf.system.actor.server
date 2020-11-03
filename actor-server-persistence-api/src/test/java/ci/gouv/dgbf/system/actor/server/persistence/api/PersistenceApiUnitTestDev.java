@@ -57,6 +57,11 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void function_readWhereAssociatedToScopeTypeForUICreateScopeFunction(){
+		EntityReader.getInstance().readMany(Function.class, new QueryExecutorArguments().setQuery(new Query().setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI_CREATE_SCOPE_FUNCTION)));
+	}
+	
+	@Test
 	public void executionImputation_refreshMaterializedView(){
 		ExecutionImputationQuerier.refreshMaterializedView();
 	}
