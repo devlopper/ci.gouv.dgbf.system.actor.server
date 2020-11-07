@@ -141,12 +141,14 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 		Integer batchSize = 10000;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());
-		TransactionResult result = new TransactionResult();
+		TransactionResult result = new TransactionResult().setTupleName("Affectation");
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize);
+			TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize);
+			result.add(r);
 		}
 		ExecutionImputationQuerier.refreshMaterializedView();
 		LogHelper.logInfo(String.format("Application du modèle terminée. Durée = %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		result.log(getClass());
 		return result;
 	}
 	
@@ -197,30 +199,35 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 				return;
 			Collection<Map<String,String>> creatables = new ArrayList<>();
 			Collection<Map<String,String>> updatables = new ArrayList<>();
-			Collection<Object> deletablesIdentifiers = new ArrayList<>();
-			for(ExecutionImputation executionImputation : executionImputations) {
-				for(String functionFieldName : ExecutionImputation.FUNCTIONS_FIELDS_NAMES) {
-					for(String functionFieldNameType : ExecutionImputation.FUNCTIONS_FIELDS_NAMES_TYPES) {
-						if(addIfCreatable(executionImputation, functionFieldName, functionFieldNameType, creatables))
-							continue;
-						if(addIfUpdatable(executionImputation, functionFieldName, functionFieldNameType, updatables))
-							continue;
-						if(addIfDeletable(executionImputation, functionFieldName, functionFieldNameType, deletablesIdentifiers))
-							continue;							
+			List<Object> deletablesIdentifiers = new ArrayList<>();
+			if(result == null)
+				result = new TransactionResult();
+			try {
+				for(ExecutionImputation executionImputation : executionImputations) {
+					for(String functionFieldName : ExecutionImputation.FUNCTIONS_FIELDS_NAMES) {
+						for(String functionFieldNameType : ExecutionImputation.FUNCTIONS_FIELDS_NAMES_TYPES) {
+							if(addIfCreatable(executionImputation, functionFieldName, functionFieldNameType, creatables))
+								continue;
+							if(addIfUpdatable(executionImputation, functionFieldName, functionFieldNameType, updatables))
+								continue;
+							if(addIfDeletable(executionImputation, functionFieldName, functionFieldNameType, deletablesIdentifiers))
+								continue;							
+						}
 					}
 				}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			/*
-			System.out.println(
-					"ExecutionImputationBusinessImpl.SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor.run()");
-			System.out.println(creatables);
-			System.out.println(updatables);
-			System.out.println(deletablesIdentifiers);
-			*/
+			
 			if(CollectionHelper.isNotEmpty(deletablesIdentifiers)) {
 				result.setNumberOfDeletionFromCollection(deletablesIdentifiers);
 				NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
-						.setAction(Action.DELETE).addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildDeleteManyByIdentifiers(ScopeFunctionExecutionImputation.class, deletablesIdentifiers)));
+					.setAction(Action.DELETE).addQueriesStrings(__inject__(NativeQueryStringBuilder.class)
+					.buildDeleteManyByIdentifiersByBatches(ScopeFunctionExecutionImputation.class, deletablesIdentifiers,1000)));
+				
+				//NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+				//		.setAction(Action.DELETE).addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildDeleteManyByIdentifiers(ScopeFunctionExecutionImputation.class, deletablesIdentifiers)));
 			}
 			
 			if(CollectionHelper.isNotEmpty(updatables)) {
@@ -230,11 +237,12 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 						.addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildUpdateManyFromMaps(ScopeFunctionExecutionImputation.class, updatables)));
 			}
 			
-			if(CollectionHelper.isNotEmpty(creatables)) {
+			
+			if(CollectionHelper.isNotEmpty(creatables)) {				
 				result.setNumberOfCreation(NumberHelper.getLong(creatables.size()));
 				NativeQueryStringExecutor.getInstance().execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
 						.setAction(Action.CREATE)
-						.addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildInsertManyFromMaps(ScopeFunctionExecutionImputation.class, creatables)));
+						.addQueriesStrings(__inject__(NativeQueryStringBuilder.class).buildInsertManyFromMaps(ScopeFunctionExecutionImputation.class, creatables)));				
 			}
 		}
 		
@@ -244,15 +252,16 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 			if(StringHelper.isNotBlank(scopeFunctionExecutionImputationIdentifier))
 				return Boolean.FALSE;
 			ExecutionImputationScopeFunction executionImputationScopeFunctionModel = (ExecutionImputationScopeFunction) FieldHelper.read(computeModel(executionImputation), functionFieldName);
-			String identifier = ExecutionImputation.FUNCTION_FIELD_NAME_TYPE_HOLDER.equals(type) ? executionImputationScopeFunctionModel.getHolderIdentifier()
-					: executionImputationScopeFunctionModel.getAssistantIdentifier();
+			String identifier = executionImputationScopeFunctionModel == null ? null :
+				(ExecutionImputation.FUNCTION_FIELD_NAME_TYPE_HOLDER.equals(type) ? executionImputationScopeFunctionModel.getHolderIdentifier()
+					: executionImputationScopeFunctionModel.getAssistantIdentifier());
 			if(StringHelper.isNotBlank(identifier)) {
 				creatables.add(Map.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
 						,PersistenceHelper.stringifyColumnValue(ScopeFunctionExecutionImputationBusiness.identify(identifier, executionImputation.getIdentifier()))
 						,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION,PersistenceHelper.stringifyColumnValue(identifier)
 						,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION,PersistenceHelper.stringifyColumnValue(executionImputation.getIdentifier())
 						));
-					return Boolean.TRUE;
+				return Boolean.TRUE;
 			}
 			return Boolean.FALSE;
 		}
