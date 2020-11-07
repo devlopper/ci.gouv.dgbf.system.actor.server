@@ -57,6 +57,19 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void executionImputation_readByIdentifierForEdit(){
+		ExecutionImputation executionImputation = ExecutionImputationQuerier.getInstance().readByIdentifierForEdit("IMPUTATION13002010027EEFC5BC4534B49FF9C9FCDC80878182E");
+		System.out.println(executionImputation.getCreditManager().getHolder() != null);
+		System.out.println(executionImputation.getCreditManager().getAssistant() != null);
+		System.out.println(executionImputation.getAuthorizingOfficer().getHolder() != null);
+		System.out.println(executionImputation.getAuthorizingOfficer().getAssistant() != null);
+		System.out.println(executionImputation.getFinancialController().getHolder() != null);
+		System.out.println(executionImputation.getFinancialController().getAssistant() != null);
+		System.out.println(executionImputation.getAccounting().getHolder() != null);
+		System.out.println(executionImputation.getAccounting().getAssistant() != null);
+	}
+	
+	@Test
 	public void function_readWhereAssociatedToScopeTypeForUICreateScopeFunction(){
 		EntityReader.getInstance().readMany(Function.class, new QueryExecutorArguments().setQuery(new Query().setIdentifier(FunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI_CREATE_SCOPE_FUNCTION)));
 	}
@@ -136,7 +149,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void executionImputation_readForEdit(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		ExecutionImputation executionImputation = EntityReader.getInstance().readOne(ExecutionImputation.class,new QueryExecutorArguments()
-				.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT)
+				.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT)
 				.addFilterFieldsValues(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER,"IMPUTATION11018010005BF1E3A5D576B48E1B5DC3D4FDA69A2CF"));
 		System.out.println(executionImputation.getName());
 		System.out.println(executionImputation.getFunctions());

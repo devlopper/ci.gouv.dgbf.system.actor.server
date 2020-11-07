@@ -30,13 +30,23 @@ import lombok.experimental.Accessors;
 public class ExecutionImputation extends AbstractImputation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	/*Gestionnaire de crédits*/
+	
 	@Column(table = VIEW_NAME,name = "GC_A_IDENTIFIANT")
 	private String creditManagerHolderScopeFunctionExecutionImputationIdentifier;
 	@Column(table = VIEW_NAME,name = "GC_P_IDENTIFIANT")
 	private String creditManagerHolderScopeFunctionIdentifier;
 	@Column(table = VIEW_NAME,name = "GC_P_CODE_LIBELLE")
 	private String creditManagerHolderScopeFunctionCodeName;
-	//private String creditManagerAssistantCodeName;
+	
+	@Column(table = VIEW_NAME,name = "AGC_A_IDENTIFIANT")
+	private String creditManagerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Column(table = VIEW_NAME,name = "AGC_P_IDENTIFIANT")
+	private String creditManagerAssistantScopeFunctionIdentifier;
+	@Column(table = VIEW_NAME,name = "AGC_P_CODE_LIBELLE")
+	private String creditManagerAssistantScopeFunctionCodeName;
+	
+	/*Ordonnateur*/
 	
 	@Column(table = VIEW_NAME,name = "ORD_A_IDENTIFIANT")
 	private String authorizingOfficerHolderScopeFunctionExecutionImputationIdentifier;
@@ -44,7 +54,15 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	private String authorizingOfficerHolderScopeFunctionIdentifier;
 	@Column(table = VIEW_NAME,name = "ORD_P_CODE_LIBELLE")
 	private String authorizingOfficerHolderScopeFunctionCodeName;
-	//private String assistantCodeName;
+	
+	@Column(table = VIEW_NAME,name = "AORD_A_IDENTIFIANT")
+	private String authorizingOfficerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Column(table = VIEW_NAME,name = "AORD_P_IDENTIFIANT")
+	private String authorizingOfficerAssistantScopeFunctionIdentifier;
+	@Column(table = VIEW_NAME,name = "AORD_P_CODE_LIBELLE")
+	private String authorizingOfficerAssistantScopeFunctionCodeName;
+	
+	/*Contrôleur financier*/
 	
 	@Column(table = VIEW_NAME,name = "CF_A_IDENTIFIANT")
 	private String financialControllerHolderScopeFunctionExecutionImputationIdentifier;
@@ -52,7 +70,15 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	private String financialControllerHolderScopeFunctionIdentifier;
 	@Column(table = VIEW_NAME,name = "CF_P_CODE_LIBELLE")
 	private String financialControllerHolderScopeFunctionCodeName;
-	//private String assistantCodeName;
+	
+	@Column(table = VIEW_NAME,name = "ACF_A_IDENTIFIANT")
+	private String financialControllerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Column(table = VIEW_NAME,name = "ACF_P_IDENTIFIANT")
+	private String financialControllerAssistantScopeFunctionIdentifier;
+	@Column(table = VIEW_NAME,name = "ACF_P_CODE_LIBELLE")
+	private String financialControllerAssistantScopeFunctionCodeName;
+	
+	/*Comptable*/
 	
 	@Column(table = VIEW_NAME,name = "CPT_A_IDENTIFIANT")
 	private String accountingHolderScopeFunctionExecutionImputationIdentifier;
@@ -60,7 +86,13 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	private String accountingHolderScopeFunctionIdentifier;
 	@Column(table = VIEW_NAME,name = "CPT_P_CODE_LIBELLE")
 	private String accountingHolderScopeFunctionCodeName;
-	//private String assistantCodeName;
+	
+	@Column(table = VIEW_NAME,name = "ACPT_A_IDENTIFIANT")
+	private String accountingAssistantScopeFunctionExecutionImputationIdentifier;
+	@Column(table = VIEW_NAME,name = "ACPT_P_IDENTIFIANT")
+	private String accountingAssistantScopeFunctionIdentifier;
+	@Column(table = VIEW_NAME,name = "ACPT_P_CODE_LIBELLE")
+	private String accountingAssistantScopeFunctionCodeName;
 	
 	@Transient private ExecutionImputationScopeFunction creditManager;
 	@Transient private ExecutionImputationScopeFunction authorizingOfficer;
@@ -97,6 +129,10 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	public ExecutionImputation setCreditManagerAssistant(ScopeFunction scopeFunction) {
 		getCreditManager(Boolean.TRUE).setAssistant(scopeFunction);
 		return this;
+	}
+	
+	public String getCreditManagerAssistantIdentifier() {
+		return creditManager == null ? null : creditManager.getAssistantIdentifier();
 	}
 	
 	public ExecutionImputationScopeFunction getAuthorizingOfficer(Boolean instantiateIfNull) {
@@ -397,5 +433,5 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	
 	public static final String FUNCTION_FIELD_NAME_TYPE_HOLDER = "Holder";
 	public static final String FUNCTION_FIELD_NAME_TYPE_ASSISTANT = "Assistant";
-	public static final Collection<String> FUNCTIONS_FIELDS_NAMES_TYPES = List.of(FUNCTION_FIELD_NAME_TYPE_HOLDER/*,FUNCTION_FIELD_NAME_TYPE_ASSISTANT*/);
+	public static final Collection<String> FUNCTIONS_FIELDS_NAMES_TYPES = List.of(FUNCTION_FIELD_NAME_TYPE_HOLDER,FUNCTION_FIELD_NAME_TYPE_ASSISTANT);
 }

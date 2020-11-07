@@ -12,10 +12,12 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.script.ScriptExecutor;
+import org.cyk.utility.__kernel__.script.ScriptHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 
@@ -180,6 +182,27 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return null;
 	}
 	
+	public static void computeCodeAndName(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return;
+		String script = formatScript(scopeTypeCode,codeScript, nameScript);
+		ScriptExecutor.getInstance().execute(script, "l",scopeFunctions);		
+	}
+	
+	public static String formatScript(String scopeTypeCode,String codeScript,String nameScript) { 
+		return StringUtils.join(
+				ScriptHelper.formatFunction("generateCode", ScriptHelper.formatReturnIfNotExist(codeScript), getScriptVariableNameScopeCode(scopeTypeCode),"code_fonction")
+				,ScriptHelper.formatFunction("generateName", ScriptHelper.formatReturnIfNotExist(nameScript), getScriptVariableNameScopeName(scopeTypeCode),"libelle_fonction"))
+				+ScriptHelper.join(
+				
+			ScriptHelper.formatLoopForCollection("l", "i", ScriptHelper.join(
+					"l.get(i).code = generateCode(l.get(i).scope.code,l.get(i).function.code)"
+					,"l.get(i).name = generateName(l.get(i).scope.name,l.get(i).function.name)"
+					)
+				)
+		);
+	}
+	
 	@Override
 	public String toString() {
 		return function+"-"+scope;
@@ -204,4 +227,5 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE = "code_fonction";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME = "libelle_fonction";
+	
 }

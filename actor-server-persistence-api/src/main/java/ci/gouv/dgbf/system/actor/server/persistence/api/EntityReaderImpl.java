@@ -49,8 +49,8 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_PROJECTION_02_WITH_BUDGETARIES_FUNCTIONS_AND_FUNCTIONS_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return (T) AccountRequestQuerier.getInstance().readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier((String)arguments
 						.getFilterFieldValue(AccountRequestQuerier.PARAMETER_NAME_IDENTIFIER));
-			if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
-				return (T) ExecutionImputationQuerier.getInstance().readBySystemIdentifierForEdit((String)arguments
+			if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return (T) ExecutionImputationQuerier.getInstance().readByIdentifierForEdit((String)arguments
 						.getFilterFieldValue(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER));
 		}
 		return super.readOne(tupleClass, arguments);

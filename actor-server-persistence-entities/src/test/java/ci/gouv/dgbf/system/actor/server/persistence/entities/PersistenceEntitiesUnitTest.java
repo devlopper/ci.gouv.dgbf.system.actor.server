@@ -1,7 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
@@ -24,6 +26,17 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 		assertThat(scopeFunction.getCode()).isNull();
 		assertThat(scopeFunction.setCodeFromScript(codeScript).getCode()).isEqualTo("GC13010222");
 		assertThat(scopeFunction.setNameFromScript(nameScript).getName()).isEqualTo("Gestionnaire de crédits DTI");
+	}
+	
+	@Test
+	public void scopeFunctions_computeCodeAndName(){
+		String codeScript = "code_fonction+code_ua";
+		String nameScript = "libelle_fonction+' '+libelle_ua";
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode("GC").setName("Gestionnaire de crédits"));
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction), codeScript, nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");
 	}
 	
 	@Test

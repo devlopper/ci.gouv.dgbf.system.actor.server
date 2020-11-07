@@ -56,8 +56,10 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	String PARAMETER_NAME_ACCOUNTING_HOLDER_CODE_NAME = "accountingHolderCodeName";
 	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_CODE_NAME = "accountingAssistantCodeName";
 	
-	String QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readBySystemIdentifierForEdit");
-	ExecutionImputation readBySystemIdentifierForEdit(String identifier);
+	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readByIdentifierForEdit");
+	ExecutionImputation readByIdentifierForEdit(String identifier);
 	
 	/* Read where filter */
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, QueryName.READ_WHERE_FILTER.getValue());
@@ -98,6 +100,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY);
 	Long countWhereScopeFunctionDoesNotExistWithReferencesOnly();
 	
+	String QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class
+			, "readWhereScopeFunctionIsNullDoExistWithReferencesOnly");
+	Collection<ExecutionImputation> readWhereScopeFunctionIsNullDoesExistWithReferencesOnly(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY = QueryIdentifierBuilder.getInstance()
+			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY);
+	Long countWhereScopeFunctionIsNullDoesExistWithReferencesOnly();
+	
 	/**/
 	
 	/**/
@@ -112,8 +122,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		
 		@Override
 		public ExecutionImputation readOne(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
-				return readBySystemIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			return super.readOne(arguments);
 		}
 		
@@ -201,8 +211,8 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		}
 		
 		@Override
-		public ExecutionImputation readBySystemIdentifierForEdit(String identifier) {
-			QueryExecutorArguments arguments = new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT)
+		public ExecutionImputation readByIdentifierForEdit(String identifier) {
+			QueryExecutorArguments arguments = new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT)
 					.addFilterField(PARAMETER_NAME_IDENTIFIER, identifier);
 			ExecutionImputation executionImputation = QueryExecutor.getInstance().executeReadOne(ExecutionImputation.class, arguments);
 			if(executionImputation == null)
@@ -226,8 +236,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			ExecutionImputationScopeFunction executionImputationScopeFunction = (ExecutionImputationScopeFunction) FieldHelper.read(executionImputation, functionFieldName);
 			if(executionImputationScopeFunction == null)
 				FieldHelper.write(executionImputation, functionFieldName, executionImputationScopeFunction = new ExecutionImputationScopeFunction());
-			executionImputationScopeFunction.setHolder(new ScopeFunction()
-					.setIdentifier(identifier).setCode(StringUtils.substringBefore(codeName, " ")).setName(StringUtils.substringAfter(codeName, " ")));
+			ScopeFunction scopeFunction = new ScopeFunction()
+					.setIdentifier(identifier).setCode(StringUtils.substringBefore(codeName, " ")).setName(StringUtils.substringAfter(codeName, " "));
+			if(ExecutionImputation.FUNCTION_FIELD_NAME_TYPE_HOLDER.equals(functionFieldNameType))
+				executionImputationScopeFunction.setHolder(scopeFunction)
+				.setHolderIdentifier((String) FieldHelper.read(executionImputation, ExecutionImputation.buildScopeFunctionHolderIdentifierFieldName(functionFieldName)));
+			else if(ExecutionImputation.FUNCTION_FIELD_NAME_TYPE_ASSISTANT.equals(functionFieldNameType))
+				executionImputationScopeFunction.setAssistant(scopeFunction)
+				.setAssistantIdentifier((String) FieldHelper.read(executionImputation, ExecutionImputation.buildScopeFunctionAssistantIdentifierFieldName(functionFieldName)));
 		}
 		
 		@Override
@@ -247,6 +263,20 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		@Override
 		public Long countWhereScopeFunctionDoesNotExistWithReferencesOnly() {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY);
+		}
+		
+		@Override
+		public Collection<ExecutionImputation> readWhereScopeFunctionIsNullDoesExistWithReferencesOnly(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY);
+			return QueryExecutor.getInstance().executeReadMany(ExecutionImputation.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereScopeFunctionIsNullDoesExistWithReferencesOnly() {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY);
 		}
 		
 		@Override
@@ -284,8 +314,11 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_DOES_NOT_EXIST_WITH_REFERENCES_ONLY
 					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
-							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
-							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER))
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER
+							))
 							,"FROM ExecutionImputation t"
 							,"WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t)"
 							))
@@ -298,39 +331,44 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t "
 							+ "WHERE NOT EXISTS(SELECT t1.identifier FROM ScopeFunctionExecutionImputation t1 WHERE t1.executionImputation = t) "
 							)
-				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
-					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)		
 				
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY
+					, jpql(select(fields("t","identifier","section.code","budgetSpecializationUnit.code","administrativeUnit.code"
+							,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+							,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER))
+							,"FROM ExecutionImputation t"
+							,"WHERE t.creditManagerHolderScopeFunctionIdentifier IS NULL OR t.creditManagerAssistantScopeFunctionIdentifier IS NULL"
+									+ " OR t.authorizingOfficerHolderScopeFunctionIdentifier IS NULL OR t.authorizingOfficerAssistantScopeFunctionIdentifier IS NULL"
+									+ " OR t.financialControllerHolderScopeFunctionIdentifier IS NULL OR t.financialControllerAssistantScopeFunctionIdentifier IS NULL"
+									+ " OR t.accountingHolderScopeFunctionIdentifier IS NULL OR t.accountingAssistantScopeFunctionIdentifier IS NULL"
+							))
+				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_SECTION_CODE_NAME
+					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+					,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER
+					,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER)	
+			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_COUNT_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY
+					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t "
+					+" WHERE t.creditManagerHolderScopeFunctionIdentifier IS NULL OR t.creditManagerAssistantScopeFunctionIdentifier IS NULL"
+							+ " OR t.authorizingOfficerHolderScopeFunctionIdentifier IS NULL OR t.authorizingOfficerAssistantScopeFunctionIdentifier IS NULL"
+							+ " OR t.financialControllerHolderScopeFunctionIdentifier IS NULL OR t.financialControllerAssistantScopeFunctionIdentifier IS NULL"
+							+ " OR t.accountingHolderScopeFunctionIdentifier IS NULL OR t.accountingAssistantScopeFunctionIdentifier IS NULL"
+							)
+							
 			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.COUNT)
 					, "SELECT COUNT(t.identifier) FROM ExecutionImputation t")
 			
-			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_SYSTEM_IDENTIFIER_FOR_EDIT
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 					, jpql(select("t"),From.ofTuple(ExecutionImputation.class),where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER)))
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 					, jpql(
-							select(fields("t",ExecutionImputation.FIELD_IDENTIFIER
-									,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
-									,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
-									,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-									,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-									,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-									,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-									,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME
-									))
+							select(fields("t",getReadWhereFilterFieldsNames()))
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",ExecutionImputation.FIELD_ACTIVITY_CODE_NAME)+","+asc("t",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME))
 						)
 					)
-				.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER
-						,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
-						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
-						,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
-						,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-						,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-						,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME
-						,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME
-						)
+				.setTupleFieldsNamesIndexesFromFieldsNames(getReadWhereFilterFieldsNames())
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
 		);
 	}
@@ -364,6 +402,27 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 					,String.format("LEFT JOIN ScopeFunction sf%1$s ON sf%1$s = sfei%1$s.scopeFunction",functionCode)
 					,String.format("LEFT JOIN Function f%1$s ON f%1$s = sf%1$s.function",functionCode)
 				);
+	}
+	
+	static String[] getReadWhereFilterFieldsNames() {
+		return new String[] {
+				ExecutionImputation.FIELD_IDENTIFIER
+				,ExecutionImputation.FIELD_SECTION_CODE_NAME,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
+				,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+				,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME
+				
+				,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+				,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_CREDIT_MANAGER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+				
+				,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+				,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_AUTHORIZING_OFFICER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+				
+				,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_HOLDER_SCOPE_FUNCTION_CODE_NAME
+				,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+				
+				,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_HOLDER_SCOPE_FUNCTION_CODE_NAME
+				,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_IDENTIFIER,ExecutionImputation.FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_CODE_NAME
+		};
 	}
 	
 	/**/

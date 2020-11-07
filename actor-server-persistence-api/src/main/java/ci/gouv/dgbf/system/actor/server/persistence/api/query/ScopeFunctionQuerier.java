@@ -45,8 +45,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
 	
-	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");
-	Collection<ScopeFunction> readAllWithReferencesOnly();
+	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");	
+	Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
@@ -228,8 +228,12 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		}
 		
 		@Override
-		public Collection<ScopeFunction> readAllWithReferencesOnly() {
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY);
+		public Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY);
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 		}
 		
 		@Override

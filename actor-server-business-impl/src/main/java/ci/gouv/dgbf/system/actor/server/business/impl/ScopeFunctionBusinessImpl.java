@@ -89,7 +89,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					return;
 				LogHelper.logInfo(String.format("\t\tCodification des postes",scopeFunctions.size()), getClass());
-				__codify__(scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
+				__codify__(scopeTypeFunction.getScopeType().getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement des postes",scopeFunctions.size()), getClass());
 				EntityCreator.getInstance().createMany(CollectionHelper.cast(Object.class, scopeFunctions));
 			}
@@ -163,8 +163,10 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	}
 	*/
 	
-	private void __codify__(Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
+	private void __codify__(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
+		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions, codeScript, nameScript);
+		/*
 		Executor<Runnable> executor = new Executor<Runnable>().setName("Générateur des codes et des libellés").setNumberOfRunnablesToBeExecuted(scopeFunctions.size())
 				//.setExecutorService(RunnableHelper.instantiateExecutorService(1, 100, 3l, TimeUnit.MINUTES, null, scopeFunctions.size(), null, null))
 				;
@@ -182,6 +184,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		});		
 		//executor.join();
 		executor.run();
+		*/
 	}
 	
 	private void __codify__(Collection<ScopeFunction> scopeFunctions) {
@@ -241,7 +244,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					continue;
 				LogHelper.logInfo(String.format("\t\tCodification"), getClass());
-				__codify__(scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
+				__codify__(scopeTypeFunction.getScopeType().getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement",scopeFunctions.size()), getClass());
 				EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class,scopeFunctions));
 			}
