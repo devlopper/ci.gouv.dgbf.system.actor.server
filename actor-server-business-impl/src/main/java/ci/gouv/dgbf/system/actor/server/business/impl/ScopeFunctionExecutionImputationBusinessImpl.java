@@ -41,6 +41,9 @@ import lombok.experimental.Accessors;
 public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<ScopeFunctionExecutionImputation, ScopeFunctionExecutionImputationPersistence> implements ScopeFunctionExecutionImputationBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static Integer DERIVE_ALL_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE = 5000;
+	public static Integer DERIVE_ALL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE = 25;
+	
 	@Override
 	public void deriveFromExecutionImputations(Collection<ExecutionImputation> executionImputations) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("executionImputations", executionImputations);
@@ -73,13 +76,12 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		Collection<ScopeFunction> scopeFunctions = (List<ScopeFunction>) ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly(new QueryExecutorArguments());
 		LogHelper.logInfo(String.format("%s poste(s) chargé(s)",scopeFunctions.size()), getClass());
 		
-		Integer executionImputationsBatchSize = 20000;
 		do {
 			Long numberOfExecutionImputations = ExecutionImputationQuerier.getInstance().countWhereScopeFunctionDoesNotExistWithReferencesOnly();
 			LogHelper.logInfo(String.format("%s imputation(s) non complet(s)",numberOfExecutionImputations), getClass());
 			if(NumberHelper.isEqualToZero(numberOfExecutionImputations))
 				break;			
-			derive(scopeFunctions, executionImputationsBatchSize);
+			derive(scopeFunctions, DERIVE_ALL_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE,DERIVE_ALL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE);
 		}while(true);
 		
 		Long duration = System.currentTimeMillis() - t0;
@@ -94,7 +96,7 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		System.gc();
 	}
 	
-	private void derive(Collection<ScopeFunction> scopeFunctions,Integer numberOfExecutionImputations) {
+	private void derive(Collection<ScopeFunction> scopeFunctions,Integer numberOfExecutionImputations,Integer batchSize) {
 		if(CollectionHelper.isEmpty(scopeFunctions) || NumberHelper.isLessThanZero(numberOfExecutionImputations))
 			return;
 		System.gc();
@@ -107,7 +109,6 @@ public class ScopeFunctionExecutionImputationBusinessImpl extends AbstractBusine
 		numberOfExecutionImputations = executionImputations.size();
 		LogHelper.logInfo(String.format("\t%s imputation(s) chargée(s)",numberOfExecutionImputations), getClass());
 
-		Integer batchSize = 25;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);
 		LogHelper.logInfo(String.format("\tTaille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());
 		

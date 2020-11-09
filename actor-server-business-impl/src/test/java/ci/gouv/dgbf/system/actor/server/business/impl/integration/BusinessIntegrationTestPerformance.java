@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.business.NativeQueryStringExecutor;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.time.TimeHelper;
@@ -62,6 +63,27 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 	protected void __listenBefore__() {
 		// TODO Auto-generated method stub
 		//super.__listenBefore__();
+	}
+	
+	@Test
+	public void executionImputation_refresh(){
+		ExecutionImputationQuerier.refreshMaterializedView();
+		ExecutionImputationQuerier.refreshMaterializedView();
+		ExecutionImputationQuerier.refreshMaterializedView();
+		ExecutionImputationQuerier.refreshMaterializedView();
+		ExecutionImputationQuerier.refreshMaterializedView();
+	}
+	
+	//@Test
+	public void executionImputation_readWhereFilter(){
+		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
+			Long t = System.currentTimeMillis();
+			Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments()
+					.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER)
+					.setNumberOfTuples(count));
+			System.out.println(String.format("%s read in %s", executionImputations.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)));
+		}		
 	}
 	
 	//@Test
@@ -224,7 +246,7 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		}
 	}
 	
-	@Test
+	//@Test
 	public void executionImputation_deriveScopeFunctionsFromModel() throws Exception {
 		try {
 			__inject__(ScopeFunctionExecutionImputationBusiness.class).deleteAll();

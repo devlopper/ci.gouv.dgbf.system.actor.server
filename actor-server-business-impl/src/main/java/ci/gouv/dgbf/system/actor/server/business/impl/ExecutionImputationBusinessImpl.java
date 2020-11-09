@@ -44,17 +44,20 @@ import lombok.experimental.Accessors;
 public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<ExecutionImputation, ExecutionImputationPersistence> implements ExecutionImputationBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static Integer DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE = 5000;
+	public static Integer DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE = 200;
+	
 	@Override @Transactional
 	public TransactionResult saveScopeFunctions(Collection<ExecutionImputation> executionImputations) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("execution imputations", executionImputations);
 		LogHelper.logInfo(String.format("Enregistrement des affectations de %s imputation(s) en cours...",executionImputations.size()), getClass());
-		ExecutionImputationQuerier.refreshMaterializedView();
+		//ExecutionImputationQuerier.refreshMaterializedView();
 		TransactionResult result = new TransactionResult().setTupleName("affectation");
 		new Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor>().setName("Générateur et exécuteur de requête SQL").setNumberOfRunnablesToBeExecuted(1)
 		.addRunnables(new SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor().setExecutionImputations(executionImputations).setResult(result))
 		.run();
 		if(NumberHelper.isGreaterThanZero(result.getNumberOfCreation()) || NumberHelper.isGreaterThanZero(result.getNumberOfUpdate()) || NumberHelper.isGreaterThanZero(result.getNumberOfDeletion()))
-		ExecutionImputationQuerier.refreshMaterializedView();
+			ExecutionImputationQuerier.refreshMaterializedView();
 		result.log(getClass());
 		return result;
 	}
@@ -125,7 +128,7 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	public TransactionResult deriveScopeFunctionsFromModel(ExecutionImputation executionImputationModel,Filter filter) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("executionImputationModel", executionImputationModel);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
-		ExecutionImputationQuerier.refreshMaterializedView();
+		//ExecutionImputationQuerier.refreshMaterializedView();
 		LogHelper.logInfo(String.format("Application de modèle : CM=%s|AO=%s|FC=%s|A=%s , filtre : %s", executionImputationModel.getCreditManager()
 				,executionImputationModel.getAuthorizingOfficer(),executionImputationModel.getFinancialController(),executionImputationModel.getAccounting(),filter), getClass());
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
@@ -138,13 +141,15 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 		if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 			return null;
 		t = System.currentTimeMillis();		
-		Integer batchSize = 10000;
+		Integer batchSize = DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());
 		TransactionResult result = new TransactionResult().setTupleName("Affectation");
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize);
-			result.add(r);
+			TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize
+					,DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE);
+			if(r != null)
+				result.add(r);
 		}
 		ExecutionImputationQuerier.refreshMaterializedView();
 		LogHelper.logInfo(String.format("Application du modèle terminée. Durée = %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
@@ -153,7 +158,7 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 	}
 	
 	private TransactionResult deriveScopeFunctionsFromModel(ExecutionImputation executionImputationModel,QueryExecutorArguments queryExecutorArguments
-			,Integer numberOfExecutionImputations,Integer from) {
+			,Integer numberOfExecutionImputations,Integer from,Integer batchSize) {
 		LogHelper.logInfo(String.format("\tChargement de %s imputation(s) à partir l'index %s en cours...",numberOfExecutionImputations,from), getClass());
 		queryExecutorArguments.setQueryFromIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setFirstTupleIndex(from)
 		.setNumberOfTuples(numberOfExecutionImputations);
@@ -162,14 +167,14 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 		LogHelper.logInfo(String.format("\t%s imputation(s) chargée(s)", numberOfExecutionImputations), getClass());
 		if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 			return null;
-		Integer batchSize = 250;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / batchSize) + (numberOfExecutionImputations % batchSize == 0 ? 0 : 1);		
 		LogHelper.logInfo(String.format("\ttaille du lot est de %s. %s lot(s) à traiter",batchSize,numberOfBatches), getClass());				
 		
 		Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor> producer = new Executor<SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor>()
 				.setName("Générateur et exécuteur de requête SQL").setNumberOfRunnablesToBeExecuted(numberOfBatches)
 				.setExecutorService(RunnableHelper.instantiateExecutorService(3,5,1l,TimeUnit.MINUTES,null,numberOfBatches,null,null));				
-		producer.start();		
+		producer.start();
+		Collection<TransactionResult> results = new ArrayList<TransactionResult>();
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
 			from = index * batchSize;
 			Integer to = from + batchSize;
@@ -177,14 +182,20 @@ public class ExecutionImputationBusinessImpl extends AbstractBusinessEntityImpl<
 				to = executionImputations.size();
 			Collection<ExecutionImputation> executionImputationsBatch = executionImputations.subList(from, to);			
 			if(CollectionHelper.isEmpty(executionImputationsBatch))
-				continue;	
+				continue;
+			TransactionResult result = new TransactionResult();
+			results.add(result);
 			producer.addRunnables(new SaveScopeFunctionsNativeQueryStringManyBuilderAndExecutor().setExecutionImputationModel(executionImputationModel)
-					.setExecutionImputations(executionImputationsBatch));			
+					.setExecutionImputations(executionImputationsBatch).setResult(result));			
 		}
 		producer.join();
 		executionImputations.clear();
 		executionImputations = null;
-		return null;
+		TransactionResult result = new TransactionResult();
+		results.forEach(r -> {
+			result.add(r);
+		});
+		return result;
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
