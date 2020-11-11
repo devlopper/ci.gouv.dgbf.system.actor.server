@@ -101,6 +101,11 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	
 	@Transient private Collection<Function> functions;
 	
+	@Override
+	public ExecutionImputation setIdentifier(String identifier) {
+		return (ExecutionImputation) super.setIdentifier(identifier);
+	}
+	
 	public ExecutionImputationScopeFunction getCreditManager(Boolean instantiateIfNull) {
 		if(creditManager == null && Boolean.TRUE.equals(instantiateIfNull))
 			creditManager = new ExecutionImputationScopeFunction();

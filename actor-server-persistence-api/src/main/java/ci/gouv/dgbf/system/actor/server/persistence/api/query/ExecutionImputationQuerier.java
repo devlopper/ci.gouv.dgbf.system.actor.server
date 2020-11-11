@@ -108,6 +108,15 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_SCOPE_FUNCTION_IS_NULL_DOES_EXIST_WITH_REFERENCES_ONLY);
 	Long countWhereScopeFunctionIsNullDoesExistWithReferencesOnly();
 	
+	String QUERY_IDENTIFIER_READ_IDENTIFIERS_NOT_IN_ASSIGNMENTS = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readIdentifiersNotInAssignments");
+	Collection<String> readIdentifiersNotInAssignments(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_IDENTIFIERS_NOT_IN_ASSIGNMENTS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_IDENTIFIERS_NOT_IN_ASSIGNMENTS);
+	Long countIdentifiersNotInAssignments();
+	
+	String QUERY_IDENTIFIER_READ_NOT_IN_ASSIGNMENTS_FOR_INITIALIZATION = QueryIdentifierBuilder.getInstance().build(ExecutionImputation.class, "readNotInAssignmentsForInitialization");
+	Collection<ExecutionImputation> readNotInAssignmentsForInitialization(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	/**/
@@ -280,6 +289,29 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		}
 		
 		@Override
+		public Collection<String> readIdentifiersNotInAssignments(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_IDENTIFIERS_NOT_IN_ASSIGNMENTS);
+			return QueryExecutor.getInstance().executeReadMany(String.class, arguments);
+		}
+		
+		@Override
+		public Long countIdentifiersNotInAssignments() {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_IDENTIFIERS_NOT_IN_ASSIGNMENTS);
+		}
+		
+		@Override
+		public Collection<ExecutionImputation> readNotInAssignmentsForInitialization(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_IN_ASSIGNMENTS_FOR_INITIALIZATION);
+			return QueryExecutor.getInstance().executeReadMany(ExecutionImputation.class, arguments);
+		}
+		
+		@Override
 		protected Class<ExecutionImputation> getKlass() {
 			return ExecutionImputation.class;
 		}
@@ -298,6 +330,20 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 		QueryHelper.addQueries(
 			Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.READ_BY_SYSTEM_IDENTIFIERS)
 			, "SELECT ei FROM ExecutionImputation ei WHERE ei.identifier IN :"+PARAMETER_NAME_IDENTIFIERS)
+			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_NOT_IN_ASSIGNMENTS_FOR_INITIALIZATION
+					, jpql(select(fields("i",ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE,
+							ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE))
+							,"FROM ExecutionImputation i"
+							,"WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier)"))
+			.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE,
+							ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE)
+			
+			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_IDENTIFIERS_NOT_IN_ASSIGNMENTS
+					, "SELECT i.identifier FROM ExecutionImputation i WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier)")
+			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_IDENTIFIERS_NOT_IN_ASSIGNMENTS
+					, "SELECT COUNT(i.identifier) FROM ExecutionImputation i WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier)")
 			
 			,Query.buildSelect(ExecutionImputation.class, QueryIdentifierGetter.getInstance().get(ExecutionImputation.class, QueryName.READ)
 					, "SELECT t FROM ExecutionImputation t")

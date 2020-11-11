@@ -26,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerie
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
@@ -48,6 +49,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 
 @ApplicationScoped
@@ -79,6 +81,24 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION
 				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_EXECUTION_IMPUTATION)
 				));
+		
+		PersistenceHelper.COLUMN_NAME_FIELD.put(Assignments.class, Map.of(
+				Assignments.COLUMN_IDENTIFIER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_IDENTIFIER)
+				
+				,Assignments.COLUMN_EXECUTION_IMPUTATION,FieldHelper.getByName(Assignments.class, Assignments.FIELD_EXECUTION_IMPUTATION)
+				
+				,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_CREDIT_MANAGER_HOLDER)
+				,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT,FieldHelper.getByName(Assignments.class, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT)
+				
+				,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+				,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT,FieldHelper.getByName(Assignments.class, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT)
+				
+				,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
+				,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT,FieldHelper.getByName(Assignments.class, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT)
+				
+				,Assignments.COLUMN_ACCOUNTING_HOLDER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_ACCOUNTING_HOLDER)
+				,Assignments.COLUMN_ACCOUNTING_ASSISTANT,FieldHelper.getByName(Assignments.class, Assignments.FIELD_ACCOUNTING_ASSISTANT)
+			));
 		
 		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 		
@@ -118,5 +138,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		
 		ScopeFunctionExecutionImputationQuerier.initialize();
 		ExecutionImputationQuerier.initialize();
+		AssignmentsQuerier.initialize();
 	}
 }

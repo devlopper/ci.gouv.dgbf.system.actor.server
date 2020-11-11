@@ -8,6 +8,14 @@ package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 		password="sa"
 )*/
 
+/*@javax.annotation.sql.DataSourceDefinition(
+		name="java:/actor/server/dataSource",
+		className="oracle.jdbc.pool.OracleDataSource",
+		url="jdbc:oracle:thin:@10.3.4.104:1521:SIB",
+		user="acteur",
+		password="acteur"
+)*/
+
 @javax.annotation.sql.DataSourceDefinition(
 		name="java:/actor/server/dataSource",
 		className="oracle.jdbc.pool.OracleDataSource",

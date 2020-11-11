@@ -22,9 +22,11 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@Column(name = COLUMN_SECTION_CODE) private String sectionCode;
 	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
+	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE) private String budgetSpecializationUnitCode;
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
@@ -36,9 +38,11 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@Column(name = COLUMN_ECONOMIC_NATURE_CODE_NAME) private String economicNatureCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
+	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_CODE) private String administrativeUnitCode;
 	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME) private String administrativeUnitCodeName;
 	
 	@Column(name = COLUMN_ACTIVITY_CATEGORY_CODE_NAME) private String activityCategoryCodeName;
+	
 	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE_NAME) private String expenditureNatureCodeName;
 	
 	@Override
@@ -81,8 +85,10 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	}
 	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_CODE = "sectionCode";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE = "budgetSpecializationUnitCode";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 	public static final String FIELD_ACTION = "action";
 	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";
@@ -90,13 +96,16 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ACTIVITY_CODE_NAME = "activityCodeName";
 	public static final String FIELD_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE = "administrativeUnitCode";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
 	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
 	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
 	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_SECTION_CODE = "SECTION_CODE";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
+	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE = "USB_CODE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
 	public static final String COLUMN_ACTION = "ACTION";
 	public static final String COLUMN_ACTION_CODE_NAME = "ACTION_CODE_LIBELLE";
@@ -104,6 +113,7 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_ACTIVITY_CODE_NAME = "ACTIVITE_CODE_LIBELLE";
 	public static final String COLUMN_ECONOMIC_NATURE_CODE_NAME = "NATURE_ECONOMIQUE_CODE_LIBELLE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UA";
+	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE = "UA_CODE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME = "UA_CODE_LIBELLE";
 	
 	public static final String COLUMN_ACTIVITY_CATEGORY_CODE_NAME = "CA_CODE_LIBELLE";

@@ -10,12 +10,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class ExecutableImputationDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	public ExecutableImputationDto setIdentifier(String identifier) {
-		return (ExecutableImputationDto) super.setIdentifier(identifier);
+	public AssignmentsDto setIdentifier(String identifier) {
+		return (AssignmentsDto) super.setIdentifier(identifier);
 	}
 
 }

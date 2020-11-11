@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
@@ -42,6 +43,12 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS;
 		if(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(readQueryIdentifier))
 			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT;
+		
+		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL.equals(readQueryIdentifier))
+			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		
 		return super.__get__(readQueryIdentifier);
 	}
 }

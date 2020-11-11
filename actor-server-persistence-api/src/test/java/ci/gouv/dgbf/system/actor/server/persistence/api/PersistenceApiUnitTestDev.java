@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
@@ -14,10 +16,13 @@ import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
@@ -27,6 +32,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
@@ -54,6 +60,55 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		EntityCreator.getInstance().createMany(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(objects).setIsNative(Boolean.TRUE));
 		entityManager.getTransaction().commit();
 		//(new Identity().setFirstName("a").setLastNames("b").setElectronicMailAddress("a@b.com"));
+	}
+	
+	@Test
+	public void assignments_readWhereFilter(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(1));
+		Assignments assignments = collection.iterator().next();
+		System.out.println(assignments.getExecutionImputation().getIdentifier());
+		System.out.println(assignments.getExecutionImputation().getCode());
+	}
+	
+	@Test
+	public void assignments_readWhereFilterForApplyModel(){
+		Filter filter = new Filter();
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");
+		//filter.addField(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER, "26010568");
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setFilter(filter);
+		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER);		
+		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
+		Long t = System.currentTimeMillis();
+		Long numberOfExecutionImputations = AssignmentsQuerier.getInstance().countWhereFilter(queryExecutorArguments);
+		LogHelper.logInfo(String.format("%s affectations à traiter compté en %s", numberOfExecutionImputations,TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
+			return;
+		Integer numberOfBatches = (int) (numberOfExecutionImputations / 3000) + (numberOfExecutionImputations % 3000 == 0 ? 0 : 1);
+		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",3000,numberOfBatches), getClass());
+		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(3000);
+		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
+			queryExecutorArguments.setFirstTupleIndex(index * 3000); 
+			t = System.currentTimeMillis();
+			Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(queryExecutorArguments);
+			LogHelper.logInfo(String.format("\tChargement de %s assignation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
+					,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		}
+		/*Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(new QueryExecutorArguments().setNumberOfTuples(1));
+		Assignments assignments = collection.iterator().next();
+		System.out.println(assignments.getExecutionImputation().getIdentifier());
+		System.out.println(assignments.getExecutionImputation().getCode());
+		*/
+	}
+	
+	@Test
+	public void executionImputation_readIdentifiersNotInAssignments(){
+		System.out.println(ExecutionImputationQuerier.getInstance().countIdentifiersNotInAssignments());
+		Collection<ExecutionImputation> executionImputations = 
+				ExecutionImputationQuerier.getInstance().readNotInAssignmentsForInitialization(new QueryExecutorArguments().setNumberOfTuples(1));
+		System.out.println("SECTION : "+executionImputations.iterator().next().getSectionCodeName());	
 	}
 	
 	@Test
