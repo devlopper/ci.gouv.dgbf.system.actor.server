@@ -14,9 +14,11 @@ import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Path(ActorRepresentation.PATH)
+@Api
 public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	
 	@POST
@@ -70,6 +72,13 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@ApiOperation(value = "Envoyer un mail de mise à jour du mot de passe",tags = {TAG})
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
+	@GET
+	@Path(PATH_GET_BY_ELECTRONIC_MAIL_ADDRESSES)
+	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Obtenir un acteur par email",tags = {TAG})
+	Response getByElectronicMailAddress(@QueryParam(QUERY_PARAMETER_NAME_EMAIL)String electronicMailAddress);
+	
 	String PATH = "actor";
 	String PATH_GET_PROFILE_INFORMATIONS_BY_CODE = "informations-profile-par-acteur";
 	String PATH_IMPORT_FROM_KEYCLOAK = "importFromKeycloak";
@@ -81,8 +90,10 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS = "create_privileges_from_functions";
 	String PATH_CREATE_PROFILES = "create_profiles";
 	String PATH_DELETE_PROFILES = "delete_profiles";
+	String PATH_GET_BY_ELECTRONIC_MAIL_ADDRESSES = "getByElectronicMailAddress";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
+	String QUERY_PARAMETER_NAME_EMAIL = "email";
 	
 	String TAG = "Acteurs";
 	

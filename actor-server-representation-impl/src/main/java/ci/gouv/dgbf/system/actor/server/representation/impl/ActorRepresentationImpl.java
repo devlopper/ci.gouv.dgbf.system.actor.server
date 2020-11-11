@@ -11,6 +11,8 @@ import javax.ws.rs.core.Response.Status;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
@@ -189,5 +191,17 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 				};
 			}
 		});
+	}
+
+	@Override
+	public Response getByElectronicMailAddress(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			return Response.status(Status.BAD_REQUEST).entity("Email obligatoire").build();
+		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS)
+				.addFilterField(ActorQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress));						
+		if(actor == null)
+			return Response.status(Status.NOT_FOUND).entity("Cet email n'est pas lié à un compte").build();
+		return Response.status(Status.OK).entity(MappingHelper.getSource(actor, ActorDto.class)).build();
 	}
 }

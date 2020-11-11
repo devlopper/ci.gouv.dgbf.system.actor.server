@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
@@ -133,6 +134,16 @@ public class AccountRequestRepresentationImpl extends AbstractRepresentationEnti
 	@Override
 	public Response reject(Collection<AccountRequestDto> accountRequests) {
 		return validate(accountRequests, Boolean.FALSE);
+	}
+	
+	@Override
+	public Response getByElectronicMailAddress(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			return Response.status(Status.BAD_REQUEST).entity("Email obligatoire").build();
+		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readByElectronicMailAddress(electronicMailAddress);							
+		if(accountRequest == null)
+			return Response.status(Status.NOT_FOUND).entity("Cet email n'est pas lié à une demande de compte").build();
+		return Response.status(Status.OK).entity(MappingHelper.getSource(accountRequest, AccountRequestDto.class)).build();
 	}
 	
 	private Response validate(Collection<AccountRequestDto> accountRequests,Boolean accept) {
