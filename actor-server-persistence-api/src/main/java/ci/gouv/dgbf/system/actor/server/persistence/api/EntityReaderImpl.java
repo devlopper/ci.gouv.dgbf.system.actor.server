@@ -10,6 +10,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuer
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -51,7 +52,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 						.getFilterFieldValue(AccountRequestQuerier.PARAMETER_NAME_IDENTIFIER));
 			if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return (T) ExecutionImputationQuerier.getInstance().readByIdentifierForEdit((String)arguments
-						.getFilterFieldValue(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER));
+						.getFilterFieldValue(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER));			
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return (T) AssignmentsQuerier.getInstance().readByIdentifierForEdit((String)arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER));
+			
+			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return (T) FunctionQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -148,6 +154,10 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
 			
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForUI(arguments);
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForEdit(arguments);
 		}
 		return super.readMany(tupleClass, arguments);
 	}

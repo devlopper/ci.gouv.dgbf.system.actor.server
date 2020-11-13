@@ -15,17 +15,17 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	//@Transactional
 	//void deriveFromExecutionImputations(Collection<Assignments> assignments);
 	
+	String INITIALIZE = "Assignments.initialize";
 	TransactionResult initialize();
 	
-	@Transactional
-	TransactionResult save(Collection<Assignments> collection);
-	
-	TransactionResult applyModel(Assignments model,Filter filter,Collection<String> overridablesFieldsNames);
-	
-	String INITIALIZE = "Assignments.initialize";
 	String INITIALIZE_MANY = "Assignments.initializeMany";
 	
-	String SAVE = "Assignments.save";	
+	String SAVE_SCOPE_FUNCTIONS = "Assignments.saveScopeFunctions";
+	@Transactional
+	TransactionResult saveScopeFunctions(Collection<Assignments> collection);
 	
 	String APPLY_MODEL = "Assignments.applyModel";
+	TransactionResult applyModel(Assignments model,Filter filter,Collection<String> overridablesFieldsNames);
+	
+	String DELETE_ALL = "Assignments.deleteAll";
 }

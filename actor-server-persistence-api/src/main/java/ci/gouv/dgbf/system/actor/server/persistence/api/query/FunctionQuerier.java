@@ -48,6 +48,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
 	String PARAMETER_NAME_SCOPE_TYPE_CODES = "scopeTypeCodes";
 	
+	String QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI = "readByCodeForUI";
+	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Function.class, QUERY_NAME_READ);
@@ -279,6 +281,13 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				});
 		}
 		
+		@Override
+		public Function readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return QueryExecutor.getInstance().executeReadOne(Function.class, arguments);
+			return super.readOne(arguments);
+		}
+		
 		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<Function> readMany(QueryExecutorArguments arguments) {
@@ -363,6 +372,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				
 				,Query.buildSelect(Function.class, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_BY_BUSINESS_IDENTIFIERS)
 						, jpql(select("t"),from("Function t"),where("t.code IN :"+PARAMETER_NAME_IDENTIFIERS),order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI
+						, jpql(select("t"),from("Function t"),where("t.code = :"+PARAMETER_NAME_CODE)))
 			);
 		
 		QueryHelper.addQueries(

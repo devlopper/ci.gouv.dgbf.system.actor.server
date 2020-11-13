@@ -52,6 +52,16 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 		//super.__listenBefore__();
 	}
 	
+	@Test
+	public void assignments_all(){
+		__inject__(AssignmentsBusiness.class).deleteAll();
+		__inject__(AssignmentsBusiness.class).initialize();
+		Assignments model = new Assignments();
+		Filter filter = new Filter();
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");
+		__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
+	}
+	
 	//@Test
 	public void assignments_initialize(){
 		try {
@@ -62,7 +72,7 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 		}
 	}
 	
-	@Test
+	//@Test
 	public void assignments_applyModel(){
 		__inject__(AssignmentsBusiness.class).initialize();
 		Assignments model = new Assignments();

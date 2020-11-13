@@ -72,6 +72,76 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void assignments_readByIdentifierForEdit(){
+		Assignments assignments = AssignmentsQuerier.getInstance().readByIdentifierForEdit("00009afd-f1a0-4291-a9a1-781e2faaccea");
+		System.out.println(assignments.getIdentifier());
+		System.out.println(assignments.getSectionAsString());
+		System.out.println(assignments.getBudgetSpecializationUnitAsString());
+		System.out.println(assignments.getActionAsString());
+		System.out.println(assignments.getActivityAsString());
+		System.out.println(assignments.getActivityCategoryAsString());
+		System.out.println(assignments.getExpenditureNatureAsString());
+		System.out.println(assignments.getEconomicNatureAsString());
+		System.out.println(assignments.getAdministrativeUnitAsString());
+		System.out.println(assignments.getCreditManagerHolder());
+		System.out.println(assignments.getCreditManagerAssistant());
+		System.out.println(assignments.getAuthorizingOfficerHolder());
+		System.out.println(assignments.getAuthorizingOfficerAssistant());
+		System.out.println(assignments.getFinancialControllerHolder());
+		System.out.println(assignments.getFinancialControllerAssistant());
+		System.out.println(assignments.getAccountingHolder());
+		System.out.println(assignments.getAccountingAssistant());
+	}
+	
+	@Test
+	public void assignments_readWhereFilterForEdit(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilterForEdit(new QueryExecutorArguments().setNumberOfTuples(1));
+		Assignments assignments = collection.iterator().next();
+		System.out.println(assignments.getIdentifier());
+		System.out.println(assignments.getSectionAsString());
+		System.out.println(assignments.getBudgetSpecializationUnitAsString());
+		System.out.println(assignments.getActionAsString());
+		System.out.println(assignments.getActivityAsString());
+		System.out.println(assignments.getActivityCategoryAsString());
+		System.out.println(assignments.getExpenditureNatureAsString());
+		System.out.println(assignments.getEconomicNatureAsString());
+		System.out.println(assignments.getAdministrativeUnitAsString());
+		System.out.println(assignments.getCreditManagerHolder());
+		System.out.println(assignments.getCreditManagerAssistant());
+		System.out.println(assignments.getAuthorizingOfficerHolder());
+		System.out.println(assignments.getAuthorizingOfficerAssistant());
+		System.out.println(assignments.getFinancialControllerHolder());
+		System.out.println(assignments.getFinancialControllerAssistant());
+		System.out.println(assignments.getAccountingHolder());
+		System.out.println(assignments.getAccountingAssistant());
+	}
+	
+	@Test
+	public void assignments_readWhereFilterForUI(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments().setNumberOfTuples(1));
+		Assignments assignments = collection.iterator().next();
+		System.out.println(assignments.getIdentifier());
+		System.out.println(assignments.getSectionAsString());
+		System.out.println(assignments.getBudgetSpecializationUnitAsString());
+		System.out.println(assignments.getActionAsString());
+		System.out.println(assignments.getActivityAsString());
+		System.out.println(assignments.getActivityCategoryAsString());
+		System.out.println(assignments.getExpenditureNatureAsString());
+		System.out.println(assignments.getEconomicNatureAsString());
+		System.out.println(assignments.getAdministrativeUnitAsString());
+		System.out.println(assignments.getCreditManagerHolderAsString());
+		System.out.println(assignments.getCreditManagerAssistantAsString());
+		System.out.println(assignments.getAuthorizingOfficerHolderAsString());
+		System.out.println(assignments.getAuthorizingOfficerAssistantAsString());
+		System.out.println(assignments.getFinancialControllerHolderAsString());
+		System.out.println(assignments.getFinancialControllerAssistantAsString());
+		System.out.println(assignments.getAccountingHolderAsString());
+		System.out.println(assignments.getAccountingAssistantAsString());
+	}
+	
+	@Test
 	public void assignments_readWhereFilterForApplyModel(){
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");

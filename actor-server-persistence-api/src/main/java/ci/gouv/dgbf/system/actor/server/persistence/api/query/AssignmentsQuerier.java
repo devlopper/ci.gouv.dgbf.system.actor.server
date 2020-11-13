@@ -5,6 +5,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -78,6 +80,9 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readWhereFilterForUI");
 	Collection<Assignments> readWhereFilterForUI(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readWhereFilterForEdit");
+	Collection<Assignments> readWhereFilterForEdit(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AssignmentsQuerier,Serializable {		
@@ -97,6 +102,8 @@ public interface AssignmentsQuerier extends Querier {
 				return readWhereFilterForApplyModel(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilterForUI(arguments);
+			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilterForEdit(arguments);
 			throw new RuntimeException("Not yet handled : "+arguments);
 		}
 		
@@ -182,6 +189,15 @@ public interface AssignmentsQuerier extends Querier {
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
 			return readWhereFilter(arguments);
 		}
+		
+		@Override
+		public Collection<Assignments> readWhereFilterForEdit(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT);
+			return readWhereFilter(arguments);
+		}
 	}
 	
 	/**/
@@ -194,7 +210,10 @@ public interface AssignmentsQuerier extends Querier {
 	
 	static void initialize() {
 		QueryHelper.addQueries(
-			Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
+			Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
+				, jpql(getForEditSelect(),getReadWhereFilterFrom(),"WHERE t.identifier = :identifier"					
+				)).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 					, jpql(
 							select("t")
 							,getReadWhereFilterFromWhere()
@@ -205,33 +224,60 @@ public interface AssignmentsQuerier extends Querier {
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL
 					, jpql(
-							/*String.format("SELECT new %s(t.%s.identifier,t.%s.identifier"
-									+ ",t.%s.identifier,t.%s.identifier,t.%s.identifier,t.%s.identifier,t.%s.identifier,t.%s.identifier"
-									+ ",t.%s.identifier,t.%s.identifier)",Assignments.class.getName()
-									,Assignments.FIELD_IDENTIFIER,Assignments.FIELD_EXECUTION_IMPUTATION
-									,Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
-									,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
-									,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
-									,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT
-									)
-							*/
 							"SELECT t"
-							//"SELECT t.identifier"
 							,getReadWhereFilterFromWhere()
 							,order(asc("t",Assignments.FIELD_IDENTIFIER))
 							))
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
+					, jpql(
+							select(
+									fields("t",Assignments.FIELD_IDENTIFIER)
+									,fields("t."+Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE_NAME
+											,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
+											,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME
+											,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+											,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
+									,Language.Select.concatCodeName(
+											Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+											,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+											,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+											,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
+											)
+								)
+							,getReadWhereFilterFromWhere()
+							,order(asc("t",Assignments.FIELD_IDENTIFIER))
+							))
+			.setTupleFieldsNamesIndexesFromFieldsNames(Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING
+					,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
+					,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+					,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
+					,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
+					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
+					,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING)
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT
+					, jpql(getForEditSelect(),getReadWhereFilterFromWhere(),order(asc("t",Assignments.FIELD_IDENTIFIER)))
+					).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
 		);
+	}
+	
+	static String getReadWhereFilterFrom() {
+		return from(
+				"Assignments t"
+				,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_HOLDER, Assignments.COLUMN_CREDIT_MANAGER_HOLDER)
+				,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT)
+				,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER)
+				,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT)
+				,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER)
+				,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT)
+				,getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_HOLDER, Assignments.COLUMN_ACCOUNTING_HOLDER)
+				,getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_ASSISTANT, Assignments.COLUMN_ACCOUNTING_ASSISTANT)
+			);
 	}
 	
 	static String getReadWhereFilterFromWhere() {
 		return jpql(
-				from(
-					"Assignments t"
-					,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_HOLDER, "gc"),getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, "agc")
-					,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, "ord"),getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, "aord")
-					,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, "cf"),getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, "acf")
-					,getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_HOLDER, "cpt"),getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_ASSISTANT, "acpt")
-				)
+				getReadWhereFilterFrom()
 				,where(and(
 					like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_SECTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
@@ -241,14 +287,14 @@ public interface AssignmentsQuerier extends Querier {
 					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,getReadWhereFilterScopeFunctionPredicate("gc", PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate("agc", PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate("ord", PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate("aord", PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate("cf", PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate("acf", PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate("cpt", PARAMETER_NAME_ACCOUNTING_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate("acpt", PARAMETER_NAME_ACCOUNTING_ASSISTANT)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT, PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT, PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_HOLDER, PARAMETER_NAME_ACCOUNTING_HOLDER)
+					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)
 					
 				))
 			);
@@ -264,5 +310,30 @@ public interface AssignmentsQuerier extends Querier {
 	
 	static String getLeftJoinScopeFunction(String holderFieldName,String holderVariableName) {
 		return String.format("LEFT JOIN ScopeFunction %2$s ON %2$s = t.%1$s", holderFieldName,holderVariableName);
+	}
+	
+	static String getForEditSelect() {
+		return select(
+				fields("t",Assignments.FIELD_IDENTIFIER)
+				,fields("t."+Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE_NAME
+					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
+					,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME
+					,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+					,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
+				,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+						,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+						,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+						,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
+			);
+	}
+	
+	static String[] getForEditTupleFieldsNamesIndexesFromFieldsNames() {
+		return new String[] {Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING
+						,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
+						,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+						,Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
+						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
+						,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT};
 	}
 }

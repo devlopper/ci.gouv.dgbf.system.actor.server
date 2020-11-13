@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -97,6 +98,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			
 			if(Boolean.TRUE.equals(ExecutionImputationQuerier.getInstance().isOwner(arguments)))
 				return ExecutionImputationQuerier.getInstance().count(arguments);
+			
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return AssignmentsQuerier.getInstance().countWhereFilter(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}

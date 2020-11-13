@@ -14,11 +14,14 @@ import org.cyk.utility.__kernel__.business.TransactionResult;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.persistence.query.Query;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
+import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AssignmentsPersistence;
@@ -112,7 +115,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	 */
 	@Transactional
 	@Override
-	public TransactionResult save(Collection<Assignments> collection) {
+	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
 		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
@@ -184,5 +187,11 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
 		LogHelper.logInfo(String.format("\tEnregistrement en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		transactionResult.setNumberOfUpdate(NumberHelper.add(transactionResult.getNumberOfUpdate(),collection.size()).longValue());
+	}
+
+	@Override @Transactional
+	public BusinessEntity<Assignments> deleteAll() {
+		QueryExecutor.getInstance().executeUpdateOrDelete(new QueryExecutorArguments().setQuery(new Query().setValue("DELETE FROM Assignments")));
+		return this;
 	}
 }

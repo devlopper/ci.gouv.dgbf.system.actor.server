@@ -48,6 +48,8 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(readQueryIdentifier))
+			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		
 		return super.__get__(readQueryIdentifier);
 	}

@@ -57,6 +57,17 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringImpl impl
 	
 	/**/
 	
+	@Transient private String creditManagerHolderAsString;
+	@Transient private String creditManagerAssistantAsString;	
+	@Transient private String authorizingOfficerHolderAsString;
+	@Transient private String authorizingOfficerAssistantAsString;	
+	@Transient private String financialControllerHolderAsString;
+	@Transient private String financialControllerAssistantAsString;	
+	@Transient private String accountingHolderAsString;
+	@Transient private String accountingAssistantAsString;
+	
+	/**/
+	
 	public Assignments(String identifier,String executionImputationIdentifier
 			,String creditManagerHolderIdentifier,String creditManagerAssistantIdentifier
 			,String authorizingOfficerHolder,String authorizingOfficerAssistant
@@ -94,6 +105,15 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringImpl impl
 	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT = "financialControllerAssistant";
 	public static final String FIELD_ACCOUNTING_HOLDER = "accountingHolder";
 	public static final String FIELD_ACCOUNTING_ASSISTANT = "accountingAssistant";
+	
+	public static final String FIELD_CREDIT_MANAGER_HOLDER_AS_STRING = "creditManagerHolderAsString";
+	public static final String FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING = "creditManagerAssistantAsString";
+	public static final String FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING = "authorizingOfficerHolderAsString";
+	public static final String FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING = "authorizingOfficerAssistantAsString";
+	public static final String FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING = "financialControllerHolderAsString";
+	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING = "financialControllerAssistantAsString";
+	public static final String FIELD_ACCOUNTING_HOLDER_AS_STRING = "accountingHolderAsString";
+	public static final String FIELD_ACCOUNTING_ASSISTANT_AS_STRING = "accountingAssistantAsString";
 	
 	public static final String TABLE_NAME = "AFFECTATIONS";
 	
