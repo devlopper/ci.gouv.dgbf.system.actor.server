@@ -22,6 +22,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private Boolean shared;
 	private String sharedAsString;
 	private ArrayList<String> functionsIdentifiers;
+	private String parentIdentifier;
 	
 	@Override
 	public ScopeFunctionDto setIdentifier(String identifier) {

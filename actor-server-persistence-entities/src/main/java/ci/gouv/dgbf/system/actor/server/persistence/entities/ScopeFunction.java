@@ -37,6 +37,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
 	
 	@Transient private String scopeAsString;
 	@Transient private String functionAsString;
@@ -215,12 +216,14 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
+	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
 	
 	public static final String TABLE_NAME = "POSTE";
 	
 	public static final String COLUMN_SCOPE = "domaine";
 	public static final String COLUMN_FUNCTION = "fonction";
 	public static final String COLUMN_NUMBER_OF_ACTOR = "nombre_acteur";
+	public static final String COLUMN_PARENT_IDENTIFIER = "parent";
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT = "code_%s";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT = "libelle_%s";
