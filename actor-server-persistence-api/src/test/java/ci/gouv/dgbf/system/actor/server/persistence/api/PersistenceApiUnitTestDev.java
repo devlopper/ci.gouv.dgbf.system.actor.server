@@ -1,18 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
@@ -37,8 +31,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
@@ -47,19 +39,6 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
-	}
-	
-	//@Test
-	public void createScopeFunctionExecutionImputation_natively(){
-		EntityManager entityManager = EntityManagerGetter.getInstance().get();
-		Collection<Object> objects = new ArrayList<Object>();
-		objects.add(new ScopeFunctionExecutionImputation()
-				.setScopeFunction(EntityFinder.getInstance().find(ScopeFunction.class, "GC13010662"))
-				.setExecutionImputation(EntityFinder.getInstance().find(ExecutionImputation.class, "IMPUTATION11018010005BF1E3A5D576B48E1B5DC3D4FDA69A2CF")));
-		entityManager.getTransaction().begin();
-		EntityCreator.getInstance().createMany(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(objects).setIsNative(Boolean.TRUE));
-		entityManager.getTransaction().commit();
-		//(new Identity().setFirstName("a").setLastNames("b").setElectronicMailAddress("a@b.com"));
 	}
 	
 	@Test

@@ -30,11 +30,14 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
+	@Column(name = COLUMN_ACTION_CODE) private String actionCode;
 	@Column(name = COLUMN_ACTION_CODE_NAME) private String actionCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ACTIVITY) private Activity activity;
+	@Column(name = COLUMN_ACTIVITY_CODE) private String activityCode;
 	@Column(name = COLUMN_ACTIVITY_CODE_NAME) private String activityCodeName;
 	
+	@Column(name = COLUMN_ECONOMIC_NATURE_CODE) private String economicNatureCode;
 	@Column(name = COLUMN_ECONOMIC_NATURE_CODE_NAME) private String economicNatureCodeName;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
@@ -91,9 +94,12 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE = "budgetSpecializationUnitCode";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 	public static final String FIELD_ACTION = "action";
+	public static final String FIELD_ACTION_CODE = "actionCode";
 	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";
 	public static final String FIELD_ACTIVITY = "activity";
+	public static final String FIELD_ACTIVITY_CODE = "activityCode";
 	public static final String FIELD_ACTIVITY_CODE_NAME = "activityCodeName";
+	public static final String FIELD_ECONOMIC_NATURE_CODE = "economicNatureCode";
 	public static final String FIELD_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE = "administrativeUnitCode";
@@ -108,9 +114,12 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE = "USB_CODE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
 	public static final String COLUMN_ACTION = "ACTION";
+	public static final String COLUMN_ACTION_CODE = "ACTION_CODE";
 	public static final String COLUMN_ACTION_CODE_NAME = "ACTION_CODE_LIBELLE";
 	public static final String COLUMN_ACTIVITY = "ACTIVITE";
+	public static final String COLUMN_ACTIVITY_CODE = "ACTIVITE_CODE";
 	public static final String COLUMN_ACTIVITY_CODE_NAME = "ACTIVITE_CODE_LIBELLE";
+	public static final String COLUMN_ECONOMIC_NATURE_CODE = "NATURE_ECONOMIQUE_CODE";
 	public static final String COLUMN_ECONOMIC_NATURE_CODE_NAME = "NATURE_ECONOMIQUE_CODE_LIBELLE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UA";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE = "UA_CODE";

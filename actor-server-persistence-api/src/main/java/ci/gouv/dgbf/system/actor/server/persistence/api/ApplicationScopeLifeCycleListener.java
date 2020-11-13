@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -42,7 +41,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQu
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
@@ -50,7 +48,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionExecutionImputation;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -69,19 +66,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
 				,EntitySaver.class,CountQueryIdentifierGetter.class);
 		DependencyInjection.setQualifierClassTo(Oracle.class,NativeQueryStringBuilder.class);
-		PersistenceHelper.CLASS_PRIMARY_KEY_COLUMN_NAME.put(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER);
-		PersistenceHelper.CLASS_COLUMNS_NAMES.put(ScopeFunctionExecutionImputation.class, Set.of(ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
-				,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION
-				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION));
-		PersistenceHelper.COLUMN_NAME_FIELD.put(ScopeFunctionExecutionImputation.class, Map.of(
-				ScopeFunctionExecutionImputation.COLUMN_IDENTIFIER
-				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_IDENTIFIER)
-				,ScopeFunctionExecutionImputation.COLUMN_SCOPE_FUNCTION
-				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_SCOPE_FUNCTION)
-				,ScopeFunctionExecutionImputation.COLUMN_EXECUTION_IMPUTATION
-				,FieldHelper.getByName(ScopeFunctionExecutionImputation.class, ScopeFunctionExecutionImputation.FIELD_EXECUTION_IMPUTATION)
-				));
-		
+	
 		PersistenceHelper.COLUMN_NAME_FIELD.put(Assignments.class, Map.of(
 				Assignments.COLUMN_IDENTIFIER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_IDENTIFIER)
 				
@@ -136,7 +121,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		AdministrativeUnitQuerier.initialize();
 		BudgetaryFunctionQuerier.initialize();
 		
-		ScopeFunctionExecutionImputationQuerier.initialize();
 		ExecutionImputationQuerier.initialize();
 		AssignmentsQuerier.initialize();
 	}

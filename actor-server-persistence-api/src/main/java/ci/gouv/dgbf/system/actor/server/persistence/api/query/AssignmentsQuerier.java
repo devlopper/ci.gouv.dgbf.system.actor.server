@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -213,21 +214,13 @@ public interface AssignmentsQuerier extends Querier {
 			Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 				, jpql(getForEditSelect(),getReadWhereFilterFrom(),"WHERE t.identifier = :identifier"					
 				)).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
-			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
-					, jpql(
-							select("t")
-							,getReadWhereFilterFromWhere()
-							,order(asc("t",Assignments.FIELD_IDENTIFIER))
-							))
-			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER
-					, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
 			
-			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL
-					, jpql(
-							"SELECT t"
-							,getReadWhereFilterFromWhere()
-							,order(asc("t",Assignments.FIELD_IDENTIFIER))
-							))
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))
+			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL, jpql("SELECT t",getReadWhereFilterFromWhere(),getOrderBy()))
+			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 					, jpql(
 							select(
@@ -245,7 +238,7 @@ public interface AssignmentsQuerier extends Querier {
 											)
 								)
 							,getReadWhereFilterFromWhere()
-							,order(asc("t",Assignments.FIELD_IDENTIFIER))
+							,getOrderBy()
 							))
 			.setTupleFieldsNamesIndexesFromFieldsNames(Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING
 					,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
@@ -256,7 +249,7 @@ public interface AssignmentsQuerier extends Querier {
 					,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING)
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT
-					, jpql(getForEditSelect(),getReadWhereFilterFromWhere(),order(asc("t",Assignments.FIELD_IDENTIFIER)))
+					, jpql(getForEditSelect(),getReadWhereFilterFromWhere(),getOrderBy())
 					).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
 		);
 	}
@@ -335,5 +328,15 @@ public interface AssignmentsQuerier extends Querier {
 						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
 						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
 						,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT};
+	}
+	
+	static String getOrderBy() {
+		return order(
+				asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE))
+				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE))
+				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ACTION_CODE))
+				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ACTIVITY_CODE))
+				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE))
+			);
 	}
 }
