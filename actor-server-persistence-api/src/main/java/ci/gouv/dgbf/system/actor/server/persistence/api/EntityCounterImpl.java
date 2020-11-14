@@ -11,6 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
@@ -44,6 +45,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			return ScopeOfTypeActivityQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return ScopeOfTypeImputationQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
+			return ClusterQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))

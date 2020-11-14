@@ -13,6 +13,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
@@ -58,6 +59,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
+				return (T) ClusterQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -81,6 +85,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ClusterQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(ScopeFunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ScopeFunctionQuerier.getInstance().readMany(arguments);

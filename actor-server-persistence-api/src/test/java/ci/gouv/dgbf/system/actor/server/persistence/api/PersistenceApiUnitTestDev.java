@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
@@ -39,6 +41,16 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void clusters_readWhereFilter(){
+		System.out.println(ClusterQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()));
+	}
+	
+	@Test
+	public void clusterPrivileges_readWhereFilter(){
+		System.out.println(ClusterPrivilegesQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()));
 	}
 	
 	@Test

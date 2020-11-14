@@ -51,6 +51,11 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>   	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -115,6 +120,11 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -178,6 +188,11 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
+    	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -240,6 +255,11 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
     	
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
