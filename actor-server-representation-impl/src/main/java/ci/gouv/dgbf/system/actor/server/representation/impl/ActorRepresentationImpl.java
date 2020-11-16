@@ -34,6 +34,30 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public ActorDto getOneToBeCreatedByPublic() {	
+		Actor actor = __inject__(ActorBusiness.class).instantiateOneToBeCreatedByPublic();				
+		return MappingHelper.getSource(actor, ActorDto.class);		
+	}
+	
+	@Override
+	public Response createByPublic(ActorDto actorDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						if(actorDto == null)
+							throw new RuntimeException("Acteur obligatoire");						
+						Actor actor = MappingHelper.getDestination(actorDto, Actor.class);			
+						__inject__(ActorBusiness.class).createByPublic(actor);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response createPrivilegesFromFunctions(Collection<ActorDto> actors) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override

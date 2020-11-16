@@ -39,6 +39,7 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private CivilityDto civility;
 	private IdentityGroupDto group;
 	private Boolean emailSendableAfterCreation;
+	private IdentificationFormDto form;
 	
 	private ArrayList<ProfileDto> profiles;
 	private ArrayList<String> profilesCodes;

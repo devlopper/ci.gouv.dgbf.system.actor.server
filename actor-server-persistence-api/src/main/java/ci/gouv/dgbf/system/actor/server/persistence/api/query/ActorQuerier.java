@@ -43,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
@@ -85,12 +86,23 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_NAME = "visibleAdministrativeUnitName";
 	
+	Actor instantiateOneToBeCreatedByPublic();
+	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
 	Actor readOne(QueryExecutorArguments arguments);
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ActorQuerier,Serializable {
+		
+		@Override
+		public Actor instantiateOneToBeCreatedByPublic() {
+			Actor actor = new Actor();
+			actor.setEmailSendableAfterCreation(Boolean.TRUE);
+			IdentificationForm form = IdentificationFormQuerier.getInstance().readWithFieldsByCode(IdentificationForm.CODE_CREATION_COMPTE);
+			actor.setForm(form);
+			return actor;
+		}
 		
 		@Override
 		public Actor readOne(QueryExecutorArguments arguments) {

@@ -44,6 +44,13 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void actor_instantiateOneToBeCreatedByPublic(){
+		Actor actor = ActorQuerier.getInstance().instantiateOneToBeCreatedByPublic();
+		System.out.println(actor);
+		System.out.println(actor.getForm().getAttributs());
+	}
+	
+	@Test
 	public void clusters_readWhereFilter(){
 		System.out.println(ClusterQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()));
 	}

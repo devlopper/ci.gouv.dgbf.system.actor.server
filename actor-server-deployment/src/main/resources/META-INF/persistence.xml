@@ -49,6 +49,10 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut</class>	
+    	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>

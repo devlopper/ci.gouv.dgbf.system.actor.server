@@ -19,6 +19,20 @@ import io.swagger.annotations.ApiOperation;
 @Path(ActorRepresentation.PATH)
 public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	
+	@GET
+	@Path(PATH_GET_ONE_TO_BE_CREATED_BY_PUBLIC)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Instantié un acteur a être créé par public",tags = {TAG})
+	ActorDto getOneToBeCreatedByPublic();
+	
+	@POST
+	@Path(PATH_CREATE_BY_PUBLIC)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@ApiOperation(value = "Créer un acteur par public",tags = {TAG})
+	Response createByPublic(ActorDto actor);
+	
 	@POST
 	@Path(PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
@@ -71,6 +85,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	String PATH = "actor";
+	String PATH_GET_ONE_TO_BE_CREATED_BY_PUBLIC = "getonetobecreatedbypublic";
 	String PATH_GET_PROFILE_INFORMATIONS_BY_CODE = "informations-profile-par-acteur";
 	String PATH_IMPORT_FROM_KEYCLOAK = "importFromKeycloak";
 	String PATH_EXPORT_TO_KEYCLOAK = "exportToKeycloak";
@@ -81,6 +96,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS = "create_privileges_from_functions";
 	String PATH_CREATE_PROFILES = "create_profiles";
 	String PATH_DELETE_PROFILES = "delete_profiles";
+	String PATH_CREATE_BY_PUBLIC = "createbypublic";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	

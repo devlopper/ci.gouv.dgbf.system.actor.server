@@ -18,6 +18,11 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void IdentificationAttribut_CODES_FIELDS_NAMES(){
+		System.out.println(IdentificationAttribut.CODES_FIELDS_NAMES);
+	}
+	
+	@Test
 	public void scopeFunction_setCodeFromScript(){
 		String codeScript = "code_fonction+code_ua";
 		String nameScript = "libelle_fonction+' '+libelle_ua";

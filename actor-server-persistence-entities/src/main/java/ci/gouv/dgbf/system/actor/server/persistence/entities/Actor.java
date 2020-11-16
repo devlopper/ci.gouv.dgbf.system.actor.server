@@ -28,7 +28,6 @@ import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.AuditOverrides;
-import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import lombok.Getter;
@@ -45,7 +44,7 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = Actor.FIELD___AUDIT_WHEN__,column = @Column(name="audit_date"))
 		,@AttributeOverride(name = Actor.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="audit_fonctionalite"))
 })
-@Audited
+//@org.hibernate.envers.Audited
 @AuditOverrides(value = {
 		@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringImpl.class)
 		,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl.class)
@@ -93,6 +92,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private String password;
 	@Transient private Boolean keycloakUserCreatable;
 	@Transient private Boolean emailSendableAfterCreation;
+	@Transient private IdentificationForm form;
 	
 	@Transient private User keycloakUser;
 	

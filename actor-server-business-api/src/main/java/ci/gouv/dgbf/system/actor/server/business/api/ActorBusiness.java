@@ -33,6 +33,11 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	@Transactional
 	void saveProfile(Actor actor);
 	
+	Actor instantiateOneToBeCreatedByPublic();
+	
+	@Transactional
+	void createByPublic(Actor actor);
+	
 	String CREATE_PRIVILEGES_FROM_FUNCTIONS = "Actor.createPrivilegesFromFunctions";
 	String CREATE_PROFILES = "Actor.createProfiles";
 	String DELETE_PROFILES = "Actor.deleteProfiles";
@@ -40,6 +45,8 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	String DELETE_SCOPES = "Actor.deleteScopes";
 	String SAVE_PREFERENCES = "Actor.savePreferences";
 	String SAVE_PROFILE = "Actor.saveProfile";
+	
+	String CREATE_FROM_PUBLIC = "Actor.createFromPublic";
 	
 	/**/
 	

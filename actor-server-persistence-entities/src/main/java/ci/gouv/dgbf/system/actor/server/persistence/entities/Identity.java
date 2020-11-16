@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Identity.TABLE_NAME)
-@Audited
+//@org.hibernate.envers.Audited
 public class Identity extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -104,7 +104,7 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
 	public static final String FIELD_NAMES = "names";
 	
-	public static final String TABLE_NAME = "IDENTITE";
+	public static final String TABLE_NAME = "ID_IDENTITE";
 	
 	public static final String COLUMN_FIRST_NAME = "NOM";
 	public static final String COLUMN_LAST_NAMES = "PRENOMS";

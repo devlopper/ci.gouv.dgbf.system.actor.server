@@ -35,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -49,6 +50,24 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPersistence> implements ActorBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Actor instantiateOneToBeCreatedByPublic() {
+		Actor actor = ActorQuerier.getInstance().instantiateOneToBeCreatedByPublic();
+		return actor;
+	}
+	
+	@Override @Transactional
+	public void createByPublic(Actor actor) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		actor.setElectronicMailAddress(StringUtils.stripToNull(actor.getElectronicMailAddress()));			
+		actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
+		actor.setCode(actor.getIdentity().getElectronicMailAddress());
+		actor.setIdentifier("ACT_"+actor.getCode());
+		actor.setCreationDate(LocalDateTime.now());
+		create(actor);
+		//EntityCreator.getInstance().createMany(List.of(actor));
+	}
+	
 	@Override @Transactional
 	public void createPrivilegesFromFunctions(Collection<Actor> actors,Collection<Function> functions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actors", actors);
