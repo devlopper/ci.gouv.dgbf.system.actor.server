@@ -12,7 +12,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetaryFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
@@ -103,9 +102,6 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(Boolean.TRUE.equals(ProfileQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ProfileQuerier.getInstance().readMany(arguments);
-		
-		if(Boolean.TRUE.equals(BudgetaryFunctionQuerier.getInstance().isOwner(arguments)))
-			return (Collection<T>) BudgetaryFunctionQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) SectionQuerier.getInstance().readMany(arguments);

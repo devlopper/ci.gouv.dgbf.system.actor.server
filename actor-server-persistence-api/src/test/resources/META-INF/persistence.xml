@@ -44,10 +44,6 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
@@ -117,10 +113,6 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
@@ -189,10 +181,6 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
@@ -261,10 +249,6 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorBudgetaryFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	

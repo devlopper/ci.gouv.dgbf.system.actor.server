@@ -65,7 +65,6 @@ public interface AccountRequestQuerier extends Querier {
 			AccountRequest accountRequest = readProjection01ByAccessToken(accessToken);
 			if(accountRequest == null)
 				return null;
-			accountRequest.setBudgetaryFunctions(BudgetaryFunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			accountRequest.setFunctions(FunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			return accountRequest;
 		}
@@ -82,7 +81,6 @@ public interface AccountRequestQuerier extends Querier {
 			AccountRequest accountRequest = readProjection01ByIdentifier(identifier);
 			if(accountRequest == null)
 				return null;
-			accountRequest.setBudgetaryFunctions(BudgetaryFunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			accountRequest.setFunctions(FunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			return accountRequest;
 		}
@@ -102,7 +100,6 @@ public interface AccountRequestQuerier extends Querier {
 			Scope scope = EntityFinder.getInstance().find(Scope.class, accountRequest.getAdministrativeUnit().getIdentifier());
 			accountRequest.getAdministrativeUnit().setCode(scope.getCode());
 			accountRequest.getAdministrativeUnit().setName(scope.getName());
-			accountRequest.setBudgetaryFunctions(BudgetaryFunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			accountRequest.setFunctions(FunctionQuerier.getInstance().readByAccountRequestIdentifier(accountRequest.getIdentifier()));
 			return accountRequest;
 		}

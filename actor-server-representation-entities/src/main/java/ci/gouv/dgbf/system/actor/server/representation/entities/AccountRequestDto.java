@@ -45,7 +45,6 @@ public class AccountRequestDto extends AbstractIdentifiableSystemScalarStringImp
 	private String accessToken;
 	private String rejectReason;
 	
-	private ArrayList<BudgetaryFunctionDto> budgetaryFunctions;
 	private ArrayList<FunctionDto> functions;
 	
 	@Override

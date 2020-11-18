@@ -4,8 +4,8 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
@@ -19,8 +19,6 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
-import org.cyk.utility.__kernel__.persistence.query.Language.Select;
-import org.cyk.utility.__kernel__.persistence.query.Language.Where;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -395,15 +393,6 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Function t")			
 						,Language.Where.of("t.type.code IN :"+PARAMETER_NAME_TYPES_CODES))
-				)
-			);
-		
-		QueryHelper.addQueries(
-				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACCOUNT_REQUEST_IDENTIFIER
-				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Function.class
-				,Query.FIELD_VALUE,Language.of(Select.of("t")
-						,From.of("Function t","INNER JOIN AccountRequestFunction f ON f.function = t")
-						,Where.of("f.accountRequest.identifier = :"+PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER))
 				)
 			);
 	}

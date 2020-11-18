@@ -15,8 +15,6 @@ import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,10 +36,10 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 	@Column(name = COLUMN_MOBILE_PHONE_NUMBER) private String mobilePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
-	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED) private AdministrativeUnit administrativeUnit;
+	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private AdministrativeUnit administrativeUnit;
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
-	@ManyToOne @JoinColumn(name = COLUMN_CIVILITY) @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED) private Civility civility;
-	@ManyToOne @JoinColumn(name = COLUMN_GROUP) @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED) private IdentityGroup group;
+	@ManyToOne @JoinColumn(name = COLUMN_CIVILITY) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private Civility civility;
+	@ManyToOne @JoinColumn(name = COLUMN_GROUP) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private IdentityGroup group;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_REFERENCE) private String actOfAppointmentReference;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATORY) private String actOfAppointmentSignatory;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE) private LocalDate actOfAppointmentSignatureDate;

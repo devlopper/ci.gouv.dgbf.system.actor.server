@@ -25,13 +25,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestBudgetaryFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequestFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetaryFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
@@ -98,7 +96,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
 		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
 		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
-		assertThat(accountRequest.getBudgetaryFunctions()).isNull();
 		assertThat(accountRequest.getFunctions()).isNull();
 	}
 	
@@ -112,7 +109,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
 		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
-		EntityCreator.getInstance().createManyInTransaction(new BudgetaryFunction().setCode(budgetaryFunctionIdentifier).setName("1"));		
 		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
 		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("11010045").setName("DTI"));
 		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("11010045").setSectionFromIdentifier("SEC01"));
@@ -124,7 +120,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				.setRegistrationNumber("100A"));
 		EntityCreator.getInstance().createOneInTransaction(new AccountRequest().setIdentifier("1").setIdentityFromIdentifier("1").setCreationDate(d2).setAccessToken("at")
 				.setSubmissionDate(d3));
-		EntityCreator.getInstance().createOneInTransaction(new AccountRequestBudgetaryFunction().setAccountRequestFromIdentifier("1").setBudgetaryFunctionFromIdentifier(budgetaryFunctionIdentifier));
 		EntityCreator.getInstance().createOneInTransaction(new AccountRequestFunction().setAccountRequestFromIdentifier("1").setFunctionFromIdentifier(functionIdentifier));
 		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readProjection01WithBudgetaryFunctionsAndFunctionsByAccessToken("at");	
 		assertThat(accountRequest).isNotNull();
@@ -146,7 +141,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
 		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
 		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
-		assertThat(accountRequest.getBudgetaryFunctions()).isNotNull();
 		assertThat(accountRequest.getFunctions()).isNotNull();
 	}
 	
@@ -160,7 +154,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
 		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
-		EntityCreator.getInstance().createManyInTransaction(new BudgetaryFunction().setCode(budgetaryFunctionIdentifier).setName("1"));		
 		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
 		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("11010045").setName("DTI"));
 		EntityCreator.getInstance().createManyInTransaction(new AdministrativeUnit().setIdentifier("11010045").setSectionFromIdentifier("SEC01"));
@@ -172,7 +165,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 				.setRegistrationNumber("100A"));
 		EntityCreator.getInstance().createOneInTransaction(new AccountRequest().setIdentifier("1").setIdentityFromIdentifier("1").setCreationDate(d2).setAccessToken("at")
 				.setSubmissionDate(d3));
-		EntityCreator.getInstance().createOneInTransaction(new AccountRequestBudgetaryFunction().setAccountRequestFromIdentifier("1").setBudgetaryFunctionFromIdentifier(budgetaryFunctionIdentifier));
 		EntityCreator.getInstance().createOneInTransaction(new AccountRequestFunction().setAccountRequestFromIdentifier("1").setFunctionFromIdentifier(functionIdentifier));
 		AccountRequest accountRequest = AccountRequestQuerier.getInstance().readProjection02WithBudgetaryFunctionsAndFunctionsByIdentifier("1");	
 		assertThat(accountRequest).isNotNull();
@@ -200,7 +192,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		assertThat(accountRequest.getPostalBoxAddress()).isEqualTo("06BP");
 		assertThat(accountRequest.getRegistrationNumber()).isEqualTo("100A");
 		assertThat(accountRequest.getSubmissionDateAsString()).isEqualTo("05/01/2021 à 14:35");
-		assertThat(accountRequest.getBudgetaryFunctions()).isNotNull();
 		assertThat(accountRequest.getFunctions()).isNotNull();
 	}
 	
