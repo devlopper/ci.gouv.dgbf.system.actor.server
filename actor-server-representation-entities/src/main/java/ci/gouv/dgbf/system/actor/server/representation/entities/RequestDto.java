@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.representation.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringImpl;
 
@@ -18,6 +19,14 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringImpl imple
 	private ActorDto actor;
 	private String comment;
 	private ArrayList<FunctionDto> functions;
+	private AdministrativeUnitDto administrativeUnit;
+	private SectionDto section;
+	private BudgetSpecializationUnitDto budgetSpecializationUnit;
+	private String administrativeFunction;
+	private String certificatReference;
+	private String certificatSignatory;
+	private Date certificatSignatureDate;
+	
 	
 	private ArrayList<String> functionsAsStrings;	
 	private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;

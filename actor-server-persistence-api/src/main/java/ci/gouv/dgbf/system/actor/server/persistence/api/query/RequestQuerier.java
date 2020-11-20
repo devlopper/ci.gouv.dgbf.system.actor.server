@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -20,6 +21,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -30,6 +32,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public interface RequestQuerier extends Querier {
 
+	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
+	
 	Request readOne(QueryExecutorArguments arguments);
 	Collection<Request> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);
@@ -43,12 +47,26 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.COUNT_WHERE_FILTER.getValue());
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifier");
+	Request instantiateOneByTypeIdentifier(String typeIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifier");
+	Request readByIdentifier(String identifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForUI");
+	Request readByIdentifierForUI(String identifier);
+	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
 		@Override
 		public Request readOne(QueryExecutorArguments arguments) {
-			
-			return null;
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
+				return instantiateOneByTypeIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER))
+				return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
+				return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
 		@Override
@@ -65,6 +83,33 @@ public interface RequestQuerier extends Querier {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_WHERE_FILTER))
 				return countWhereFilter(arguments);
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
+		}
+		
+		@Override
+		public Request instantiateOneByTypeIdentifier(String typeIdentifier) {
+			if(StringHelper.isBlank(typeIdentifier))
+				return null;
+			RequestType type = EntityFinder.getInstance().find(RequestType.class, typeIdentifier);
+			if(type == null)
+				return null;
+			Request request = new Request().setType(type);			
+			IdentificationFormQuerier.AbstractImpl.setFields(type.getForm(), null);
+			return request;
+		}
+		
+		@Override
+		public Request readByIdentifier(String identifier) {
+			return QueryExecutor.getInstance().executeReadOne(Request.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER)
+					.addFilterField(PARAMETER_NAME_IDENTIFIER, identifier));
+		}
+		
+		@Override
+		public Request readByIdentifierForUI(String identifier) {
+			Request request = readByIdentifier(identifier);
+			if(request == null)
+				return null;
+			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+			return request;
 		}
 		
 		@Override
@@ -149,6 +194,8 @@ public interface RequestQuerier extends Querier {
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Long.class
 			,Query.FIELD_VALUE,jpql("SELECT COUNT(t.identifier)",getReadWhereFilterFromWhere())
 			)
+			
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 		);
 	}
 	

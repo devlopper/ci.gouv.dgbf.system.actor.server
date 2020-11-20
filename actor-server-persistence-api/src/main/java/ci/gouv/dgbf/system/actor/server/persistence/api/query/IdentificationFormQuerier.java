@@ -49,7 +49,8 @@ public interface IdentificationFormQuerier extends Querier {
 			if(Boolean.TRUE.equals(asString)) {
 				
 			}else {
-				form.setAttributs(formAttributs.stream().map(x -> x.getAttribut().setRequired(x.getRequired()).setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
+				form.setAttributs(formAttributs.stream().map(x -> x.getAttribut().setRequired(x.getRequired() == null ? x.getAttribut().getRequired() : x.getRequired())
+						.setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
 			}			
 		}
 	}

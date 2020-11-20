@@ -47,6 +47,22 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	public static final String CODE_ELECTRONIC_MAIL_ADDRESS = "EMAIL";
 	public static final String CODE_MOBILE_PHONE_NUMBER = "NUMERO_TELEPHONE_MOBILE";
 	public static final String CODE_OFFICE_PHONE_NUMBER = "NUMERO_TELEPHONE_BUREAU";
+	public static final String CODE_OFFICE_PHONE_EXTENSION = "POSTE_TELEPHONE_BUREAU";
+	public static final String CODE_CERTIFICAT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
+	public static final String CODE_CERTIFICAT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
+	public static final String CODE_CERTIFICAT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
+	public static final String CODE_REGISTRATION_NUMBER = "MATRICULE";
+	public static final String CODE_GROUP = "GROUPE";
+	public static final String CODE_POSTAL_BOX_ADDRESS = "ADRESSE_BOITE_POSTALE";
+	public static final String CODE_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
+	public static final String CODE_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
+	public static final String CODE_SECTION = "SECTION";
+	public static final String CODE_BUDGET_SPECIALIZATION_UNIT = "USB";
+	public static final String CODE_CREDIT_MANAGER_HOLDER = "GESTIONNAIRE_CREDIT";
+	public static final String CODE_AUTHORIZING_OFFICER_HOLDER = "ORDONNATEUR_DELEGUE";
+	public static final String CODE_FINANCIAL_CONTROLLER_HOLDER = "CONTROLEUR_FINANCIER";
+	public static final String CODE_ACCOUNTING_HOLDER = "COMPTABLE";
+	public static final String CODE_COMMENT = "COMMENTAIRE";
 	
 	public static final Collection<String> CODES_FIELDS_NAMES = new ArrayList<>();
 	static {

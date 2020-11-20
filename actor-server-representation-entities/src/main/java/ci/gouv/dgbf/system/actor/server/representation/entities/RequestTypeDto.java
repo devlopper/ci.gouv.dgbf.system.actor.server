@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 public class RequestTypeDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private IdentificationFormDto form;
+	
 	@Override
 	public RequestTypeDto setIdentifier(String identifier) {
 		return (RequestTypeDto) super.setIdentifier(identifier);

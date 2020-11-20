@@ -30,6 +30,15 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
+	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;		
+	/*
+	private String certificatReference;
+	private String certificatSignatory;
+	private LocalDateTime certificatSignatureDate;
+	*/
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<String> functionsAsStrings;
 	@Transient private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;
@@ -53,6 +62,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
 	
+	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	
 	public static final String COLUMN_TYPE = "TYPE";
@@ -60,4 +74,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
 	public static final String COLUMN_COMMENT = "COMMENTAIRE";
+	
+	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
+	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
+	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
 }

@@ -29,7 +29,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_GET_ONE_TO_BE_CREATED_BY_PUBLIC)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Instantié un acteur a être créé par public")
+	@Operation(description = "Instantier un acteur a être créé par public")
 	ActorDto getOneToBeCreatedByPublic();
 	
 	@POST
