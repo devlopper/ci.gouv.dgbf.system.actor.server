@@ -22,6 +22,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -32,6 +34,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -48,6 +51,26 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		Actor actor = ActorQuerier.getInstance().instantiateOneToBeCreatedByPublic();
 		System.out.println(actor);
 		System.out.println(actor.getForm().getAttributs());
+	}
+	
+	@Test
+	public void request(){
+		System.out.println(RequestTypeQuerier.getInstance().readAll());
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE"));
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE").getForm());
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE").getForm().getAttributs());
+	}
+	
+	@Test
+	public void request_readWhereFilterForUI(){
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(null);
+		Request request = CollectionHelper.getFirst(requests);
+		System.out.println(request.getActorCode());
+		System.out.println(request.getActorNames());
+		System.out.println(request.getTypeAsString());
+		System.out.println(request.getComment());
+		System.out.println(request.getCreationDateAsString());
+		System.out.println(request.getFunctionsAsStrings());
 	}
 	
 	@Test

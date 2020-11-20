@@ -106,7 +106,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		LocalDateTime d3 = LocalDateTime.of(2021, 01, 05,14,35);
 		String functionTypeIdentifier = RandomHelper.getAlphabetic(3);
 		String functionIdentifier = RandomHelper.getAlphabetic(3);
-		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
 		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
 		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));
@@ -151,7 +150,6 @@ public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
 		LocalDateTime d3 = LocalDateTime.of(2021, 01, 05,14,35);
 		String functionTypeIdentifier = RandomHelper.getAlphabetic(3);
 		String functionIdentifier = RandomHelper.getAlphabetic(3);
-		String budgetaryFunctionIdentifier = RandomHelper.getAlphabetic(3);
 		EntityCreator.getInstance().createManyInTransaction(new FunctionType().setCode(functionTypeIdentifier).setName("1"));
 		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(functionIdentifier).setName("1").setTypeFromIdentifier(functionTypeIdentifier));
 		EntityCreator.getInstance().createManyInTransaction(new Section().setIdentifier("SEC01"));

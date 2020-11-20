@@ -38,13 +38,20 @@ public interface IdentificationFormQuerier extends Querier {
 			IdentificationForm form = readByCode(code);
 			if(form == null)
 				return null;
-			Collection<IdentificationFormAttribut> formAttributs = IdentificationFormAttributQuerier.getInstance().readByFormCode(form.getCode());
-			if(CollectionHelper.isEmpty(formAttributs))
-				return form;
-			form.setAttributs(formAttributs.stream().map(x -> x.getAttribut().setRequired(x.getRequired()).setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
+			setFields(form, null);
 			return form;
 		}
-
+		
+		public static void setFields(IdentificationForm form,Boolean asString) {
+			Collection<IdentificationFormAttribut> formAttributs = IdentificationFormAttributQuerier.getInstance().readByFormCode(form.getCode());
+			if(CollectionHelper.isEmpty(formAttributs))
+				return;
+			if(Boolean.TRUE.equals(asString)) {
+				
+			}else {
+				form.setAttributs(formAttributs.stream().map(x -> x.getAttribut().setRequired(x.getRequired()).setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
+			}			
+		}
 	}
 	
 	/**/
