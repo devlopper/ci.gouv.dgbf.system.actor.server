@@ -1,8 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +16,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 
 import lombok.Getter;
@@ -48,6 +55,20 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 		return (Request) super.setIdentifier(identifier);
 	}
 	
+	public static Map<String,IdentificationAttribut> computeFieldsNames(IdentificationForm form) {
+		if(form == null || CollectionHelper.isEmpty(form.getAttributs()) || CollectionHelper.isEmpty(COLUMNS_FIELDS_NAMES))
+			return null;
+		Map<String,IdentificationAttribut> fieldsNames = new LinkedHashMap<>();
+		form.getAttributs().forEach(attribut -> {
+			for(String columnFieldName : COLUMNS_FIELDS_NAMES) {
+				String columnName = (String) FieldHelper.readStatic(Request.class,columnFieldName);
+				if(columnName.equals(attribut.getCode()))
+					fieldsNames.put((String) FieldHelper.readStatic(Request.class,"FIELD_"+StringUtils.substringAfter(columnFieldName, "COLUMN_")),attribut);
+			}		
+		});
+		return fieldsNames;
+	}
+	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_ACTOR = "actor";
@@ -79,4 +100,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
+	
+	public static final Collection<String> COLUMNS_FIELDS_NAMES = new ArrayList<>();
+	static {
+		Collection<String> names = FieldHelper.getNames(FieldHelper.filter(Request.class, "^COLUMN_", Modifier.STATIC));
+		if(CollectionHelper.isNotEmpty(names))
+			COLUMNS_FIELDS_NAMES.addAll(names);
+	}
 }

@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -33,12 +34,23 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	})
 	Response getOneToBeCreatedByTypeIdentifier(@QueryParam(QUERY_PARAMETER_NAME_TYPE_IDENTIFIER) String typeIdentifier);
 	
+	@POST
+	@Path(PATH_SAVE)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Enregistrer une demande")
+	@Parameters(value = {
+			@Parameter(name = "Demande",allowEmptyValue = false,description = "Demande",required = true,style = ParameterStyle.DEFAULT)
+	})
+	Response save(RequestDto request);
+	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
 	}
 	
 	String PATH = "demande";
 	String PATH_GET_ONE_TO_BE_CREATED_BY_TYPE_IDENTIFIER = "getonetobecreatedbytypeidentifier";
+	String PATH_SAVE = "save";
 	
 	String TAG = "Demande";
 	

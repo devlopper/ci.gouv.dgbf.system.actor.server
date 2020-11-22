@@ -2,14 +2,16 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessServiceProvider;
@@ -17,6 +19,7 @@ import org.cyk.utility.server.business.BusinessServiceProvider;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 
 @ApplicationScoped
@@ -30,21 +33,18 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("Le formulaire de demande est obligatoire", request.getType().getForm());
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("L'acteur qui demande est obligatoire", request.getActor());
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
-		if(CollectionHelper.isNotEmpty(request.getType().getForm().getAttributs())) {
-			Collection<String> messages = new ArrayList<>();
-			request.getType().getForm().getAttributs().forEach(attribut -> {
-				
+		Map<String,IdentificationAttribut> attributs = Request.computeFieldsNames(request.getType().getForm());
+		if(MapHelper.isNotEmpty(attributs)) {
+			ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+			attributs.forEach( (fieldName,attribut) -> {
+				Object fieldValue = FieldHelper.read(request, fieldName);
+				if(Boolean.TRUE.equals(attribut.getRequired()))
+					if(ValueHelper.isBlank(fieldValue))
+						throwablesMessages.add(attribut.getName()+" est obligatoire");
 			});
+			throwablesMessages.throwIfNotEmpty();
 		}
 		return super.save(request, properties);
-	}
-	
-	@Override
-	public BusinessServiceProvider<Request> save(Request request) {
-		ThrowableHelper.throwIllegalArgumentException("La demande est obligatoire", request);
-		ThrowableHelper.throwIllegalArgumentException("Le type de demande est obligatoire", request.getType());
-		ThrowableHelper.throwIllegalArgumentException("L'acteur qui demande est obligatoire", request.getActor());
-		return this;
 	}
 	
 	@Override

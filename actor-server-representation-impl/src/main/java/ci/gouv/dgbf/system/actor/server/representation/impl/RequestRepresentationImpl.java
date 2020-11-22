@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
@@ -44,4 +45,20 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 			}
 		});
 	}	
+	
+	@Override
+	public Response save(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request request = MappingHelper.getDestination(requestDto, Request.class);
+						__inject__(RequestBusiness.class).save(request);
+					}
+				};
+			}
+		});
+	}
 }
