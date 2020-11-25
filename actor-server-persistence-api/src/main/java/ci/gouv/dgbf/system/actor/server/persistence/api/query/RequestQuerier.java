@@ -32,6 +32,7 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
@@ -105,7 +106,7 @@ public interface RequestQuerier extends Querier {
 			RequestType type = EntityFinder.getInstance().find(RequestType.class, typeIdentifier);
 			if(type == null)
 				return null;
-			Request request = new Request().setType(type);			
+			Request request = new Request().setType(type);
 			IdentificationFormQuerier.AbstractImpl.setFields(type.getForm(), null);
 			return request;
 		}
@@ -121,6 +122,12 @@ public interface RequestQuerier extends Querier {
 			Request request = readByIdentifier(identifier);
 			if(request == null)
 				return null;
+			request.setActorCode(request.getActor().getCode());
+			request.setActorNames(
+					Identity.getNames((String)FieldHelper.readName(request.getActor().getCivility())
+					, request.getActor().getIdentity().getFirstName()
+					, request.getActor().getIdentity().getLastNames()));
+			request.setTypeAsString(request.getType().getName());
 			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 			return request;
 		}
@@ -210,6 +217,11 @@ public interface RequestQuerier extends Querier {
 			)
 			
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+			/*,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+					, jpql(select("t")
+							,from("FROM Request t")
+							,where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER))
+					)*/
 		);
 	}
 	

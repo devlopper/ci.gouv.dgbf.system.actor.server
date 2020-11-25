@@ -26,7 +26,9 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringImpl imple
 	private String certificatReference;
 	private String certificatSignatory;
 	private Date certificatSignatureDate;
-	
+	private RequestStatusDto status;
+	private String statusAsString;
+	private String rejectionReason;
 	
 	private ArrayList<String> functionsAsStrings;	
 	private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;

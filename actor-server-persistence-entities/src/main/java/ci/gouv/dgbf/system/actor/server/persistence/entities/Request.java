@@ -40,7 +40,12 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
-	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;		
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
+	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
+	@Transient private String statusAsString;
+	
 	/*
 	private String certificatReference;
 	private String certificatSignatory;
@@ -69,6 +74,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 		return fieldsNames;
 	}
 	
+	public static final String FIELD_REJECTION_REASON = "rejectionReason";
+	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_ACTOR = "actor";
@@ -90,6 +98,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	
+	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
+	public static final String COLUMN_STATUS = "STATUT";
 	public static final String COLUMN_TYPE = "TYPE";
 	public static final String COLUMN_ACTOR = "ACTEUR";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";

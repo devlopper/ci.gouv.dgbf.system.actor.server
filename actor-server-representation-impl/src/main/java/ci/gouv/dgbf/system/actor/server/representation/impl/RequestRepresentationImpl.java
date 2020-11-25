@@ -47,15 +47,44 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}	
 	
 	@Override
-	public Response save(RequestDto requestDto) {
+	public Response initialize(RequestDto requestDto) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						Request request = MappingHelper.getDestination(requestDto, Request.class);
-						__inject__(RequestBusiness.class).save(request);
+						__inject__(RequestBusiness.class).initialize(MappingHelper.getDestination(requestDto, Request.class));
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response acceptByIdentifier(String identifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).acceptByIdentifier(identifier);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response rejectByIdentifier(String identifier, String rejectionReason) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).rejectByIdentifier(identifier, rejectionReason);
 					}
 				};
 			}

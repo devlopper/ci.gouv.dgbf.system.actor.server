@@ -35,14 +35,38 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response getOneToBeCreatedByTypeIdentifier(@QueryParam(QUERY_PARAMETER_NAME_TYPE_IDENTIFIER) String typeIdentifier);
 	
 	@POST
-	@Path(PATH_SAVE)
+	@Path(PATH_INITIALIZE)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	@Operation(description = "Enregistrer une demande")
 	@Parameters(value = {
 			@Parameter(name = "Demande",allowEmptyValue = false,description = "Demande",required = true,style = ParameterStyle.DEFAULT)
 	})
-	Response save(RequestDto request);
+	Response initialize(RequestDto request);
+	
+	@POST
+	@Path(PATH_ACCEPT_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Accepter une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande à accepter",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response acceptByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	
+	@POST
+	@Path(PATH_REJECT_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Accepter une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant",allowEmptyValue = false,description = "Identifiant de la demande",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+			,@Parameter(name = "Motif de rejet",allowEmptyValue = false,description = "Motif de rejet de la demande",required = true
+					,example = "Informations incorrectes",style = ParameterStyle.SIMPLE)
+	})
+	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason);
 	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
@@ -50,9 +74,12 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	
 	String PATH = "demande";
 	String PATH_GET_ONE_TO_BE_CREATED_BY_TYPE_IDENTIFIER = "getonetobecreatedbytypeidentifier";
-	String PATH_SAVE = "save";
+	String PATH_INITIALIZE = "initialize";
+	String PATH_ACCEPT_BY_IDENTIFIER = "acceptbyidentifier";
+	String PATH_REJECT_BY_IDENTIFIER = "rejectbyidentifier";
 	
 	String TAG = "Demande";
 	
 	String QUERY_PARAMETER_NAME_TYPE_IDENTIFIER = "type_identifiant";
+	String QUERY_PARAMETER_NAME_REJECTION_REASON = "motif_rejet";
 }
