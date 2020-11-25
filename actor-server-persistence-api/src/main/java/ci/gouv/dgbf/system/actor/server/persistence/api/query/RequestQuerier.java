@@ -35,12 +35,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public interface RequestQuerier extends Querier {
 
 	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE = PARAMETER_NAME_ACTOR_IDENTIFIER+"Nullable";
+	String PARAMETER_NAME_STATUS_IDENTIFIER = "statusIdentifier";
+	String PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE = PARAMETER_NAME_STATUS_IDENTIFIER+"Nullable";
 	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NULL = "processingDateIsNull";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE = PARAMETER_NAME_PROCESSING_DATE_IS_NULL+"Nullable";
@@ -166,8 +169,10 @@ public interface RequestQuerier extends Querier {
 		
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
-			filter.addFieldsNullable(arguments, PARAMETER_NAME_ACTOR_IDENTIFIER,PARAMETER_NAME_PROCESSING_DATE_IS_NULL,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL);
+			filter.addFieldsNullable(arguments, PARAMETER_NAME_ACTOR_IDENTIFIER,PARAMETER_NAME_STATUS_IDENTIFIER,PARAMETER_NAME_PROCESSING_DATE_IS_NULL
+					,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL);
 			filter.addFieldEquals(PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_STATUS_IDENTIFIER, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -203,13 +208,14 @@ public interface RequestQuerier extends Querier {
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
 			,Query.FIELD_VALUE,jpql(select(
-					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE)
+					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
 					,fields("a",Actor.FIELD_CODE),Language.Select.concat("a.identity", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
-					,fields("rt",RequestType.FIELD_NAME)
+					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME)
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
 			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE_AS_STRING
-					,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING)
+					,Request.FIELD_PROCESSING_DATE_AS_STRING,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING
+					,Request.FIELD_STATUS_AS_STRING)
 				
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -230,19 +236,21 @@ public interface RequestQuerier extends Querier {
 				"FROM Request t"
 				,"LEFT JOIN Actor a ON a = t.actor"
 				,"LEFT JOIN RequestType rt ON rt = t.type"
+				,"LEFT JOIN RequestStatus rs ON rs = t.status"
 				,getReadWhereFilterWhere()
 			);
 	}
 	
 	static String getReadWhereFilterWhere() {
 		return where(and(
-				parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE),"a.identifier = :actorIdentifier"))
+				parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE),"a.identifier = :"+PARAMETER_NAME_ACTOR_IDENTIFIER))
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE),"rs.identifier = :"+PARAMETER_NAME_STATUS_IDENTIFIER))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE),"t.processingDate IS NOT NULL"))
 		));
 	}
 	
 	static String getOrderBy() {
-		return order(desc("t",Request.FIELD_PROCESSING_DATE));
+		return order(desc("t",Request.FIELD_CREATION_DATE));
 	}
 }
