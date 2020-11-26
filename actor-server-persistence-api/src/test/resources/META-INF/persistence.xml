@@ -55,12 +55,12 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
-    	
+    	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
-    	
+    	-->
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -129,12 +129,12 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
-    	
+    	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
-    	
+    	-->
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -202,12 +202,12 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
-    	
+    	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
-    	
+    	-->
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
@@ -275,12 +275,12 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
-    	
+    	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivileges</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterPrivilege</class>
-    	
+    	-->
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>

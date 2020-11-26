@@ -11,7 +11,10 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
@@ -131,6 +134,12 @@ public interface RequestQuerier extends Querier {
 					, request.getActor().getIdentity().getFirstName()
 					, request.getActor().getIdentity().getLastNames()));
 			request.setTypeAsString(request.getType().getName());
+			if(request.getActOfAppointmentSignatureDate() != null) {
+				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+				request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
+						.format(request.getActOfAppointmentSignatureDate()));
+				request.setActOfAppointmentSignatureDate(null);
+			}
 			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 			return request;
 		}

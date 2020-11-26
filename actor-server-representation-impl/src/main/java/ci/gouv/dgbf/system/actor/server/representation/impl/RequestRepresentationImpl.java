@@ -1,6 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
@@ -54,7 +57,15 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).initialize(MappingHelper.getDestination(requestDto, Request.class));
+						Request request = MappingHelper.getDestination(requestDto, Request.class);
+						if(request != null) {
+							if(requestDto.getActOfAppointmentSignatureDateAsTimestamp() == null)
+								request.setActOfAppointmentSignatureDate(null);
+							else
+								request.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(requestDto.getActOfAppointmentSignatureDateAsTimestamp())
+										, ZoneId.systemDefault()));
+						}						
+						__inject__(RequestBusiness.class).initialize(request);
 					}
 				};
 			}

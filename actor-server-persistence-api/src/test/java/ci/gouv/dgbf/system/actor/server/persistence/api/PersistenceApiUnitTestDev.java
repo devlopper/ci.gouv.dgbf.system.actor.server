@@ -56,12 +56,12 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void request(){
 		System.out.println(RequestTypeQuerier.getInstance().readAll());
-		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE"));
-		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE").getForm());
-		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("EREQUETE").getForm().getAttributs());
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT"));
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm());
+		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm().getAttributs());
 		
 		Request request = EntityReader.getInstance().readOne(Request.class, new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
-				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"EREQUETE"));
+				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"DM_GESTIONNAIRE_CREDIT"));
 		System.out.println(request.getType());
 		System.out.println(request.getType().getForm());
 		System.out.println(request.getType().getForm().getAttributs());
@@ -70,6 +70,9 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_IDENTIFIER,"1"));
 		System.out.println(request.getAdministrativeFunction());
 		System.out.println(request.getAdministrativeUnit());
+		System.out.println(request.getActOfAppointmentSignatureDate());
+		System.out.println(request.getActOfAppointmentSignatureDateAsString());
+		System.out.println(request.getActOfAppointmentSignatureDateAsTimestamp());
 		System.out.println(request.getComment());
 		System.out.println(request.getType());
 		System.out.println(request.getType().getForm());

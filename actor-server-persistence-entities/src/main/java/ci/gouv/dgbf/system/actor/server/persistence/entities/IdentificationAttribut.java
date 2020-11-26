@@ -48,9 +48,11 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	public static final String CODE_MOBILE_PHONE_NUMBER = "NUMERO_TELEPHONE_MOBILE";
 	public static final String CODE_OFFICE_PHONE_NUMBER = "NUMERO_TELEPHONE_BUREAU";
 	public static final String CODE_OFFICE_PHONE_EXTENSION = "POSTE_TELEPHONE_BUREAU";
-	public static final String CODE_CERTIFICAT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
-	public static final String CODE_CERTIFICAT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
-	public static final String CODE_CERTIFICAT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
+	
+	public static final String CODE_ACT_OF_APPOINTMENT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
+	public static final String CODE_ACT_OF_APPOINTMENT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
+	public static final String CODE_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
+	
 	public static final String CODE_REGISTRATION_NUMBER = "MATRICULE";
 	public static final String CODE_GROUP = "GROUPE";
 	public static final String CODE_POSTAL_BOX_ADDRESS = "ADRESSE_BOITE_POSTALE";

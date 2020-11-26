@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,18 +43,19 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
 	
+	@Column(name = COLUMN_ACT_OF_APPOINTMENT_REFERENCE) private String actOfAppointmentReference;
+	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATORY) private String actOfAppointmentSignatory;
+	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE) private LocalDate actOfAppointmentSignatureDate;
+	
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
 	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
 	@Transient private String statusAsString;
 	
-	/*
-	private String certificatReference;
-	private String certificatSignatory;
-	private LocalDateTime certificatSignatureDate;
-	*/
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<String> functionsAsStrings;
 	@Transient private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;
+	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Transient private String actOfAppointmentSignatureDateAsString;
 	
 	@Override
 	public Request setIdentifier(String identifier) {
@@ -91,6 +93,12 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
 	
+	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
+	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION = "section";
@@ -105,6 +113,10 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
 	public static final String COLUMN_COMMENT = "COMMENTAIRE";
+	
+	public static final String COLUMN_ACT_OF_APPOINTMENT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
+	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
+	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
 	
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
 	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
