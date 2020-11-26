@@ -34,6 +34,10 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private String administrativeUnitAsString;
 	private String civilityAsString;
 	private String groupAsString;
+	private String actOfAppointmentReference;
+	private String actOfAppointmentSignatory;
+	private String actOfAppointmentSignatureDateAsString;
+	private Long actOfAppointmentSignatureDateAsTimestamp;
 	
 	private AdministrativeUnitDto administrativeUnit;
 	private CivilityDto civility;

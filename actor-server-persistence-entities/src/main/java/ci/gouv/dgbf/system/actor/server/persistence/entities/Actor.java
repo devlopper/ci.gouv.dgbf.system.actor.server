@@ -173,6 +173,17 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 		});
 	}
 	
+	public static String buildNames(String civility,String firstName,String lastNames) {
+		Collection<String> tokens = new ArrayList<>();
+		if(StringHelper.isNotBlank(civility))
+			tokens.add(civility);
+		if(StringHelper.isNotBlank(firstName))
+			tokens.add(firstName);
+		if(StringHelper.isNotBlank(lastNames))
+			tokens.add(lastNames);
+		return StringUtils.join(tokens," ");
+	}
+	
 	public static final String FIELD_IDENTITY = "identity";
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAMES = "lastNames";
@@ -182,16 +193,23 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
+	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_NOTATION = "notation";
 	public static final String FIELD_COLOR = "color";
+	public static final String FIELD_CIVILITY = "civility";
 	public static final String FIELD_CIVILITY_STRING = "civilityAsString";
+	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_PROFILES = "profiles";
+	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	

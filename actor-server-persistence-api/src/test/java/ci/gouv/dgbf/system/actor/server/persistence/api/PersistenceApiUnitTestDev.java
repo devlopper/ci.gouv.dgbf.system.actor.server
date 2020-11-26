@@ -54,6 +54,57 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void actor_readByIdentifierForEdit(){
+		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_IDENTIFIER,"ACT_christian"));
+		System.out.println(actor.getIdentifier());
+		System.out.println(actor.getCode());
+		System.out.println(actor.getCivility());
+		System.out.println(actor.getFirstName());
+		System.out.println(actor.getLastNames());
+		System.out.println(actor.getRegistrationNumber());
+		
+		System.out.println(actor.getMobilePhoneNumber());
+		System.out.println(actor.getOfficePhoneNumber());
+		System.out.println(actor.getOfficePhoneExtension());
+		System.out.println(actor.getElectronicMailAddress());
+		System.out.println(actor.getPostalBoxAddress());
+		
+		System.out.println(actor.getAdministrativeUnit());
+		System.out.println(actor.getAdministrativeFunction());
+		
+		System.out.println(actor.getActOfAppointmentReference());
+		System.out.println(actor.getActOfAppointmentSignatureDateAsTimestamp());
+		System.out.println(actor.getActOfAppointmentSignatory());
+	}
+	
+	@Test
+	public void actor_readProfileInformationsByIdentifier(){
+		Actor actor = ActorQuerier.getInstance().readProfileInformationsByIdentifierForUI("ACT_christian");
+		System.out.println(actor.getIdentifier());
+		System.out.println(actor.getCode());
+		System.out.println(actor.getCivilityAsString());
+		System.out.println(actor.getFirstName());
+		System.out.println(actor.getLastNames());
+		System.out.println(actor.getNames());
+		System.out.println(actor.getRegistrationNumber());
+		
+		System.out.println(actor.getMobilePhoneNumber());
+		System.out.println(actor.getOfficePhoneNumber());
+		System.out.println(actor.getOfficePhoneExtension());
+		System.out.println(actor.getElectronicMailAddress());
+		System.out.println(actor.getPostalBoxAddress());
+		
+		System.out.println(actor.getSectionAsString());
+		System.out.println(actor.getAdministrativeUnitAsString());
+		System.out.println(actor.getAdministrativeFunction());
+		
+		System.out.println(actor.getActOfAppointmentReference());
+		System.out.println(actor.getActOfAppointmentSignatureDateAsString());
+		System.out.println(actor.getActOfAppointmentSignatory());
+	}
+	
+	@Test
 	public void request(){
 		System.out.println(RequestTypeQuerier.getInstance().readAll());
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT"));

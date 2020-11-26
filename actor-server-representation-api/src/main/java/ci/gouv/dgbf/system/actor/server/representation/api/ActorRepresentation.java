@@ -43,6 +43,16 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	Response createByPublic(@Parameter(allowEmptyValue = false,name = "acteur",required = true) ActorDto actor);
 	
 	@POST
+	@Path(PATH_SAVE_PROFILE)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Operation(description = "Enregistrer le profile")
+	@APIResponses(value = {
+			@APIResponse(responseCode = "200",name = "Enregistré")
+	})
+	Response saveProfile(@Parameter(allowEmptyValue = false,name = "acteur",required = true) ActorDto actor);
+	
+	@POST
 	@Path(PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -113,6 +123,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_CREATE_PROFILES = "create_profiles";
 	String PATH_DELETE_PROFILES = "delete_profiles";
 	String PATH_CREATE_BY_PUBLIC = "createbypublic";
+	String PATH_SAVE_PROFILE = "saveProfile";
 	
 	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	

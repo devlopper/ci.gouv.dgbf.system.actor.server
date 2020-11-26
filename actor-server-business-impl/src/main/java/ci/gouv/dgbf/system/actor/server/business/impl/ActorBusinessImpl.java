@@ -13,7 +13,10 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
+import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.persistence.query.EntityUpdater;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.security.keycloak.KeycloakHelper;
@@ -43,6 +46,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
@@ -197,7 +201,11 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	
 	@Override @Transactional
 	public void saveProfile(Actor actor) {
-		__persistence__.update(actor);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		Actor database = EntityFinder.getInstance().find(Actor.class, actor.getIdentifier());
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("database", database);
+		InstanceCopier.getInstance().copy(actor, database.getIdentity(), Identity.PROFILE_FIELDS_NAMES);
+		EntityUpdater.getInstance().updateMany(database.getIdentity(),database);
 	}
 	
 	@Override

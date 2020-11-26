@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,29 +80,35 @@ public class Identity extends AbstractIdentifiableSystemScalarStringImpl impleme
 		return this;
 	}
 	
+	public static final String FIELD_CIVILITY = "civility";
+	public static final String FIELD_CIVILITY_STRING = "civilityAsString";
 	public static final String FIELD_FIRST_NAME = "firstName";
-	public static final String FIELD_LAST_NAMES = "lastNames";
-	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	public static final String FIELD_LAST_NAMES = "lastNames";	
+	public static final String FIELD_NAMES = "names";
+	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
 	public static final String FIELD_REGISTRATION_NUMBER = "registrationNumber";
-	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
+	
+	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
+	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
+	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
-	public static final String FIELD_CIVILITY = "civility";
-	public static final String FIELD_CIVILITY_STRING = "civilityAsString";
-	public static final String FIELD_GROUP = "group";
-	public static final String FIELD_GROUP_AS_STRING = "groupAsString";
+	
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
-	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
-	
+	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";	
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
-	public static final String FIELD_NAMES = "names";
+	
+	public static final Collection<String> PROFILE_FIELDS_NAMES = List.of(FIELD_CIVILITY,FIELD_FIRST_NAME,FIELD_LAST_NAMES,FIELD_GROUP,FIELD_REGISTRATION_NUMBER
+			,FIELD_ELECTRONIC_MAIL_ADDRESS,FIELD_MOBILE_PHONE_NUMBER,FIELD_OFFICE_PHONE_NUMBER,FIELD_OFFICE_PHONE_EXTENSION,FIELD_POSTAL_BOX_ADDRESS
+			,FIELD_ADMINISTRATIVE_UNIT,FIELD_ADMINISTRATIVE_FUNCTION,FIELD_ACT_OF_APPOINTMENT_REFERENCE,FIELD_ACT_OF_APPOINTMENT_SIGNATORY,FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE);
 	
 	public static final String TABLE_NAME = "ID_IDENTITE";
 	

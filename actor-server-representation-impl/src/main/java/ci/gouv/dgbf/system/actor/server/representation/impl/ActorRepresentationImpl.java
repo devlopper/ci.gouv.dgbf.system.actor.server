@@ -1,6 +1,9 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -51,6 +54,26 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 							throw new RuntimeException("Acteur obligatoire");						
 						Actor actor = MappingHelper.getDestination(actorDto, Actor.class);			
 						__inject__(ActorBusiness.class).createByPublic(actor);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response saveProfile(ActorDto actorDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						if(actorDto == null)
+							throw new RuntimeException("Acteur obligatoire");
+						Actor actor = MappingHelper.getDestination(actorDto, Actor.class);
+						if(actor.getActOfAppointmentSignatureDate() == null && actor.getActOfAppointmentSignatureDateAsTimestamp() != null)
+							actor.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(actor.getActOfAppointmentSignatureDateAsTimestamp()), ZoneId.systemDefault()));
+						__inject__(ActorBusiness.class).saveProfile(actor);
 					}
 				};
 			}

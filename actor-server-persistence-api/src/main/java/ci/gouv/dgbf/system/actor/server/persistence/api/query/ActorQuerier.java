@@ -7,11 +7,11 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Select.selec
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.exists;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
-//import static org.cyk.utility.__kernel__.persistence.query.Language.Where.equals;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
@@ -86,6 +87,13 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_NAME = "visibleAdministrativeUnitName";
 	
+	/* Read profile informations by identifier */
+	String QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Actor.class, "readProfileInformationsByIdentifierForUI");
+	Actor readProfileInformationsByIdentifierForUI(String identifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Actor.class, "readByIdentifierForEdit");
+	Actor readByIdentifierForEdit(String identifier);
+	
 	Actor instantiateOneToBeCreatedByPublic();
 	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
@@ -107,7 +115,13 @@ public interface ActorQuerier extends Querier {
 		@Override
 		public Actor readOne(QueryExecutorArguments arguments) {
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_ONE_WITH_ALL_PRIVILEGES_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return readOneWithAllPrivilegesByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));	
+				return readOneWithAllPrivilegesByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE.equals(arguments.getQuery().getIdentifier()))
+				return readProfileInformationsByCode((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readProfileInformationsByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
+				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			return QueryExecutor.getInstance().executeReadOne(Actor.class, arguments);
 		}
 		
@@ -138,6 +152,27 @@ public interface ActorQuerier extends Querier {
 				return null;
 			return QueryExecutor.getInstance().executeReadOne(Actor.class, new QueryExecutorArguments()
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE).addFilterFieldsValues(PARAMETER_NAME_CODE,code));
+		}
+		
+		@Override
+		public Actor readProfileInformationsByIdentifierForUI(String identifier) {
+			if(StringHelper.isBlank(identifier))
+				return null;
+			Actor actor = QueryExecutor.getInstance().executeReadOne(Actor.class, new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI).addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));			
+			actor.setNames(Actor.buildNames(actor.getCivilityAsString(), actor.getFirstName(), actor.getLastNames()));
+			if(actor.getActOfAppointmentSignatureDate() != null)
+				actor.setActOfAppointmentSignatureDateAsString(TimeHelper.formatLocalDate(actor.getActOfAppointmentSignatureDate(),"dd/MM/yyyy"));
+			return actor;
+		}
+		
+		@Override
+		public Actor readByIdentifierForEdit(String identifier) {
+			Actor actor = QueryExecutor.getInstance().executeReadOne(Actor.class, new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));	
+			if(actor.getActOfAppointmentSignatureDate() != null)
+				actor.setActOfAppointmentSignatureDateAsTimestamp(actor.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+			return actor;
 		}
 		
 		@Override
@@ -381,6 +416,14 @@ public interface ActorQuerier extends Querier {
 						,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,Actor.FIELD_ADMINISTRATIVE_FUNCTION,Actor.FIELD_CIVILITY_STRING,Actor.FIELD_GROUP_AS_STRING
 						//Joins
 						,Actor.FIELD_SECTION_AS_STRING,Actor.FIELD_ADMINISTRATIVE_UNIT_AS_STRING))
+				
+				,Query.buildSelect(Actor.class, QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI
+						, jpql(getReadProfileInformationsSelect(),getReadProfileInformationsFrom(),where(Where.equals("a", PARAMETER_NAME_IDENTIFIER))) )
+					.setTupleFieldsNamesIndexesFromFieldsNames(getReadProfileInformationsTupleFieldsNames())
+				
+				,Query.buildSelect(Actor.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
+						, jpql(getReadForEditSelect(),getReadForEditFrom(),where(Where.equals("a", PARAMETER_NAME_IDENTIFIER))) )
+					.setTupleFieldsNamesIndexesFromFieldsNames(getReadForEditTupleFieldsNames())
 			);
 		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ALL_01
@@ -496,5 +539,141 @@ public interface ActorQuerier extends Querier {
 				,exists(jpql("SELECT scope FROM Scope scope",ScopeOfTypeSectionQuerier.getInstance().buildQueryValueReadVisibleWhereFilterWhere(PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_CODE
 				,PARAMETER_NAME_VISIBLE_ACTIVITY_CATEGORY_NAME,"t.code")))
 			));
+	}
+	
+	/**/
+	
+	/* Read profile informations */
+	
+	static String getReadProfileInformationsSelect() {
+		return jpql(
+				select(
+						FieldHelper.join("a",Actor.FIELD_IDENTIFIER)
+						,FieldHelper.join("a",Actor.FIELD_CODE)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_FIRST_NAME)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_LAST_NAMES)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_REGISTRATION_NUMBER)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_FUNCTION)
+						
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_MOBILE_PHONE_NUMBER)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_OFFICE_PHONE_NUMBER)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_OFFICE_PHONE_EXTENSION)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_POSTAL_BOX_ADDRESS)
+						
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_REFERENCE)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_SIGNATORY)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE)
+						
+						,FieldHelper.join(Identity.FIELD_CIVILITY,Civility.FIELD_CODE)
+						,FieldHelper.join("identityGroup",IdentityGroup.FIELD_NAME)
+						
+						//Joins
+						,Select.concatCodeName("section")
+						,Select.concatCodeName(Identity.FIELD_ADMINISTRATIVE_UNIT)						
+					)	
+			);
+	}
+	
+	static String getReadProfileInformationsFrom() {
+		return jpql(
+			from("Actor a"
+				,"LEFT JOIN Civility civility ON civility = a.identity.civility"
+				,"LEFT JOIN IdentityGroup identityGroup ON identityGroup = a.identity.group"
+				,"LEFT JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = a.identity.administrativeUnit"
+				,"LEFT JOIN Section section ON section = a.identity.administrativeUnit.section"
+			)
+		);
+	}
+	
+	static String[] getReadProfileInformationsTupleFieldsNames() {
+		return new String[] {
+				Actor.FIELD_IDENTIFIER
+				,Actor.FIELD_CODE
+				,Actor.FIELD_FIRST_NAME
+				,Actor.FIELD_LAST_NAMES
+				,Actor.FIELD_REGISTRATION_NUMBER
+				,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS
+				,Actor.FIELD_ADMINISTRATIVE_FUNCTION
+				
+				,Actor.FIELD_MOBILE_PHONE_NUMBER
+				,Actor.FIELD_OFFICE_PHONE_NUMBER
+				,Actor.FIELD_OFFICE_PHONE_EXTENSION
+				,Actor.FIELD_POSTAL_BOX_ADDRESS
+				
+				,Actor.FIELD_ACT_OF_APPOINTMENT_REFERENCE
+				,Actor.FIELD_ACT_OF_APPOINTMENT_SIGNATORY
+				,Actor.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
+				
+				,Actor.FIELD_CIVILITY_STRING
+				,Actor.FIELD_GROUP_AS_STRING
+				//Joins
+				,Actor.FIELD_SECTION_AS_STRING
+				,Actor.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+		};
+	}
+	
+	/* Read for edit*/
+	
+	static String getReadForEditSelect() {
+		return jpql(
+				select(
+						FieldHelper.join("a",Actor.FIELD_IDENTIFIER)
+						//Account
+						,FieldHelper.join("a",Actor.FIELD_CODE)
+						//Identity
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_FIRST_NAME)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_LAST_NAMES)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_REGISTRATION_NUMBER)
+						,FieldHelper.join(Identity.FIELD_CIVILITY)
+						,FieldHelper.join("identityGroup")
+						//Contacts
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_MOBILE_PHONE_NUMBER)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_OFFICE_PHONE_NUMBER)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_OFFICE_PHONE_EXTENSION)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_POSTAL_BOX_ADDRESS)
+						//Administrative
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_UNIT)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_FUNCTION)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_REFERENCE)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_SIGNATORY)
+						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE)
+					)	
+			);
+	}
+	
+	static String getReadForEditFrom() {
+		return jpql(
+			from("Actor a"
+				,"LEFT JOIN Civility civility ON civility = a.identity.civility"
+				,"LEFT JOIN IdentityGroup identityGroup ON identityGroup = a.identity.group"
+				,"LEFT JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = a.identity.administrativeUnit"
+			)
+		);
+	}
+	
+	static String[] getReadForEditTupleFieldsNames() {
+		return new String[] {
+				Actor.FIELD_IDENTIFIER
+				,Actor.FIELD_CODE
+				,Actor.FIELD_FIRST_NAME
+				,Actor.FIELD_LAST_NAMES
+				,Actor.FIELD_REGISTRATION_NUMBER
+				,Actor.FIELD_CIVILITY
+				,Actor.FIELD_GROUP
+				
+				,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS
+				,Actor.FIELD_MOBILE_PHONE_NUMBER
+				,Actor.FIELD_OFFICE_PHONE_NUMBER
+				,Actor.FIELD_OFFICE_PHONE_EXTENSION
+				,Actor.FIELD_POSTAL_BOX_ADDRESS
+				
+				,Actor.FIELD_ADMINISTRATIVE_UNIT
+				,Actor.FIELD_ADMINISTRATIVE_FUNCTION
+				,Actor.FIELD_ACT_OF_APPOINTMENT_REFERENCE
+				,Actor.FIELD_ACT_OF_APPOINTMENT_SIGNATORY
+				,Actor.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE
+		};
 	}
 }
