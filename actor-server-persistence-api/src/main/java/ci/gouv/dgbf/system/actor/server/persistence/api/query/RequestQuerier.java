@@ -13,13 +13,17 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.instance.InstanceCopier;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -31,10 +35,12 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
@@ -69,6 +75,9 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifier");
 	Request instantiateOneByTypeIdentifier(String typeIdentifier);
 	
+	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifierByActorIdentifier");
+	Request instantiateOneByTypeIdentifierByActorIdentifier(String typeIdentifier,String actorIdentifier);
+	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifier");
 	Request readByIdentifier(String identifier);
 	
@@ -82,6 +91,9 @@ public interface RequestQuerier extends Querier {
 		public Request readOne(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
 				return instantiateOneByTypeIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER))
+				return instantiateOneByTypeIdentifierByActorIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER)
+						,(String)arguments.getFilterFieldValue(PARAMETER_NAME_ACTOR_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER))
 				return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
@@ -114,6 +126,41 @@ public interface RequestQuerier extends Querier {
 				return null;
 			Request request = new Request().setType(type);
 			IdentificationFormQuerier.AbstractImpl.setFields(type.getForm(), null);
+			return request;
+		}
+		
+		@Override
+		public Request instantiateOneByTypeIdentifierByActorIdentifier(String typeIdentifier,String actorIdentifier) {
+			if(StringHelper.isBlank(typeIdentifier) || StringHelper.isBlank(actorIdentifier))
+				return null;
+			Request request = instantiateOneByTypeIdentifier(typeIdentifier);
+			if(request == null)
+				return null;
+			//Actor actor = ActorQuerier.getInstance().readProfileInformationsByIdentifierForUI(actorIdentifier);
+			Actor actor = EntityFinder.getInstance().find(Actor.class, actorIdentifier);
+			if(actor != null) {
+				request.setActor(new Actor().setIdentifier(actor.getIdentifier()));
+				Map<String,IdentificationAttribut> fieldsNamesMap = Request.computeFieldsNames(request.getType().getForm());
+				if(MapHelper.isNotEmpty(fieldsNamesMap)) {
+					Collection<String> fieldsNames = null;
+					for(Map.Entry<String, IdentificationAttribut> entry : fieldsNamesMap.entrySet()) {
+						if(FieldHelper.getByName(Identity.class, entry.getKey()) == null)
+							continue;
+						if(fieldsNames == null)
+							fieldsNames = new ArrayList<>();
+						fieldsNames.add(entry.getKey());
+					}
+					if(CollectionHelper.isNotEmpty(fieldsNames)) {
+						InstanceCopier.getInstance().copy(actor.getIdentity(), request, fieldsNames);
+						if(fieldsNames.contains(Request.FIELD_ADMINISTRATIVE_UNIT))
+							request.setAdministrativeUnit(actor.getIdentity().getAdministrativeUnit());
+						if(fieldsNames.contains(Request.FIELD_SECTION) && actor.getIdentity().getAdministrativeUnit() != null)
+							request.setSection(actor.getIdentity().getAdministrativeUnit().getSection());	
+						if(fieldsNames.contains(Request.FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE) && actor.getIdentity().getActOfAppointmentSignatureDate() != null)
+							request.setActOfAppointmentSignatureDateAsTimestamp(TimeHelper.toMillisecond(actor.getIdentity().getActOfAppointmentSignatureDate()));
+					}					
+				}			
+			}
 			return request;
 		}
 		

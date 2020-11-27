@@ -111,12 +111,27 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm());
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm().getAttributs());
 		
-		Request request = EntityReader.getInstance().readOne(Request.class, new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
+		System.out.println("-------------------------- instanciate by type -----------------------------");
+		Request request = EntityReader.getInstance().readOne(Request.class, new QueryExecutorArguments().setQuery(new Query()
+				.setIdentifier(RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
 				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"DM_GESTIONNAIRE_CREDIT"));
 		System.out.println(request.getType());
 		System.out.println(request.getType().getForm());
 		System.out.println(request.getType().getForm().getAttributs());
 		
+		System.out.println("-------------------------- instanciate by type by actor -----------------------------");
+		request = EntityReader.getInstance().readOne(Request.class, new QueryExecutorArguments().setQuery(new Query()
+				.setIdentifier(RequestQuerier.QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER))
+				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"DM_GESTIONNAIRE_CREDIT"
+						,RequestQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER,"ACT_christian"));
+		System.out.println(request.getAdministrativeUnit());
+		System.out.println(request.getAdministrativeFunction());
+		System.out.println(request.getActOfAppointmentReference());
+		System.out.println(request.getActOfAppointmentSignatory());
+		System.out.println(request.getActOfAppointmentSignatureDate());
+		System.out.println(request.getActOfAppointmentSignatureDateAsTimestamp());
+		
+		System.out.println("-------------------------- read by identifier for UI -----------------------------");
 		request = EntityReader.getInstance().readOne(Request.class, new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
 				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_IDENTIFIER,"1"));
 		System.out.println(request.getAdministrativeFunction());

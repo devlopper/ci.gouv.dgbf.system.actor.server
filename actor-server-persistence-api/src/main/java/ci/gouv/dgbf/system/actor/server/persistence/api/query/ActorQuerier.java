@@ -170,6 +170,9 @@ public interface ActorQuerier extends Querier {
 		public Actor readByIdentifierForEdit(String identifier) {
 			Actor actor = QueryExecutor.getInstance().executeReadOne(Actor.class, new QueryExecutorArguments()
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));	
+			if(actor == null) {
+				return null;
+			}
 			if(actor.getActOfAppointmentSignatureDate() != null)
 				actor.setActOfAppointmentSignatureDateAsTimestamp(actor.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
 			return actor;
@@ -634,7 +637,7 @@ public interface ActorQuerier extends Querier {
 						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_OFFICE_PHONE_EXTENSION)
 						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_POSTAL_BOX_ADDRESS)
 						//Administrative
-						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_UNIT)
+						,FieldHelper.join(Actor.FIELD_ADMINISTRATIVE_UNIT)
 						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ADMINISTRATIVE_FUNCTION)
 						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_REFERENCE)
 						,FieldHelper.join("a",Actor.FIELD_IDENTITY,Identity.FIELD_ACT_OF_APPOINTMENT_SIGNATORY)
