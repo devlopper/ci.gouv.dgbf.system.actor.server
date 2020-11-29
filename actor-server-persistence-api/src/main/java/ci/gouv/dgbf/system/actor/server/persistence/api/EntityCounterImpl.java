@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
@@ -29,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Serializable {
@@ -50,6 +52,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 		
 		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 			return ClusterQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
+			return RequestTypeQuerier.getInstance().count(arguments);
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return RequestQuerier.getInstance().count(arguments);

@@ -10,6 +10,8 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -44,6 +47,22 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void form(){
+		System.out.println(EntityReader.getInstance().readMany(IdentificationForm.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ))));
+		System.out.println(EntityCounter.getInstance().count(IdentificationForm.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.COUNT))));
+		System.out.println(EntityReader.getInstance().readMany(IdentificationForm.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ_FOR_UI))));
+		System.out.println(EntityReader.getInstance().readMany(IdentificationForm.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ_BY_IDENTIFIER_FOR_UI))
+				.addFilterField("identifier", "DH_GESTIONNAIRE_CREDIT")));
+		System.out.println(EntityReader.getInstance().readMany(IdentificationForm.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ_BY_IDENTIFIER_FOR_EDIT))
+				.addFilterField("identifier", "DH_GESTIONNAIRE_CREDIT")));
 	}
 	
 	@Test
@@ -107,6 +126,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void request(){
 		System.out.println(RequestTypeQuerier.getInstance().readAll());
+		System.out.println(RequestTypeQuerier.getInstance().readForUI(new QueryExecutorArguments()));
+		System.out.println(RequestTypeQuerier.getInstance().countForUI(new QueryExecutorArguments()));
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT"));
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm());
 		System.out.println(RequestTypeQuerier.getInstance().readByIdentifierForRequestCreation("DM_GESTIONNAIRE_CREDIT").getForm().getAttributs());

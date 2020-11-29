@@ -26,6 +26,7 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	
 	@Column(name = COLUMN_REQUIRED) private Boolean required;
 	
+	@Transient private String requiredAsString;
 	@Transient private Integer orderNumber;
 	
 	@Override
@@ -34,6 +35,8 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	}
 	
 	public static final String FIELD_REQUIRED = "required";
+	public static final String FIELD_REQUIRED_AS_STRING = "requiredAsString";
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	
 	public static final String TABLE_NAME = "ID_ATTRIBUT";	
 	

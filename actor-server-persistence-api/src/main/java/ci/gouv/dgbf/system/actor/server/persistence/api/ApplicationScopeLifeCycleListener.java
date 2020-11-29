@@ -31,6 +31,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationAttributQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
@@ -134,6 +135,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		ClusterQuerier.initialize();
 		ClusterPrivilegesQuerier.initialize();
 		*/
+		IdentificationAttributQuerier.initialize();
 		IdentificationFormQuerier.initialize();
 		IdentificationFormAttributQuerier.initialize();
 	}

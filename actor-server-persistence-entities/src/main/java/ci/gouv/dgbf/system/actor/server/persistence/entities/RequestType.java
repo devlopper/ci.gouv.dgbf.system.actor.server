@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
@@ -22,12 +23,15 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FORM) @NotNull private IdentificationForm form;
 	
+	@Transient private String formAsString;
+	
 	@Override
 	public RequestType setIdentifier(String identifier) {
 		return (RequestType) super.setIdentifier(identifier);
 	}
 	
 	public static final String FIELD_FORM = "form";
+	public static final String FIELD_FORM_AS_STRING = "formAsString";
 	
 	public static final String TABLE_NAME = "DM_TYPE";
 	

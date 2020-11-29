@@ -21,8 +21,17 @@ public interface RequestTypeQuerier extends Querier {
 	Long count(QueryExecutorArguments arguments);
 	
 	/* read order by code ascending */
-	String QUERY_IDENTIFIER_READ_ALL = QueryIdentifierBuilder.getInstance().build(RequestType.class, "readAllOrderByNameAscending");
+	String QUERY_IDENTIFIER_READ_ALL = QueryIdentifierBuilder.getInstance().build(RequestType.class, "readAll");
 	Collection<RequestType> readAll();
+	
+	String QUERY_IDENTIFIER_READ_FOR_UI = QueryIdentifierBuilder.getInstance().build(RequestType.class, "readForUI");
+	Collection<RequestType> readForUI(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_FOR_UI = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_FOR_UI);
+	Long countForUI(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = "readByIdentifierForEdit";
+	RequestType readByIdentifierForEdit(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION = "readByIdentifierForRequestCreation";
 	RequestType readByIdentifierForRequestCreation(String identifier);
@@ -33,6 +42,8 @@ public interface RequestTypeQuerier extends Querier {
 		
 		@Override
 		public RequestType readOne(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT))
+				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION))
 				return readByIdentifierForRequestCreation((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
@@ -42,17 +53,42 @@ public interface RequestTypeQuerier extends Querier {
 		public Collection<RequestType> readMany(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_ALL))
 				return readAll();
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_FOR_UI))
+				return readForUI(arguments);
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_FOR_UI))
+				return countForUI(arguments);
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
 		@Override
 		public Collection<RequestType> readAll() {
 			return QueryExecutor.getInstance().executeReadMany(RequestType.class, QUERY_IDENTIFIER_READ_ALL);
+		}
+		
+		@Override
+		public Collection<RequestType> readForUI(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_FOR_UI);
+			return QueryExecutor.getInstance().executeReadMany(RequestType.class, arguments);
+		}
+		
+		@Override
+		public Long countForUI(QueryExecutorArguments arguments) {
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_FOR_UI);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		@Override
+		public RequestType readByIdentifierForEdit(String identifier) {
+			RequestType type = QueryExecutor.getInstance().executeReadOne(RequestType.class,new QueryExecutorArguments().setQueryFromIdentifier(
+					QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+			return type;
 		}
 		
 		@Override
@@ -76,6 +112,11 @@ public interface RequestTypeQuerier extends Querier {
 	static void initialize() {
 		QueryHelper.addQueries(
 			Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_ALL, "SELECT t FROM RequestType t ORDER BY t.code ASC")
+			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_FOR_UI, "SELECT t.identifier,t.code,t.name,t.form.name FROM RequestType t ORDER BY t.code ASC")
+			.setTupleFieldsNamesIndexesFromFieldsNames(RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,RequestType.FIELD_FORM_AS_STRING)
+			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_COUNT_FOR_UI, "SELECT COUNT(t.identifier) FROM RequestType t")
+			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
+					, "SELECT t FROM RequestType t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION
 					, "SELECT t FROM RequestType t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 		);

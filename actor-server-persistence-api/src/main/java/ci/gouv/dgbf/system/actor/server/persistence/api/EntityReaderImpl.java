@@ -73,6 +73,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 				return (T) ClusterQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
+				return (T) RequestTypeQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 				return (T) RequestQuerier.getInstance().readOne(arguments);
 		}
@@ -132,12 +135,12 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(Boolean.TRUE.equals(ExecutionImputationQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ExecutionImputationQuerier.getInstance().readMany(arguments);
 		
-		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
-			return (Collection<T>) RequestQuerier.getInstance().readMany(arguments);
-		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
 			return (Collection<T>) RequestTypeQuerier.getInstance().readMany(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
+			return (Collection<T>) RequestQuerier.getInstance().readMany(arguments);
+			
 		if(arguments != null && arguments.getQuery() != null) {
 			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
 				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
