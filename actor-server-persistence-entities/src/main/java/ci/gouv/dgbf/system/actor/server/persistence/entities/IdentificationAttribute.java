@@ -20,8 +20,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=IdentificationAttribut.TABLE_NAME)
-public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+@Entity @Table(name=IdentificationAttribute.TABLE_NAME)
+public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Column(name = COLUMN_REQUIRED) private Boolean required;
@@ -30,8 +30,8 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	@Transient private Integer orderNumber;
 	
 	@Override
-	public IdentificationAttribut setIdentifier(String identifier) {
-		return (IdentificationAttribut) super.setIdentifier(identifier);
+	public IdentificationAttribute setIdentifier(String identifier) {
+		return (IdentificationAttribute) super.setIdentifier(identifier);
 	}
 	
 	public static final String FIELD_REQUIRED = "required";
@@ -71,7 +71,7 @@ public class IdentificationAttribut extends AbstractIdentifiableSystemScalarStri
 	
 	public static final Collection<String> CODES_FIELDS_NAMES = new ArrayList<>();
 	static {
-		Collection<String> names = FieldHelper.getNames(FieldHelper.filter(ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut.class, "^CODE_", Modifier.STATIC));
+		Collection<String> names = FieldHelper.getNames(FieldHelper.filter(ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute.class, "^CODE_", Modifier.STATIC));
 		if(CollectionHelper.isNotEmpty(names))
 			CODES_FIELDS_NAMES.addAll(names);
 	}

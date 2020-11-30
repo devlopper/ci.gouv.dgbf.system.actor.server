@@ -23,7 +23,7 @@ import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 
@@ -43,7 +43,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			throw new RuntimeException("L'acteur qui demande est obligatoire");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
-		Map<String,IdentificationAttribut> attributs = Request.computeFieldsNames(request.getType().getForm());
+		Map<String,IdentificationAttribute> attributs = Request.computeFieldsNames(request.getType().getForm());
 		if(MapHelper.isNotEmpty(attributs)) {
 			ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 			attributs.forEach( (fieldName,attribut) -> {

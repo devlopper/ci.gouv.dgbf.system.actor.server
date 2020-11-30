@@ -16,7 +16,7 @@ import org.cyk.utility.__kernel__.persistence.query.TypedQuerier;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 
 public interface IdentificationFormQuerier extends TypedQuerier<IdentificationForm,String> {
 
@@ -34,7 +34,7 @@ public interface IdentificationFormQuerier extends TypedQuerier<IdentificationFo
 	public static abstract class AbstractImpl extends TypedQuerier.AbstractImpl<IdentificationForm,String> implements IdentificationFormQuerier,Serializable {
 		
 		@Override
-		protected Class<IdentificationForm> getResultClass() {
+		public Class<IdentificationForm> getType() {
 			return IdentificationForm.class;
 		}
 		
@@ -73,13 +73,13 @@ public interface IdentificationFormQuerier extends TypedQuerier<IdentificationFo
 		}
 		
 		public static void setFields(IdentificationForm form,Boolean asString) {
-			Collection<IdentificationFormAttribut> formAttributs = IdentificationFormAttributQuerier.getInstance().readByFormCode(form.getCode());
-			if(CollectionHelper.isEmpty(formAttributs))
+			Collection<IdentificationFormAttribute> formAttributes = IdentificationFormAttributeQuerier.getInstance().readByFormCode(form.getCode());
+			if(CollectionHelper.isEmpty(formAttributes))
 				return;
 			if(Boolean.TRUE.equals(asString)) {
 				
 			}else {
-				form.setAttributs(formAttributs.stream().map(x -> x.getAttribut().setRequired(x.getRequired() == null ? x.getAttribut().getRequired() : x.getRequired())
+				form.setAttributs(formAttributes.stream().map(x -> x.getAttribute().setRequired(x.getRequired() == null ? x.getAttribute().getRequired() : x.getRequired())
 						.setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
 			}			
 		}

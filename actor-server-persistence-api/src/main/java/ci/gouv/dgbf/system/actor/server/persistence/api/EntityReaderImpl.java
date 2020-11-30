@@ -16,6 +16,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializati
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
@@ -35,6 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
@@ -78,6 +80,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 				return (T) RequestQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, IdentificationFormAttribute.class)))
+				return (T) IdentificationFormAttributeQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -141,6 +146,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return (Collection<T>) RequestQuerier.getInstance().readMany(arguments);
 			
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, IdentificationFormAttribute.class)))
+			return (Collection<T>) IdentificationFormAttributeQuerier.getInstance().readMany(arguments);
+		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
 				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();

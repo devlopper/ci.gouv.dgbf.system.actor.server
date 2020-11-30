@@ -47,9 +47,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>   	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
@@ -121,9 +121,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
@@ -194,9 +194,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
@@ -267,9 +267,9 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
     	
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribut</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>

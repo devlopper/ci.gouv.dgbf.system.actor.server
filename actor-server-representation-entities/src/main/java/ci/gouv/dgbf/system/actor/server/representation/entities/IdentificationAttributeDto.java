@@ -10,15 +10,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class IdentificationAttributDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+public class IdentificationAttributeDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Boolean required;
 	private Integer orderNumber;
 	
 	@Override
-	public IdentificationAttributDto setIdentifier(String identifier) {
-		return (IdentificationAttributDto) super.setIdentifier(identifier);
+	public IdentificationAttributeDto setIdentifier(String identifier) {
+		return (IdentificationAttributeDto) super.setIdentifier(identifier);
 	}
 
 }

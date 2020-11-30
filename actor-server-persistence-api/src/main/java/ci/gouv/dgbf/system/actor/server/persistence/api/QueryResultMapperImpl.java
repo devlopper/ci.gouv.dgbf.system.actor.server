@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
@@ -56,6 +57,12 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 			}
 			if(Request.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName) && value != null) {
 				request.setProcessingDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
+				return;
+			}
+		}else if(instance instanceof IdentificationFormAttribute) {
+			IdentificationFormAttribute identificationFormAttribute = (IdentificationFormAttribute) instance;
+			if(IdentificationFormAttribute.FIELD_REQUIRED_AS_STRING.equals(fieldName)) {
+				identificationFormAttribute.setRequiredAsString(Boolean.TRUE.equals(value) ? "Oui" : "Non");
 				return;
 			}
 		}

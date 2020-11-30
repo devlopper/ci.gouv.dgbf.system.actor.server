@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
@@ -36,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -63,6 +65,18 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(EntityReader.getInstance().readMany(IdentificationForm.class, new QueryExecutorArguments()
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ_BY_IDENTIFIER_FOR_EDIT))
 				.addFilterField("identifier", "DH_GESTIONNAIRE_CREDIT")));
+		
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER))));
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_UI))));
+		
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_UI))
+				.addFilterField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, "DH_GESTIONNAIRE_CREDIT")));
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_UI))
+				.addFilterField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, "1")));
 	}
 	
 	@Test

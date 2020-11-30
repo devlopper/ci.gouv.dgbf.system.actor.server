@@ -19,7 +19,7 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 	
 	@Test
 	public void IdentificationAttribut_CODES_FIELDS_NAMES(){
-		System.out.println(IdentificationAttribut.CODES_FIELDS_NAMES);
+		System.out.println(IdentificationAttribute.CODES_FIELDS_NAMES);
 	}
 	
 	@Test

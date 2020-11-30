@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 public class IdentificationForm extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Transient private Collection<IdentificationAttribut> attributs;
+	@Transient private Collection<IdentificationAttribute> attributs;
 	
 	@Override
 	public IdentificationForm setIdentifier(String identifier) {

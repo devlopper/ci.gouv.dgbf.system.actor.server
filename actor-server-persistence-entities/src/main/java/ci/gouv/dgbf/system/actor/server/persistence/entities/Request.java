@@ -62,10 +62,10 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 		return (Request) super.setIdentifier(identifier);
 	}
 	
-	public static Map<String,IdentificationAttribut> computeFieldsNames(IdentificationForm form) {
+	public static Map<String,IdentificationAttribute> computeFieldsNames(IdentificationForm form) {
 		if(form == null || CollectionHelper.isEmpty(form.getAttributs()) || CollectionHelper.isEmpty(COLUMNS_FIELDS_NAMES))
 			return null;
-		Map<String,IdentificationAttribut> fieldsNames = new LinkedHashMap<>();
+		Map<String,IdentificationAttribute> fieldsNames = new LinkedHashMap<>();
 		form.getAttributs().forEach(attribut -> {
 			for(String columnFieldName : COLUMNS_FIELDS_NAMES) {
 				String columnName = (String) FieldHelper.readStatic(Request.class,columnFieldName);

@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 public class IdentificationFormDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<IdentificationAttributDto> attributs;
+	private ArrayList<IdentificationAttributeDto> attributs;
 	
 	@Override
 	public IdentificationFormDto setIdentifier(String identifier) {

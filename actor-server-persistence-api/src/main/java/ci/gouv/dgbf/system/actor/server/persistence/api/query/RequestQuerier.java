@@ -40,7 +40,7 @@ import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribut;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
@@ -140,10 +140,10 @@ public interface RequestQuerier extends Querier {
 			Actor actor = EntityFinder.getInstance().find(Actor.class, actorIdentifier);
 			if(actor != null) {
 				request.setActor(new Actor().setIdentifier(actor.getIdentifier()));
-				Map<String,IdentificationAttribut> fieldsNamesMap = Request.computeFieldsNames(request.getType().getForm());
+				Map<String,IdentificationAttribute> fieldsNamesMap = Request.computeFieldsNames(request.getType().getForm());
 				if(MapHelper.isNotEmpty(fieldsNamesMap)) {
 					Collection<String> fieldsNames = null;
-					for(Map.Entry<String, IdentificationAttribut> entry : fieldsNamesMap.entrySet()) {
+					for(Map.Entry<String, IdentificationAttribute> entry : fieldsNamesMap.entrySet()) {
 						if(FieldHelper.getByName(Identity.class, entry.getKey()) == null)
 							continue;
 						if(fieldsNames == null)
