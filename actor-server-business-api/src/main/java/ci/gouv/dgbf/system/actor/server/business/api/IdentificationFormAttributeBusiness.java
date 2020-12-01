@@ -5,4 +5,6 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 public interface IdentificationFormAttributeBusiness extends BusinessEntity<IdentificationFormAttribute> {
 
+	String SAVE = "IdentificationFormAttribute.save";
+	
 }

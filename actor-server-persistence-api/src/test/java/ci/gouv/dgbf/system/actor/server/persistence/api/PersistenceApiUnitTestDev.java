@@ -77,6 +77,14 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_UI))
 				.addFilterField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, "1")));
+		
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_EDIT))
+				.addFilterField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, "DH_GESTIONNAIRE_CREDIT")));
+		
+		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_EDIT))
+				.addFilterField(IdentificationFormAttributeQuerier.PARAMETER_NAME_FORM_IDENTIFIER, "DH_GESTIONNAIRE_CREDIT")).iterator().next().getForm());
 	}
 	
 	@Test

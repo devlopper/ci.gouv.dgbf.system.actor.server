@@ -45,6 +45,8 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(IdentificationFormAttribute.class, QueryName.COUNT_WHERE_FILTER.getValue());
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_UI.getValue());
 	
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER_FOR_EDIT.getValue());
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends TypedQuerier.AbstractImpl<IdentificationFormAttribute,String> implements IdentificationFormAttributeQuerier,Serializable {
@@ -59,11 +61,6 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 			super.prepareReadWhereFilter(arguments, filter);
 			filter.addFieldsNullable(arguments, PARAMETER_NAME_FORM_IDENTIFIER);
 			filter.addFieldEquals(PARAMETER_NAME_FORM_IDENTIFIER, arguments);
-		}
-		
-		@Override
-		public Collection<IdentificationFormAttribute> readWhereFilterForUI(QueryExecutorArguments arguments) {
-			return super.readWhereFilterForUI(arguments);
 		}
 		
 		@Override
@@ -86,11 +83,24 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 			Query.buildSelect(IdentificationFormAttribute.class, QUERY_IDENTIFIER_READ_BY_FORM_CODE, "SELECT t FROM IdentificationFormAttribute t WHERE t.form.code = :"
 					+PARAMETER_NAME_FORM_CODE+" ORDER BY t.orderNumber ASC,t.identifier ASC")
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql("SELECT COUNT(t.identifier)",getReadWhereFilterFrom(),getReadWhereFilterWhere()))
+			
+			,Query.buildSelect(IdentificationFormAttribute.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
+					, jpql(getReadWhereFilterSelect(),getReadWhereFilterFrom(),getReadWhereFilterWhere(),getReadWhereFilterOrder()))
+				.setTupleFieldsNamesIndexesFromFieldsNames(IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER
+						,IdentificationFormAttribute.FIELD_REQUIRED,IdentificationFormAttribute.FIELD_FORM
+						,IdentificationFormAttribute.FIELD_ATTRIBUTE).setType(QueryType.READ_MANY)
+			
 			,Query.buildSelect(IdentificationFormAttribute.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 					, jpql(getReadWhereFilterForUISelect(),getReadWhereFilterFrom(),getReadWhereFilterWhere(),getReadWhereFilterOrder()))
 				.setTupleFieldsNamesIndexesFromFieldsNames(IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER
 						,IdentificationFormAttribute.FIELD_REQUIRED_AS_STRING,IdentificationFormAttribute.FIELD_FORM_AS_STRING
 						,IdentificationFormAttribute.FIELD_ATTRIBUTE_AS_STRING).setType(QueryType.READ_MANY)
+				
+			,Query.buildSelect(IdentificationFormAttribute.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT
+					, jpql(getReadWhereFilterForEditSelect(),getReadWhereFilterFrom(),getReadWhereFilterWhere(),getReadWhereFilterOrder()))
+				.setTupleFieldsNamesIndexesFromFieldsNames(IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER
+						,IdentificationFormAttribute.FIELD_REQUIRED,IdentificationFormAttribute.FIELD_FORM
+						,IdentificationFormAttribute.FIELD_ATTRIBUTE).setType(QueryType.READ_MANY)
 		);
 	}
 	
@@ -103,6 +113,11 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 		return select(fields("t",IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER,IdentificationFormAttribute.FIELD_REQUIRED
 				,FieldHelper.join(IdentificationFormAttribute.FIELD_FORM,IdentificationForm.FIELD_NAME)
 				,FieldHelper.join(IdentificationFormAttribute.FIELD_ATTRIBUTE,IdentificationAttribute.FIELD_NAME)));
+	}
+	
+	static String getReadWhereFilterForEditSelect() {
+		return select(fields("t",IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER,IdentificationFormAttribute.FIELD_REQUIRED
+				,IdentificationFormAttribute.FIELD_FORM,IdentificationFormAttribute.FIELD_ATTRIBUTE));
 	}
 	
 	static String getReadWhereFilterFrom() {
@@ -124,6 +139,8 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 	
 	static String getReadOrderBy() {
 		return order(asc("t",FieldHelper.join(IdentificationFormAttribute.FIELD_FORM,IdentificationForm.FIELD_CODE))
-				,asc("t",FieldHelper.join(IdentificationFormAttribute.FIELD_ATTRIBUTE,IdentificationForm.FIELD_CODE)));
+				,asc("t",FieldHelper.join(IdentificationFormAttribute.FIELD_ORDER_NUMBER))
+				,asc("t",FieldHelper.join(IdentificationFormAttribute.FIELD_ATTRIBUTE,IdentificationForm.FIELD_CODE))
+			);
 	}
 }
