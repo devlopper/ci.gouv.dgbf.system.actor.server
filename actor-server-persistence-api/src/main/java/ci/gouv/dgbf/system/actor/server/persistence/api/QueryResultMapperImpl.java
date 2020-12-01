@@ -60,11 +60,11 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 				return;
 			}
 		}else if(instance instanceof IdentificationFormAttribute) {
-			IdentificationFormAttribute identificationFormAttribute = (IdentificationFormAttribute) instance;
+			/*IdentificationFormAttribute identificationFormAttribute = (IdentificationFormAttribute) instance;
 			if(IdentificationFormAttribute.FIELD_REQUIRED_AS_STRING.equals(fieldName)) {
 				identificationFormAttribute.setRequiredAsString(Boolean.TRUE.equals(value) ? "Oui" : "Non");
 				return;
-			}
+			}*/
 		}
 		super.write(instance, fieldName, value);
 	}

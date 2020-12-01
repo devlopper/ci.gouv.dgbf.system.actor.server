@@ -7,6 +7,9 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.kase;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.whens;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.whenEqual;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
@@ -110,8 +113,13 @@ public interface IdentificationFormAttributeQuerier extends TypedQuerier<Identif
 	}
 	
 	static String getReadWhereFilterForUISelect() {
-		return select(fields("t",IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER,IdentificationFormAttribute.FIELD_REQUIRED
-				,FieldHelper.join(IdentificationFormAttribute.FIELD_FORM,IdentificationForm.FIELD_NAME)
+		return select(
+				fields("t",IdentificationFormAttribute.FIELD_IDENTIFIER,IdentificationFormAttribute.FIELD_ORDER_NUMBER)
+				,kase(whens(
+						whenEqual("t", IdentificationFormAttribute.FIELD_REQUIRED, Boolean.TRUE.toString(), "'Oui'")
+						,whenEqual("t", IdentificationFormAttribute.FIELD_REQUIRED, Boolean.FALSE.toString(), "'Non'")
+						), "'Hérité'")
+				,fields("t",FieldHelper.join(IdentificationFormAttribute.FIELD_FORM,IdentificationForm.FIELD_NAME)
 				,FieldHelper.join(IdentificationFormAttribute.FIELD_ATTRIBUTE,IdentificationAttribute.FIELD_NAME)));
 	}
 	
