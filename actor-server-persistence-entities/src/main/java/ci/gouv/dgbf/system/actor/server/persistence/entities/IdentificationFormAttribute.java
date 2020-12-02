@@ -49,4 +49,6 @@ public class IdentificationFormAttribute extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_ATTRIBUTE = "ATTRIBUT";
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
 	public static final String COLUMN_REQUIRED = "OBLIGATOIRE";
+	
+	public static final String REQUIRED_NULL_VALUE_NAME = "Hérité";
 }

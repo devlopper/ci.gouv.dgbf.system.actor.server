@@ -66,6 +66,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationForm.class, QueryName.READ_BY_IDENTIFIER_FOR_EDIT))
 				.addFilterField("identifier", "DH_GESTIONNAIRE_CREDIT")));
 		
+		System.out.println("----------------------------------------------------------------------------------------------------------------------");
+		
 		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(IdentificationFormAttribute.class, QueryName.READ_WHERE_FILTER))));
 		System.out.println(EntityReader.getInstance().readMany(IdentificationFormAttribute.class, new QueryExecutorArguments()
