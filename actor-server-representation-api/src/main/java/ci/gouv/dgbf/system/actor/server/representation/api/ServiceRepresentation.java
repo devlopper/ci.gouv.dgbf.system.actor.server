@@ -10,9 +10,9 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ServiceDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(ServiceRepresentation.PATH)
 public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> {
@@ -21,70 +21,70 @@ public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> 
 	@Path(PATH_DELETE_ALL_KEYCLOAK_AUTHORIZATION_POLICIES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer les règles d'autorisation de keycloak",tags = {TAG})
+	@Operation(description = "Supprimer les règles d'autorisation de keycloak")
 	Response deleteAllKeycloakAuthorizationPolicies(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_CREATE_KEYCLOAK_AUTHORIZATION_POLICIES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver les règles d'autorisation de keycloak",tags = {TAG})
+	@Operation(description = "Dériver les règles d'autorisation de keycloak")
 	Response deriveKeycloakAuthorizationPolicies(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DELETE_ALL_KEYCLOAK_AUTHORIZATION_RESOURCES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer les ressources autorisables de keycloak",tags = {TAG})
+	@Operation(description = "Supprimer les ressources autorisables de keycloak")
 	Response deleteAllKeycloakAuthorizationResources(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_CREATE_KEYCLOAK_AUTHORIZATION_RESOURCES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver les ressources autorisables de keycloak",tags = {TAG})
+	@Operation(description = "Dériver les ressources autorisables de keycloak")
 	Response deriveKeycloakAuthorizationResources(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DERIVE_KEYCLOAK_AUTHORIZATION_PERMISSIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver les permissions d'autorisation de keycloak",tags = {TAG})
+	@Operation(description = "Dériver les permissions d'autorisation de keycloak")
 	Response deriveKeycloakAuthorizationPermissions(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver les autorisations de keycloak",tags = {TAG})
+	@Operation(description = "Dériver les autorisations de keycloak")
 	Response deriveKeycloakAuthorizations(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DELETE_KEYCLOAK_AUTHORIZATIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer les autorisations de keycloak",tags = {TAG})
+	@Operation(description = "Supprimer les autorisations de keycloak")
 	Response deleteKeycloakAuthorizations(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver les autorisations de keycloak à partir de zéro",tags = {TAG})
+	@Operation(description = "Dériver les autorisations de keycloak à partir de zéro")
 	Response deriveKeycloakAuthorizationsFromScratch(Collection<ServiceDto> services);
 	
 	@POST
 	@Path(PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver toutes les autorisations de keycloak",tags = {TAG})
+	@Operation(description = "Dériver toutes les autorisations de keycloak")
 	Response deriveAllKeycloakAuthorizations();
 	
 	@POST
 	@Path(PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Dériver toutes les autorisations de keycloak à partir de zéro",tags = {TAG})
+	@Operation(description = "Dériver toutes les autorisations de keycloak à partir de zéro")
 	Response deriveAllKeycloakAuthorizationsFromScratch();
 	
 	String PATH = "service";

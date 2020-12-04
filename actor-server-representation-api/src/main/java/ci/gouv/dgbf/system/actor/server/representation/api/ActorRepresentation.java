@@ -19,7 +19,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(ActorRepresentation.PATH)
 @Tag(name = ActorRepresentation.TAG)
@@ -63,7 +62,6 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_CREATE_PROFILES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Créer des profiles",tags = {TAG})
 	@Operation(description = "Créer des profiles")
 	Response createProfiles(Collection<ActorDto> actors);
 	
@@ -71,42 +69,36 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_DELETE_PROFILES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer des profiles",tags = {TAG})
 	@Operation(description = "Supprimer des profiles")
 	Response deleteProfiles(Collection<ActorDto> actors);
 	
 	@GET
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Obtenir les informations de profile d'un compte utilisateur",tags = {TAG})
 	@Operation(description = "Obtenir les informations de profile d'un compte utilisateur")
 	Response getProfileInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Importer les comptes utilisateurs à partir de keycloak pour les création",tags = {TAG})
 	@Operation(description = "Importer les comptes utilisateurs à partir de keycloak pour les création")
 	Response importFromKeycloak();
 	
 	@POST
 	@Path(PATH_EXPORT_TO_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Exporter les acteurs vers keycloak",tags = {TAG})
 	@Operation(description = "Exporter les acteurs vers keycloak")
 	Response exportToKeycloak();
 	
 	@POST
 	@Path(PATH_UPDATE_TO_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Mettre à jour les utilisateurs de keycloak",tags = {TAG})
 	@Operation(description = "Mettre à jour les utilisateurs de keycloak")
 	Response updateToKeycloak();
 	
 	@POST
 	@Path(PATH_SEND_UPDATE_PASSWORD_EMAIL)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Envoyer un mail de mise à jour du mot de passe",tags = {TAG})
 	@Operation(description = "Envoyer un mail de mise à jour du mot de passe")
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	

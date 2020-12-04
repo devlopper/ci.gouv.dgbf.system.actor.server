@@ -10,11 +10,11 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorScopeDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(ActorScopeRepresentation.PATH)
 public interface ActorScopeRepresentation extends RepresentationEntity<ActorScopeDto> {
@@ -23,42 +23,42 @@ public interface ActorScopeRepresentation extends RepresentationEntity<ActorScop
 	@Path(PATH_CREATE_BY_ACTORS_CODES_BY_SCOPES_CODES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Créer des visibilités",tags = {ActorRepresentation.TAG})
+	@Operation(description = "Créer des visibilités")
 	Response createByActorsByScopes(Collection<ActorDto> actors,Collection<ScopeDto> scopes);
 	
 	@POST
 	@Path(PATH_CREATE_BY_ACTORS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Créer des visibilités",tags = {ActorRepresentation.TAG})
+	@Operation(description = "Créer des visibilités")
 	Response createByActors(Collection<ActorDto> actors);
 	
 	@POST
 	@Path(PATH_DELETE_BY_ACTORS_CODES_BY_SCOPES_CODES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer des visibilités",tags = {ActorRepresentation.TAG})
+	@Operation(description = "Supprimer des visibilités")
 	Response deleteByActorsByScopes(Collection<ActorDto> actors,Collection<ScopeDto> scopes);
 	
 	@POST
 	@Path(PATH_DELETE_BY_ACTORS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Supprimer des visibilités",tags = {ActorRepresentation.TAG})
+	@Operation(description = "Supprimer des visibilités")
 	Response deleteByActors(Collection<ActorDto> actors);
 	
 	@POST
 	@Path(PATH_CREATE_BY_SCOPES_CODES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "createByScopes",tags = {"create"})
+	@Operation(description = "createByScopes")
 	Response createByScopes(Collection<ScopeDto> scopes);
 	
 	@POST
 	@Path(PATH_DELETE_BY_SCOPES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "deleteByScopes",tags = {"delete"})
+	@Operation(description = "deleteByScopes")
 	Response deleteByScopes(Collection<ScopeDto> scopes);
 	
 	static ActorScopeRepresentation getProxy() {

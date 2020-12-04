@@ -1,4 +1,4 @@
-REM call mvn clean package -P wildfly.jar.maven.plugin.prod
+call mvn clean package -P wildfly.jar.maven.plugin.server,prod,swagger
 set ORACLE_DATASOURCE=actorDataSource
 set ORACLE_URL=jdbc:oracle:thin:@localhost:1521:XE
 set ORACLE_USER=SIIBC_Actor

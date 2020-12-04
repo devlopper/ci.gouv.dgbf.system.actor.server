@@ -10,9 +10,9 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(ProfileRepresentation.PATH)
 public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> {
@@ -21,19 +21,19 @@ public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> 
 	@Path(PATH_SAVE_PRIVILEGES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Enregistrer des privilèges",tags = {TAG})
+	@Operation(description = "Enregistrer des privilèges")
 	Response savePrivileges(Collection<ProfileDto> profiles);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK_ROLES)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Importer les profiles à partir des roles de keycloak",tags = {TAG})
+	@Operation(description = "Importer les profiles à partir des roles de keycloak")
 	Response importFromKeycloakRoles();
 	
 	@POST
 	@Path(PATH_EXPORT_TO_KEYCLOAK_ROLES)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Exporter les profiles vers les roles de keycloak",tags = {TAG})
+	@Operation(description = "Exporter les profiles vers les roles de keycloak")
 	Response exportToKeycloakRoles();
 	
 	String PATH_SAVE_PRIVILEGES = "save_privileges";

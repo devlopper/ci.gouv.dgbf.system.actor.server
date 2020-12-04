@@ -12,10 +12,10 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.AccountRequestDto.AccountRequestCreationDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(AccountRequestRepresentation.PATH)
 public interface AccountRequestRepresentation extends RepresentationEntity<AccountRequestDto> {
@@ -24,28 +24,28 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	@Path(PATH_RECORD)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Enregistrer des demandes de comptes",tags = {TAG})
+	@Operation(description = "Enregistrer des demandes de comptes")
 	Response record(Collection<AccountRequestDto> accountRequests);
 	
 	@POST
 	@Path(PATH_RECORD_ONE)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Enregistrer une demande de compte",tags = {TAG})
+	@Operation(description = "Enregistrer une demande de compte")
 	Response record(AccountRequestDto accountRequest);
 	
 	@POST
 	@Path(PATH_RECORD_ONE_FOR_EXTERNAL)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Enregistrer une demande de compte",tags = {TAG})
+	@Operation(description = "Enregistrer une demande de compte")
 	Response record(AccountRequestCreationDto accountRequest);
 	
 	@POST
 	@Path(PATH_SUBMIT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Soumettre des demandes de comptes",tags = {TAG})
+	@Operation(description = "Soumettre des demandes de comptes")
 	Response submit(Collection<AccountRequestDto> accountRequests);
 	
 	@POST
@@ -57,14 +57,14 @@ public interface AccountRequestRepresentation extends RepresentationEntity<Accou
 	@Path(PATH_ACCEPT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Accepter des demandes de comptes",tags = {TAG})
+	@Operation(description = "Accepter des demandes de comptes")
 	Response accept(Collection<AccountRequestDto> accountRequests);
 	
 	@POST
 	@Path(PATH_REJECT)
 	@Consumes({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Rejeter des demandes de comptes",tags = {TAG})
+	@Operation(description = "Rejeter des demandes de comptes")
 	Response reject(Collection<AccountRequestDto> accountRequests);
 	
 	static AccountRequestRepresentation getProxy() {

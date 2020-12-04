@@ -10,9 +10,9 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeTypeFunctionDto;
-import io.swagger.annotations.ApiOperation;
 
 @Path(ScopeTypeFunctionRepresentation.PATH)
 public interface ScopeTypeFunctionRepresentation extends RepresentationEntity<ScopeTypeFunctionDto> {
@@ -21,7 +21,7 @@ public interface ScopeTypeFunctionRepresentation extends RepresentationEntity<Sc
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@ApiOperation(value = "Associer des types de domaines et des fonctions",tags = {ScopeTypeRepresentation.TAG})
+	@Operation(description = "Associer des types de domaines et des fonctions")
 	Response save(Collection<ScopeTypeFunctionDto> scopeTypeFunctionDtos);
 	
 	static ScopeTypeFunctionRepresentation getProxy() {

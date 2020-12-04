@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -8,11 +9,12 @@
 		<version>0.1.0</version>
 	</parent>
 
-	<name>Deployment</name>
-	
-	<groupId>ci.gouv.dgbf.system.actor.server.deployment</groupId>
-	<artifactId>actor-server-deployment</artifactId>
+	<groupId>ci.gouv.dgbf.system.packaging</groupId>
+	<artifactId>actor-server-packaging</artifactId>
+	<version>0.0.1</version>
 	<packaging>war</packaging>
+
+	<name>actor-server-packaging</name>
 	
 	<properties>
 		<cyk.variable.system.identifier>acteur</cyk.variable.system.identifier>
@@ -54,18 +56,11 @@
 		<security.single.sign.on.system.keycloak.prod.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.prod.credential.username>
 		<security.single.sign.on.system.keycloak.prod.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.prod.credential.password>
 		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
+		
+		<!-- packaging properties -->
+		<cyk.variable.system.timestamp.as.string>${maven.build.timestamp}</cyk.variable.system.timestamp.as.string>
+		<maven.build.timestamp.format>EEEE dd LLLL yyyy 'at' HH:mm:ss</maven.build.timestamp.format>
 	</properties>
-	
-	<dependencyManagement>
-	    <dependencies>
-	    	<dependency>
-			    <groupId>org.wildfly.bom</groupId>
-			    <artifactId>wildfly-microprofile</artifactId>
-			    <version>21.0.1.Final</version>
-			    <type>pom</type>
-			</dependency>
-	    </dependencies>
-	</dependencyManagement>
 	
 	<dependencies>
 		<dependency>
@@ -91,19 +86,6 @@
 		    <artifactId>openapi-ui</artifactId>
 		    <version>1.1.4</version>
 		</dependency>
-		<!--
-		<dependency>
-		    <groupId>org.eclipse.microprofile.openapi</groupId>
-		    <artifactId>microprofile-openapi-api</artifactId>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.wildfly</groupId>
-		    <artifactId>wildfly-microprofile-openapi-smallrye</artifactId>
-		    <version>21.0.1.Final</version>
-		    <scope>provided</scope>
-		</dependency>
-		-->
 	</dependencies>		
 	
 	<profiles>
@@ -147,6 +129,26 @@
 			<build>
 				<finalName>${project.build.file.name}</finalName>
 				<plugins>
+					<!-- war build -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.0.2</version>
+						<configuration>
+							<webResources>
+								<resource>
+									<directory>${basedir}/src/main/webapp/WEB-INF</directory>
+									<filtering>true</filtering>
+									<targetPath>WEB-INF</targetPath>
+									<includes>
+										<include>**/*.*</include>
+									</includes>
+								</resource>
+							</webResources>
+						</configuration>
+					</plugin>
+					
+					<!-- wildfly build -->
 		            <plugin>
 		                <groupId>org.wildfly.plugins</groupId>
 		                <artifactId>wildfly-jar-maven-plugin</artifactId>
@@ -205,5 +207,6 @@
 		        </plugins>
 			</build>
 		</profile>
-	</profiles>
+		
+	</profiles>	
 </project>
