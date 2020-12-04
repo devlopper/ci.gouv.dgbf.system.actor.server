@@ -54,6 +54,10 @@
 		<security.single.sign.on.system.keycloak.prod.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.prod.credential.username>
 		<security.single.sign.on.system.keycloak.prod.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.prod.credential.password>
 		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
+		
+		<!-- packaging properties -->
+		<cyk.variable.system.timestamp.as.string>${maven.build.timestamp}</cyk.variable.system.timestamp.as.string>
+		<maven.build.timestamp.format>EEEE dd LLLL yyyy 'at' HH:mm:ss</maven.build.timestamp.format>
 	</properties>
 	
 	<dependencyManagement>
