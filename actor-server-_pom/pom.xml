@@ -18,7 +18,7 @@
 	
 	<properties>
 		<data.source.name>actorServerDataSource</data.source.name>
-		<data.source.jndi.name>java:/actor/server/dataSource</data.source.jndi.name>
+		<data.source.jndi.name>java:jboss/datasources/actor/server</data.source.jndi.name>
 		<hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
 	</properties>
 	

@@ -10,9 +10,6 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.IdentificationFormAttributeDto;
 
@@ -23,10 +20,10 @@ public interface IdentificationFormAttributeRepresentation extends Representatio
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Enregistrer des attributs de formulaires")
+	/*@Operation(description = "Enregistrer des attributs de formulaires")
 	@APIResponses(value = {
 			@APIResponse(responseCode = "200",name = "Enregistré")
-	})
+	})*/
 	Response save(Collection<IdentificationFormAttributeDto> formAttributeDtos);
 	
 	String PATH = "identificationformattribut";

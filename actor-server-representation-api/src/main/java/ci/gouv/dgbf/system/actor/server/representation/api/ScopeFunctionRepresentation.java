@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 
@@ -21,42 +20,42 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Enregistrer des postes")
+	//@Operation(description = "Enregistrer des postes")
 	Response save(Collection<ScopeFunctionDto> scopeFunctionDtos);
 	
 	@POST
 	@Path(PATH_DERIVE_ALL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Dériver tous les postes")
+	//@Operation(description = "Dériver tous les postes")
 	Response deriveAll();
 	
 	@POST
 	@Path(PATH_DERIVE_BY_FUNCTIONS_IDENTIFIERS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Dériver les postes par fonctions")
+	//@Operation(description = "Dériver les postes par fonctions")
 	Response deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	@POST
 	@Path(PATH_CODIFY_ALL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Codifier tous les postes")
+	//@Operation(description = "Codifier tous les postes")
 	Response codifyAll();
 	
 	@POST
 	@Path(PATH_CODIFY_BY_FUNCTIONS_IDENTIFIERS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Codifier les postes par fonctions")
+	//@Operation(description = "Codifier les postes par fonctions")
 	Response codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	@POST
 	@Path(PATH_DELETE_BY_FUNCTIONS_IDENTIFIERS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Supprimer les postes par fonctions")
+	//@Operation(description = "Supprimer les postes par fonctions")
 	Response deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	String PATH_SAVE = "save";

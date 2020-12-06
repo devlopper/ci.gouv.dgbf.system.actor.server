@@ -1,6 +1,4 @@
 thorntail:
-  port:
-    offset: ${swarm.port.offset}
   datasources:
     data-sources:
        ActorDataSource:

@@ -13,9 +13,6 @@ import javax.ws.rs.core.Response;
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
@@ -35,71 +32,71 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_CREATE_BY_PUBLIC)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Créer un acteur par public")
+	/*@Operation(description = "Créer un acteur par public")
 	@APIResponses(value = {
 			@APIResponse(responseCode = "201",name = "Créé")
-	})
-	Response createByPublic(@Parameter(allowEmptyValue = false,name = "acteur",required = true) ActorDto actor);
+	})*/
+	Response createByPublic(/*@Parameter(allowEmptyValue = false,name = "acteur",required = true)*/ ActorDto actor);
 	
 	@POST
 	@Path(PATH_SAVE_PROFILE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Enregistrer le profile")
+	/*@Operation(description = "Enregistrer le profile")
 	@APIResponses(value = {
 			@APIResponse(responseCode = "200",name = "Enregistré")
-	})
-	Response saveProfile(@Parameter(allowEmptyValue = false,name = "acteur",required = true) ActorDto actor);
+	})*/
+	Response saveProfile(/*@Parameter(allowEmptyValue = false,name = "acteur",required = true)*/ ActorDto actor);
 	
 	@POST
 	@Path(PATH_CREATE_PRIVILEGES_FROM_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Créer des privilèges à partir de fonctions")
+	//@Operation(description = "Créer des privilèges à partir de fonctions")
 	Response createPrivilegesFromFunctions(Collection<ActorDto> actors);
 	
 	@POST
 	@Path(PATH_CREATE_PROFILES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Créer des profiles")
+	//@Operation(description = "Créer des profiles")
 	Response createProfiles(Collection<ActorDto> actors);
 	
 	@POST
 	@Path(PATH_DELETE_PROFILES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Supprimer des profiles")
+	//@Operation(description = "Supprimer des profiles")
 	Response deleteProfiles(Collection<ActorDto> actors);
 	
 	@GET
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Obtenir les informations de profile d'un compte utilisateur")
+	//@Operation(description = "Obtenir les informations de profile d'un compte utilisateur")
 	Response getProfileInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Importer les comptes utilisateurs à partir de keycloak pour les création")
+	//@Operation(description = "Importer les comptes utilisateurs à partir de keycloak pour les création")
 	Response importFromKeycloak();
 	
 	@POST
 	@Path(PATH_EXPORT_TO_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Exporter les acteurs vers keycloak")
+	//@Operation(description = "Exporter les acteurs vers keycloak")
 	Response exportToKeycloak();
 	
 	@POST
 	@Path(PATH_UPDATE_TO_KEYCLOAK)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Mettre à jour les utilisateurs de keycloak")
+	//@Operation(description = "Mettre à jour les utilisateurs de keycloak")
 	Response updateToKeycloak();
 	
 	@POST
 	@Path(PATH_SEND_UPDATE_PASSWORD_EMAIL)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Envoyer un mail de mise à jour du mot de passe")
+	//@Operation(description = "Envoyer un mail de mise à jour du mot de passe")
 	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
 	
 	String PATH = "actor";

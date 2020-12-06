@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileFunctionDto;
 
@@ -21,7 +20,7 @@ public interface ProfileFunctionRepresentation extends RepresentationEntity<Prof
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "Associer des profiles et des fonctions")
+	//@Operation(description = "Associer des profiles et des fonctions")
 	Response save(Collection<ProfileFunctionDto> profileFunctionDtos);
 	
 	static ProfileFunctionRepresentation getProxy() {

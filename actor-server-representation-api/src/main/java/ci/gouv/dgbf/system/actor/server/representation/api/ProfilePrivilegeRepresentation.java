@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.FunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
@@ -23,21 +22,21 @@ public interface ProfilePrivilegeRepresentation extends RepresentationEntity<Pro
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "save")
+	//@Operation(description = "save")
 	Response save(Collection<ProfilePrivilegeDto> profilePrivilegeDtos);
 	
 	@POST
 	@Path(PATH_CREATE_FROM_PROFILES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "create")
+	//@Operation(description = "create")
 	Response createFromProfiles(Collection<ProfileDto> profileDtos);
 	
 	@POST
 	@Path(PATH_CREATE_FROM_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Operation(description = "create")
+	//@Operation(description = "create")
 	Response createFromFunctions(Collection<FunctionDto> functionsDtos);
 	
 	static ProfilePrivilegeRepresentation getProxy() {
