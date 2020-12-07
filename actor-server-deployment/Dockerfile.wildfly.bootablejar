@@ -1,0 +1,27 @@
+FROM adoptopenjdk/openjdk11-openj9:jre-11.0.3_7_openj9-0.14.0-alpine
+
+# -- DATABASE MANAGEMENT SYSTEM : ORACLE --
+ENV SIIB_DB_HOST sib-database
+ENV SIIB_DB_PORT 1521
+ENV SIIB_DB_SID SIB
+ENV SIIB_DB_USER acteur
+ENV SIIB_DB_PASSWORD acteur
+
+ENV ORACLE_DATASOURCE actor/server
+ENV ORACLE_URL 'jdbc:oracle:thin:@${env.SIIB_DB_HOST}:${env.SIIB_DB_PORT}:${env.SIIB_DB_SID}'
+ENV ORACLE_USER '${env.SIIB_DB_USER}'
+ENV ORACLE_PASSWORD '${env.SIIB_DB_PASSWORD}'
+
+# -- SIGNLE SING ON SYSTEM : KEYCLOAK --
+ENV KEYCLOAK_REALM SIIBTEST
+ENV security.single.sign.on.system.keycloak.prod.realm.name SIIBTEST
+ENV security.single.sign.on.system.keycloak.prod.client.identifier admin-cli
+ENV security.single.sign.on.system.keycloak.prod.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
+ENV security.single.sign.on.system.keycloak.prod.credential.username mic-acteur-api
+ENV security.single.sign.on.system.keycloak.prod.credential.password mic-@cteur-@pi@2O2o
+
+# -- Files --
+ADD gitignore/wildfly/bootablejar/ROOT-bootable.jar /opt/ROOT-bootable.jar
+ADD target/ROOT.war /opt/ROOT.war
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true","/opt/ROOT-bootable.jar","--deployment=/opt/ROOT.war"]
