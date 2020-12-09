@@ -1,1 +1,1 @@
-mvn -f ../../../.. wildfly-jar:shutdown -P package.wildfly.bootable.jaxrs.oracle
+mvn -f ../../../.. wildfly-jar:shutdown -P package.wildfly.bootable.jaxrs.oracle,dev

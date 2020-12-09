@@ -1,0 +1,8 @@
+{
+  "realm": "${env.KEYCLOAK_REALM}",
+  "auth-server-url": "${env.keycloak.auth-server-url}",
+  "ssl-required": "external",
+  "resource": "mic-acteur-api",
+  "verify-token-audience": true
+  ,"confidential-port": 0
+}

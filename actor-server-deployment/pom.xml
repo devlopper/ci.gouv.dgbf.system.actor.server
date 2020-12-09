@@ -77,6 +77,12 @@
 			<artifactId>freemarker</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<!--
+		<dependency>
+		    <groupId>org.keycloak</groupId>
+		    <artifactId>keycloak-servlet-filter-adapter</artifactId>
+		</dependency>
+		-->
 	</dependencies>		
 	
 	<profiles>
@@ -109,6 +115,15 @@
 			<properties>
 				<deployment.standalone.port.offset>0</deployment.standalone.port.offset>
 				
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>dev</id>
+			<properties>
+				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
+				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
+				<wildfly.port>10090</wildfly.port>
 			</properties>
 		</profile>
 		
