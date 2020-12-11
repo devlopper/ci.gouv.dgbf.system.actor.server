@@ -44,6 +44,7 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	
 	/**/
 	
+	public static final String CODE_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
 	public static final String CODE_CIVILITY = "CIVILITE";
 	public static final String CODE_FIRST_NAME = "NOM";
 	public static final String CODE_LAST_NAMES = "PRENOMS";
@@ -68,6 +69,8 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	public static final String CODE_FINANCIAL_CONTROLLER_HOLDER = "CONTROLEUR_FINANCIER";
 	public static final String CODE_ACCOUNTING_HOLDER = "COMPTABLE";
 	public static final String CODE_COMMENT = "COMMENTAIRE";
+	public static final String CODE_BUDGETARIES_FUNCTIONS = "FONCTIONS_BUDGETAIRES";
+	public static final String CODE_BUDGETARIES_SCOPE_FUNCTIONS = "POSTES_BUDGETAIRES";
 	
 	public static final Collection<String> CODES_FIELDS_NAMES = new ArrayList<>();
 	static {

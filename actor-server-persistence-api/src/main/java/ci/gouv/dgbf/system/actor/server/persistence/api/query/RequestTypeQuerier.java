@@ -3,6 +3,14 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 import java.io.Serializable;
 import java.util.Collection;
 
+import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.kaseBooleanYesNo;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -112,11 +120,17 @@ public interface RequestTypeQuerier extends Querier {
 	static void initialize() {
 		QueryHelper.addQueries(
 			Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_ALL, "SELECT t FROM RequestType t ORDER BY t.code ASC")
-			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_FOR_UI, "SELECT t.identifier,t.code,t.name,t.form.name FROM RequestType t ORDER BY t.code ASC")
-			.setTupleFieldsNamesIndexesFromFieldsNames(RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,RequestType.FIELD_FORM_AS_STRING)
+			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_FOR_UI, 
+					jpql(
+							select(fields("t",RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,"form.name")
+									,kaseBooleanYesNo("t", RequestType.FIELD_AUTHENTICATION_REQUIRED,"Non"))
+							,from("RequestType t")
+							,order(asc("t","code"))))
+			.setTupleFieldsNamesIndexesFromFieldsNames(RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,RequestType.FIELD_FORM_AS_STRING
+					,RequestType.FIELD_AUTHENTICATION_REQUIRED_AS_STRING)
 			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_COUNT_FOR_UI, "SELECT COUNT(t.identifier) FROM RequestType t")
 			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
-					, "SELECT t FROM RequestType t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+					, jpql(select("t"),from("RequestType t"),where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER)))
 			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION
 					, "SELECT t FROM RequestType t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 		);

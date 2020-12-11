@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,8 +23,10 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FORM) @NotNull private IdentificationForm form;
+	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	
 	@Transient private String formAsString;
+	@Transient private Boolean authenticationRequiredAsString;
 	
 	@Override
 	public RequestType setIdentifier(String identifier) {
@@ -31,9 +34,12 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	}
 	
 	public static final String FIELD_FORM = "form";
+	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
+	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
 	
 	public static final String TABLE_NAME = "DM_TYPE";
 	
 	public static final String COLUMN_FORM = "FORMULAIRE";
+	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
 }

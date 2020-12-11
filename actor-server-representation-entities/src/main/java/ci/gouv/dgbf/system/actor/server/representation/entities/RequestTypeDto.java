@@ -14,7 +14,9 @@ public class RequestTypeDto extends AbstractIdentifiableSystemScalarStringIdenti
 	private static final long serialVersionUID = 1L;
 	
 	private IdentificationFormDto form;
+	private Boolean authenticationRequired;
 	private String formAsString;
+	private Boolean authenticationRequiredAsString;
 	
 	@Override
 	public RequestTypeDto setIdentifier(String identifier) {

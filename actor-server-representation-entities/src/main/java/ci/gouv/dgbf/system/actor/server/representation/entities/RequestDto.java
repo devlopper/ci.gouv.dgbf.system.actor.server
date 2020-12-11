@@ -14,23 +14,54 @@ import lombok.experimental.Accessors;
 public class RequestDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/* Initialization */
+	
 	private RequestTypeDto type;
+	private String typeAsString;
+	private RequestStatusDto status;
+	private Boolean authenticationRequired;
+	private String authenticationRequiredAsString;
+	private String creationDateAsString;
+	
+	/* Identity */
+	
 	private ActorDto actor;
-	private String comment;
-	private ArrayList<FunctionDto> functions;
+	private String actorAsString,actorCode,actorNames;
+	private String firstName;
+	private String lastNames;
+	private String registrationNumber;
+	private CivilityDto civility;
+	private IdentityGroupDto group;
+	private String electronicMailAddress;
+	private String postalBoxAddress;
+	private String mobilePhoneNumber;
+	private String officePhoneNumber;
+	private String officePhoneExtension;
+	
+	/* Job */
+	
+	private Integer budgetaryExercice;
 	private AdministrativeUnitDto administrativeUnit;
+	private String administrativeFunction;
 	private SectionDto section;
 	private BudgetSpecializationUnitDto budgetSpecializationUnit;
-	private String administrativeFunction;
-	private RequestStatusDto status;
-	private String statusAsString;
-	private String rejectionReason;
-	
 	private String actOfAppointmentReference;
 	private String actOfAppointmentSignatory;
 	private Long actOfAppointmentSignatureDateAsTimestamp;
 	private String actOfAppointmentSignatureDateAsString;
+	private ArrayList<FunctionDto> functions;
+	private ArrayList<String> functionsAsStrings;
+	private ArrayList<FunctionDto> budgetariesFunctions;
+	private ArrayList<String> budgetariesFunctionsAsStrings;
+	private ArrayList<ScopeFunctionDto> budgetariesScopeFunctions;
+	private ArrayList<String> budgetariesScopeFunctionsAsStrings;
 	
-	private ArrayList<String> functionsAsStrings;	
-	private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;
+	/* Others */
+	
+	private String comment;
+	
+	/* Processing */
+	
+	private String processingDateAsString;
+	private String rejectionReason;
 }

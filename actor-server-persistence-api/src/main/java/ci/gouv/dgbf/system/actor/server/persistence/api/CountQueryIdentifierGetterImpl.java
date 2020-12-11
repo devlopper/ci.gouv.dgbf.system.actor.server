@@ -11,6 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 
@@ -52,6 +53,9 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(readQueryIdentifier))
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		
+		if(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return ScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		
 		if(ClusterQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return ClusterQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;

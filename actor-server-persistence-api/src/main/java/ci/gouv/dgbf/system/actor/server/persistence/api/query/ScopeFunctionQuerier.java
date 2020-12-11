@@ -72,7 +72,13 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE);
 	Long countWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments);
+	/*
+	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE);
+	Collection<ScopeFunction> readWhereCodeOrNameLike(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE);
+	Long countWhereCodeOrNameLike(QueryExecutorArguments arguments);
+	*/
 	String QUERY_IDENTIFIER_READ_WITH_CODES_ONLY_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readWithCodesOnlyByFunctionsIdentifiers");
 	Collection<ScopeFunction> readWithCodesOnlyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
@@ -82,6 +88,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.COUNT_WHERE_FILTER);
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_WHERE_FILTER_FOR_UI);
+	Collection<ScopeFunction> readWhereFilterForUI(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeFunction> implements ScopeFunctionQuerier,Serializable {	
@@ -90,6 +99,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Collection<ScopeFunction> readMany(QueryExecutorArguments arguments) {
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilter(arguments);
+			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilterForUI(arguments);
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
 				return readByFunctionsCodes(arguments);
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
@@ -228,6 +239,14 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		}
 		
 		@Override
+		public Collection<ScopeFunction> readWhereFilterForUI(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ_WHERE_FILTER_FOR_UI);
+			prepareWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+		}
+		
+		@Override
 		public Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments) {
 			if(arguments == null)
 				arguments = new QueryExecutorArguments();
@@ -251,35 +270,6 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Value INSTANCE = new Value();
 	
 	/**/
-	
-	static String getQueryValueReadWhereFilterWhere() {
-		return where(and(
-				String.format("(:%s = true OR t.function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
-				,like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
-				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-				,like("t", FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)
-			));
-	}
-	
-	static String getQueryValueReadWhereFilter() {
-		return jpql(
-				select(				
-					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR)
-					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
-				)
-				,jpql(
-					From.ofTuple(ScopeFunction.class)
-					,"LEFT JOIN Scope scope ON scope = t.scope"
-					,"LEFT JOIN Function function ON function = t.function"
-				)
-				,getQueryValueReadWhereFilterWhere()
-				,order(Order.join(asc("t",ScopeFunction.FIELD_CODE)))
-			);
-	}
-	
-	static String getQueryValueCountWhereFilter() {
-		return jpql(select("COUNT(t.identifier)"),From.ofTuple(ScopeFunction.class),getQueryValueReadWhereFilterWhere());
-	}
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(ScopeFunction.class);
@@ -322,10 +312,65 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, getQueryValueReadWhereFilter()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
 								,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING)
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
+				
+				/*
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
+					, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
+					,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+				*/
 		);
 	}
 	
 	/**/
+	
+	static String getQueryValueReadWhereFilterFrom() {
+		return jpql(
+				From.ofTuple(ScopeFunction.class)
+				,"LEFT JOIN Scope scope ON scope = t.scope"
+				,"LEFT JOIN Function function ON function = t.function"
+			);
+	}
+	
+	static String getQueryValueReadWhereFilterWhere() {
+		return where(and(
+				String.format("(:%s = true OR t.function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
+				,like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
+				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,like("t", FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)
+			));
+	}
+	
+	static String getQueryValueReadWhereFilterOrder() {
+		return order(Order.join(asc("t",ScopeFunction.FIELD_CODE)));
+	}
+	
+	static String getQueryValueReadWhereFilter() {
+		return jpql(
+				select(				
+					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR)
+					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+				)
+				,getQueryValueReadWhereFilterFrom()
+				,getQueryValueReadWhereFilterWhere()
+				,getQueryValueReadWhereFilterOrder()
+			);
+	}
+	
+	static String getQueryValueReadWhereFilterForUI() {
+		return jpql(
+				select(				
+					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR)
+					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+				)
+				,getQueryValueReadWhereFilterFrom()
+				,getQueryValueReadWhereFilterWhere()
+				,getQueryValueReadWhereFilterOrder()
+			);
+	}
+	
+	static String getQueryValueCountWhereFilter() {
+		return jpql(select("COUNT(t.identifier)"),From.ofTuple(ScopeFunction.class),getQueryValueReadWhereFilterWhere());
+	}
 	
 	static String getQueryValueReadWhereCodeOrNameLikeByFunctionCodeFromWhere() {
 		return jpql(

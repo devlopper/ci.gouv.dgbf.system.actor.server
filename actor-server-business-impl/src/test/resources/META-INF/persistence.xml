@@ -54,6 +54,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>

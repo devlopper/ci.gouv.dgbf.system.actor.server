@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -39,8 +40,13 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			throw new RuntimeException("Le type de demande est obligatoire");
 		if(request.getType().getForm() == null)
 			throw new RuntimeException("Le formulaire de demande est obligatoire");
-		if(request.getActor() == null)
-			throw new RuntimeException("L'acteur qui demande est obligatoire");
+		if(Boolean.TRUE.equals(request.getAuthenticationRequired())) {
+			if(request.getActor() == null)
+				throw new RuntimeException("L'acteur qui demande est obligatoire");
+		}else {
+			if(StringHelper.isBlank(request.getElectronicMailAddress()))
+				throw new RuntimeException("Le mail du demandeur est obligatoire");
+		}
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 		Map<String,IdentificationAttribute> attributs = Request.computeFieldsNames(request.getType().getForm());
@@ -57,6 +63,9 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		if(StringHelper.isBlank(request.getIdentifier())) {
 			request.setIdentifier("DM_"+IdentifiableSystem.generateRandomly());
 			request.setCreationDate(LocalDateTime.now());
+			if(request.getActor() == null) {
+				request.setAccessToken(RandomHelper.getAlphanumeric(12));
+			}
 		}
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setCreatables(List.of(request))));

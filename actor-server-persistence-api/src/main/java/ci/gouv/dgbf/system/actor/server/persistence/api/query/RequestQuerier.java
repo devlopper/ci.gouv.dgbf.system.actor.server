@@ -15,6 +15,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,11 +45,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttri
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public interface RequestQuerier extends Querier {
 
+	String PARAMETER_NAME_ACCESS_TOKEN = "accessToken";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE = PARAMETER_NAME_ACTOR_IDENTIFIER+"Nullable";
 	String PARAMETER_NAME_STATUS_IDENTIFIER = "statusIdentifier";
@@ -84,6 +87,11 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForUI");
 	Request readByIdentifierForUI(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN = QueryIdentifierBuilder.getInstance().build(Request.class, "readByAccessToken");
+	Request readByAccessToken(String accessToken);
+	
+	String QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByAccessTokenForUI");
+	Request readByAccessTokenForUI(String accessToken);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
@@ -98,6 +106,10 @@ public interface RequestQuerier extends Querier {
 				return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
 				return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN))
+				return readByAccessToken((String)arguments.getFilterFieldValue(PARAMETER_NAME_ACCESS_TOKEN));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI))
+				return readByAccessTokenForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_ACCESS_TOKEN));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -126,6 +138,7 @@ public interface RequestQuerier extends Querier {
 				return null;
 			Request request = new Request().setType(type);
 			IdentificationFormQuerier.AbstractImpl.setFields(type.getForm(), null);
+			request.setAuthenticationRequired(request.getType().getAuthenticationRequired());
 			return request;
 		}
 		
@@ -175,11 +188,16 @@ public interface RequestQuerier extends Querier {
 			Request request = readByIdentifier(identifier);
 			if(request == null)
 				return null;
-			request.setActorCode(request.getActor().getCode());
-			request.setActorNames(
-					Identity.getNames((String)FieldHelper.readName(request.getActor().getCivility())
-					, request.getActor().getIdentity().getFirstName()
-					, request.getActor().getIdentity().getLastNames()));
+			prepareForUI(request,Boolean.TRUE,Boolean.TRUE);
+			return request;
+		}
+		
+		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
+			if(request == null)
+				return;
+			if(request.getActor() != null)
+				request.setActorCode(request.getActor().getCode());
+			request.setActorNames(Identity.getNames((String)FieldHelper.readName(request.getCivility()), request.getFirstName(), request.getLastNames()));
 			request.setTypeAsString(request.getType().getName());
 			if(request.getActOfAppointmentSignatureDate() != null) {
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -188,6 +206,31 @@ public interface RequestQuerier extends Querier {
 				request.setActOfAppointmentSignatureDate(null);
 			}
 			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
+				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
+					if(Boolean.TRUE.equals(budgetariesScopeFunctionsStringifiable))
+						request.setBudgetariesScopeFunctionsAsStrings(requestScopeFunctions.stream()
+							.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()))
+							.map(x -> x.getScopeFunction().getName())
+							.collect(Collectors.toList()));
+					
+				}
+			}
+		}
+		
+		@Override
+		public Request readByAccessToken(String accessToken) {
+			return QueryExecutor.getInstance().executeReadOne(Request.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN)
+					.addFilterField(PARAMETER_NAME_ACCESS_TOKEN, accessToken));
+		}
+		
+		@Override
+		public Request readByAccessTokenForUI(String accessToken) {
+			Request request = readByAccessToken(accessToken);
+			if(request == null)
+				return null;
+			prepareForUI(request,null,null);
 			return request;
 		}
 		
@@ -265,7 +308,7 @@ public interface RequestQuerier extends Querier {
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
 			,Query.FIELD_VALUE,jpql(select(
 					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
-					,fields("a",Actor.FIELD_CODE),Language.Select.concat("a.identity", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
+					,fields("a",Actor.FIELD_CODE),Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
 					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME)
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
@@ -279,6 +322,7 @@ public interface RequestQuerier extends Querier {
 			)
 			
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN, "SELECT t FROM Request t WHERE t.accessToken = :"+PARAMETER_NAME_ACCESS_TOKEN)
 			/*,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
 					, jpql(select("t")
 							,from("FROM Request t")

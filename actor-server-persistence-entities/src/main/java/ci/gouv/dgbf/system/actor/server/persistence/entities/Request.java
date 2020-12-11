@@ -32,30 +32,61 @@ import lombok.experimental.Accessors;
 public class Request extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
-	@ManyToOne @JoinColumn(name = COLUMN_ACTOR) @NotNull private Actor actor;
-	@Column(name = COLUMN_COMMENT) private String comment;
-	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
-	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;
+	/* Initialization */
 	
+	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
+	@Transient private String typeAsString,creationDateAsString;
+	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
+	@Transient private String statusAsString;	
+	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
+	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
+	@Transient private Boolean authenticationRequiredAsString;
+	@Column(name = COLUMN_ACCESS_TOKEN) private String accessToken;
+	
+	/* Identity */
+	
+	@ManyToOne @JoinColumn(name = COLUMN_ACTOR) private Actor actor;
+	@Transient private String actorAsString,actorCode,actorNames;
+	@Column(name = COLUMN_FIRST_NAME) private String firstName;
+	@Column(name = COLUMN_LAST_NAMES) private String lastNames;
+	@Column(name = COLUMN_REGISTRATION_NUMBER) private String registrationNumber;
+	@ManyToOne @JoinColumn(name = COLUMN_CIVILITY) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private Civility civility;
+	@ManyToOne @JoinColumn(name = COLUMN_GROUP) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private IdentityGroup group;
+	@Column(name = COLUMN_ELECTRONIC_MAIL_ADDRESS) private String electronicMailAddress;
+	@Column(name = COLUMN_POSTAL_BOX_ADDRESS) private String postalBoxAddress;
+	@Column(name = COLUMN_MOBILE_PHONE_NUMBER) private String mobilePhoneNumber;
+	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
+	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
+	
+	/* Job */
+	
+	@Column(name = COLUMN_BUDGETARY_EXERCICE) private Integer budgetaryExercice;
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
-	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
-	
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;	
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_REFERENCE) private String actOfAppointmentReference;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATORY) private String actOfAppointmentSignatory;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE) private LocalDate actOfAppointmentSignatureDate;
-	
-	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
-	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
-	@Transient private String statusAsString;
+	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
+	@Transient private String actOfAppointmentSignatureDateAsString;
 	
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<String> functionsAsStrings;
-	@Transient private String typeAsString,actorAsString,actorCode,actorNames,creationDateAsString,processingDateAsString;
-	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
-	@Transient private String actOfAppointmentSignatureDateAsString;
+	@Transient private Collection<Function> budgetariesFunctions;
+	@Transient private Collection<String> budgetariesFunctionsAsStrings;
+	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions;
+	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
+	
+	/* Others */
+	
+	@Column(name = COLUMN_COMMENT) private String comment;	
+	
+	/* Processing */
+	
+	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;	
+	@Transient private String processingDateAsString;
+	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
 	
 	@Override
 	public Request setIdentifier(String identifier) {
@@ -76,52 +107,83 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 		return fieldsNames;
 	}
 	
-	public static final String FIELD_REJECTION_REASON = "rejectionReason";
-	public static final String FIELD_STATUS = "status";
-	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
-	public static final String FIELD_ACTOR = "actor";
-	public static final String FIELD_ACTOR_AS_STRING = "actorAsString";
-	public static final String FIELD_ACTOR_CODE = "actorCode";
-	public static final String FIELD_ACTOR_NAMES = "actorNames";
-	public static final String FIELD_COMMENT = "comment";
+	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
-	public static final String FIELD_PROCESSING_DATE = "processingDate";
-	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
-	public static final String FIELD_FUNCTIONS = "functions";
-	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
+	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";
+	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
+	public static final String FIELD_ACCESS_TOKEN = "accessToken";
 	
+	public static final String FIELD_ACTOR = "actor";
+	public static final String FIELD_ACTOR_CODE = "actorCode";
+	public static final String FIELD_ACTOR_NAMES = "actorNames";
+	public static final String FIELD_ACTOR_AS_STRING = "actorAsString";
+	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_CIVILITY = "civility";
+	public static final String FIELD_FIRST_NAME = "firstName";
+	public static final String FIELD_LAST_NAMES = "lastNames";
+	public static final String FIELD_REGISTRATION_NUMBER = "registrationNumber";
+	public static final String FIELD_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
+	public static final String FIELD_OFFICE_PHONE_NUMBER = "officePhoneNumber";
+	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
+	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
+	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	
+	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";	
+	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_TIMESTAMP = "actOfAppointmentSignatureDateAsTimestamp";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
+	public static final String FIELD_FUNCTIONS = "functions";
+	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
 	
-	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
-	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
-	public static final String FIELD_SECTION = "section";
-	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	public static final String FIELD_COMMENT = "comment";
+	
+	public static final String FIELD_PROCESSING_DATE = "processingDate";
+	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
+	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	
-	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
-	public static final String COLUMN_STATUS = "STATUT";
 	public static final String COLUMN_TYPE = "TYPE";
-	public static final String COLUMN_ACTOR = "ACTEUR";
+	public static final String COLUMN_STATUS = "STATUT";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
-	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
-	public static final String COLUMN_COMMENT = "COMMENTAIRE";
+	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
+	public static final String COLUMN_ACCESS_TOKEN = "jeton_acces";
 	
+	public static final String COLUMN_ACTOR = "ACTEUR";
+	public static final String COLUMN_GROUP = "GROUPE";
+	public static final String COLUMN_CIVILITY = "CIVILITE";
+	public static final String COLUMN_FIRST_NAME = "NOM";
+	public static final String COLUMN_LAST_NAMES = "PRENOMS";	
+	public static final String COLUMN_REGISTRATION_NUMBER = "MATRICULE";
+	public static final String COLUMN_ELECTRONIC_MAIL_ADDRESS = "EMAIL";
+	public static final String COLUMN_POSTAL_BOX_ADDRESS = "BOITE_POSTALE";
+	public static final String COLUMN_MOBILE_PHONE_NUMBER = "NUMERO_MOBILE";
+	public static final String COLUMN_OFFICE_PHONE_NUMBER = "NUMERO_BUREAU";
+	public static final String COLUMN_OFFICE_PHONE_EXTENSION = "POSTE_BUREAU";
+	
+	public static final String COLUMN_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
+	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
+	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
-	
-	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
-	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
+	
+	public static final String COLUMN_COMMENT = "COMMENTAIRE";
+	
+	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
+	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
 	
 	public static final Collection<String> COLUMNS_FIELDS_NAMES = new ArrayList<>();
 	static {

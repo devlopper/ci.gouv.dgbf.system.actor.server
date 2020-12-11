@@ -204,7 +204,18 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getTypeAsString());
 		System.out.println(request.getComment());
 		System.out.println(request.getCreationDateAsString());
-		System.out.println(request.getFunctionsAsStrings());
+		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
+	}
+	
+	@Test
+	public void request_readByIdentifierForUI(){
+		Request request = RequestQuerier.getInstance().readByIdentifierForUI("DM_7a332338-e827-4f3c-91bf-0aedbcc4f6ef");
+		System.out.println(request.getActorCode());
+		System.out.println(request.getActorNames());
+		System.out.println(request.getTypeAsString());
+		System.out.println(request.getComment());
+		System.out.println(request.getCreationDateAsString());
+		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
 	}
 	
 	@Test
