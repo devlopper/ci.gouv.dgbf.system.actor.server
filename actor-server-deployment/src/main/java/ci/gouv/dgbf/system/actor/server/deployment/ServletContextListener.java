@@ -6,7 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebListener;
 
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
-import org.cyk.utility.__kernel__.security.keycloak.KeycloakClientGetter;
+import org.cyk.utility.security.keycloak.server.KeycloakClientGetter;
 import org.cyk.utility.__kernel__.variable.VariableHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.deployment.AbstractServletContextListener;

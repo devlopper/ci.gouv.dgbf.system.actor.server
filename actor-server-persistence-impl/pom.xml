@@ -48,8 +48,9 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
+			<groupId>org.cyk.jee.utility.security.keycloak.server</groupId>
+			<artifactId>jee-utility-security-keycloak-server</artifactId>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>		
 	

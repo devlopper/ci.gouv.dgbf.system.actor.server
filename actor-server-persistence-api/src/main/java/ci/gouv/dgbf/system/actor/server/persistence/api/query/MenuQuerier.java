@@ -13,9 +13,9 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
-import org.cyk.utility.__kernel__.security.keycloak.Client;
-import org.cyk.utility.__kernel__.security.keycloak.ClientManager;
-import org.cyk.utility.__kernel__.security.keycloak.Resource;
+import org.cyk.utility.security.keycloak.server.Client;
+import org.cyk.utility.security.keycloak.server.ClientManager;
+import org.cyk.utility.security.keycloak.server.Resource;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Menu;

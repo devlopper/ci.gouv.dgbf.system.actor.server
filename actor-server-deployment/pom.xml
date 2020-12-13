@@ -124,6 +124,13 @@
 				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
 				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
 				<wildfly.port>10090</wildfly.port>
+				
+				<security.single.sign.on.system.keycloak.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.url>
+				<security.single.sign.on.system.keycloak.realm.name>SIIB</security.single.sign.on.system.keycloak.realm.name>
+				<security.single.sign.on.system.keycloak.client.identifier>admin-cli</security.single.sign.on.system.keycloak.client.identifier>
+				<security.single.sign.on.system.keycloak.client.secret>ee334d25-4f98-4a42-a1e5-6097e7494fb7</security.single.sign.on.system.keycloak.client.secret>
+				<security.single.sign.on.system.keycloak.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.credential.username>
+				<security.single.sign.on.system.keycloak.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.credential.password>
 			</properties>
 		</profile>
 		

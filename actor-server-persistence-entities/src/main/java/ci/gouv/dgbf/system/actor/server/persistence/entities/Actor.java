@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -24,7 +22,6 @@ import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifi
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.security.keycloak.User;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.AuditOverrides;
@@ -94,8 +91,6 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private Boolean emailSendableAfterCreation;
 	@Transient private IdentificationForm form;
 	
-	@Transient private User keycloakUser;
-	
 	@Override
 	public Actor setIdentifier(String identifier) {
 		return (Actor) super.setIdentifier(identifier);
@@ -138,7 +133,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 			setIdentity(EntityFinder.getInstance().find(Identity.class, identifier));
 		return this;
 	}
-	
+	/*
 	public static void setKeycloakUsers(Collection<Actor> actors,Collection<User> users) {
 		if(CollectionHelper.isEmpty(actors) || CollectionHelper.isEmpty(users))
 			return;
@@ -172,7 +167,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 			}
 		});
 	}
-	
+	*/
 	public static String buildNames(String civility,String firstName,String lastNames) {
 		Collection<String> tokens = new ArrayList<>();
 		if(StringHelper.isNotBlank(civility))

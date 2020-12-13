@@ -4,7 +4,6 @@ import java.io.Serializable;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListenerImpl;
-import org.cyk.utility.__kernel__.security.keycloak.ClientManager;
 import org.cyk.utility.server.persistence.AbstractApplicationScopeLifeCycleListenerEntities;
 
 @ApplicationScoped
@@ -32,6 +31,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,RejectedAccountRequest.class
 				));
 		
-		ClientManager.AbstractImpl.useFrenchValues();
+		//ClientManager.AbstractImpl.useFrenchValues();
 	}
 }
