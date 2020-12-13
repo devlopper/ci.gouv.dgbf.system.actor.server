@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -59,13 +62,44 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 					public void run() {
 						Request request = MappingHelper.getDestination(requestDto, Request.class);
 						if(request != null) {
-							if(requestDto.getActOfAppointmentSignatureDateAsTimestamp() == null)
-								request.setActOfAppointmentSignatureDate(null);
-							else
-								request.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(requestDto.getActOfAppointmentSignatureDateAsTimestamp())
-										, ZoneId.systemDefault()));
-						}						
+							setFromDto(requestDto, request);
+						}
 						__inject__(RequestBusiness.class).initialize(request);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response record(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						Request request = MappingHelper.getDestination(requestDto, Request.class);											
+						InstanceCopier.getInstance().copy(database, request, List.of(Request.FIELD_TYPE,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE
+							,Request.FIELD_AUTHENTICATION_REQUIRED,Request.FIELD_ACCESS_TOKEN));
+						setFromDto(requestDto, request);
+						__inject__(RequestBusiness.class).record(request);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response submitByIdentifier(String identifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).submitByIdentifier(identifier);
 					}
 				};
 			}
@@ -100,5 +134,24 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 				};
 			}
 		});
+	}
+
+	/**/
+	
+	private void setFromDto(RequestDto requestDto,Request request) {
+		/*if(CollectionHelper.isNotEmpty(requestDto.getBudgetariesScopeFunctions())) {
+			for(ScopeFunctionDto scopeFunctionDto : requestDto.getBudgetariesScopeFunctions()) {
+				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, scopeFunctionDto.getIdentifier());
+				if(scopeFunction == null)
+					continue;
+				if(request.getBudgetariesScopeFunctions() == null)
+					request.setBudgetariesScopeFunctions(new ArrayList<>());
+				request.getBudgetariesScopeFunctions().add(scopeFunction);
+			}
+		}*/
+		if(requestDto.getActOfAppointmentSignatureDateAsTimestamp() == null)
+			request.setActOfAppointmentSignatureDate(null);
+		else
+			request.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(requestDto.getActOfAppointmentSignatureDateAsTimestamp()), ZoneId.systemDefault()));
 	}
 }

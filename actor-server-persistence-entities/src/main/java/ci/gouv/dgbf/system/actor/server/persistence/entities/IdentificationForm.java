@@ -26,6 +26,11 @@ public class IdentificationForm extends AbstractIdentifiableSystemScalarStringId
 		return (IdentificationForm) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public IdentificationForm setCode(String code) {
+		return (IdentificationForm) super.setCode(code);
+	}
+	
 	public static final String TABLE_NAME = "ID_FORMULAIRE";
 	
 	public static final String CODE_CREATION_COMPTE = "CREATION_COMPTE";

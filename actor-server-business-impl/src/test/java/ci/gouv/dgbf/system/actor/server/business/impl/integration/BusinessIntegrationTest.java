@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.business.EntityCreator;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RejectedAccountRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
@@ -37,6 +39,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
@@ -44,11 +47,14 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
@@ -57,6 +63,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
@@ -65,6 +74,64 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void __listenPostConstruct__() {
+		org.cyk.utility.__kernel__.klass.PersistableClassesGetter.COLLECTION.set(java.util.List.of(
+				ProfileFunction.class,ProfilePrivilege.class
+				,PrivilegeType.class
+				,ActorProfile.class,ActorScope.class
+				,ScopeFunction.class,ScopeTypeFunction.class
+				,Function.class,FunctionType.class
+				,Actor.class
+				,Profile.class,ProfileType.class,ScopeType.class
+				,AccountRequest.class
+				,Identity.class
+				,RejectedAccountRequest.class
+				));
+		super.__listenPostConstruct__();
+	}
+	
+	@Override
+	protected void __listenBefore__() {
+		// TODO Auto-generated method stub
+		//super.__listenBefore__();
+	}
+	
+	@Test
+	public void request_record() throws Exception{
+		EntityCreator.getInstance().createMany(new RequestStatus().setCode(RequestStatus.CODE_INITIALIZED).setName("1"));
+		
+		EntityCreator.getInstance().createMany(new IdentificationForm().setCode("1").setName("1"));
+		EntityCreator.getInstance().createMany(new RequestType().setCode("1").setFormFromIdentifier("1").setName("1"));
+		
+		EntityCreator.getInstance().createMany(new FunctionType().setCode("1").setName("1"));
+		EntityCreator.getInstance().createMany(new Function().setCode("1").setName("1").setTypeFromIdentifier("1")
+				,new Function().setCode("2").setName("2").setTypeFromIdentifier("1"),new Function().setCode("3").setName("3").setTypeFromIdentifier("1"));
+		
+		EntityCreator.getInstance().createMany(new ScopeType().setCode("1").setName("1"));
+		EntityCreator.getInstance().createMany(new Scope().setCode("1").setName("1").setTypeFromIdentifier("1")
+				,new Scope().setCode("2").setName("2").setTypeFromIdentifier("1"),new Scope().setCode("3").setName("3").setTypeFromIdentifier("1"));
+		
+		EntityCreator.getInstance().createMany(new ScopeFunction().setCode("1").setName("1").setScopeFromIdentifier("1").setFunctionFromIdentifier("1")
+				,new ScopeFunction().setCode("2").setName("2").setScopeFromIdentifier("2").setFunctionFromIdentifier("1")
+				,new ScopeFunction().setCode("3").setName("3").setScopeFromIdentifier("3").setFunctionFromIdentifier("1"));
+		
+		Request request = new Request();
+		request.setTypeFromIdentifier("1").setElectronicMailAddress("m@m.com");
+		request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "1"),EntityFinder.getInstance().find(ScopeFunction.class, "2")));
+		__inject__(RequestBusiness.class).initialize(request);		
+		String identifier = request.getIdentifier();
+		request = RequestQuerier.getInstance().readByIdentifierForEdit(identifier);
+		assertThat(request.getBudgetariesScopeFunctions()).isNotNull();
+		assertThat(request.getBudgetariesScopeFunctions().size()).isEqualTo(2);
+		
+		request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "2")));
+		__inject__(RequestBusiness.class).record(request);
+		request = RequestQuerier.getInstance().readByIdentifierForEdit(identifier);
+		assertThat(request.getBudgetariesScopeFunctions()).isNotNull();
+		assertThat(request.getBudgetariesScopeFunctions().size()).isEqualTo(1);
+	}
 	
 	@Test
 	public void scopeFunction_createFromAllScopesFromAllFunctions() throws Exception{

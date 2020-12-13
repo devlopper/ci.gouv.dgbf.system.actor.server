@@ -2,14 +2,19 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.business.EntitySaver;
 import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
@@ -24,16 +29,18 @@ import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ApplicationScoped
 public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, RequestPersistence> implements RequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Override @Transactional
-	public void initialize(Request request) {
+	private void validate(Request request) {
 		if(request == null)
 			throw new RuntimeException("La demande est obligatoire");
 		if(request.getType() == null)
@@ -47,7 +54,9 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(StringHelper.isBlank(request.getElectronicMailAddress()))
 				throw new RuntimeException("Le mail du demandeur est obligatoire");
 		}
-		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
+	}
+	
+	private void setFields(Request request) {
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 		Map<String,IdentificationAttribute> attributs = Request.computeFieldsNames(request.getType().getForm());
 		if(MapHelper.isNotEmpty(attributs)) {
@@ -60,21 +69,87 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			});
 			throwablesMessages.throwIfNotEmpty();
 		}
-		if(StringHelper.isBlank(request.getIdentifier())) {
-			request.setIdentifier("DM_"+IdentifiableSystem.generateRandomly());
-			request.setCreationDate(LocalDateTime.now());
-			if(request.getActor() == null) {
-				request.setAccessToken(RandomHelper.getAlphanumeric(12));
+	}
+	
+	private void saveBudgetariesScopeFunctions(Request request,EntityManager entityManager) {
+		org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<RequestScopeFunction> requestScopeFunctionsSaverArguments =
+				new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<RequestScopeFunction>().setEntityManager(entityManager);
+		requestScopeFunctionsSaverArguments.setExistingCollection(RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier())));
+		requestScopeFunctionsSaverArguments.setIsNotBelogingToProvidedCollectionDeletable(Boolean.TRUE);
+		//build provided budgetaries scope functions
+		if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctions())) {
+			//get existing
+			if(CollectionHelper.isNotEmpty(requestScopeFunctionsSaverArguments.getExistingCollection())) {				
+				for(RequestScopeFunction requestScopeFunction : requestScopeFunctionsSaverArguments.getExistingCollection()) {
+					if(request.getBudgetariesScopeFunctions().contains(requestScopeFunction.getScopeFunction())) {
+						if(requestScopeFunctionsSaverArguments.getProvidedCollection() == null)
+							requestScopeFunctionsSaverArguments.setProvidedCollection(new ArrayList<>());
+						requestScopeFunctionsSaverArguments.getProvidedCollection().add(requestScopeFunction);
+					}
+				}
+			}
+			Collection<ScopeFunction> providedExistingScopeFunctions = CollectionHelper.isEmpty(requestScopeFunctionsSaverArguments.getProvidedCollection()) ? null
+					: requestScopeFunctionsSaverArguments.getProvidedCollection().stream().map(x -> x.getScopeFunction()).collect(Collectors.toList());
+			//get news
+			for(ScopeFunction scopeFunction : request.getBudgetariesScopeFunctions()) {
+				if(!CollectionHelper.contains(providedExistingScopeFunctions, scopeFunction)) {
+					if(requestScopeFunctionsSaverArguments.getProvidedCollection() == null)
+						requestScopeFunctionsSaverArguments.setProvidedCollection(new ArrayList<>());
+					requestScopeFunctionsSaverArguments.getProvidedCollection().add(new RequestScopeFunction().setRequest(request).setScopeFunction(scopeFunction));
+				}
 			}
 		}
+		org.cyk.utility.__kernel__.persistence.EntitySaver.getInstance().save(RequestScopeFunction.class, requestScopeFunctionsSaverArguments);
+	}
+	
+	@Override @Transactional
+	public void initialize(Request request) {
+		validate(request);
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
+		setFields(request);
+		request.setIdentifier("DM_"+IdentifiableSystem.generateRandomly());
+		request.setCreationDate(LocalDateTime.now());
+		if(request.getActor() == null) {
+			request.setAccessToken(RandomHelper.getAlphanumeric(12));
+		}
+		EntityManager entityManager = __inject__(EntityManager.class);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setCreatables(List.of(request))));
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+						.setCreatables(List.of(request))));
+		saveBudgetariesScopeFunctions(request,entityManager);
+	}
+	
+	@Override @Transactional
+	public void record(Request request) {
+		validate(request);
+		setFields(request);
+		EntityManager entityManager = __inject__(EntityManager.class);
+		saveBudgetariesScopeFunctions(request,entityManager);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void submit(Request request) {
+		validate(request);
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_SUBMITTED));
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void submitByIdentifier(String identifier) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				);
+		submit(request);
 	}
 	
 	@Override @Transactional
 	public void accept(Request request) {
-		if(request == null)
-			throw new RuntimeException("La demande est obligatoire");
+		validate(request);
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
@@ -92,8 +167,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	@Override @Transactional
 	public void reject(Request request) {
-		if(request == null)
-			throw new RuntimeException("La demande est obligatoire");
+		validate(request);
 		if(StringHelper.isBlank(request.getRejectionReason()))
 			throw new RuntimeException("Le motif de rejet est obligatoire");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));

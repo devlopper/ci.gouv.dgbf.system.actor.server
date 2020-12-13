@@ -87,6 +87,9 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForUI");
 	Request readByIdentifierForUI(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForEdit");
+	Request readByIdentifierForEdit(String identifier);
+	
 	String QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN = QueryIdentifierBuilder.getInstance().build(Request.class, "readByAccessToken");
 	Request readByAccessToken(String accessToken);
 	
@@ -106,6 +109,8 @@ public interface RequestQuerier extends Querier {
 				return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
 				return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT))
+				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN))
 				return readByAccessToken((String)arguments.getFilterFieldValue(PARAMETER_NAME_ACCESS_TOKEN));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI))
@@ -217,6 +222,28 @@ public interface RequestQuerier extends Querier {
 					
 				}
 			}
+		}
+		
+		@Override
+		public Request readByIdentifierForEdit(String identifier) {
+			Request request = readByIdentifier(identifier);
+			if(request == null)
+				return null;
+			if(request.getActOfAppointmentSignatureDate() != null) {
+				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+				request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
+						.format(request.getActOfAppointmentSignatureDate()));
+				request.setActOfAppointmentSignatureDate(null);
+			}
+			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+			Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+			if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
+				request.setBudgetariesScopeFunctions(requestScopeFunctions.stream()
+					.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()))
+					.map(x -> x.getScopeFunction())
+					.collect(Collectors.toList()));				
+			}
+			return request;
 		}
 		
 		@Override

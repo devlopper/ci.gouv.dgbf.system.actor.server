@@ -22,9 +22,15 @@ public class RequestStatus extends AbstractIdentifiableSystemScalarStringIdentif
 		return (RequestStatus) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public RequestStatus setCode(String code) {
+		return (RequestStatus) super.setCode(code);
+	}
+	
 	public static final String TABLE_NAME = "DM_STATUT";
 	
 	public static final String CODE_INITIALIZED = "INITIEE";
+	public static final String CODE_SUBMITTED = "SOUMISE";
 	public static final String CODE_ACCEPTED = "ACCEPTEE";
 	public static final String CODE_REJECTED = "REJETEE";
 }

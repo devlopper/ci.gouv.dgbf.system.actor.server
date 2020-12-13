@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -91,6 +93,14 @@ public class Request extends AbstractIdentifiableSystemScalarStringImpl implemen
 	@Override
 	public Request setIdentifier(String identifier) {
 		return (Request) super.setIdentifier(identifier);
+	}
+	
+	public Request setTypeFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setType(null);
+		else
+			setType(EntityFinder.getInstance().find(RequestType.class, identifier));
+		return this;
 	}
 	
 	public static Map<String,IdentificationAttribute> computeFieldsNames(IdentificationForm form) {

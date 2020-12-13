@@ -11,6 +11,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +33,19 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	@Override
 	public RequestType setIdentifier(String identifier) {
 		return (RequestType) super.setIdentifier(identifier);
+	}
+	
+	@Override
+	public RequestType setCode(String code) {
+		return (RequestType) super.setCode(code);
+	}
+	
+	public RequestType setFormFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setForm(null);
+		else
+			setForm(EntityFinder.getInstance().find(IdentificationForm.class, identifier));
+		return this;
 	}
 	
 	public static final String FIELD_FORM = "form";
