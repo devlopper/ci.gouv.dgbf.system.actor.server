@@ -40,11 +40,9 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
@@ -200,18 +198,21 @@ public interface RequestQuerier extends Querier {
 		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
-			request.setStatusAsString(request.getStatus().getName());
+			if(request.getStatus() != null)
+				request.setStatusAsString(request.getStatus().getName());
 			if(request.getActor() != null)
 				request.setActorCode(request.getActor().getCode());
 			request.setActorNames(Identity.getNames((String)FieldHelper.readName(request.getCivility()), request.getFirstName(), request.getLastNames()));
-			request.setTypeAsString(request.getType().getName());
+			if(request.getType() != null) {
+				request.setTypeAsString(request.getType().getName());
+				IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+			}
 			if(request.getActOfAppointmentSignatureDate() != null) {
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
 				request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
 						.format(request.getActOfAppointmentSignatureDate()));
 				request.setActOfAppointmentSignatureDate(null);
-			}
-			IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+			}			
 			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
 				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
@@ -223,8 +224,6 @@ public interface RequestQuerier extends Querier {
 					
 				}
 			}
-			
-			//request.setType(null);
 		}
 		
 		@Override
@@ -282,7 +281,10 @@ public interface RequestQuerier extends Querier {
 			Collection<Request> requests = readWhereFilter(arguments);
 			if(CollectionHelper.isEmpty(requests))
 				return null;
-			setFunctions(requests,Boolean.TRUE);
+			requests.forEach(request -> {
+				prepareForUI(request, null, null);
+			});			
+			//setFunctions(requests,Boolean.TRUE);
 			return requests;
 		}
 		
@@ -305,7 +307,7 @@ public interface RequestQuerier extends Querier {
 			arguments.setFilter(filter);
 		}
 		
-		protected static void setFunctions(Collection<Request> requests,Boolean asString) {
+		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
 			Collection<RequestFunction> requestFunctions = RequestFunctionQuerier.getInstance().readByRequestsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(requests));
 			if(CollectionHelper.isEmpty(requestFunctions))
 				return;
@@ -319,7 +321,7 @@ public interface RequestQuerier extends Querier {
 				}
 				
 			});
-		}
+		}*/
 	}
 	
 	/**/
@@ -337,12 +339,12 @@ public interface RequestQuerier extends Querier {
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
 			,Query.FIELD_VALUE,jpql(select(
-					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
+					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
 					,fields("a",Actor.FIELD_CODE),Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
 					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME)
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
-			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE_AS_STRING
+			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE_AS_STRING
 					,Request.FIELD_PROCESSING_DATE_AS_STRING,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING
 					,Request.FIELD_STATUS_AS_STRING)
 				

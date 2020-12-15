@@ -110,7 +110,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		validate(request);
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		setFields(request);
-		request.setIdentifier("DM_"+IdentifiableSystem.generateRandomly());
+		request.setIdentifier(IdentifiableSystem.generateRandomly());
+		request.setCode("D"+RandomHelper.getNumeric(3)+RandomHelper.getAlphabetic(4).toUpperCase()+RandomHelper.getNumeric(3));
 		request.setCreationDate(LocalDateTime.now());
 		if(request.getActor() == null) {
 			request.setAccessToken(RandomHelper.getAlphanumeric(12));

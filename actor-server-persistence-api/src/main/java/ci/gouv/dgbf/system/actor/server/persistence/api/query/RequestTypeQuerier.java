@@ -123,7 +123,7 @@ public interface RequestTypeQuerier extends Querier {
 			,Query.buildSelect(RequestType.class, QUERY_IDENTIFIER_READ_FOR_UI, 
 					jpql(
 							select(fields("t",RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,"form.name")
-									,kaseBooleanYesNo("t", RequestType.FIELD_AUTHENTICATION_REQUIRED,"Non"))
+									,kaseBooleanYesNo("t", RequestType.FIELD_AUTHENTICATION_REQUIRED,"'Non'"))
 							,from("RequestType t")
 							,order(asc("t","code"))))
 			.setTupleFieldsNamesIndexesFromFieldsNames(RequestType.FIELD_IDENTIFIER,RequestType.FIELD_CODE,RequestType.FIELD_NAME,RequestType.FIELD_FORM_AS_STRING

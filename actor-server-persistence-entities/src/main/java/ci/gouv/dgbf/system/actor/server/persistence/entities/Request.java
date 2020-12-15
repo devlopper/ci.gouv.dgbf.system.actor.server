@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Request.TABLE_NAME)
-public class Request extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/* Initialization */
