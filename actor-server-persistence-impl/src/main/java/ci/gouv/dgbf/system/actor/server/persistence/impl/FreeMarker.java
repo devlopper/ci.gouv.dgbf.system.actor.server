@@ -1,10 +1,15 @@
-package ci.gouv.dgbf.system.actor.server.persistence.entities;
+package ci.gouv.dgbf.system.actor.server.persistence.impl;
 
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.string.StringGenerator;
-import org.cyk.utility.__kernel__.string.freemarker.FreeMarkerHelper;
+import org.cyk.utility.template.freemarker.FreeMarkerHelper;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -12,6 +17,21 @@ import freemarker.template.TemplateExceptionHandler;
 
 public class FreeMarker {
 
+	public static String getRequestInitializedMailMessage(Request request) {
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_initialized.ftlh")
+				, Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+	}
+	
+	public static String getRequestAcceptedMailMessage(Request request) {
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_accepted.ftlh")
+				, Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+	}
+	
+	public static String getRequestRejectedMailMessage(Request request) {
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_rejected.ftlh")
+				, Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+	}
+	
 	public static String getRecordedMailMessage(AccountRequest accountRequest) {
 		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("account_request_saved.ftlh")
 				, Map.of("names",Identity.getNames(accountRequest)));
@@ -51,7 +71,7 @@ public class FreeMarker {
         CONFIGURATION.setLogTemplateExceptions(false);
         CONFIGURATION.setWrapUncheckedExceptions(true);
         CONFIGURATION.setFallbackOnNullLoopVariable(false);
-        CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreeMarkerHelper.class, "/ci/gouv/dgbf/system/actor/server/persistence/entities"));
+        CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreeMarkerHelper.class, "/ci/gouv/dgbf/system/actor/server/persistence/impl"));
 	}
 	
 }

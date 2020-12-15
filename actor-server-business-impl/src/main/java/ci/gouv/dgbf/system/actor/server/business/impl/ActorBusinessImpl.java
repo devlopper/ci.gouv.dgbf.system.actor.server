@@ -47,11 +47,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
 @ApplicationScoped
 public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPersistence> implements ActorBusiness,Serializable {

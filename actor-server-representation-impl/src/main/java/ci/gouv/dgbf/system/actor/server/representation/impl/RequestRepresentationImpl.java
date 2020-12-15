@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.report.ReportRepresentation;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
@@ -134,6 +135,11 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 				};
 			}
 		});
+	}
+	
+	@Override
+	public Response buildReportByIdentifier(String identifier) {
+		return __inject__(ReportRepresentation.class).get("/reports/sigobe/Referentiel/ListeDesCUSB", null, null, null);
 	}
 
 	/**/

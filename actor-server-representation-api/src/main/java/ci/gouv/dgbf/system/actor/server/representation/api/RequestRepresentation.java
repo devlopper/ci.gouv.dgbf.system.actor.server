@@ -89,6 +89,17 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	})
 	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason);
 	
+	@GET
+	@Path(PATH_BUILD_REPORT_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Construire l'état d'une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande pour construire l'état",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response buildReportByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
 	}
@@ -97,9 +108,11 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_GET_ONE_TO_BE_CREATED_BY_TYPE_IDENTIFIER = "getonetobecreatedbytypeidentifier";
 	String PATH_INITIALIZE = "initialize";
 	String PATH_RECORD = "record";
-	String PATH_SUBMIT_BY_IDENTIFIER = "submitbyidentifier";
-	String PATH_ACCEPT_BY_IDENTIFIER = "acceptbyidentifier";
-	String PATH_REJECT_BY_IDENTIFIER = "rejectbyidentifier";
+	String PATH_SUBMIT_BY_IDENTIFIER = "soumettreparidentifiant";
+	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
+	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
+	
+	String PATH_BUILD_REPORT_BY_IDENTIFIER = "construireetatparidentifiant";
 	
 	String TAG = "Demande";
 	

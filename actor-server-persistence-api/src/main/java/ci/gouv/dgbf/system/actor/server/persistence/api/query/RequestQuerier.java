@@ -200,6 +200,7 @@ public interface RequestQuerier extends Querier {
 		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
+			request.setStatusAsString(request.getStatus().getName());
 			if(request.getActor() != null)
 				request.setActorCode(request.getActor().getCode());
 			request.setActorNames(Identity.getNames((String)FieldHelper.readName(request.getCivility()), request.getFirstName(), request.getLastNames()));
@@ -222,6 +223,8 @@ public interface RequestQuerier extends Querier {
 					
 				}
 			}
+			
+			//request.setType(null);
 		}
 		
 		@Override

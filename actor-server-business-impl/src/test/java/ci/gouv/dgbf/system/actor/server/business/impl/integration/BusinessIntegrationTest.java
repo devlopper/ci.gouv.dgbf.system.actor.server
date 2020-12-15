@@ -13,6 +13,8 @@ import org.cyk.utility.__kernel__.business.EntityCreator;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.variable.VariableHelper;
+import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
 
@@ -99,8 +101,18 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	}
 	
 	@Test
-	public void request_record() throws Exception{
-		EntityCreator.getInstance().createMany(new RequestStatus().setCode(RequestStatus.CODE_INITIALIZED).setName("1"));
+	public void request_workflow_accept() throws Exception{
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_ENABLE, Boolean.TRUE);
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_HOST, "smtp.gmail.com");
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_PORT, 587);
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_REQUIRED, Boolean.TRUE);
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_SECURED_CONNECTION_REQUIRED, Boolean.TRUE);
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_IDENTIFIER, "sigobe.dgbf@gmail.com");
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_SECRET, "budget@2020");
+		
+		EntityCreator.getInstance().createMany(new RequestStatus().setCode(RequestStatus.CODE_INITIALIZED).setName("1")
+				,new RequestStatus().setCode(RequestStatus.CODE_SUBMITTED).setName("1"),new RequestStatus().setCode(RequestStatus.CODE_ACCEPTED).setName("1")
+				,new RequestStatus().setCode(RequestStatus.CODE_REJECTED).setName("1"));
 		
 		EntityCreator.getInstance().createMany(new IdentificationForm().setCode("1").setName("1"));
 		EntityCreator.getInstance().createMany(new RequestType().setCode("1").setFormFromIdentifier("1").setName("1"));
@@ -118,19 +130,26 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 				,new ScopeFunction().setCode("3").setName("3").setScopeFromIdentifier("3").setFunctionFromIdentifier("1"));
 		
 		Request request = new Request();
-		request.setTypeFromIdentifier("1").setElectronicMailAddress("m@m.com");
+		request.setTypeFromIdentifier("1").setElectronicMailAddress("kycdev@gmail.com");
 		request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "1"),EntityFinder.getInstance().find(ScopeFunction.class, "2")));
 		__inject__(RequestBusiness.class).initialize(request);		
+		
 		String identifier = request.getIdentifier();
 		request = RequestQuerier.getInstance().readByIdentifierForEdit(identifier);
 		assertThat(request.getBudgetariesScopeFunctions()).isNotNull();
-		assertThat(request.getBudgetariesScopeFunctions().size()).isEqualTo(2);
-		
+		assertThat(request.getBudgetariesScopeFunctions().size()).isEqualTo(2);		
 		request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "2")));
 		__inject__(RequestBusiness.class).record(request);
+		
 		request = RequestQuerier.getInstance().readByIdentifierForEdit(identifier);
 		assertThat(request.getBudgetariesScopeFunctions()).isNotNull();
 		assertThat(request.getBudgetariesScopeFunctions().size()).isEqualTo(1);
+		
+		request = EntityFinder.getInstance().find(Request.class, identifier);
+		__inject__(RequestBusiness.class).submit(request);
+		
+		request = EntityFinder.getInstance().find(Request.class, identifier);
+		__inject__(RequestBusiness.class).accept(request);
 	}
 	
 	@Test

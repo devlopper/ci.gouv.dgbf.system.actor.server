@@ -1,9 +1,15 @@
-package ci.gouv.dgbf.system.actor.server.persistence.entities;
+package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cyk.utility.__kernel__.test.weld.AbstractWeldUnitTest;
 import org.junit.jupiter.api.Test;
+
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
 public class MailTemplateUnitTest extends AbstractWeldUnitTest {
 	private static final long serialVersionUID = 1L;

@@ -16,10 +16,12 @@ import org.cyk.utility.__kernel__.business.EntitySaver;
 import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
@@ -35,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
 @ApplicationScoped
 public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, RequestPersistence> implements RequestBusiness,Serializable {
@@ -117,11 +120,20 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setCreatables(List.of(request))));
 		saveBudgetariesScopeFunctions(request,entityManager);
+		
+		//Non blocking operations
+		try {
+			notifyInitialized(request);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
 	}
 	
 	@Override @Transactional
 	public void record(Request request) {
 		validate(request);
+		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
 		setFields(request);
 		EntityManager entityManager = __inject__(EntityManager.class);
 		saveBudgetariesScopeFunctions(request,entityManager);
@@ -133,6 +145,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void submit(Request request) {
 		validate(request);
+		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été soumise");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_SUBMITTED));
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
@@ -150,10 +164,18 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void accept(Request request) {
 		validate(request);
+		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été acceptée");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		//Non blocking operations
+		try {
+			notifyAccepted(request);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
 	}
 	
 	@Override @Transactional
@@ -168,6 +190,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void reject(Request request) {
 		validate(request);
+		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été rejetée");
 		if(StringHelper.isBlank(request.getRejectionReason()))
 			throw new RuntimeException("Le motif de rejet est obligatoire");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
@@ -184,5 +208,33 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				);
 		request.setRejectionReason(rejectionReason);
 		reject(request);
+	}
+
+	/**/
+	
+	private static void notifyInitialized(Request request) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), FreeMarker.getRequestInitializedMailMessage(request), request.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
+	private static void notifyAccepted(Request request) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), FreeMarker.getRequestAcceptedMailMessage(request), request.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
 	}
 }

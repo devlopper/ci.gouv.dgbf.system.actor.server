@@ -25,9 +25,9 @@ import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.FreeMarker;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
 @ApplicationScoped
 public class AccountRequestBusinessImpl extends AbstractBusinessEntityImpl<AccountRequest, AccountRequestPersistence> implements AccountRequestBusiness,Serializable {

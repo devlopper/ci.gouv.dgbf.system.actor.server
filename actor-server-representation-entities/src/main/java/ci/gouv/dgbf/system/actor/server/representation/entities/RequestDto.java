@@ -20,6 +20,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringImpl imple
 	private String typeAsString;
 	private RequestStatusDto status;
 	private Boolean authenticationRequired;
+	private String statusAsString;
 	private String authenticationRequiredAsString;
 	private String creationDateAsString;
 	
@@ -64,4 +65,8 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringImpl imple
 	
 	private String processingDateAsString;
 	private String rejectionReason;
+	
+	/* Uniform Resource Identifier : URI*/
+	
+	private String reportUniformResourceIdentifier;
 }
