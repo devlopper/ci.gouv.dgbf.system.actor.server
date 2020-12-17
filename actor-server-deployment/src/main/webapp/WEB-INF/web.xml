@@ -42,8 +42,23 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.uri.scheme</param-name>
+		<param-value>${cyk.variable.system.uri.scheme}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.uri.host</param-name>
+		<param-value>${cyk.variable.system.uri.host}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.host</param-name>
 		<param-value>${cyk.variable.system.host}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.uri.port</param-name>
+		<param-value>${cyk.variable.system.uri.port}</param-value>
 	</context-param>
 	
 	<context-param>
@@ -52,8 +67,18 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.uri.context</param-name>
+		<param-value>${cyk.variable.system.uri.context}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.web.context</param-name>
 		<param-value>${jboss-web.context-root}</param-value>
+	</context-param>	
+	
+	<context-param>
+		<param-name>cyk.variable.request.report.identifier</param-name>
+		<param-value>${cyk.variable.request.report.identifier}</param-value>
 	</context-param>	
 	
 	<context-param>

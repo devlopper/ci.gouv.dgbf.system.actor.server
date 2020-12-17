@@ -1,8 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.string.StringGenerator;
+import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.template.freemarker.FreeMarkerHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
@@ -17,9 +21,25 @@ import freemarker.template.TemplateExceptionHandler;
 
 public class FreeMarker {
 
-	public static String getRequestInitializedMailMessage(Request request) {
-		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_initialized.ftlh")
-				, Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+	public static String getRequestInitializedMailMessage(Request request,String readUrl) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		map.putAll(Map.of(
+					"names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())
+				));
+		addAccessArguments(request, map);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_initialized.ftlh"), map);
+	}
+	
+	public static String getRequestAccessTokenMailMessage(Request request,String readUrl) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		addAccessArguments(request, map);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_access_token.ftlh"), map);
+	}
+	
+	public static void addAccessArguments(Request request,Map<String,Object> map) {
+		map.put("code",request.getCode());
+		map.put("access_token",request.getAccessToken());	
+		map.put("read_url",ValueHelper.defaultToIfBlank(request.getReadPageURL(),ConfigurationHelper.getValueAsString(VARIABLE_NAME_REQUEST_READ_PAGE_URL)));
 	}
 	
 	public static String getRequestAcceptedMailMessage(Request request) {
@@ -74,4 +94,5 @@ public class FreeMarker {
         CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreeMarkerHelper.class, "/ci/gouv/dgbf/system/actor/server/persistence/impl"));
 	}
 	
+	public static final String VARIABLE_NAME_REQUEST_READ_PAGE_URL = VariableName.build("request.read.page.url");
 }

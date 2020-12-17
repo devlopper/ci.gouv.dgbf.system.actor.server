@@ -69,4 +69,8 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	/* Uniform Resource Identifier : URI*/
 	
 	private String reportUniformResourceIdentifier;
+	
+	/**/
+	
+	private String readPageURL;
 }

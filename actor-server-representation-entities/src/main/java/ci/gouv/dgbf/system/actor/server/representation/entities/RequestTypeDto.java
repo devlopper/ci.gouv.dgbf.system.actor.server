@@ -16,7 +16,7 @@ public class RequestTypeDto extends AbstractIdentifiableSystemScalarStringIdenti
 	private IdentificationFormDto form;
 	private Boolean authenticationRequired;
 	private String formAsString;
-	private Boolean authenticationRequiredAsString;
+	private String authenticationRequiredAsString;
 	
 	@Override
 	public RequestTypeDto setIdentifier(String identifier) {

@@ -26,6 +26,9 @@
 		<jboss-web.context-root>${cyk.variable.system.identifier}/server</jboss-web.context-root>
 		<web.context>/${jboss-web.context-root}</web.context>
 		
+		<cyk.variable.system.uri.scheme>http</cyk.variable.system.uri.scheme>
+		<cyk.variable.system.uri.context>/api</cyk.variable.system.uri.context>
+		
 		<!-- Development -->
 		<data.source.oracle.dev.user>SIIBC_Actor</data.source.oracle.dev.user>
 		<data.source.oracle.dev.password>actor</data.source.oracle.dev.password>
@@ -56,6 +59,10 @@
 		<deployment.server.standalone.thorntail.prod.host>10.3.4.20</deployment.server.standalone.thorntail.prod.host>
 		
 		<cyk.variable.protocol.simple.mail.transfer.enabled>true</cyk.variable.protocol.simple.mail.transfer.enabled>
+		<!--
+		<cyk.variable.request.report.identifier>/reports/sigobe/Referentiel/ListeDesCUSB</cyk.variable.request.report.identifier>
+		-->
+		<cyk.variable.request.report.identifier>/reports/sigobe/acteur/Gestion_Credit</cyk.variable.request.report.identifier>
 		<data.source.jndi.name>java:jboss/datasources/actor/server</data.source.jndi.name>
 	</properties>
 	
@@ -113,6 +120,10 @@
 				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
 				<wildfly.port>10090</wildfly.port>
 				
+				<cyk.variable.system.uri.host>localhost</cyk.variable.system.uri.host>
+				<cyk.variable.system.uri.port>8180</cyk.variable.system.uri.port>
+				<cyk.variable.request.read.page.url>http://localhost:8280/public/request/read.jsf</cyk.variable.request.read.page.url>
+				
 				<security.single.sign.on.system.keycloak.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.url>
 				<security.single.sign.on.system.keycloak.realm.name>SIIB</security.single.sign.on.system.keycloak.realm.name>
 				<security.single.sign.on.system.keycloak.client.identifier>admin-cli</security.single.sign.on.system.keycloak.client.identifier>
@@ -128,6 +139,8 @@
 				<jboss-web.context-root></jboss-web.context-root>
 				<deployment.standalone.port.offset>0</deployment.standalone.port.offset>
 				<swagger.json>/api/swagger.json</swagger.json>
+				
+				<cyk.variable.system.uri.host>mic-acteur-api</cyk.variable.system.uri.host>
 			</properties>
 		</profile>
 	</profiles>

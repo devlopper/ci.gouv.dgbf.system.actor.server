@@ -42,7 +42,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String statusAsString;	
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
-	@Transient private Boolean authenticationRequiredAsString;
+	@Transient private String authenticationRequiredAsString;
 	@Column(name = COLUMN_ACCESS_TOKEN) private String accessToken;
 	
 	/* Identity */
@@ -89,6 +89,10 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;	
 	@Transient private String processingDateAsString;
 	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
+	
+	/* Links */
+	
+	@Transient private String readPageURL;
 	
 	@Override
 	public Request setIdentifier(String identifier) {

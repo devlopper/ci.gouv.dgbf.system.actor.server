@@ -17,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 
 @Path(RequestRepresentation.PATH)
@@ -100,11 +101,21 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	})
 	Response buildReportByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
 	
+	@POST
+	@Path(PATH_NOTIFY_ACCESS_TOKENS)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Notifier les jetons d'accès")
+	@Parameters(value = {
+			@Parameter(name = "Email",allowEmptyValue = false,description = "Email",required = true,example = "k@m.com",style = ParameterStyle.SIMPLE)
+	})
+	Response notifyAcessTokens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress);
+	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
 	}
 	
-	String PATH = "demande";
+	String PATH = RequestBusiness.REPRESENTATION_PATH;// "demande";
 	String PATH_GET_ONE_TO_BE_CREATED_BY_TYPE_IDENTIFIER = "getonetobecreatedbytypeidentifier";
 	String PATH_INITIALIZE = "initialize";
 	String PATH_RECORD = "record";
@@ -112,10 +123,13 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
 	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
 	
-	String PATH_BUILD_REPORT_BY_IDENTIFIER = "construireetatparidentifiant";
+	String PATH_NOTIFY_ACCESS_TOKENS = "notifyaccesstokens";
+	
+	String PATH_BUILD_REPORT_BY_IDENTIFIER = RequestBusiness.REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER;// "construireetatparidentifiant";
 	
 	String TAG = "Demande";
 	
 	String QUERY_PARAMETER_NAME_TYPE_IDENTIFIER = "type_identifiant";
 	String QUERY_PARAMETER_NAME_REJECTION_REASON = "motif_rejet";
+	String QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "email";
 }

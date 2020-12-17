@@ -23,7 +23,9 @@ import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.rest.RestHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -31,6 +33,7 @@ import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -121,15 +124,10 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setCreatables(List.of(request))));
 		saveBudgetariesScopeFunctions(request,entityManager);
-		
-		//Non blocking operations
-		try {
-			notifyInitialized(request);
-		} catch (Exception exception) {
-			LogHelper.log(exception, getClass());
-		}
+
+		notifyInitialized(request);	
 	}
-	
+		
 	@Override @Transactional
 	public void record(Request request) {
 		validate(request);
@@ -211,14 +209,48 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		reject(request);
 	}
 
+	@Override
+	public Integer notifyAccessTokens(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			throw new RuntimeException("L'adresse mail est obligatoire");
+		Collection<Request> requests = RequestQuerier.getInstance().readByElectronicMailAddress(electronicMailAddress);
+		if(CollectionHelper.isEmpty(requests))
+			return null;
+		requests.forEach(request -> {
+			notifyAccessToken(request);
+		});
+		LogHelper.logInfo(String.format("%s notification(s) envoyée(s)", requests.size()), getClass());
+		return requests.size();
+	}
+	
 	/**/
+	
+	private static void notifyAccessToken(Request request) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request", request);
+		if(StringHelper.isBlank(request.getReadPageURL()))
+			request.setReadPageURL("http://siib.dgbf.ci/acteur/public/request/read.jsf");
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					String message = FreeMarker.getRequestAccessTokenMailMessage(request
+							,RestHelper.buildResourceIdentifier(REPRESENTATION_PATH, REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER));
+					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), message, request.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}
+			}
+		}).start();
+	}
 	
 	private static void notifyInitialized(Request request) {
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), FreeMarker.getRequestInitializedMailMessage(request), request.getElectronicMailAddress());
+					String message = FreeMarker.getRequestInitializedMailMessage(request
+							,RestHelper.buildResourceIdentifier(REPRESENTATION_PATH, REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER));
+					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), message, request.getElectronicMailAddress());
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}	

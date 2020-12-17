@@ -28,7 +28,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	
 	@Transient private String formAsString;
-	@Transient private Boolean authenticationRequiredAsString;
+	@Transient private String authenticationRequiredAsString;
 	
 	@Override
 	public RequestType setIdentifier(String identifier) {

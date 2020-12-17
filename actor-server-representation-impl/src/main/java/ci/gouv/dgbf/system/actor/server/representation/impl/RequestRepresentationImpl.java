@@ -9,12 +9,14 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.report.ReportRepresentation;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
@@ -58,7 +60,7 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
-				return new Runnable() {					
+				return new Runnable() {
 					@Override
 					public void run() {
 						Request request = MappingHelper.getDestination(requestDto, Request.class);
@@ -139,9 +141,24 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	
 	@Override
 	public Response buildReportByIdentifier(String identifier) {
-		return __inject__(ReportRepresentation.class).get("/reports/sigobe/Referentiel/ListeDesCUSB", null, null, null);
+		return __inject__(ReportRepresentation.class).get(ConfigurationHelper.getValueAsString(VARIABLE_NAME_REPORT_IDENTIFIER), null, null, null);
 	}
 
+	@Override
+	public Response notifyAcessTokens(String electronicMailAddress) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).notifyAccessTokens(electronicMailAddress);
+					}
+				};
+			}
+		});
+	}
+	
 	/**/
 	
 	private void setFromDto(RequestDto requestDto,Request request) {
@@ -160,4 +177,8 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 		else
 			request.setActOfAppointmentSignatureDate(LocalDate.ofInstant(Instant.ofEpochMilli(requestDto.getActOfAppointmentSignatureDateAsTimestamp()), ZoneId.systemDefault()));
 	}
+
+	/**/
+	
+	public static final String VARIABLE_NAME_REPORT_IDENTIFIER = VariableName.build("request.report.identifier");
 }

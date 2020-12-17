@@ -49,6 +49,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public interface RequestQuerier extends Querier {
 
+	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_ACCESS_TOKEN = "accessToken";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE = PARAMETER_NAME_ACTOR_IDENTIFIER+"Nullable";
@@ -93,6 +94,9 @@ public interface RequestQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByAccessTokenForUI");
 	Request readByAccessTokenForUI(String accessToken);
+	
+	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Request.class, "readByElectronicMailAddress");
+	Collection<Request> readByElectronicMailAddress(String electronicMailAddress);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
@@ -307,6 +311,12 @@ public interface RequestQuerier extends Querier {
 			arguments.setFilter(filter);
 		}
 		
+		@Override
+		public Collection<Request> readByElectronicMailAddress(String electronicMailAddress) {
+			return QueryExecutor.getInstance().executeReadMany(Request.class, QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS,PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
+					,electronicMailAddress);
+		}
+		
 		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
 			Collection<RequestFunction> requestFunctions = RequestFunctionQuerier.getInstance().readByRequestsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(requests));
 			if(CollectionHelper.isEmpty(requestFunctions))
@@ -355,6 +365,7 @@ public interface RequestQuerier extends Querier {
 			
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN, "SELECT t FROM Request t WHERE t.accessToken = :"+PARAMETER_NAME_ACCESS_TOKEN)
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS, "SELECT t FROM Request t WHERE t.electronicMailAddress = :"+PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS)
 			/*,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
 					, jpql(select("t")
 							,from("FROM Request t")

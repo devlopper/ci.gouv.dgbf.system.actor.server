@@ -73,6 +73,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
 public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
@@ -110,6 +111,8 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_IDENTIFIER, "sigobe.dgbf@gmail.com");
 		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_SECRET, "budget@2020");
 		
+		VariableHelper.write(FreeMarker.VARIABLE_NAME_REQUEST_READ_PAGE_URL, "http://siibtest.dgbf.ci/public/request/read.jsf");
+		
 		EntityCreator.getInstance().createMany(new RequestStatus().setCode(RequestStatus.CODE_INITIALIZED).setName("1")
 				,new RequestStatus().setCode(RequestStatus.CODE_SUBMITTED).setName("1"),new RequestStatus().setCode(RequestStatus.CODE_ACCEPTED).setName("1")
 				,new RequestStatus().setCode(RequestStatus.CODE_REJECTED).setName("1"));
@@ -133,6 +136,8 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		request.setTypeFromIdentifier("1").setElectronicMailAddress("kycdev@gmail.com");
 		request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "1"),EntityFinder.getInstance().find(ScopeFunction.class, "2")));
 		__inject__(RequestBusiness.class).initialize(request);		
+		
+		//TimeHelper.pause(1000l * 30);
 		
 		String identifier = request.getIdentifier();
 		request = RequestQuerier.getInstance().readByIdentifierForEdit(identifier);
