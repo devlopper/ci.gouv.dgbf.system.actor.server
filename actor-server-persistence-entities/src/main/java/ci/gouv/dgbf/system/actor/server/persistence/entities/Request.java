@@ -92,6 +92,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	/* Links */
 	
+	@Transient private String readReportURIQuery;
 	@Transient private String readPageURL;
 	
 	@Override

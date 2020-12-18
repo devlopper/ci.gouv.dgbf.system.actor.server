@@ -48,6 +48,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-envers</artifactId>
+			<version>${org.hibernate.hibernate-envers.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.cyk.jee.utility.security.keycloak.server</groupId>
 			<artifactId>jee-utility-security-keycloak-server</artifactId>
 			<version>0.1.0</version>

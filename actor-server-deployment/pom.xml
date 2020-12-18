@@ -62,7 +62,7 @@
 		<!--
 		<cyk.variable.request.report.identifier>/reports/sigobe/Referentiel/ListeDesCUSB</cyk.variable.request.report.identifier>
 		-->
-		<cyk.variable.request.report.identifier>/reports/sigobe/acteur/Gestion_Credit</cyk.variable.request.report.identifier>
+		<cyk.variable.request.report.identifier>/reports/sigobe/acteur/FicheGestCredit</cyk.variable.request.report.identifier>
 		<data.source.jndi.name>java:jboss/datasources/actor/server</data.source.jndi.name>
 	</properties>
 	

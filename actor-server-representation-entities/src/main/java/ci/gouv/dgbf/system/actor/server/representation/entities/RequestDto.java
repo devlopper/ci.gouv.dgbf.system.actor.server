@@ -66,9 +66,9 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String processingDateAsString;
 	private String rejectionReason;
 	
-	/* Uniform Resource Identifier : URI*/
+	/* Report identifier */
 	
-	private String reportUniformResourceIdentifier;
+	private String readReportURIQuery;
 	
 	/**/
 	

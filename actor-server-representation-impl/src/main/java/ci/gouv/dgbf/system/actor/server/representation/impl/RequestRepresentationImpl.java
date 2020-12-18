@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
@@ -23,6 +25,7 @@ import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.representation.api.RequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 
@@ -162,16 +165,25 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	/**/
 	
 	private void setFromDto(RequestDto requestDto,Request request) {
-		/*if(CollectionHelper.isNotEmpty(requestDto.getBudgetariesScopeFunctions())) {
-			for(ScopeFunctionDto scopeFunctionDto : requestDto.getBudgetariesScopeFunctions()) {
-				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, scopeFunctionDto.getIdentifier());
+		setBudgetariesScopeFunctionsFromIdentifiers(requestDto, request);
+		setActOfAppointmentSignatureDateFromTimestamp(requestDto, request);
+	}
+	
+	private void setBudgetariesScopeFunctionsFromIdentifiers(RequestDto requestDto,Request request) {
+		request.setBudgetariesScopeFunctions(null);
+		if(CollectionHelper.isNotEmpty(requestDto.getBudgetariesScopeFunctionsAsStrings())) {
+			for(String identifier : requestDto.getBudgetariesScopeFunctionsAsStrings()) {
+				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, identifier);
 				if(scopeFunction == null)
 					continue;
 				if(request.getBudgetariesScopeFunctions() == null)
 					request.setBudgetariesScopeFunctions(new ArrayList<>());
 				request.getBudgetariesScopeFunctions().add(scopeFunction);
 			}
-		}*/
+		}
+	}
+	
+	private void setActOfAppointmentSignatureDateFromTimestamp(RequestDto requestDto,Request request) {
 		if(requestDto.getActOfAppointmentSignatureDateAsTimestamp() == null)
 			request.setActOfAppointmentSignatureDate(null);
 		else
