@@ -192,5 +192,6 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 
 	/**/
 	
+	// TODO each request type can have its own report identifier
 	public static final String VARIABLE_NAME_REPORT_IDENTIFIER = VariableName.build("request.report.identifier");
 }

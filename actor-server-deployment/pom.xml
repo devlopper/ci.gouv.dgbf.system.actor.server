@@ -62,7 +62,6 @@
 		<!--
 		<cyk.variable.request.report.identifier>/reports/sigobe/Referentiel/ListeDesCUSB</cyk.variable.request.report.identifier>
 		-->
-		<cyk.variable.request.report.identifier>/reports/sigobe/acteur/FicheGestCredit</cyk.variable.request.report.identifier>
 		<data.source.jndi.name>java:jboss/datasources/actor/server</data.source.jndi.name>
 	</properties>
 	
@@ -130,6 +129,11 @@
 				<security.single.sign.on.system.keycloak.client.secret>ee334d25-4f98-4a42-a1e5-6097e7494fb7</security.single.sign.on.system.keycloak.client.secret>
 				<security.single.sign.on.system.keycloak.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.credential.username>
 				<security.single.sign.on.system.keycloak.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.credential.password>
+				
+				<cyk.variable.jasper.server.url>http://localhost:9080/jasperserver/</cyk.variable.jasper.server.url>
+				<cyk.variable.jasper.server.enabled>true</cyk.variable.jasper.server.enabled>
+				<cyk.variable.jasper.server.credential.username>jasperadmin</cyk.variable.jasper.server.credential.username>
+				<cyk.variable.jasper.server.credential.password>jasperadmin</cyk.variable.jasper.server.credential.password>
 			</properties>
 		</profile>
 		
