@@ -18,7 +18,7 @@ public class DataTransferObjectProcessorImpl extends DataTransferObjectProcessor
 	protected <T> void __processRead__(Class<T> klass, Arguments arguments, T dto) {
 		super.__processRead__(klass, arguments, dto);
 		if(RequestDto.class.equals(klass)) {
-			if(((RequestDto)dto).getType() != null && StringHelper.isNotBlank(((RequestDto)dto).getType().getReportIdentifier()))
+			if(StringHelper.isNotBlank(((RequestDto)dto).getIdentifier()) &&  ((RequestDto)dto).getType() != null && StringHelper.isNotBlank(((RequestDto)dto).getType().getReportIdentifier()))
 				((RequestDto)dto).setReadReportURIQuery(ReportRepresentation.buildURIQuery(((RequestDto)dto).getType().getReportIdentifier()
 						, Map.of(Request.COLUMN_IDENTIFIER, ((RequestDto)dto).getIdentifier()), null, null));
 		}

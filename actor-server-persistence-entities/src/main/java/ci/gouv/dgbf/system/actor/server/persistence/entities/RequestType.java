@@ -58,6 +58,6 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String TABLE_NAME = "DM_TYPE";
 	
 	public static final String COLUMN_FORM = "FORMULAIRE";
-	public static final String COLUMN_REPORT_IDENTIFIER = "IDENTIFIANT_ETAT";
+	public static final String COLUMN_REPORT_IDENTIFIER = "ETAT_IDENTIFIANT";
 	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
 }

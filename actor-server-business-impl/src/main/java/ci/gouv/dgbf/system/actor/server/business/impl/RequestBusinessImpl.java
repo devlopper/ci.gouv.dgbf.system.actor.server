@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import org.cyk.utility.__kernel__.business.EntitySaver;
 import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -228,7 +229,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	private static void notifyAccessToken(Request request) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request", request);
 		if(StringHelper.isBlank(request.getReadPageURL()))
-			request.setReadPageURL("http://siib.dgbf.ci/acteur/public/request/read.jsf");
+			request.setReadPageURL(ValueHelper.defaultToIfBlank(ConfigurationHelper.getValueAsString(FreeMarker.VARIABLE_NAME_REQUEST_READ_PAGE_URL)
+					, "http://siib.dgbf.ci/acteur/public/request/read.jsf"));
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {

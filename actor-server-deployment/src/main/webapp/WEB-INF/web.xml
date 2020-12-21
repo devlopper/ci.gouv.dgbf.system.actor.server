@@ -77,6 +77,11 @@
 	</context-param>	
 	
 	<context-param>
+		<param-name>cyk.variable.request.read.page.url</param-name>
+		<param-value>${cyk.variable.request.read.page.url}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.request.report.identifier</param-name>
 		<param-value>${cyk.variable.request.report.identifier}</param-value>
 	</context-param>	
