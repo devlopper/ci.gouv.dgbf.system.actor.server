@@ -38,6 +38,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String mobilePhoneNumber;
 	private String officePhoneNumber;
 	private String officePhoneExtension;
+	//private byte[] photo;
 	
 	/* Job */
 	

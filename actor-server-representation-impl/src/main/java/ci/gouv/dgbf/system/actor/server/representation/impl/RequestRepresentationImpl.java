@@ -34,6 +34,63 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public Response getPhotoByIdentifier(String identifier) {
+		/*Runner.Arguments runnerArguments = new Runner.Arguments();
+		runnerArguments.addRunnables(new Runnable() {					
+			@Override
+			public void run() {
+				if(StringHelper.isBlank(identifier))
+					throw new RuntimeException("Identifiant de la demande est obligatoire");						
+				byte[] bytes = RequestQuerier.getInstance().readPhotoByIdentifier(identifier);
+				if(bytes != null)
+					runnerArguments.setResult(bytes);
+			}
+		});
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return null;
+			}
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+		});*/
+		if(StringHelper.isBlank(identifier))
+			throw new RuntimeException("Identifiant de la demande est obligatoire");						
+		return Response.ok(RequestQuerier.getInstance().readPhotoByIdentifier(identifier)).build();
+	}
+	
+	@Override
+	public Response getSignatureByIdentifier(String identifier) {
+		/*Runner.Arguments runnerArguments = new Runner.Arguments();
+		runnerArguments.addRunnables(new Runnable() {					
+			@Override
+			public void run() {
+				if(StringHelper.isBlank(identifier))
+					throw new RuntimeException("Identifiant de la demande est obligatoire");						
+				byte[] bytes = RequestQuerier.getInstance().readSignatureByIdentifier(identifier);
+				if(bytes != null)
+					runnerArguments.setResult(bytes);
+			}
+		});
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return null;
+			}
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+		});
+		*/
+		if(StringHelper.isBlank(identifier))
+			throw new RuntimeException("Identifiant de la demande est obligatoire");						
+		return Response.ok(RequestQuerier.getInstance().readSignatureByIdentifier(identifier)).build();
+	}
+	
+	@Override
 	public Response getOneToBeCreatedByTypeIdentifier(String typeIdentifier) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		runnerArguments.addRunnables(new Runnable() {					
@@ -98,6 +155,38 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
+	public Response recordPhoto(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						//database.setPhoto(requestDto.get);
+						__inject__(RequestBusiness.class).recordPhoto(database);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordPhotoByIdentifier(String identifier, byte[] bytes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).recordPhotoByIdentifier(identifier, bytes);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response submitByIdentifier(String identifier) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
@@ -148,14 +237,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 
 	@Override
-	public Response notifyAcessTokens(String electronicMailAddress) {
+	public Response notifyAcessTokens(String electronicMailAddress,String readPageURL) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).notifyAccessTokens(electronicMailAddress);
+						__inject__(RequestBusiness.class).notifyAccessTokens(electronicMailAddress,readPageURL);
 					}
 				};
 			}

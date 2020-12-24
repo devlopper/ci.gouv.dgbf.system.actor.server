@@ -58,6 +58,10 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 				request.setProcessingDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
 				return;
 			}
+			if(Request.FIELD_PHOTO.equals(fieldName) && value != null) {
+				request.setPhoto((byte[]) value);
+				return;
+			}
 		}
 		super.write(instance, fieldName, value);
 	}

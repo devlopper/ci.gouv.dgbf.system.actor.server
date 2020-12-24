@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -59,6 +60,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Column(name = COLUMN_MOBILE_PHONE_NUMBER) private String mobilePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
+	@Column(name = COLUMN_PHOTO) @Lob private byte[] photo;
+	@Column(name = COLUMN_SIGNATURE) @Lob private byte[] signature;
 	
 	/* Job */
 	
@@ -146,6 +149,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_OFFICE_PHONE_EXTENSION = "officePhoneExtension";
 	public static final String FIELD_POSTAL_BOX_ADDRESS = "postalBoxAddress";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	public static final String FIELD_PHOTO = "photo";
+	public static final String FIELD_SIGNATURE = "signature";
 	
 	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
@@ -168,6 +173,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	
+	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_TYPE = "TYPE";
 	public static final String COLUMN_STATUS = "STATUT";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
@@ -185,6 +191,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_MOBILE_PHONE_NUMBER = "NUMERO_MOBILE";
 	public static final String COLUMN_OFFICE_PHONE_NUMBER = "NUMERO_BUREAU";
 	public static final String COLUMN_OFFICE_PHONE_EXTENSION = "POSTE_BUREAU";
+	public static final String COLUMN_PHOTO = "PHOTO";
+	public static final String COLUMN_SIGNATURE = "SIGNATURE";
 	
 	public static final String COLUMN_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";

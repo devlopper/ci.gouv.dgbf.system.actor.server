@@ -15,6 +15,12 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void record(Request request);
 	
 	@Transactional
+	void recordPhoto(Request request);
+	
+	@Transactional
+	void recordPhotoByIdentifier(String identifier,byte[] bytes);
+	
+	@Transactional
 	void submit(Request request);
 	
 	@Transactional
@@ -32,7 +38,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	@Transactional
 	void rejectByIdentifier(String identifier,String rejectionReason);
 	
-	Integer notifyAccessTokens(String electronicMailAddress);
+	Integer notifyAccessTokens(String electronicMailAddress,String readPageURL);
 	
 	/**/
 	
@@ -40,6 +46,8 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	
 	String INITIALIZE = "Request.initialize";
 	String RECORD = "Request.record";
+	String RECORD_PHOTO = "Request.record.photo";
+	String RECORD_SIGNATURE = "Request.record.signature";
 	String SUBMIT = "Request.submit";
 	String ACCEPT = "Request.accept";
 	String REJECT = "Request.reject";

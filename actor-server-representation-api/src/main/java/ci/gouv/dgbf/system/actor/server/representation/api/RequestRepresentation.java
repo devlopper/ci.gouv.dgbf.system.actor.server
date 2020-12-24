@@ -56,6 +56,18 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response record(RequestDto request);
 	
 	@POST
+	@Path(PATH_RECORD_PHOTO)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordPhoto(RequestDto request);
+	
+	@POST
+	@Path(PATH_RECORD_PHOTO_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordPhotoByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
+	
+	@POST
 	@Path(PATH_SUBMIT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -91,6 +103,28 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason);
 	
 	@GET
+	@Path(PATH_GET_PHOTO_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir la photo d'une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response getPhotoByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	
+	@GET
+	@Path(PATH_GET_SIGNATURE_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir la signature d'une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response getSignatureByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	
+	@GET
 	@Path(PATH_BUILD_REPORT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -109,7 +143,8 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	@Parameters(value = {
 			@Parameter(name = "Email",allowEmptyValue = false,description = "Email",required = true,example = "k@m.com",style = ParameterStyle.SIMPLE)
 	})
-	Response notifyAcessTokens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress);
+	Response notifyAcessTokens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress
+			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
@@ -117,11 +152,15 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	
 	String PATH = RequestBusiness.REPRESENTATION_PATH;// "demande";
 	String PATH_GET_ONE_TO_BE_CREATED_BY_TYPE_IDENTIFIER = "getonetobecreatedbytypeidentifier";
-	String PATH_INITIALIZE = "initialize";
-	String PATH_RECORD = "record";
+	String PATH_INITIALIZE = "initialiser";
+	String PATH_RECORD = "enregistrer";
+	String PATH_RECORD_PHOTO = "enregistrerphoto";
+	String PATH_RECORD_PHOTO_BY_IDENTIFIER = "enregistrerphotoparidentifiant";
 	String PATH_SUBMIT_BY_IDENTIFIER = "soumettreparidentifiant";
 	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
 	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
+	String PATH_GET_PHOTO_BY_IDENTIFIER = "obtenirphotoparidentifiant";
+	String PATH_GET_SIGNATURE_BY_IDENTIFIER = "obtenirsignatureparidentifiant";
 	
 	String PATH_NOTIFY_ACCESS_TOKENS = "notifyaccesstokens";
 	
@@ -132,4 +171,5 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String QUERY_PARAMETER_NAME_TYPE_IDENTIFIER = "type_identifiant";
 	String QUERY_PARAMETER_NAME_REJECTION_REASON = "motif_rejet";
 	String QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "email";
+	String QUERY_PARAMETER_NAME_READ_PAGE_URL = "url_page_consultation";
 }

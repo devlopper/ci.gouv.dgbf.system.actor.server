@@ -63,6 +63,12 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
+	private void validateRecord(Request request) {
+		validate(request);
+		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
+	}
+	
 	private void setFields(Request request) {
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 		Map<String,IdentificationAttribute> attributs = Request.computeFieldsNames(request.getType().getForm());
@@ -131,15 +137,30 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		
 	@Override @Transactional
 	public void record(Request request) {
-		validate(request);
-		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
+		validateRecord(request);
 		setFields(request);
 		EntityManager entityManager = __inject__(EntityManager.class);
 		saveBudgetariesScopeFunctions(request,entityManager);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void recordPhoto(Request request) {
+		validateRecord(request);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void recordPhotoByIdentifier(String identifier, byte[] bytes) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				).setPhoto(bytes);
+		recordPhoto(request);
 	}
 	
 	@Override @Transactional
@@ -211,13 +232,14 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 
 	@Override
-	public Integer notifyAccessTokens(String electronicMailAddress) {
+	public Integer notifyAccessTokens(String electronicMailAddress,String readPageURL) {
 		if(StringHelper.isBlank(electronicMailAddress))
 			throw new RuntimeException("L'adresse mail est obligatoire");
 		Collection<Request> requests = RequestQuerier.getInstance().readByElectronicMailAddress(electronicMailAddress);
 		if(CollectionHelper.isEmpty(requests))
 			return null;
 		requests.forEach(request -> {
+			request.setReadPageURL(readPageURL);
 			notifyAccessToken(request);
 		});
 		LogHelper.logInfo(String.format("%s notification(s) envoyée(s)", requests.size()), getClass());
@@ -230,8 +252,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request", request);
 		if(StringHelper.isBlank(request.getReadPageURL()))
 			request.setReadPageURL(ValueHelper.defaultToIfBlank(ConfigurationHelper.getValueAsString(FreeMarker.VARIABLE_NAME_REQUEST_READ_PAGE_URL)
-					, "http://siib.dgbf.ci/acteur/public/request/read.jsf"));
-		new Thread(new Runnable() {				
+					, "http://siib"+("test".equals(ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT")) ? "test" : "")+".dgbf.ci/acteur/public/request/read.jsf"));
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {

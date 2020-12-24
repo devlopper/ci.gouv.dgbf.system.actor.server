@@ -220,6 +220,18 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void request_readPhotoByIdentifier(){
+		byte[] bytes = RequestQuerier.getInstance().readPhotoByIdentifier("5843623c-eda1-4143-bb53-76aa893bd5d6");
+		System.out.println("Bytes count : "+(bytes == null ? 0 : bytes.length));
+	}
+	
+	@Test
+	public void request_readSignatureByIdentifier(){
+		byte[] bytes = RequestQuerier.getInstance().readSignatureByIdentifier("5843623c-eda1-4143-bb53-76aa893bd5d6");
+		System.out.println("Bytes count : "+(bytes == null ? 0 : bytes.length));
+	}
+	
+	@Test
 	public void clusters_readWhereFilter(){
 		System.out.println(ClusterQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()));
 	}

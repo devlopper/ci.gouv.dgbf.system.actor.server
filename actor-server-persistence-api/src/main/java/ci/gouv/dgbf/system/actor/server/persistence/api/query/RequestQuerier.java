@@ -25,6 +25,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
@@ -97,6 +98,12 @@ public interface RequestQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Request.class, "readByElectronicMailAddress");
 	Collection<Request> readByElectronicMailAddress(String electronicMailAddress);
+	
+	String QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readPhotoByIdentifier");
+	byte[] readPhotoByIdentifier(String identifier);
+	
+	String QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignatureByIdentifier");
+	byte[] readSignatureByIdentifier(String identifier);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
@@ -317,6 +324,18 @@ public interface RequestQuerier extends Querier {
 					,electronicMailAddress);
 		}
 		
+		@Override
+		public byte[] readPhotoByIdentifier(String identifier) {
+			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER
+					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
+		}
+		
+		@Override
+		public byte[] readSignatureByIdentifier(String identifier) {
+			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER
+					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
+		}
+		
 		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
 			Collection<RequestFunction> requestFunctions = RequestFunctionQuerier.getInstance().readByRequestsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(requests));
 			if(CollectionHelper.isEmpty(requestFunctions))
@@ -371,6 +390,11 @@ public interface RequestQuerier extends Querier {
 							,from("FROM Request t")
 							,where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER))
 					)*/
+			
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER, "SELECT t.photo FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_PHOTO)
+				,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER, "SELECT t.signature FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
 		);
 	}
 	
