@@ -164,6 +164,23 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
+	public void recordActOfAppointment(Request request) {
+		validateRecord(request);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void recordActOfAppointmentByIdentifier(String identifier, byte[] bytes) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				).setActOfAppointment(bytes);
+		recordActOfAppointment(request);
+	}
+	
+	@Override @Transactional
 	public void submit(Request request) {
 		validate(request);
 		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))

@@ -21,6 +21,12 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void recordPhotoByIdentifier(String identifier,byte[] bytes);
 	
 	@Transactional
+	void recordActOfAppointment(Request request);
+	
+	@Transactional
+	void recordActOfAppointmentByIdentifier(String identifier,byte[] bytes);
+	
+	@Transactional
 	void submit(Request request);
 	
 	@Transactional

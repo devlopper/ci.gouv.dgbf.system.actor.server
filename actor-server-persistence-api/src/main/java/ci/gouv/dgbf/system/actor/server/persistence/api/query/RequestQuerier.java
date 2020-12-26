@@ -102,6 +102,9 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readPhotoByIdentifier");
 	byte[] readPhotoByIdentifier(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_ACT_OF_APPOINTMENT_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readActOfAppointmentByIdentifier");
+	byte[] readActOfAppointmentByIdentifier(String identifier);
+	
 	String QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignatureByIdentifier");
 	byte[] readSignatureByIdentifier(String identifier);
 	
@@ -331,6 +334,12 @@ public interface RequestQuerier extends Querier {
 		}
 		
 		@Override
+		public byte[] readActOfAppointmentByIdentifier(String identifier) {
+			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_ACT_OF_APPOINTMENT_BY_IDENTIFIER
+					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
+		}
+		
+		@Override
 		public byte[] readSignatureByIdentifier(String identifier) {
 			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER
 					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
@@ -393,7 +402,9 @@ public interface RequestQuerier extends Querier {
 			
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER, "SELECT t.photo FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_PHOTO)
-				,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER, "SELECT t.signature FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_ACT_OF_APPOINTMENT_BY_IDENTIFIER, "SELECT t.actOfAppointment FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_PHOTO)
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER, "SELECT t.signature FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
 		);
 	}

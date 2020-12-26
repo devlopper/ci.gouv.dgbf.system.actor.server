@@ -91,6 +91,35 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
+	public Response getActOfAppointmentByIdentifier(String identifier) {
+		/*Runner.Arguments runnerArguments = new Runner.Arguments();
+		runnerArguments.addRunnables(new Runnable() {					
+			@Override
+			public void run() {
+				if(StringHelper.isBlank(identifier))
+					throw new RuntimeException("Identifiant de la demande est obligatoire");						
+				byte[] bytes = RequestQuerier.getInstance().readSignatureByIdentifier(identifier);
+				if(bytes != null)
+					runnerArguments.setResult(bytes);
+			}
+		});
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return null;
+			}
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+		});
+		*/
+		if(StringHelper.isBlank(identifier))
+			throw new RuntimeException("Identifiant de la demande est obligatoire");						
+		return Response.ok(RequestQuerier.getInstance().readActOfAppointmentByIdentifier(identifier)).build();
+	}
+	
+	@Override
 	public Response getOneToBeCreatedByTypeIdentifier(String typeIdentifier) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		runnerArguments.addRunnables(new Runnable() {					
@@ -145,7 +174,9 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
 						Request request = MappingHelper.getDestination(requestDto, Request.class);											
 						InstanceCopier.getInstance().copy(database, request, List.of(Request.FIELD_TYPE,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE
-							,Request.FIELD_AUTHENTICATION_REQUIRED,Request.FIELD_ACCESS_TOKEN));
+							,Request.FIELD_AUTHENTICATION_REQUIRED,Request.FIELD_ACCESS_TOKEN
+							//files
+							,Request.FIELD_PHOTO,Request.FIELD_ACT_OF_APPOINTMENT,Request.FIELD_SIGNATURE));
 						setFromDto(requestDto, request);
 						__inject__(RequestBusiness.class).record(request);
 					}
@@ -180,6 +211,38 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 					@Override
 					public void run() {
 						__inject__(RequestBusiness.class).recordPhotoByIdentifier(identifier, bytes);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordActOfAppointment(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						//database.setPhoto(requestDto.get);
+						__inject__(RequestBusiness.class).recordActOfAppointment(database);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordActOfAppointmentByIdentifier(String identifier, byte[] bytes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).recordActOfAppointmentByIdentifier(identifier, bytes);
 					}
 				};
 			}

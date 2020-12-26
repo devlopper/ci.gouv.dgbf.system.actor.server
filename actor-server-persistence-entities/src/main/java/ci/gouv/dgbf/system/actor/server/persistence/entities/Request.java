@@ -61,6 +61,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
 	@Column(name = COLUMN_PHOTO) @Lob private byte[] photo;
+	@Column(name = COLUMN_ACT_OF_APPOINTMENT) @Lob private byte[] actOfAppointment;
 	@Column(name = COLUMN_SIGNATURE) @Lob private byte[] signature;
 	
 	/* Job */
@@ -157,6 +158,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	public static final String FIELD_ACT_OF_APPOINTMENT = "actOfAppointment";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
@@ -197,6 +199,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
 	public static final String COLUMN_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
+	public static final String COLUMN_ACT_OF_APPOINTMENT = "ACTE_NOMINATION";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
 	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
