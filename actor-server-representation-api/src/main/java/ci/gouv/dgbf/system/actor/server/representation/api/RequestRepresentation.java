@@ -80,6 +80,30 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response recordActOfAppointmentByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
 	
 	@POST
+	@Path(PATH_RECORD_SIGNATURE)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordSignature(RequestDto request);
+	
+	@POST
+	@Path(PATH_RECORD_SIGNATURE_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordSignatureByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
+	
+	@POST
+	@Path(PATH_RECORD_SIGNED_REQUEST_SHEET)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordSignedRequestSheet(RequestDto request);
+	
+	@POST
+	@Path(PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordSignedRequestSheetByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
+	
+	@POST
 	@Path(PATH_SUBMIT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -148,6 +172,17 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response getSignatureByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
 	
 	@GET
+	@Path(PATH_GET_SIGNED_REQUEST_SHEET_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir la fiche de demande signée d'une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response getSignedRequestSheetByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	
+	@GET
 	@Path(PATH_BUILD_REPORT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -181,13 +216,17 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_RECORD_PHOTO_BY_IDENTIFIER = "enregistrerphotoparidentifiant";
 	String PATH_RECORD_ACT_OF_APPOINTMENT = "enregistreractenomination";
 	String PATH_RECORD_ACT_OF_APPOINTMENT_BY_IDENTIFIER = "enregistreractenominationparidentifiant";
+	String PATH_RECORD_SIGNATURE = "enregistrersignature";
 	String PATH_RECORD_SIGNATURE_BY_IDENTIFIER = "enregistrersignatureparidentifiant";
+	String PATH_RECORD_SIGNED_REQUEST_SHEET = "enregistrerfichedemandesignee";
+	String PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = "enregistrerfichedemandesigneeparidentifiant";
 	String PATH_SUBMIT_BY_IDENTIFIER = "soumettreparidentifiant";
 	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
 	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
 	String PATH_GET_PHOTO_BY_IDENTIFIER = "obtenirphotoparidentifiant";
 	String PATH_GET_ACT_OF_APPOINTMENT_BY_IDENTIFIER = "obteniractenominationparidentifiant";
 	String PATH_GET_SIGNATURE_BY_IDENTIFIER = "obtenirsignatureparidentifiant";
+	String PATH_GET_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = "obtenirfichedemandesigneeparidentifiant";
 	
 	String PATH_NOTIFY_ACCESS_TOKENS = "notifyaccesstokens";
 	

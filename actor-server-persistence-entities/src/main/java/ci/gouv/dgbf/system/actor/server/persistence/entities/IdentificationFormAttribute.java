@@ -23,6 +23,7 @@ public class IdentificationFormAttribute extends AbstractIdentifiableSystemScala
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FORM) private IdentificationForm form;	
 	@ManyToOne @JoinColumn(name = COLUMN_ATTRIBUTE) private IdentificationAttribute attribute;
+	@Column(name = COLUMN_NAME) private String name;
 	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
 	@Column(name = COLUMN_REQUIRED) private Boolean required;
 	
@@ -40,6 +41,7 @@ public class IdentificationFormAttribute extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ATTRIBUTE = "attribute";
 	public static final String FIELD_ATTRIBUTE_AS_STRING = "attributeAsString";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_NAME = "name";
 	public static final String FIELD_REQUIRED = "required";
 	public static final String FIELD_REQUIRED_AS_STRING = "requiredAsString";
 	
@@ -47,6 +49,7 @@ public class IdentificationFormAttribute extends AbstractIdentifiableSystemScala
 	
 	public static final String COLUMN_FORM = "FORMULAIRE";
 	public static final String COLUMN_ATTRIBUTE = "ATTRIBUT";
+	public static final String COLUMN_NAME = "LIBELLE";
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
 	public static final String COLUMN_REQUIRED = "OBLIGATOIRE";
 	

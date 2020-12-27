@@ -63,31 +63,16 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	
 	@Override
 	public Response getSignatureByIdentifier(String identifier) {
-		/*Runner.Arguments runnerArguments = new Runner.Arguments();
-		runnerArguments.addRunnables(new Runnable() {					
-			@Override
-			public void run() {
-				if(StringHelper.isBlank(identifier))
-					throw new RuntimeException("Identifiant de la demande est obligatoire");						
-				byte[] bytes = RequestQuerier.getInstance().readSignatureByIdentifier(identifier);
-				if(bytes != null)
-					runnerArguments.setResult(bytes);
-			}
-		});
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
-			@Override
-			public Runnable getRunnable() {
-				return null;
-			}
-			@Override
-			public Runner.Arguments getRunnerArguments() {
-				return runnerArguments;
-			}
-		});
-		*/
 		if(StringHelper.isBlank(identifier))
 			throw new RuntimeException("Identifiant de la demande est obligatoire");						
 		return Response.ok(RequestQuerier.getInstance().readSignatureByIdentifier(identifier)).build();
+	}
+	
+	@Override
+	public Response getSignedRequestSheetByIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			throw new RuntimeException("Identifiant de la demande est obligatoire");						
+		return Response.ok(RequestQuerier.getInstance().readSignedRequestSheetByIdentifier(identifier)).build();
 	}
 	
 	@Override
@@ -176,7 +161,7 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 						InstanceCopier.getInstance().copy(database, request, List.of(Request.FIELD_TYPE,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE
 							,Request.FIELD_AUTHENTICATION_REQUIRED,Request.FIELD_ACCESS_TOKEN
 							//files
-							,Request.FIELD_PHOTO,Request.FIELD_ACT_OF_APPOINTMENT,Request.FIELD_SIGNATURE));
+							,Request.FIELD_PHOTO,Request.FIELD_ACT_OF_APPOINTMENT,Request.FIELD_SIGNATURE,Request.FIELD_SIGNED_REQUEST_SHEET));
 						setFromDto(requestDto, request);
 						__inject__(RequestBusiness.class).record(request);
 					}
@@ -243,6 +228,70 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 					@Override
 					public void run() {
 						__inject__(RequestBusiness.class).recordActOfAppointmentByIdentifier(identifier, bytes);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignature(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						//database.setPhoto(requestDto.get);
+						__inject__(RequestBusiness.class).recordSignature(database);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignatureByIdentifier(String identifier, byte[] bytes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).recordSignatureByIdentifier(identifier, bytes);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignedRequestSheet(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						//database.setPhoto(requestDto.get);
+						__inject__(RequestBusiness.class).recordSignedRequestSheet(database);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignedRequestSheetByIdentifier(String identifier, byte[] bytes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).recordSignedRequestSheetByIdentifier(identifier, bytes);
 					}
 				};
 			}

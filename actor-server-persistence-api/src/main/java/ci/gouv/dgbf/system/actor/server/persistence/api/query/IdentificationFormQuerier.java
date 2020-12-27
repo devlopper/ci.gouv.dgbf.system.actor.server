@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.TypedQuerier;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
@@ -79,8 +80,13 @@ public interface IdentificationFormQuerier extends TypedQuerier<IdentificationFo
 			if(Boolean.TRUE.equals(asString)) {
 				
 			}else {
-				form.setAttributs(formAttributes.stream().map(x -> x.getAttribute().setRequired(x.getRequired() == null ? x.getAttribute().getRequired() : x.getRequired())
-						.setOrderNumber(x.getOrderNumber())).collect(Collectors.toList()));
+				form.setAttributs(formAttributes.stream()
+						.map(x -> x.getAttribute()
+							.setName(StringHelper.isBlank(x.getName()) ? x.getAttribute().getName() : x.getName())
+							.setRequired(x.getRequired() == null ? x.getAttribute().getRequired() : x.getRequired())
+							.setOrderNumber(x.getOrderNumber()))
+						.collect(Collectors.toList())
+						);
 			}			
 		}
 	}

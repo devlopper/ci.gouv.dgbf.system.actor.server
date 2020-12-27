@@ -34,6 +34,16 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 		return (IdentificationAttribute) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public IdentificationAttribute setCode(String code) {
+		return (IdentificationAttribute) super.setCode(code);
+	}
+	
+	@Override
+	public IdentificationAttribute setName(String name) {
+		return (IdentificationAttribute) super.setName(name);
+	}
+	
 	public static final String FIELD_REQUIRED = "required";
 	public static final String FIELD_REQUIRED_AS_STRING = "requiredAsString";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
@@ -44,7 +54,9 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	
 	/**/
 	
-	public static final String CODE_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
+	public static final String CODE_REGISTRATION_NUMBER = "MATRICULE";
+	public static final String CODE_GROUP = "GROUPE";
+	public static final String CODE_POSTAL_BOX_ADDRESS = "ADRESSE_BOITE_POSTALE";
 	public static final String CODE_CIVILITY = "CIVILITE";
 	public static final String CODE_FIRST_NAME = "NOM";
 	public static final String CODE_LAST_NAMES = "PRENOMS";
@@ -52,14 +64,14 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	public static final String CODE_MOBILE_PHONE_NUMBER = "NUMERO_TELEPHONE_MOBILE";
 	public static final String CODE_OFFICE_PHONE_NUMBER = "NUMERO_TELEPHONE_BUREAU";
 	public static final String CODE_OFFICE_PHONE_EXTENSION = "POSTE_TELEPHONE_BUREAU";
+	public static final String CODE_PHOTO = "PHOTO";
+	public static final String CODE_SIGNATURE = "SIGNATURE";
 	
+	public static final String CODE_ACT_OF_APPOINTMENT = "ACTE_NOMINATION";
 	public static final String CODE_ACT_OF_APPOINTMENT_REFERENCE = "REFERENCE_ACTE_NOMINATION";
 	public static final String CODE_ACT_OF_APPOINTMENT_SIGNATORY = "SIGNATAIRE_ACTE_NOMINATION";
 	public static final String CODE_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
 	
-	public static final String CODE_REGISTRATION_NUMBER = "MATRICULE";
-	public static final String CODE_GROUP = "GROUPE";
-	public static final String CODE_POSTAL_BOX_ADDRESS = "ADRESSE_BOITE_POSTALE";
 	public static final String CODE_ADMINISTRATIVE_FUNCTION = "FONCTION_ADMINISTRATIVE";
 	public static final String CODE_ADMINISTRATIVE_UNIT = "UNITE_ADMINISTRATIVE";
 	public static final String CODE_SECTION = "SECTION";
@@ -71,6 +83,9 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	public static final String CODE_COMMENT = "COMMENTAIRE";
 	public static final String CODE_BUDGETARIES_FUNCTIONS = "FONCTIONS_BUDGETAIRES";
 	public static final String CODE_BUDGETARIES_SCOPE_FUNCTIONS = "POSTES_BUDGETAIRES";
+	
+	public static final String CODE_BUDGETARY_EXERCICE = "EXERCICE_BUDGETAIRE";
+	public static final String CODE_SIGNED_REQUEST_SHEET = "FICHE_DEMANDE_SIGNEE";
 	
 	public static final Collection<String> CODES_FIELDS_NAMES = new ArrayList<>();
 	static {

@@ -27,6 +27,18 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void recordActOfAppointmentByIdentifier(String identifier,byte[] bytes);
 	
 	@Transactional
+	void recordSignature(Request request);
+	
+	@Transactional
+	void recordSignatureByIdentifier(String identifier,byte[] bytes);
+	
+	@Transactional
+	void recordSignedRequestSheet(Request request);
+	
+	@Transactional
+	void recordSignedRequestSheetByIdentifier(String identifier,byte[] bytes);
+	
+	@Transactional
 	void submit(Request request);
 	
 	@Transactional

@@ -38,6 +38,8 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String mobilePhoneNumber;
 	private String officePhoneNumber;
 	private String officePhoneExtension;
+	private String photoIdentifier;
+	private String signatureIdentifier;
 	//private byte[] photo;
 	
 	/* Job */
@@ -51,6 +53,8 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String actOfAppointmentSignatory;
 	private Long actOfAppointmentSignatureDateAsTimestamp;
 	private String actOfAppointmentSignatureDateAsString;
+	private String actOfAppointmentIdentifier;
+	private String signedRequestSheetIdentifier;
 	private ArrayList<FunctionDto> functions;
 	private ArrayList<String> functionsAsStrings;
 	private ArrayList<FunctionDto> budgetariesFunctions;

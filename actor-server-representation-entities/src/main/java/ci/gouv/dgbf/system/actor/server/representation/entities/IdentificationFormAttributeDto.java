@@ -17,6 +17,7 @@ public class IdentificationFormAttributeDto extends AbstractIdentifiableSystemSc
 	private String formAsString;
 	private IdentificationAttributeDto attribute;
 	private String attributeAsString;	
+	private String name;
 	private Integer orderNumber;
 	private Boolean required;	
 	private String requiredAsString;

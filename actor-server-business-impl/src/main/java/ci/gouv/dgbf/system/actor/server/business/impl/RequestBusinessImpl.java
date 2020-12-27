@@ -181,6 +181,40 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
+	public void recordSignature(Request request) {
+		validateRecord(request);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void recordSignatureByIdentifier(String identifier, byte[] bytes) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				).setSignature(bytes);
+		recordSignature(request);
+	}
+	
+	@Override @Transactional
+	public void recordSignedRequestSheet(Request request) {
+		validateRecord(request);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+						.setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void recordSignedRequestSheetByIdentifier(String identifier, byte[] bytes) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				).setSignedRequestSheet(bytes);
+		recordSignedRequestSheet(request);
+	}
+	
+	@Override @Transactional
 	public void submit(Request request) {
 		validate(request);
 		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))

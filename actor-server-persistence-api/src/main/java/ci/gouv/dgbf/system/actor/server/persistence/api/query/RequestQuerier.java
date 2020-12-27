@@ -108,6 +108,9 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignatureByIdentifier");
 	byte[] readSignatureByIdentifier(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignedRequestSheetByIdentifier");
+	byte[] readSignedRequestSheetByIdentifier(String identifier);
+	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
 		@Override
@@ -212,6 +215,15 @@ public interface RequestQuerier extends Querier {
 		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
+			if(request.getActOfAppointment() != null)
+				request.setActOfAppointmentIdentifier(request.getIdentifier());
+			if(request.getPhoto() != null)
+				request.setPhotoIdentifier(request.getIdentifier());
+			if(request.getSignature() != null)
+				request.setSignatureIdentifier(request.getIdentifier());
+			if(request.getSignedRequestSheet() != null)
+				request.setSignedRequestSheetIdentifier(request.getIdentifier());
+			
 			if(request.getStatus() != null)
 				request.setStatusAsString(request.getStatus().getName());
 			if(request.getActor() != null)
@@ -345,6 +357,12 @@ public interface RequestQuerier extends Querier {
 					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
 		}
 		
+		@Override
+		public byte[] readSignedRequestSheetByIdentifier(String identifier) {
+			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER
+					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
+		}
+		
 		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
 			Collection<RequestFunction> requestFunctions = RequestFunctionQuerier.getInstance().readByRequestsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(requests));
 			if(CollectionHelper.isEmpty(requestFunctions))
@@ -405,6 +423,8 @@ public interface RequestQuerier extends Querier {
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_ACT_OF_APPOINTMENT_BY_IDENTIFIER, "SELECT t.actOfAppointment FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_PHOTO)
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNATURE_BY_IDENTIFIER, "SELECT t.signature FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
+				,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER, "SELECT t.signedRequestSheet FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
 		);
 	}

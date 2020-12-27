@@ -61,8 +61,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Column(name = COLUMN_OFFICE_PHONE_NUMBER) private String officePhoneNumber;
 	@Column(name = COLUMN_OFFICE_PHONE_EXTENSION) private String officePhoneExtension;
 	@Column(name = COLUMN_PHOTO) @Lob private byte[] photo;
-	@Column(name = COLUMN_ACT_OF_APPOINTMENT) @Lob private byte[] actOfAppointment;
+	@Transient private String photoIdentifier;
 	@Column(name = COLUMN_SIGNATURE) @Lob private byte[] signature;
+	@Transient private String signatureIdentifier;
 	
 	/* Job */
 	
@@ -71,11 +72,16 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;	
+	@Column(name = COLUMN_ACT_OF_APPOINTMENT) @Lob private byte[] actOfAppointment;
+	@Transient private String actOfAppointmentIdentifier;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_REFERENCE) private String actOfAppointmentReference;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATORY) private String actOfAppointmentSignatory;
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE) private LocalDate actOfAppointmentSignatureDate;
 	@Transient private Long actOfAppointmentSignatureDateAsTimestamp;
 	@Transient private String actOfAppointmentSignatureDateAsString;
+	
+	@Column(name = COLUMN_SIGNED_REQUEST_SHEET) @Lob private byte[] signedRequestSheet;
+	@Transient private String signedRequestSheetIdentifier;
 	
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<String> functionsAsStrings;
@@ -166,6 +172,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE_AS_STRING = "actOfAppointmentSignatureDateAsString";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
+	public static final String FIELD_SIGNED_REQUEST_SHEET = "signedRequestSheet";
 	
 	public static final String FIELD_COMMENT = "comment";
 	
@@ -205,6 +212,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "DATE_SIGNATURE_ACTE_NOMINATION";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
+	public static final String COLUMN_SIGNED_REQUEST_SHEET = "FICHE_DEMANDE_SIGNEE";
 	
 	public static final String COLUMN_COMMENT = "COMMENTAIRE";
 	
