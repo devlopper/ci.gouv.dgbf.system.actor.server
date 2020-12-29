@@ -106,6 +106,12 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response recordSignedRequestSheetByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
 	
 	@POST
+	@Path(PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER_FOR_ADMIN)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response recordSignedRequestSheetByIdentifierForAdmin(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,byte[] bytes);
+	
+	@POST
 	@Path(PATH_SUBMIT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -125,8 +131,10 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande à accepter",required = true
 					,example = "01",style = ParameterStyle.SIMPLE)
 	})
-	Response acceptByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier
+	Response acceptByIdentifier(
+			@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier
 			,@QueryParam(QUERY_PARAMETER_NAME_BUDGETAIRES_SCOPE_FUNCTIONS_IDENTIFIERS)List<String> budgetariesScopeFunctionsIdentifiers
+			,@QueryParam(QUERY_PARAMETER_NAME_COMMENT) String comment			
 			,byte[] bytes);
 	
 	@POST
@@ -224,6 +232,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_RECORD_SIGNATURE_BY_IDENTIFIER = "enregistrersignatureparidentifiant";
 	String PATH_RECORD_SIGNED_REQUEST_SHEET = "enregistrerfichedemandesignee";
 	String PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = "enregistrerfichedemandesigneeparidentifiant";
+	String PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER_FOR_ADMIN = "enregistrerfichedemandesigneeparidentifiantforadmin";
 	String PATH_SUBMIT_BY_IDENTIFIER = "soumettreparidentifiant";
 	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
 	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
@@ -238,6 +247,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	
 	String TAG = "Demande";
 	
+	String QUERY_PARAMETER_NAME_COMMENT = "commentaire";
 	String QUERY_PARAMETER_NAME_TYPE_IDENTIFIER = "type_identifiant";
 	String QUERY_PARAMETER_NAME_REJECTION_REASON = "motif_rejet";
 	String QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "email";

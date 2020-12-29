@@ -38,7 +38,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void recordSignedRequestSheet(Request request);
 	
 	@Transactional
-	void recordSignedRequestSheetByIdentifier(String identifier,byte[] bytes);
+	void recordSignedRequestSheetByIdentifier(String identifier,Boolean isAdministrator,byte[] bytes);
 	
 	@Transactional
 	void submit(Request request);
@@ -50,7 +50,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void accept(Request request);
 	
 	@Transactional
-	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes);
+	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes);
 	
 	@Transactional
 	void reject(Request request);

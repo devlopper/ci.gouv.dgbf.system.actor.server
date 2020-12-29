@@ -42,6 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttri
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
@@ -74,8 +75,12 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	private void validateRecord(Request request) {
 		validate(request);
-		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
+		if(Boolean.TRUE.equals(request.getIsAdministrator())) {
+			
+		}else {
+			if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
+				throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
+		}		
 	}
 	
 	private void setFields(Request request) {
@@ -216,11 +221,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void recordSignedRequestSheetByIdentifier(String identifier, byte[] bytes) {
+	public void recordSignedRequestSheetByIdentifier(String identifier,Boolean isAdministrator, byte[] bytes) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
-				).setSignedRequestSheet(bytes);
+				).setIsAdministrator(isAdministrator).setSignedRequestSheet(bytes);
 		recordSignedRequestSheet(request);
 	}
 	
@@ -247,8 +252,10 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	public void accept(Request request) {
 		validate(request);
 		validateProcess(request);
-		if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
-			throw new RuntimeException("Le spécimen de signature est obligatoire");
+		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
+				throw new RuntimeException("Le spécimen de signature est obligatoire");
+		}		
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
@@ -262,7 +269,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes) {
+	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
@@ -292,7 +299,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(CollectionHelper.isNotEmpty(creatables))
 				EntityCreator.getInstance().createMany(creatables);
 		}
-		request.setSignedRequestSheet(signedRequestSheetBytes);
+		request.setComment(comment);
+		//request.setSignedRequestSheet(signedRequestSheetBytes);
 		accept(request);
 	}
 	

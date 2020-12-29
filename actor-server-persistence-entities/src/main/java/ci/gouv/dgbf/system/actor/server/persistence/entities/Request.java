@@ -82,6 +82,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Column(name = COLUMN_SIGNED_REQUEST_SHEET) @Lob private byte[] signedRequestSheet;
 	@Transient private String signedRequestSheetIdentifier;
+	//@Transient private Boolean signedRequestSheetUpdatable;
 	
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<String> functionsAsStrings;
@@ -106,6 +107,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Transient private String readReportURIQuery;
 	@Transient private String readPageURL;
+	
+	@Transient private Boolean isAdministrator;
 	
 	@Override
 	public Request setIdentifier(String identifier) {

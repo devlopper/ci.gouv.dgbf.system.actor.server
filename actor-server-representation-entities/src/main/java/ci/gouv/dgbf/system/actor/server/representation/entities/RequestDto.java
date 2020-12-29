@@ -82,4 +82,5 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	/**/
 	
 	private String readPageURL;
+	private Boolean isAdministrator;
 }

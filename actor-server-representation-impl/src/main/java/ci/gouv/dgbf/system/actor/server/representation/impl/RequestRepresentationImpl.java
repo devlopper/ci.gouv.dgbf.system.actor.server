@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
@@ -17,6 +18,7 @@ import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
+import org.cyk.utility.__kernel__.runnable.Runner.Arguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.report.ReportRepresentation;
@@ -131,7 +133,13 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	
 	@Override
 	public Response initialize(RequestDto requestDto) {
+		Arguments arguments = new Arguments();		
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Arguments getRunnerArguments() {
+				return arguments;
+			}
+			
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {
@@ -142,8 +150,21 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 							setFromDto(requestDto, request);
 						}
 						__inject__(RequestBusiness.class).initialize(request);
+						arguments.setResult(request);
 					}
 				};
+			}
+			
+			@Override
+			public ResponseBuilder getResponseBuilderWhenThrowableIsNull(Arguments runnerArguments) {
+				ResponseBuilder responseBuilder = super.getResponseBuilderWhenThrowableIsNull(runnerArguments);
+				if(getRunnerArguments() != null) {
+					Request request = (Request) getRunnerArguments().getResult();
+					if(request != null) {
+						responseBuilder.header(Request.FIELD_IDENTIFIER, request.getIdentifier());
+					}
+				}
+				return responseBuilder;
 			}
 		});
 	}
@@ -291,7 +312,22 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).recordSignedRequestSheetByIdentifier(identifier, bytes);
+						__inject__(RequestBusiness.class).recordSignedRequestSheetByIdentifier(identifier,null, bytes);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignedRequestSheetByIdentifierForAdmin(String identifier, byte[] bytes) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).recordSignedRequestSheetByIdentifier(identifier,Boolean.TRUE, bytes);
 					}
 				};
 			}
@@ -314,14 +350,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes) {
+	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,signedRequestSheetBytes);
+						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,comment,signedRequestSheetBytes);
 					}
 				};
 			}
