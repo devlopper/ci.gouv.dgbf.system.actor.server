@@ -215,6 +215,17 @@ public interface RequestQuerier extends Querier {
 		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
+			
+			if(request.getCreationDate() != null) {
+				request.setCreationDateAsString(TimeHelper.formatLocalDateTime(request.getCreationDate(),"dd/MM/yyyy à HH:mm"));
+				request.setCreationDate(null);
+			}
+			
+			if(request.getProcessingDate() != null) {
+				request.setProcessingDateAsString(TimeHelper.formatLocalDateTime(request.getProcessingDate(),"dd/MM/yyyy à HH:mm"));
+				request.setProcessingDate(null);
+			}
+			
 			if(request.getActOfAppointment() != null)
 				request.setActOfAppointmentIdentifier(request.getIdentifier());
 			if(request.getPhoto() != null)
@@ -238,16 +249,21 @@ public interface RequestQuerier extends Querier {
 				request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
 						.format(request.getActOfAppointmentSignatureDate()));
 				request.setActOfAppointmentSignatureDate(null);
-			}			
+			}
 			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
 				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
-					if(Boolean.TRUE.equals(budgetariesScopeFunctionsStringifiable))
+					if(Boolean.TRUE.equals(budgetariesScopeFunctionsStringifiable)) {
 						request.setBudgetariesScopeFunctionsAsStrings(requestScopeFunctions.stream()
-							.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()))
-							.map(x -> x.getScopeFunction().getName())
+							.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getRequested()))
+							.map(x -> x.getScopeFunction().getCode()+" "+x.getScopeFunction().getName())
 							.collect(Collectors.toList()));
-					
+						
+						request.setBudgetariesScopeFunctionsGrantedAsStrings(requestScopeFunctions.stream()
+								.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getGranted()))
+								.map(x -> x.getScopeFunction().getCode()+" "+x.getScopeFunction().getName())
+								.collect(Collectors.toList()));
+					}
 				}
 			}
 		}
@@ -267,7 +283,7 @@ public interface RequestQuerier extends Querier {
 			Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 			if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
 				request.setBudgetariesScopeFunctions(requestScopeFunctions.stream()
-					.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()))
+					.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getRequested()))
 					.map(x -> x.getScopeFunction())
 					.collect(Collectors.toList()));				
 			}

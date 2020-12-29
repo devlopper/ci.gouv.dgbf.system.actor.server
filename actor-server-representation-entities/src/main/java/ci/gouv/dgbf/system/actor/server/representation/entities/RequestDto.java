@@ -23,6 +23,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String statusAsString;
 	private String authenticationRequiredAsString;
 	private String creationDateAsString;
+	private String accessToken;
 	
 	/* Identity */
 	
@@ -40,6 +41,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String officePhoneExtension;
 	private String photoIdentifier;
 	private String signatureIdentifier;
+	//private byte[] signedRequestSheetBytes;
 	//private byte[] photo;
 	
 	/* Job */
@@ -61,6 +63,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private ArrayList<String> budgetariesFunctionsAsStrings;
 	private ArrayList<ScopeFunctionDto> budgetariesScopeFunctions;
 	private ArrayList<String> budgetariesScopeFunctionsAsStrings;
+	private ArrayList<String> budgetariesScopeFunctionsGrantedAsStrings;
 	
 	/* Others */
 	
@@ -69,6 +72,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	/* Processing */
 	
 	private String processingDateAsString;
+	private String acceptationComment;
 	private String rejectionReason;
 	
 	/* Report identifier */

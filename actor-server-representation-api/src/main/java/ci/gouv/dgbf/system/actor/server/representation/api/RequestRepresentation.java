@@ -1,4 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -123,7 +125,9 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande à accepter",required = true
 					,example = "01",style = ParameterStyle.SIMPLE)
 	})
-	Response acceptByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	Response acceptByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier
+			,@QueryParam(QUERY_PARAMETER_NAME_BUDGETAIRES_SCOPE_FUNCTIONS_IDENTIFIERS)List<String> budgetariesScopeFunctionsIdentifiers
+			,byte[] bytes);
 	
 	@POST
 	@Path(PATH_REJECT_BY_IDENTIFIER)
@@ -238,4 +242,5 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String QUERY_PARAMETER_NAME_REJECTION_REASON = "motif_rejet";
 	String QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "email";
 	String QUERY_PARAMETER_NAME_READ_PAGE_URL = "url_page_consultation";
+	String QUERY_PARAMETER_NAME_BUDGETAIRES_SCOPE_FUNCTIONS_IDENTIFIERS = "identifiants_postes_budgetaires";
 }

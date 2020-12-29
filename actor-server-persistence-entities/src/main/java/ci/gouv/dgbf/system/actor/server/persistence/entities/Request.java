@@ -89,6 +89,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Collection<String> budgetariesFunctionsAsStrings;
 	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions;
 	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
+	@Transient private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
 	
 	/* Others */
 	
@@ -98,6 +99,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;	
 	@Transient private String processingDateAsString;
+	@Column(name = COLUMN_ACCEPTATION_COMMENT) private String acceptationComment;
 	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
 	
 	/* Links */
@@ -178,6 +180,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	public static final String FIELD_PROCESSING_DATE = "processingDate";
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
+	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
@@ -217,6 +220,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_COMMENT = "COMMENTAIRE";
 	
 	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
+	public static final String COLUMN_ACCEPTATION_COMMENT = "COMMENTAIRE_ACCEPTATION";
 	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
 	
 	public static final Collection<String> COLUMNS_FIELDS_NAMES = new ArrayList<>();

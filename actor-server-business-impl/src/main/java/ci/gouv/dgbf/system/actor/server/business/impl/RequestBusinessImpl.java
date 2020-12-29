@@ -12,8 +12,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import org.cyk.utility.__kernel__.business.EntityCreator;
 import org.cyk.utility.__kernel__.business.EntitySaver;
 import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
+import org.cyk.utility.__kernel__.business.EntityUpdater;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -63,6 +65,13 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
+	private void validateProcess(Request request) {
+		if(request.getStatus() != null 
+			&& (RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()) || RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode())) 
+		)
+			throw new RuntimeException("La demande a déja été traitée");
+	}
+	
 	private void validateRecord(Request request) {
 		validate(request);
 		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
@@ -108,7 +117,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				if(!CollectionHelper.contains(providedExistingScopeFunctions, scopeFunction)) {
 					if(requestScopeFunctionsSaverArguments.getProvidedCollection() == null)
 						requestScopeFunctionsSaverArguments.setProvidedCollection(new ArrayList<>());
-					requestScopeFunctionsSaverArguments.getProvidedCollection().add(new RequestScopeFunction().setRequest(request).setScopeFunction(scopeFunction));
+					requestScopeFunctionsSaverArguments.getProvidedCollection().add(new RequestScopeFunction().setRequest(request).setScopeFunction(scopeFunction)
+							.setRequested(Boolean.TRUE));
 				}
 			}
 		}
@@ -236,8 +246,9 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void accept(Request request) {
 		validate(request);
-		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été acceptée");
+		validateProcess(request);
+		if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
+			throw new RuntimeException("Le spécimen de signature est obligatoire");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
@@ -251,19 +262,44 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void acceptByIdentifier(String identifier) {
+	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				);
+		//update granted
+		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
+			for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
+				requestScopeFunction
+					.setGranted(CollectionHelper.contains(budgetariesScopeFunctionsIdentifiers, requestScopeFunction.getScopeFunction().getIdentifier()));
+			}
+			EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, requestScopeFunctions));
+		}
+		//create granted
+		if(CollectionHelper.isNotEmpty(budgetariesScopeFunctionsIdentifiers)) {
+			Collection<String> requestScopeFunctionsIdentifiers = CollectionHelper.isEmpty(requestScopeFunctions) ? null 
+					: requestScopeFunctions.stream().map(x -> x.getScopeFunction().getIdentifier()).collect(Collectors.toList());
+			Collection<Object> creatables = null;
+			for(String scopeFunctionIdentifier : budgetariesScopeFunctionsIdentifiers) {
+				if(requestScopeFunctionsIdentifiers.contains(scopeFunctionIdentifier))
+					continue;
+				if(creatables == null)
+					creatables = new ArrayList<>();
+				creatables.add(new RequestScopeFunction().setRequest(request).setScopeFunction(EntityFinder.getInstance().find(ScopeFunction.class
+					, scopeFunctionIdentifier)).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
+			}
+			if(CollectionHelper.isNotEmpty(creatables))
+				EntityCreator.getInstance().createMany(creatables);
+		}
+		request.setSignedRequestSheet(signedRequestSheetBytes);
 		accept(request);
 	}
 	
 	@Override @Transactional
 	public void reject(Request request) {
 		validate(request);
-		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été rejetée");
+		validateProcess(request);
 		if(StringHelper.isBlank(request.getRejectionReason()))
 			throw new RuntimeException("Le motif de rejet est obligatoire");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));

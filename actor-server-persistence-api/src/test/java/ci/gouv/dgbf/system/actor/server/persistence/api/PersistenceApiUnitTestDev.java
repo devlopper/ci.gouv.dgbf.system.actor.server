@@ -209,7 +209,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void request_readByIdentifierForUI(){
-		Request request = RequestQuerier.getInstance().readByIdentifierForUI("DM_7a332338-e827-4f3c-91bf-0aedbcc4f6ef");
+		Request request = RequestQuerier.getInstance().readByIdentifierForUI("5843623c-eda1-4143-bb53-76aa893bd5d6");
 		System.out.println(request.getActorCode());
 		System.out.println(request.getActorNames());
 		System.out.println(request.getStatusAsString());
@@ -217,6 +217,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getComment());
 		System.out.println(request.getCreationDateAsString());
 		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
+		System.out.println(request.getBudgetariesScopeFunctionsGrantedAsStrings());
 	}
 	
 	@Test

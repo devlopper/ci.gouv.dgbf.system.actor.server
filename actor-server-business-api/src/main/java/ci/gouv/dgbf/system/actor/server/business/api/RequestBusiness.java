@@ -1,5 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.api;
 
+import java.util.Collection;
+
 import javax.transaction.Transactional;
 
 import org.cyk.utility.server.business.BusinessEntity;
@@ -48,7 +50,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void accept(Request request);
 	
 	@Transactional
-	void acceptByIdentifier(String identifier);
+	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes);
 	
 	@Transactional
 	void reject(Request request);

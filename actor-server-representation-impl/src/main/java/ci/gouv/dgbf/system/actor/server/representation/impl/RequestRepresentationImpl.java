@@ -314,14 +314,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response acceptByIdentifier(String identifier) {
+	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,byte[] signedRequestSheetBytes) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).acceptByIdentifier(identifier);
+						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,signedRequestSheetBytes);
 					}
 				};
 			}
