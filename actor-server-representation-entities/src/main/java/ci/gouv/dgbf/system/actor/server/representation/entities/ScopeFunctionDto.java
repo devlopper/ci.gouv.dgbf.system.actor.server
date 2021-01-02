@@ -15,18 +15,24 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private static final long serialVersionUID = 1L;
 
 	private ScopeDto scope;
-	private FunctionDto function;
 	private String scopeAsString;
+	
+	private FunctionDto function;
 	private String functionAsString;
+	private ArrayList<String> functionsIdentifiers;
+	
+	private LocalityDto locality;
+	private String localityAsString;
+	
 	private Integer numberOfActor;
+	
 	private Boolean shared;
 	private String sharedAsString;
-	private ArrayList<String> functionsIdentifiers;
+	
 	private String parentIdentifier;
 	
 	@Override
 	public ScopeFunctionDto setIdentifier(String identifier) {
 		return (ScopeFunctionDto) super.setIdentifier(identifier);
 	}
-
 }

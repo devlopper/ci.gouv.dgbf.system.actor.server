@@ -17,6 +17,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Locality</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
 		
     	<!-- Transaction -->
@@ -54,6 +55,10 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountingService</class>
     	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>

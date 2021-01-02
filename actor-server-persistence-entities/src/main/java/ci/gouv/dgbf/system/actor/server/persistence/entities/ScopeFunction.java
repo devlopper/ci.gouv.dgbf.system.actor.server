@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
@@ -27,23 +30,31 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ScopeFunction.TABLE_NAME,uniqueConstraints = {
-		@UniqueConstraint(name=ScopeFunction.TABLE_NAME+"_"+ScopeFunction.COLUMN_SCOPE+"_"+ScopeFunction.COLUMN_FUNCTION+"_UK"
-				,columnNames = {ScopeFunction.COLUMN_SCOPE,ScopeFunction.COLUMN_FUNCTION})
-})
+@Entity @Table(name=ScopeFunction.TABLE_NAME)
 public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
+	@Transient private String scopeAsString;
+	@Transient private String scopeIdentifier;
+	@Transient private String scopeCode;
+	@Transient private ScopeTypeFunction scopeTypeFunction;
+	
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
+	@Transient private String functionAsString;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) @NotNull private Locality locality;
+	@Transient private String localityAsString;
+	@Transient private String localityIdentifier;
+	@Transient private String localityCode;
+	
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	
 	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
 	
-	@Transient private String scopeAsString;
-	@Transient private String functionAsString;
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
-	@Transient private ScopeTypeFunction scopeTypeFunction;
+	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
 	
 	@Override
 	public ScopeFunction setIdentifier(String identifier) {
@@ -187,21 +198,30 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
 		String script = formatScript(scopeTypeCode,codeScript, nameScript);
-		ScriptExecutor.getInstance().execute(script, "l",scopeFunctions);		
+		Collection<ScriptDto> dtos = ScriptDto.collect(scopeFunctions);
+		ScriptExecutor.getInstance().execute(script, "l",dtos);
 	}
 	
 	public static String formatScript(String scopeTypeCode,String codeScript,String nameScript) { 
 		return StringUtils.join(
-				ScriptHelper.formatFunction("generateCode", ScriptHelper.formatReturnIfNotExist(codeScript), getScriptVariableNameScopeCode(scopeTypeCode),"code_fonction")
-				,ScriptHelper.formatFunction("generateName", ScriptHelper.formatReturnIfNotExist(nameScript), getScriptVariableNameScopeName(scopeTypeCode),"libelle_fonction"))
+				ScriptHelper.formatFunction("generateCode", ScriptHelper.formatReturnIfNotExist(codeScript), "poste")
+				,ScriptHelper.formatFunction("generateName", ScriptHelper.formatReturnIfNotExist(nameScript), "poste")
+				)
+				+"var numero_ordre = 0;"
 				+ScriptHelper.join(
-				
-			ScriptHelper.formatLoopForCollection("l", "i", ScriptHelper.join(
-					"l.get(i).code = generateCode(l.get(i).scope.code,l.get(i).function.code)"
-					,"l.get(i).name = generateName(l.get(i).scope.name,l.get(i).function.name)"
+						"var numero_ordre_1 = 0;"
+						,"var numero_ordre_2 = 0;"
+						,"var numero_ordre_3 = 0;"
+			,ScriptHelper.formatLoopForCollection("l", "i", ScriptHelper.join(
+					"l.get(i).scopeFunction.code = generateCode(l.get(i))" //"l.get(i).code = generateCode("+formatGeneratorFunctionArguments("code")+")"
+					,"l.get(i).scopeFunction.name = generateName(l.get(i))" //"l.get(i).name = generateName("+formatGeneratorFunctionArguments("name")+")"
 					)
 				)
 		);
+	}
+	
+	public static String formatGeneratorFunctionArguments(String fieldName) {
+		return String.format(List.of(FIELD_SCOPE,FIELD_FUNCTION,FIELD_LOCALITY).stream().map(x -> "l.get(i)."+x+".%1$s").collect(Collectors.joining(",")), fieldName);
 	}
 	
 	@Override
@@ -210,9 +230,18 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	}
 	
 	public static final String FIELD_SCOPE = "scope";
-	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
+	public static final String FIELD_SCOPE_IDENTIFIER = "scopeIdentifier";
+	public static final String FIELD_SCOPE_CODE = "scopeCode";
+	
+	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
+	
+	public static final String FIELD_LOCALITY = "locality";
+	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
+	public static final String FIELD_LOCALITY_IDENTIFIER = "localityIdentifier";
+	public static final String FIELD_LOCALITY_CODE = "localityCode";
+	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
@@ -222,6 +251,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static final String COLUMN_SCOPE = "domaine";
 	public static final String COLUMN_FUNCTION = "fonction";
+	public static final String COLUMN_LOCALITY = "localite";
 	public static final String COLUMN_NUMBER_OF_ACTOR = "nombre_acteur";
 	public static final String COLUMN_PARENT_IDENTIFIER = "parent";
 	
@@ -231,4 +261,86 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE = "code_fonction";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME = "libelle_fonction";
 	
+	/**/
+	
+	public static class ScriptDto {
+		public ScopeFunction scopeFunction;
+		/* Scopes */
+		public CodeName section = new CodeName();
+		public CodeName usb = new CodeName();
+		public CodeName ua = new CodeName();
+		public CodeName service_ord = new CodeName();
+		public CodeName service_cf = new CodeName();
+		public CodeName service_cpt = new CodeName();
+		
+		/* Functions */
+		public CodeName fonction = new CodeName();
+		
+		/* Localities */
+		public CodeName localite = new CodeName();
+		
+		/**/
+		
+		@Override
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
+		}
+		
+		public static ScriptDto map(ScopeFunction scopeFunction) {
+			if(scopeFunction == null)
+				return null;
+			ScriptDto scriptDto = new ScriptDto();
+			scriptDto.scopeFunction = scopeFunction;
+			/* Scopes */
+			CodeName scope = null;
+			if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SECTION))
+				scope = scriptDto.section;				
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_USB))
+				scope = scriptDto.usb;	
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_UA))
+				scope = scriptDto.ua;
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_ORD))
+				scope = scriptDto.service_ord;
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_CF))
+				scope = scriptDto.service_cf;
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_CPT))
+				scope = scriptDto.service_cpt;
+			if(scope != null) {
+				scope.code = scopeFunction.getScope().getCode();
+				scope.libelle = scopeFunction.getScope().getName();
+			}
+			
+			if(scopeFunction.budgetSpecializationUnit != null) {
+				scriptDto.usb.code = scopeFunction.budgetSpecializationUnit.getCode();
+				scriptDto.usb.libelle = scopeFunction.budgetSpecializationUnit.getName();
+			}
+			
+			/* Functions */
+			scriptDto.fonction.code = scopeFunction.function.getCode();
+			scriptDto.fonction.libelle = scopeFunction.function.getName();
+			
+			/* Localities */
+			scriptDto.localite.code = scopeFunction.locality.getCode();
+			scriptDto.localite.libelle = scopeFunction.locality.getName();
+			return scriptDto;
+		}
+		
+		public static Collection<ScriptDto> collect(Collection<ScopeFunction> scopeFunctions) {
+			if(CollectionHelper.isEmpty(scopeFunctions))
+				return null;
+			return scopeFunctions.stream().map(scopeFunction -> map(scopeFunction)).collect(Collectors.toList());
+		}
+		
+		/**/
+		
+		public static class CodeName {
+			public String code;
+			public String libelle;
+			
+			@Override
+			public String toString() {
+				return code+" "+libelle;
+			}
+		}
+	}
 }

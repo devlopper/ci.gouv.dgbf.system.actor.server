@@ -54,8 +54,8 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	
 	@Test
 	public void assignments_all(){
-		__inject__(AssignmentsBusiness.class).deleteAll();
-		__inject__(AssignmentsBusiness.class).initialize();
+		__inject__(AssignmentsBusiness.class).deleteAll();		
+		__inject__(AssignmentsBusiness.class).initialize();		
 		Assignments model = new Assignments();
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");

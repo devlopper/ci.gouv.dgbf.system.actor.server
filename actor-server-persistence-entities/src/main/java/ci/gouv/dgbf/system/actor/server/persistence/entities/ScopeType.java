@@ -54,4 +54,10 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	// Chaine de gestion
 	public static final String CODE_UGP = "UGP";
 	public static final String CODE_UA = "UA";
+	
+	// Service des acteurs de l'exécution
+	public static final String CODE_SERVICE_GC = "SERVICE_GC";
+	public static final String CODE_SERVICE_ORD = "SERVICE_ORD";
+	public static final String CODE_SERVICE_CF = "SERVICE_CF";
+	public static final String CODE_SERVICE_CPT = "SERVICE_CPT";
 }

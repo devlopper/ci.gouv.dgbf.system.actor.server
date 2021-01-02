@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.annotation.Oracle;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.EntitySaver;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
@@ -26,6 +27,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -35,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationAttr
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeTypeQuerier;
@@ -73,6 +76,13 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,EntitySaver.class,CountQueryIdentifierGetter.class);
 		DependencyInjection.setQualifierClassTo(Oracle.class,NativeQueryStringBuilder.class);
 	
+		
+		PersistenceHelper.CLASS_COLUMNS_NAMES.put(Assignments.class, CollectionHelper.setOf(Assignments.COLUMN_IDENTIFIER,Assignments.COLUMN_EXECUTION_IMPUTATION
+				,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+				,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+				,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+				,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT));
+		
 		PersistenceHelper.COLUMN_NAME_FIELD.put(Assignments.class, Map.of(
 				Assignments.COLUMN_IDENTIFIER,FieldHelper.getByName(Assignments.class, Assignments.FIELD_IDENTIFIER)
 				
@@ -105,6 +115,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		SectionQuerier.initialize();
 		BudgetSpecializationUnitQuerier.initialize();
 		ActivityCategoryQuerier.initialize();
+		LocalityQuerier.initialize();
+		AuthorizingOfficerServiceQuerier.initialize();
 		
 		MenuQuerier.initialize();
 		ServiceQuerier.initialize();

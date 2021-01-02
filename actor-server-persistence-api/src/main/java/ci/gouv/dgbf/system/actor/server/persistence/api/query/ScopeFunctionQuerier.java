@@ -281,9 +281,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT COUNT(sf.identifier) FROM ScopeFunction sf")
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
-						, "SELECT t.identifier,t.code,t.scope.code,t.function.code FROM ScopeFunction t")
-					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_SCOPE_AS_STRING
-							,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+						, "SELECT t.identifier,t.code,t.scope.identifier,t.scope.code,t.function.code,t.locality.identifier FROM ScopeFunction t")
+					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_SCOPE_IDENTIFIER
+							,ScopeFunction.FIELD_SCOPE_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_LOCALITY_IDENTIFIER)
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)

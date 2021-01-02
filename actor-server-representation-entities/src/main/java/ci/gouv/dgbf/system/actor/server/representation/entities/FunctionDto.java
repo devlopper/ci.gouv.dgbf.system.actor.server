@@ -26,6 +26,9 @@ public class FunctionDto extends AbstractIdentifiableSystemScalarStringIdentifia
 	private Boolean shared;
 	private String sharedAsString;
 	
+	//private String scopeFunctionCodeScript;
+	//private String scopeFunctionNameScript;
+	
 	@Override
 	public FunctionDto setIdentifier(String identifier) {
 		return (FunctionDto) super.setIdentifier(identifier);

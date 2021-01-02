@@ -23,11 +23,58 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 	}
 	
 	@Test
+	public void scopeFunction_scopeType_computeCodeAndName(){
+		ScopeFunction scopeFunction0 = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"))
+				.setLocality(new Locality().setCode(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE).setName("S/P Bingerville"));
+		ScopeFunction scopeFunction1 = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"))
+				.setLocality(new Locality().setCode("deconcentre").setName("Bouake"));
+		ScopeFunction scopeFunction2 = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"))
+				.setLocality(new Locality().setCode("deconcentre").setName("Man"));
+		
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction0,scopeFunction1,scopeFunction2), "poste.fonction.code+poste.ua.code", "poste.fonction.libelle+' '+poste.ua.libelle");
+		assertThat(scopeFunction0.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction0.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction0,scopeFunction1,scopeFunction2), "poste.fonction.code+poste.ua.code+(poste.localite.code == '"+Locality.CODE_SOUS_PREFECTURE_BINGERVILLE
+				+"' ? '0' : ++numero_ordre)", "poste.fonction.libelle+' '+poste.ua.libelle");
+		assertThat(scopeFunction0.getCode()).isEqualTo("GC130102220");
+		assertThat(scopeFunction0.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		assertThat(scopeFunction1.getCode()).isEqualTo("GC130102221");
+		assertThat(scopeFunction1.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		assertThat(scopeFunction2.getCode()).isEqualTo("GC130102222");
+		assertThat(scopeFunction2.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction1,scopeFunction0,scopeFunction2), "poste.fonction.code+poste.ua.code+(poste.localite.code == '"+Locality.CODE_SOUS_PREFECTURE_BINGERVILLE
+				+"' ? '0' : ++numero_ordre)", "poste.fonction.libelle+' '+poste.ua.libelle");
+		assertThat(scopeFunction0.getCode()).isEqualTo("GC130102220");
+		assertThat(scopeFunction0.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		assertThat(scopeFunction1.getCode()).isEqualTo("GC130102221");
+		assertThat(scopeFunction1.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		assertThat(scopeFunction2.getCode()).isEqualTo("GC130102222");
+		assertThat(scopeFunction2.getName()).isEqualTo("Gestionnaire de crédits DTI");
+	}
+	
+	@Test
+	public void scopeFunction_usb_locality_computeCodeAndName(){
+		ScopeFunction scopeFunction = new ScopeFunction().setCode("MyCode").setName("TheName")
+				.setScope(new Scope().setCode("22086").setName("Budget").setType(new ScopeType().setCode("USB")))
+				.setFunction(new Function().setCode("OS").setName("Ordonnateur secondaire"))
+				;
+		
+		ScopeFunction.computeCodeAndName("USB", List.of(scopeFunction), "'O3'+code_usb+numero_ordre", "libelle_fonction+' '+libelle_usb+' '+libelle_localite");
+		assertThat(scopeFunction.getCode()).isEqualTo("O3220861");
+		assertThat(scopeFunction.getName()).isEqualTo("Ordonnateur secondaire Budget bouna");
+	}
+	
+	@Test
 	public void scopeFunction_setCodeFromScript(){
 		String codeScript = "code_fonction+code_ua";
 		String nameScript = "libelle_fonction+' '+libelle_ua";
 		ScopeFunction scopeFunction = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
-				.setFunction(new Function().setCode("GC").setName("Gestionnaire de crédits"));
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"));
 		assertThat(scopeFunction.getCode()).isNull();
 		assertThat(scopeFunction.setCodeFromScript(codeScript).getCode()).isEqualTo("GC13010222");
 		assertThat(scopeFunction.setNameFromScript(nameScript).getName()).isEqualTo("Gestionnaire de crédits DTI");
@@ -38,7 +85,7 @@ public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
 		String codeScript = "code_fonction+code_ua";
 		String nameScript = "libelle_fonction+' '+libelle_ua";
 		ScopeFunction scopeFunction = new ScopeFunction().setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
-				.setFunction(new Function().setCode("GC").setName("Gestionnaire de crédits"));
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"));
 		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction), codeScript, nameScript);
 		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
 		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");

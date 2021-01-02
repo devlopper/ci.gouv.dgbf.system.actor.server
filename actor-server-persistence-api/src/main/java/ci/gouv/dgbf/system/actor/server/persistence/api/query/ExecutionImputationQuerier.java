@@ -329,12 +329,14 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 			, "SELECT ei FROM ExecutionImputation ei WHERE ei.identifier IN :"+PARAMETER_NAME_IDENTIFIERS)
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_NOT_IN_ASSIGNMENTS_FOR_INITIALIZATION
-					, jpql(select(fields("i",ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE,
-							ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE))
+					, jpql(select(fields("i",ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE
+							,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_LOCALITY_CODE
+							,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE))
 							,"FROM ExecutionImputation i"
-							,"WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier)"))
-			.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE,
-							ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE)
+							,"WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier) ORDER BY i.identifier ASC"))
+			.setTupleFieldsNamesIndexesFromFieldsNames(ExecutionImputation.FIELD_IDENTIFIER,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE
+							,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_LOCALITY_CODE
+							,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_SECTION_CODE)
 			
 			,Query.buildSelect(ExecutionImputation.class, QUERY_IDENTIFIER_READ_IDENTIFIERS_NOT_IN_ASSIGNMENTS
 					, "SELECT i.identifier FROM ExecutionImputation i WHERE NOT EXISTS(SELECT a.identifier FROM Assignments a WHERE a.executionImputation.identifier = i.identifier)")
@@ -471,6 +473,7 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	
 	/**/
 	
+	@Deprecated
 	static void refreshMaterializedView(){
 		ProcedureExecutor.getInstance().executeRefreshMaterializedView(ExecutionImputation.class);
 	}

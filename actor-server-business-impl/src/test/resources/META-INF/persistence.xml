@@ -18,6 +18,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Locality</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
 		
     	<!-- Transaction -->
@@ -55,6 +56,10 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountingService</class>
     	<!--
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Cluster</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ClusterAdministrator</class>
@@ -63,7 +68,7 @@
     	-->
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+			<property name="hibernate.hbm2ddl.auto" value="validate"/>
 			<property name="hibernate.show_sql" value="false"/>
 			<property name="hibernate.format_sql" value="false"/>
 			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>

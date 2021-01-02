@@ -162,7 +162,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
 				,new ScopeType().setCode(ScopeType.CODE_UA),new ScopeType().setCode(ScopeType.CODE_ACTION),new FunctionType().setCode("BUDGETAIRE"));
 		EntityCreator.getInstance().createMany(
-				new Function().setCode("GC").setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
+				new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("ORDP").setName("Ordonnateur principal").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("ORD").setName("Ordonnateur").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("CF").setName("Contrôleur financier").setTypeFromIdentifier("BUDGETAIRE")
@@ -171,7 +171,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 				new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("CF")
 				//,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("ORDP")
 				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_USB).setFunctionFromIdentifier("ORD")
-				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier("GC")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier(Function.CODE_CREDIT_MANAGER_HOLDER)
 				);
 		
 		Long count = __inject__(ScopeFunctionPersistence.class).count();
@@ -204,7 +204,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		EntityCreator.getInstance().createMany(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
 				,new ScopeType().setCode(ScopeType.CODE_UA),new ScopeType().setCode(ScopeType.CODE_ACTION),new FunctionType().setCode("BUDGETAIRE"));
 		EntityCreator.getInstance().createMany(
-				new Function().setCode("GC").setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
+				new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("ORDP").setName("Ordonnateur principal").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("ORD").setName("Ordonnateur").setTypeFromIdentifier("BUDGETAIRE")
 				,new Function().setCode("CF").setName("Contrôleur financier").setTypeFromIdentifier("BUDGETAIRE")
@@ -213,7 +213,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 				new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("CF")
 				//,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_SECTION).setFunctionFromIdentifier("ORDP")
 				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_USB).setFunctionFromIdentifier("ORD")
-				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier("GC")
+				,new ScopeTypeFunction().setScopeTypeFromIdentifier(ScopeType.CODE_UA).setFunctionFromIdentifier(Function.CODE_CREDIT_MANAGER_HOLDER)
 				);
 		
 		EntityCreator.getInstance().createMany(
@@ -224,7 +224,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 				,new Scope().setCode("1102512401").setName("Action 01").setTypeFromIdentifier(ScopeType.CODE_ACTION)
 		);
 		
-		__inject__(ScopeFunctionBusiness.class).create(new ScopeFunction().setScopeFromIdentifier("101").setFunctionFromIdentifier("GC").setShared(null));
+		__inject__(ScopeFunctionBusiness.class).create(new ScopeFunction().setScopeFromIdentifier("101").setFunctionFromIdentifier(Function.CODE_CREDIT_MANAGER_HOLDER).setShared(null));
 		ScopeFunction scopeFunction = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier("GC101");
 		assertThat(scopeFunction).isNotNull();
 		

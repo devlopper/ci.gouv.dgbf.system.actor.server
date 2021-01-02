@@ -28,8 +28,8 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private FunctionType type;
 	@Column(name = COLUMN_NUMBER_OF_ACTOR_PER_SCOPE) private Integer numberOfActorPerScope;
-	//@Column(name = COLUMN_NUMBER_OF_ACTOR_PER_SCOPE) private String scopeFunctionCodeGenerationScript;
-	//@Column(name = COLUMN_NUMBER_OF_ACTOR_PER_SCOPE) private String scopeFunctionNameGenerationScript;
+	//@Column(name = COLUMN_SCOPE_FUNCTION_CODE_SCRIPT) private String scopeFunctionCodeScript;
+	//@Column(name = COLUMN_SCOPE_FUNCTION_NAME_SCRIPT) private String scopeFunctionNameScript;
 	
 	@Transient private Collection<String> profilesAsStrings;
 	@Transient private Collection<String> scopesAsStrings;
@@ -74,9 +74,13 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String FIELD_NUMBER_OF_ACTOR_PER_SCOPE = "numberOfActorPerScope";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
+	//public static final String FIELD_SCOPE_FUNCTION_CODE_SCRIPT = "scopeFunctionCodeScript";
+	//public static final String FIELD_SCOPE_FUNCTION_NAME_SCRIPT = "scopeFunctionNameScript";
 	
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_NUMBER_OF_ACTOR_PER_SCOPE = "NOMBRE_ACTEUR_PAR_POSTE";
+	//public static final String COLUMN_SCOPE_FUNCTION_CODE_SCRIPT = "POSTE_CODE_SCRIPT";
+	//public static final String COLUMN_SCOPE_FUNCTION_NAME_SCRIPT = "POSTE_LIBELLE_SCRIPT";
 	
 	public static final String TABLE_NAME = "FONCTION";	
 	

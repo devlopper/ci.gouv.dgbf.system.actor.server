@@ -3,7 +3,9 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,6 +17,7 @@ import org.cyk.utility.__kernel__.business.NativeQueryStringExecutor;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.properties.Properties;
@@ -28,14 +31,18 @@ import org.cyk.utility.server.business.BusinessFunctionModifier;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 @ApplicationScoped
@@ -65,6 +72,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Long t0 = System.currentTimeMillis();
 		LogHelper.logInfo(String.format("Dérivation des postes des fonctions %s",functions), getClass());		
 		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(functions));
+		Locality locality = null;
 		for(Function function : functions) {
 			LogHelper.logInfo(String.format("\tTraitement de la fonction %s",function), getClass());
 			Collection<ScopeTypeFunction> scopeTypeFunctionsOfFunction = scopeTypeFunctions.stream()
@@ -78,11 +86,25 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 						List.of(scopeTypeFunction.getScopeType().getIdentifier()),List.of(scopeTypeFunction.getFunction().getIdentifier()));
 				LogHelper.logInfo(String.format("\t\t%s chargée(s)",CollectionHelper.getSize(scopes)), getClass());
 				if(CollectionHelper.isEmpty(scopes))
-					continue;				
+					continue;
 				LogHelper.logInfo(String.format("\t\tInstantiation des postes"), getClass());
+				Collection<AuthorizingOfficerService> authorizingOfficerServices = null;
+				if(scopeTypeFunction.getScopeType().getCode().equals(ScopeType.CODE_SERVICE_ORD)) {
+					//prepare localities
+					authorizingOfficerServices = new ArrayList<>();
+					List<List<String>> batches = CollectionHelper.getBatches(scopes.stream().map(x -> x.getIdentifier()).collect(Collectors.toList()), 900);
+					for(List<String> identifiers : batches) {
+						CollectionHelper.add(authorizingOfficerServices, Boolean.TRUE, EntityFinder.getInstance().findMany(AuthorizingOfficerService.class, identifiers));
+					}			
+				}
 				Collection<ScopeFunction> scopeFunctions = new ArrayList<>();
 				for(Scope scope : scopes) {
-					ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setNumberOfActor(function.getNumberOfActorPerScope());
+					if(scope.getType().getCode().equals(ScopeType.CODE_SERVICE_ORD)) {
+						locality = EntityFinder.getInstance().find(AuthorizingOfficerService.class, scope.getIdentifier()).getLocality();
+					}
+					if(locality == null)
+						locality = LocalityQuerier.getInstance().readByCode(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE);
+					ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setLocality(locality).setNumberOfActor(function.getNumberOfActorPerScope());
 					scopeFunctions.add(scopeFunction);
 				}
 				LogHelper.logInfo(String.format("\t\t%s poste(s) instantié(s)",CollectionHelper.getSize(scopeFunctions)), getClass());
@@ -165,26 +187,37 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	private void __codify__(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
+		if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
+			List<String> authorizingOfficerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
+			List<List<String>> batches = CollectionHelper.getBatches(authorizingOfficerServiceIdentifiers, 900);
+			for(List<String> identifiers : batches) {
+				Collection<AuthorizingOfficerService> authorizingOfficerServices = EntityFinder.getInstance().findMany(AuthorizingOfficerService.class, identifiers);
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices)
+						if(scopeFunction.getScope().getIdentifier().equals(authorizingOfficerService.getIdentifier())) {
+							scopeFunction.setBudgetSpecializationUnit(authorizingOfficerService.getBudgetSpecializationUnit());
+							break;
+						}
+				}
+			}			
+		}
 		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions, codeScript, nameScript);
-		/*
-		Executor<Runnable> executor = new Executor<Runnable>().setName("Générateur des codes et des libellés").setNumberOfRunnablesToBeExecuted(scopeFunctions.size())
-				//.setExecutorService(RunnableHelper.instantiateExecutorService(1, 100, 3l, TimeUnit.MINUTES, null, scopeFunctions.size(), null, null))
-				;
-		//executor.start();		
-		scopeFunctions.forEach(scopeFunction -> {
-			executor.addRunnables(new Runnable() {
-				@Override
-				public void run() {
-					scopeFunction.computeAndSetCode(
-							codeScript, scopeFunction.getScope().getType().getCode(), scopeFunction.getScope().getCode(), scopeFunction.getFunction().getCode());
-					scopeFunction.computeAndSetName(
-							nameScript, scopeFunction.getScope().getType().getCode(), scopeFunction.getScope().getName(), scopeFunction.getFunction().getName());
-				}			
-			});
-		});		
-		//executor.join();
-		executor.run();
-		*/
+		//find duplicates by code
+		Map<String,Collection<ScopeFunction>> map = new HashMap<>();		
+		for(String code : scopeFunctions.stream().map(x -> x.getCode()).collect(Collectors.toSet())) {
+			Collection<ScopeFunction> value = scopeFunctions.stream().filter(x -> x.getCode().equals(code)).collect(Collectors.toList());
+			if(value.size() > 1)
+				map.put(code, value);
+		}
+		if(MapHelper.isNotEmpty(map)) {
+			LogHelper.logInfo(String.format("%s duplicate(s) found",map.size()), getClass());
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("Doublons trouvés\r\n");
+			for(Map.Entry<String,Collection<ScopeFunction>> entry : map.entrySet())
+				stringBuilder.append(entry.getKey()+"\r\n");
+			throw new RuntimeException(stringBuilder.toString());
+		}else
+			LogHelper.logInfo("No duplicate found", getClass());
 	}
 	
 	private void __codify__(Collection<ScopeFunction> scopeFunctions) {
@@ -232,6 +265,30 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(functions));
 		for(Function function : functions) {
 			LogHelper.logInfo(String.format("\tTraitement de la fonction %s",function), getClass());
+			/*
+			// 1 - 
+			LogHelper.logInfo(String.format("\tTraitement de tous les postes"), getClass());			
+			if(StringHelper.isNotBlank(function.getCode()) || StringHelper.isNotBlank(function.getName())) {
+				LogHelper.logInfo(String.format("\t\tChargement des %s",function.getCode()), getClass());
+				Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readByFunctionsIdentifiers(List.of(function.getIdentifier()));
+				LogHelper.logInfo(String.format("\t\t%s chargée(s)",CollectionHelper.getSize(scopeFunctions)), getClass());
+				if(CollectionHelper.isEmpty(scopeFunctions))
+					continue;
+				LogHelper.logInfo(String.format("\t\tCodification"), getClass());
+				
+				Collection<ScopeType> scopeTypes = scopeFunctions.stream().map(scopeFunction -> scopeFunction.getScope().getType()).collect(Collectors.toSet());
+				for(ScopeType scopeType : scopeTypes) {
+					Collection<ScopeFunction> __scopeFunctions__ = scopeFunctions.stream().filter(scopeFunction -> scopeFunction.getScope().getType().equals(scopeType)).collect(Collectors.toList());
+					if(CollectionHelper.isEmpty(__scopeFunctions__))
+						continue;
+					__codify__(scopeType.getCode(),__scopeFunctions__,function.getScopeFunctionCodeScript(),function.getScopeFunctionNameScript());
+				}
+				LogHelper.logInfo(String.format("\t\tEnregistrement",scopeFunctions.size()), getClass());
+				EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class,scopeFunctions));
+			}
+			*/
+			// 2 - 
+			//LogHelper.logInfo(String.format("\tTraitement des postes par type de domaine"), getClass());
 			Collection<ScopeTypeFunction> scopeTypeFunctionsOfFunction = scopeTypeFunctions.stream()
 					.filter(scopeTypeFunction -> scopeTypeFunction.getFunction().equals(function)).collect(Collectors.toList()); 
 			LogHelper.logInfo(String.format("\tNombre d'association(s) avec type de domaine : %s",scopeTypeFunctionsOfFunction.size()), getClass());
@@ -249,7 +306,6 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class,scopeFunctions));
 			}
 		}
-		ExecutionImputationQuerier.refreshMaterializedView();
 		Long duration = System.currentTimeMillis() - t0;
 		LogHelper.logInfo(String.format("Codification des postes terminée en %s", TimeHelper.formatDuration(duration)), getClass());
 	}

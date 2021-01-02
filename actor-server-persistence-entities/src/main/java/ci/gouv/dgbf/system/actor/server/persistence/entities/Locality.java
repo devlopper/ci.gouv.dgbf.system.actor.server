@@ -33,4 +33,6 @@ public class Locality extends AbstractIdentifiableSystemScalarStringIdentifiable
 	}
 	
 	public static final String TABLE_NAME = "VM_APP_LOCALITE";
+	
+	public static final String CODE_SOUS_PREFECTURE_BINGERVILLE = "780102";
 }

@@ -62,11 +62,11 @@ public class PersistenceApiScopeFunctionUnitTest extends AbstractPersistenceUnit
 	protected void createData() {
 		EntityCreator.getInstance().createManyInTransaction(new ScopeType().setCode(ScopeType.CODE_SECTION),new ScopeType().setCode(ScopeType.CODE_USB)
 				,new ScopeType().setCode(ScopeType.CODE_UA),new FunctionType().setCode("BUD"));
-		EntityCreator.getInstance().createManyInTransaction(new Function().setCode("GC").setTypeFromIdentifier("BUD"));
+		EntityCreator.getInstance().createManyInTransaction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setTypeFromIdentifier("BUD"));
 		EntityCreator.getInstance().createManyInTransaction(new Scope().setCode("101").setTypeFromIdentifier(ScopeType.CODE_SECTION)
 				,new Scope().setCode("103").setTypeFromIdentifier(ScopeType.CODE_SECTION)
 				,new Scope().setCode("102").setTypeFromIdentifier(ScopeType.CODE_SECTION));
 		
-		EntityCreator.getInstance().createManyInTransaction(new ScopeFunction().setCode("GC101").setScopeFromIdentifier("101").setFunctionFromIdentifier("GC"));
+		EntityCreator.getInstance().createManyInTransaction(new ScopeFunction().setCode("GC101").setScopeFromIdentifier("101").setFunctionFromIdentifier(Function.CODE_CREDIT_MANAGER_HOLDER));
 	}
 }
