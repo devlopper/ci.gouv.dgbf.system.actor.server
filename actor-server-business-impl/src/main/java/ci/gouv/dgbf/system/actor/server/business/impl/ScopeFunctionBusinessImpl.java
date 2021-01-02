@@ -20,6 +20,7 @@ import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.runnable.Executor;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
@@ -302,7 +303,10 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				LogHelper.logInfo(String.format("\t\tCodification"), getClass());
 				__codify__(scopeTypeFunction.getScopeType().getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement",scopeFunctions.size()), getClass());
-				EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class,scopeFunctions));
+				QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+				queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class,scopeFunctions));
+				queryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
+				EntityUpdater.getInstance().update(queryExecutorArguments);
 			}
 		}
 		Long duration = System.currentTimeMillis() - t0;

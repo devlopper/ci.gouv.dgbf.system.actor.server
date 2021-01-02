@@ -6,7 +6,6 @@ import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
-import org.junit.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
@@ -55,16 +54,7 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		// TODO Auto-generated method stub
 		//super.__listenBefore__();
 	}
-	
-	@Test
-	public void executionImputation_refresh(){
-		ExecutionImputationQuerier.refreshMaterializedView();
-		ExecutionImputationQuerier.refreshMaterializedView();
-		ExecutionImputationQuerier.refreshMaterializedView();
-		ExecutionImputationQuerier.refreshMaterializedView();
-		ExecutionImputationQuerier.refreshMaterializedView();
-	}
-	
+		
 	//@Test
 	public void executionImputation_readWhereFilter(){
 		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;

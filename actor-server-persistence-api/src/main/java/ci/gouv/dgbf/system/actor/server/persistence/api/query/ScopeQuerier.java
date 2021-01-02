@@ -519,7 +519,7 @@ public interface ScopeQuerier extends Querier {
 						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t)")
 				,Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT t FROM Scope t WHERE t.type.identifier IN :"+PARAMETER_NAME_TYPES_IDENTIFIERS
-						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t AND sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS+")")
+						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t AND sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS+") ORDER BY t.code ASC")
 			);		
 		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_ALL_01
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class,Query.FIELD_VALUE,QUERY_VALUE_COUNT_ALL_01));

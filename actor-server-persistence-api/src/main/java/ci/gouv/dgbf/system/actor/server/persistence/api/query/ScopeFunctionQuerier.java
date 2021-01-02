@@ -291,7 +291,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT COUNT(sf) FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
-						, String.format("SELECT t FROM ScopeFunction t WHERE t.scope.type.identifier IN :%s AND t.function.identifier IN :%s"
+						, String.format("SELECT t FROM ScopeFunction t WHERE t.scope.type.identifier IN :%s AND t.function.identifier IN :%s ORDER BY t.function.code ASC,t.scope.code ASC"
 								,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS))
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
