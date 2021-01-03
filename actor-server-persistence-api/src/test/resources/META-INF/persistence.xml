@@ -79,7 +79,7 @@
 		  	<property name ="hibernate.show_sql" value = "false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false"/>
-			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
 		</properties>
 	</persistence-unit>
 	
@@ -158,7 +158,7 @@
 		  	<property name ="hibernate.show_sql" value = "false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false"/>
-			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
 		</properties>
 	</persistence-unit>
 	
@@ -237,7 +237,7 @@
 		  	<property name ="hibernate.show_sql" value = "false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false"/>
-			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
 		</properties>
 	</persistence-unit>
 	
@@ -316,7 +316,7 @@
 		  	<property name ="hibernate.show_sql" value = "false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false"/>
-			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
 		</properties>
 	</persistence-unit>
 </persistence>

@@ -71,7 +71,7 @@
 			<property name="hibernate.hbm2ddl.auto" value="validate"/>
 			<property name="hibernate.show_sql" value="false"/>
 			<property name="hibernate.format_sql" value="false"/>
-			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.__kernel__.object.__static__.persistence.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
 		</properties>
     </persistence-unit>  
 </persistence>

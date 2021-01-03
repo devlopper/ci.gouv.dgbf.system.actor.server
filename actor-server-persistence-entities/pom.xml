@@ -20,11 +20,18 @@
 			<artifactId>jee-utility-server-persistence</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-				
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.persistence.server.hibernate</groupId>
+			<artifactId>jee-utility-persistence-server-hibernate</artifactId>
+			<version>0.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-envers</artifactId>
-			<version>${org.hibernate.hibernate-envers.version}</version>
+			<version>${org.hibernate.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		
