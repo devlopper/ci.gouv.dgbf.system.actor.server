@@ -40,6 +40,8 @@ public interface ScopeTypeFunctionQuerier extends Querier {
 	Collection<ScopeTypeFunction> readByFunctionsIdentifiers(QueryExecutorArguments queryExecutorArguments);
 	Collection<ScopeTypeFunction> readByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
+	//String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS_FOR_UI = QueryIdentifierBuilder.getInstance().build(ScopeTypeFunction.class, "readByFunctionsIdentifiersOrderByCodeAscendingForUI");
+	
 	/* count by functions identifiers */
 	String QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS);
 	Long countByFunctionsIdentifiers(QueryExecutorArguments queryExecutorArguments);

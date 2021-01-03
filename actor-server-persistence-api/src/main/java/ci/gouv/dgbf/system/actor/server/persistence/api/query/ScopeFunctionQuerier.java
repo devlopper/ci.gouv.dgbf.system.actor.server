@@ -2,13 +2,13 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
+import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -42,6 +42,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
+	String PARAMETER_NAME_SCOPE_CODE_NAME = "scopeCodeName";
+	//String PARAMETER_NAME_SCOPE_CODE = "scopeCode";
+	//String PARAMETER_NAME_SCOPE_NAME = "scopeName";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
 	
@@ -235,6 +238,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
+			
+			//filter.addFieldContains(PARAMETER_NAME_SCOPE_CODE, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SCOPE_CODE_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -336,6 +342,15 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				String.format("(:%s = true OR t.function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
 				,like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
 				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				
+				//,like("t", FieldHelper.join(ScopeFunction.FIELD_SCOPE,Function.FIELD_CODE), PARAMETER_NAME_SCOPE_CODE)
+				//,like("t", FieldHelper.join(ScopeFunction.FIELD_SCOPE,Function.FIELD_NAME), PARAMETER_NAME_SCOPE_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				,parenthesis(or(
+						like("t", FieldHelper.join(ScopeFunction.FIELD_SCOPE,Function.FIELD_CODE), PARAMETER_NAME_SCOPE_CODE_NAME)
+						,like("t", FieldHelper.join(ScopeFunction.FIELD_SCOPE,Function.FIELD_NAME), PARAMETER_NAME_SCOPE_CODE_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+						))
+				//,like("t", FieldHelper.join(ScopeFunction.FIELD_SCOPE,Function.FIELD_NAME), PARAMETER_NAME_SCOPE_CODE_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				
 				,like("t", FieldHelper.join(ScopeFunction.FIELD_FUNCTION,Function.FIELD_CODE), PARAMETER_NAME_FUNCTION_CODE)
 			));
 	}

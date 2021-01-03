@@ -386,6 +386,18 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void scopeFunction_readWhereFilter(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER);
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE,Function.CODE_AUTHORIZING_OFFICER_HOLDER);
+		//queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_NAME,"trait dir inf");
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,"toumodi DUR");
+		//queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_NAME,"abidjan");
+		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {System.out.println(x.getScopeAsString()+" - "+x.getFunctionAsString());});
+	}
+	
+	@Test
 	public void scopeFunction_readByFunctionCodes(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		ScopeFunctionQuerier.getInstance().readByFunctionsCodes(Function.CODE_FINANCIAL_CONTROLLER_HOLDER).forEach(x -> {System.out.println(x);});
