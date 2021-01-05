@@ -16,7 +16,9 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	String DERIVE_BY_FUNCTIONS = "ScopeFunction.deriveByFunctions";
 	void deriveByFunctions(Collection<Function> functions);
 	String DERIVE_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deriveByFunctionsIdentifiers";
-	void deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	void deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);	
+	String DERIVE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers";
+	void deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
 	String CODIFY = "ScopeFunction.codify";
 	@Transactional
@@ -27,11 +29,15 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	void codifyByFunctions(Collection<Function> functions);
 	String CODIFY_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.codifyByFunctionsIdentifiers";
 	void codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	String CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "ScopeFunction.codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers";
+	void codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
 	String DELETE_BY_FUNCTIONS = "ScopeFunction.deleteByFunctions";
 	void deleteByFunctions(Collection<Function> functions);
 	String DELETE_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deleteByFunctionsIdentifiers";
 	void deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
+	String DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers";
+	void deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
 	String SAVE = "ScopeFunction.save";
 		

@@ -33,11 +33,12 @@ import org.cyk.utility.server.business.BusinessFunctionModifier;
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountingService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -72,7 +73,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Long t0 = System.currentTimeMillis();
 		LogHelper.logInfo(String.format("Dérivation des postes des fonctions %s",functions), getClass());		
 		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(functions));
-		Locality locality = null;
+		
 		for(Function function : functions) {
 			LogHelper.logInfo(String.format("\tTraitement de la fonction %s",function), getClass());
 			Collection<ScopeTypeFunction> scopeTypeFunctionsOfFunction = scopeTypeFunctions.stream()
@@ -99,11 +100,14 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 				Collection<ScopeFunction> scopeFunctions = new ArrayList<>();
 				for(Scope scope : scopes) {
+					Locality locality = null;
 					if(scope.getType().getCode().equals(ScopeType.CODE_SERVICE_ORD)) {
-						locality = EntityFinder.getInstance().find(AuthorizingOfficerService.class, scope.getIdentifier()).getLocality();
+						AuthorizingOfficerService authorizingOfficerService = EntityFinder.getInstance().find(AuthorizingOfficerService.class, scope.getIdentifier());
+						if(authorizingOfficerService != null)
+							locality = authorizingOfficerService.getLocality();
 					}
-					if(locality == null)
-						locality = LocalityQuerier.getInstance().readByCode(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE);
+					//if(locality == null)
+					//	locality = LocalityQuerier.getInstance().readByCode(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE);
 					ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setLocality(locality).setNumberOfActor(function.getNumberOfActorPerScope());
 					scopeFunctions.add(scopeFunction);
 				}
@@ -124,6 +128,25 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	public void deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functionsIdentifiers", functionsIdentifiers);
 		deriveByFunctions(EntityFinder.getInstance().findMany(Function.class, functionsIdentifiers));
+	}
+	
+	protected Collection<Function> getHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		Collection<Function> functions = EntityFinder.getInstance().findMany(Function.class, holdersFunctionsIdentifiers);
+		if(CollectionHelper.isNotEmpty(functions)) {
+			for(Function function : functions) {
+				Function assistantFunction = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(function.getCode()));
+				if(assistantFunction == null)
+					continue;
+				functions.add(function);
+			}
+		}
+		return functions;
+	}
+	
+	@Override
+	public void deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("holdersFunctionsIdentifiers", holdersFunctionsIdentifiers);
+		deriveByFunctions(getHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers));
 	}
 	
 	@Override
@@ -196,6 +219,33 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices)
 						if(scopeFunction.getScope().getIdentifier().equals(authorizingOfficerService.getIdentifier())) {
 							scopeFunction.setBudgetSpecializationUnit(authorizingOfficerService.getBudgetSpecializationUnit());
+							scopeFunction.setLocality(authorizingOfficerService.getLocality());
+							break;
+						}
+				}
+			}			
+		}else if(ScopeType.CODE_SERVICE_CF.equals(scopeTypeCode)) {
+			List<String> financialControllerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
+			List<List<String>> batches = CollectionHelper.getBatches(financialControllerServiceIdentifiers, 900);
+			for(List<String> identifiers : batches) {
+				Collection<FinancialControllerService> financialControllerServices = EntityFinder.getInstance().findMany(FinancialControllerService.class, identifiers);
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					for(FinancialControllerService financialControllerService : financialControllerServices)
+						if(scopeFunction.getScope().getIdentifier().equals(financialControllerService.getIdentifier())) {
+							scopeFunction.setLocality(financialControllerService.getLocality());
+							break;
+						}
+				}
+			}			
+		}else if(ScopeType.CODE_SERVICE_CPT.equals(scopeTypeCode)) {
+			List<String> accountingServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
+			List<List<String>> batches = CollectionHelper.getBatches(accountingServiceIdentifiers, 900);
+			for(List<String> identifiers : batches) {
+				Collection<AccountingService> accountingServices = EntityFinder.getInstance().findMany(AccountingService.class, identifiers);
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					for(AccountingService accountingService : accountingServices)
+						if(scopeFunction.getScope().getIdentifier().equals(accountingService.getIdentifier())) {
+							scopeFunction.setLocality(accountingService.getLocality());
 							break;
 						}
 				}
@@ -320,6 +370,12 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	}
 	
 	@Override
+	public void codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("holdersFunctionsIdentifiers", holdersFunctionsIdentifiers);
+		codifyByFunctions(getHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers));
+	}
+	
+	@Override
 	public void codifyAll() {
 		Collection<Function> functions = FunctionQuerier.getInstance().readWhereAssociatedToScopeType();
 		if(CollectionHelper.isEmpty(functions))
@@ -339,6 +395,12 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	public void deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functionsIdentifiers", functionsIdentifiers);
 		deleteByFunctions(EntityFinder.getInstance().findMany(Function.class, functionsIdentifiers));
+	}
+	
+	@Override
+	public void deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("holdersFunctionsIdentifiers", holdersFunctionsIdentifiers);
+		deleteByFunctions(getHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers));
 	}
 
 	@Override

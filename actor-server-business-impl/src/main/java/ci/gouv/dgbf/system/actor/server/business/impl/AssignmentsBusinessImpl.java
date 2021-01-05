@@ -17,6 +17,7 @@ import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -24,14 +25,19 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AssignmentsPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountingServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FinancialControllerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountingService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ApplicationScoped
@@ -69,24 +75,44 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		Collection<AuthorizingOfficerService> authorizingOfficerServices = AuthorizingOfficerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
 		LogHelper.logInfo(String.format("%s service(s) d'ordonnateur(s) chargé(s)",authorizingOfficerServices.size()), getClass());
 		
+		//4 - get financial controller services to assign
+		Long numberOfFinancialControllerServices = FinancialControllerServiceQuerier.getInstance().countAll();
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de controleur(s) financier(s) en mémoire...",numberOfFinancialControllerServices), getClass());
+		Collection<FinancialControllerService> financialControllerServices = FinancialControllerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
+		LogHelper.logInfo(String.format("%s service(s) de controleur(s) financier(s) chargé(s)",financialControllerServices.size()), getClass());
+		
+		//5 - get accounting services to assign
+		Long numberOfAccountingServices = AccountingServiceQuerier.getInstance().countAll();
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de comptable(s) en mémoire...",numberOfAccountingServices), getClass());
+		Collection<AccountingService> accountingServices = AccountingServiceQuerier.getInstance().readAllForAssignmentsInitialization();
+		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",accountingServices.size()), getClass());
+		
 		LogHelper.logInfo(String.format("Read batch size = %s",INITIALIZE_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE), getClass());
 		do {
 			numberOfExecutionImputations = ExecutionImputationQuerier.getInstance().countIdentifiersNotInAssignments();
 			LogHelper.logInfo(String.format("%s imputation(s) à initialiser", numberOfExecutionImputations), getClass());
 			if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 				break;
-			initialize(scopeFunctions,authorizingOfficerServices,transactionResult);
+			initialize(scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices,transactionResult);
 			System.gc();
 			//break;
 		}while(true);
 		scopeFunctions.clear();
 		scopeFunctions = null;
+		authorizingOfficerServices.clear();
+		authorizingOfficerServices = null;
+		financialControllerServices.clear();
+		financialControllerServices = null;
+		accountingServices.clear();
+		accountingServices = null;
 		
 		transactionResult.log(getClass());
 		return transactionResult;
 	}
 
-	private void initialize(Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices,TransactionResult transactionResult) {
+	private void initialize(Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
+			,Collection<FinancialControllerService> financialControllerServices,Collection<AccountingService> accountingServices
+			,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
 		Collection<ExecutionImputation> executionImputations = ExecutionImputationQuerier.getInstance().readNotInAssignmentsForInitialization(
 				new QueryExecutorArguments().setNumberOfTuples(INITIALIZE_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE));
@@ -100,7 +126,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		executionImputations.clear();
 		
 		collection.parallelStream().forEach(assignments -> {
-			setScopeFunctions(assignments, authorizingOfficerServices, scopeFunctions);		
+			setScopeFunctions(assignments, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
 		});		
 		LogHelper.logInfo(String.format("\tPostes attribués en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		t = System.currentTimeMillis();
@@ -120,40 +146,97 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("\tCréation en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 	}
 	
-	private static void setScopeFunctions(Assignments assignments,Collection<AuthorizingOfficerService> authorizingOfficerServices
-			,Collection<ScopeFunction> scopeFunctions) {
-		assignments.setCreditManagerHolder(findScopeFunction(assignments.getExecutionImputation().getAdministrativeUnitCode(), Function.CODE_CREDIT_MANAGER_HOLDER, scopeFunctions));
-		assignments.setCreditManagerAssistant(findScopeFunction(assignments.getExecutionImputation().getAdministrativeUnitCode(), Function.CODE_CREDIT_MANAGER_ASSISTANT, scopeFunctions));
-		assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceScopeFunction(assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
+	private static void setScopeFunctions(Assignments assignments,Collection<ScopeFunction> scopeFunctions
+			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
+			,Collection<AccountingService> accountingServices) {
+		assignments.setCreditManagerHolder(findCreditManagerHolderScopeFunction(assignments.getExecutionImputation().getAdministrativeUnitCode(), scopeFunctions));
+		assignments.setCreditManagerAssistant(findAssistantScopeFunction(assignments.getCreditManagerHolder(),Function.CODE_CREDIT_MANAGER_ASSISTANT, scopeFunctions));
+		
+		assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceHolderScopeFunction(assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
 				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(),authorizingOfficerServices, scopeFunctions));
-		assignments.setAuthorizingOfficerAssistant(findScopeFunction(assignments.getExecutionImputation().getBudgetSpecializationUnitCode(), Function.CODE_AUTHORIZING_OFFICER_ASSISTANT, scopeFunctions));
-		assignments.setFinancialControllerHolder(findScopeFunction(assignments.getExecutionImputation().getSectionCode(), Function.CODE_FINANCIAL_CONTROLLER_HOLDER, scopeFunctions));
-		assignments.setFinancialControllerAssistant(findScopeFunction(assignments.getExecutionImputation().getSectionCode(), Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT, scopeFunctions));
-		assignments.setAccountingHolder(findScopeFunction(assignments.getExecutionImputation().getSectionCode(), Function.CODE_ACCOUNTING_HOLDER, scopeFunctions));
-		assignments.setAccountingAssistant(findScopeFunction(assignments.getExecutionImputation().getSectionCode(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
+		assignments.setAuthorizingOfficerAssistant(findAssistantScopeFunction(assignments.getAuthorizingOfficerHolder(),Function.CODE_AUTHORIZING_OFFICER_ASSISTANT, scopeFunctions));
+		
+		assignments.setFinancialControllerHolder(findFinancialControllerServiceHolderScopeFunction(assignments.getExecutionImputation().getSectionCode()
+				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(), financialControllerServices, scopeFunctions));
+		assignments.setFinancialControllerAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT, scopeFunctions));
+		
+		assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(assignments.getExecutionImputation().getSectionCode()
+				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(), accountingServices, scopeFunctions));
+		assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
 	}
 	
-	private static ScopeFunction findScopeFunction(String scopeCode,String functionCode,Collection<ScopeFunction> scopeFunctions) {
+	private static ScopeFunction findCreditManagerHolderScopeFunction(String scopeCode,Collection<ScopeFunction> scopeFunctions) {
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			//System.out.println(scopeFunction.getScopeCode()+" = "+scopeCode+" , "+scopeFunction.getFunctionAsString()+" = "+functionCode);
-			if(scopeFunction.getScopeCode().equals(scopeCode) && scopeFunction.getFunctionAsString().equals(functionCode))
+			if(scopeFunction.getScopeCode().equals(scopeCode) && scopeFunction.getFunctionAsString().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
 				return scopeFunction;
 		}
 		return null;
 	}
 	
-	private static ScopeFunction findAuthorizingOfficerServiceScopeFunction(String budgetSpecializationUnitCode,String localityCode
+	private static ScopeFunction findAssistantScopeFunction(ScopeFunction holder,String assistantFunctionCode,Collection<ScopeFunction> scopeFunctions) {
+		if(holder == null)
+			return null;
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getScopeCode().startsWith(holder.getCode()))
+				return scopeFunction;
+		}
+		return null;
+	}
+	
+	private static ScopeFunction findAuthorizingOfficerServiceHolderScopeFunction(String budgetSpecializationUnitCode,String localityCode
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<ScopeFunction> scopeFunctions) {
 		for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
-			//System.out.println(authorizingOfficerService.getBudgetSpecializationUnitCode()+" "+budgetSpecializationUnitCode
-			//		+" / "+authorizingOfficerService.getLocalityCode()+" = "+localityCode);
-			if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
-					&& authorizingOfficerService.getLocalityCode().equals(localityCode)) {
-				for(ScopeFunction scopeFunction : scopeFunctions)
-					if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
-						return scopeFunction;
-				break;
-			}
+			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
+				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
+						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}else {
+				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
+						&& StringHelper.isNotBlank(localityCode) && localityCode.equals(authorizingOfficerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}			
+		}
+		return null;
+	}
+	
+	private static ScopeFunction findFinancialControllerServiceHolderScopeFunction(String sectionCode,String localityCode
+			,Collection<FinancialControllerService> financialControllerServices,Collection<ScopeFunction> scopeFunctions) {
+		for(FinancialControllerService financialControllerService : financialControllerServices) {
+			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
+				
+			}else {
+				if(StringHelper.isNotBlank(localityCode) && localityCode.equals(financialControllerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}			
+		}
+		return null;
+	}
+	
+	private static ScopeFunction findAccountingServiceHolderScopeFunction(String sectionCode,String localityCode
+			,Collection<AccountingService> accountingServices,Collection<ScopeFunction> scopeFunctions) {
+		for(AccountingService accountingService : accountingServices) {
+			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
+				
+			}else {
+				if(StringHelper.isNotBlank(localityCode) && localityCode.equals(accountingService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(accountingService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}			
 		}
 		return null;
 	}

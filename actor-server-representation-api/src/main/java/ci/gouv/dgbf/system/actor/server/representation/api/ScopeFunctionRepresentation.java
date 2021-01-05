@@ -38,6 +38,13 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	Response deriveByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	@POST
+	@Path(PATH_DERIVE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Dériver les postes par fonctions")
+	Response deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
+	
+	@POST
 	@Path(PATH_CODIFY_ALL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -52,18 +59,35 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	Response codifyByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
 	@POST
+	@Path(PATH_CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Codifier les postes par fonctions")
+	Response codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
+	
+	@POST
 	@Path(PATH_DELETE_BY_FUNCTIONS_IDENTIFIERS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Supprimer les postes par fonctions")
 	Response deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
 	
+	@POST
+	@Path(PATH_DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Supprimer les postes par fonctions")
+	Response deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
+	
 	String PATH_SAVE = "save";
 	String PATH_DERIVE_ALL = "deriveAll";
 	String PATH_DERIVE_BY_FUNCTIONS_IDENTIFIERS = "deriveByFunctionsIdentifiers";
+	String PATH_DERIVE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers";
 	String PATH_CODIFY_ALL = "codifyAll";
 	String PATH_CODIFY_BY_FUNCTIONS_IDENTIFIERS = "codifyByFunctionsIdentifiers";
+	String PATH_CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers";
 	String PATH_DELETE_BY_FUNCTIONS_IDENTIFIERS = "deleteByFunctionsIdentifiers";
+	String PATH_DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers";
 	String PATH = "scopefunction";
 
 	String TAG = ScopeRepresentation.TAG;

@@ -43,7 +43,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Transient private String functionAsString;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) @NotNull private Locality locality;
+	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
 	@Transient private String localityAsString;
 	@Transient private String localityIdentifier;
 	@Transient private String localityCode;
@@ -313,6 +313,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			if(scopeFunction.budgetSpecializationUnit != null) {
 				scriptDto.usb.code = scopeFunction.budgetSpecializationUnit.getCode();
 				scriptDto.usb.libelle = scopeFunction.budgetSpecializationUnit.getName();
+				
+				if(scopeFunction.budgetSpecializationUnit.getSection() != null) {
+					scriptDto.section.code = scopeFunction.budgetSpecializationUnit.getSection().getCode();
+					scriptDto.section.libelle = scopeFunction.budgetSpecializationUnit.getSection().getName();
+				}
 			}
 			
 			/* Functions */
@@ -320,8 +325,12 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			scriptDto.fonction.libelle = scopeFunction.function.getName();
 			
 			/* Localities */
-			scriptDto.localite.code = scopeFunction.locality.getCode();
-			scriptDto.localite.libelle = scopeFunction.locality.getName();
+			if(scopeFunction.locality == null) {
+				scriptDto.localite = null;
+			}else {
+				scriptDto.localite.code = scopeFunction.locality.getCode();
+				scriptDto.localite.libelle = scopeFunction.locality.getName();
+			}
 			return scriptDto;
 		}
 		

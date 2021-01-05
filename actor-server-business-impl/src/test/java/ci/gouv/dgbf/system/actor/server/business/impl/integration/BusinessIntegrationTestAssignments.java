@@ -7,7 +7,9 @@ import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArq
 import org.junit.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
@@ -54,12 +56,15 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	
 	@Test
 	public void assignments_all(){
-		__inject__(AssignmentsBusiness.class).deleteAll();		
-		__inject__(AssignmentsBusiness.class).initialize();		
+		Function function = FunctionQuerier.getInstance().readByCode(Function.CODE_CREDIT_MANAGER_HOLDER);
+		__inject__(ScopeFunctionBusiness.class).deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(List.of(function.getIdentifier()));
+		__inject__(ScopeFunctionBusiness.class).deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(List.of(function.getIdentifier()));
+		//__inject__(AssignmentsBusiness.class).deleteAll();		
+		//__inject__(AssignmentsBusiness.class).initialize();		
 		Assignments model = new Assignments();
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");
-		__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
+		//__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
 	}
 	
 	//@Test

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -49,6 +50,15 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void scopeFunction_readAllWithReferencesOnly(){
+		//ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly(new QueryExecutorArguments())
+		//.forEach(x-> System.out.println(x.getScopeCode()+" - "+x.getLocalityCode()));
+		
+		AuthorizingOfficerServiceQuerier.getInstance().readAllForAssignmentsInitialization()
+		.forEach(x-> System.out.println(x.getIdentifier()+" - "+x.getBudgetSpecializationUnitCode()+" - "+x.getLocalityCode()));
 	}
 	
 	@Test

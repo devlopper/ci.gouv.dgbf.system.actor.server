@@ -54,7 +54,8 @@ public interface AuthorizingOfficerServiceQuerier extends Querier.CodableAndNama
 		//Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
 		QueryHelper.addQueries(
 			Query.buildSelect(AuthorizingOfficerService.class, QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION
-					, "SELECT t.identifier,t.budgetSpecializationUnit.code,t.locality.code FROM AuthorizingOfficerService t")
+					, "SELECT t.identifier,t.budgetSpecializationUnit.code,locality.code FROM AuthorizingOfficerService t "
+							+ "LEFT JOIN Locality locality ON locality = t.locality")
 			.setTupleFieldsNamesIndexesFromFieldsNames(AuthorizingOfficerService.FIELD_IDENTIFIER,AuthorizingOfficerService.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE
 					,AuthorizingOfficerService.FIELD_LOCALITY_CODE)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_ALL, "SELECT COUNT(t.identifier) FROM AuthorizingOfficerService t")

@@ -84,15 +84,20 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final String TABLE_NAME = "FONCTION";	
 	
+	public static final String FORMAT_ASSISTANT_CODE = "A%s";
+	public static String formatAssistantCode(String holderCode) {
+		return String.format(FORMAT_ASSISTANT_CODE, holderCode);
+	}
+	
 	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
 	public static final String CODE_CREDIT_MANAGER_HOLDER = "GC";
-	public static final String CODE_CREDIT_MANAGER_ASSISTANT = "AGC";
+	public static final String CODE_CREDIT_MANAGER_ASSISTANT = formatAssistantCode(CODE_CREDIT_MANAGER_HOLDER);
 	public static final String CODE_AUTHORIZING_OFFICER_HOLDER = "ORD";
-	public static final String CODE_AUTHORIZING_OFFICER_ASSISTANT = "AORD";
+	public static final String CODE_AUTHORIZING_OFFICER_ASSISTANT = formatAssistantCode(CODE_AUTHORIZING_OFFICER_HOLDER);
 	public static final String CODE_FINANCIAL_CONTROLLER_HOLDER = "CF";
-	public static final String CODE_FINANCIAL_CONTROLLER_ASSISTANT = "ACF";
+	public static final String CODE_FINANCIAL_CONTROLLER_ASSISTANT = formatAssistantCode(CODE_FINANCIAL_CONTROLLER_HOLDER);
 	public static final String CODE_ACCOUNTING_HOLDER = "CPT";
-	public static final String CODE_ACCOUNTING_ASSISTANT = "ACPT";
+	public static final String CODE_ACCOUNTING_ASSISTANT = formatAssistantCode(CODE_ACCOUNTING_HOLDER);
 	
 	public static final Collection<String> EXECUTION_CODES = List.of(CODE_CREDIT_MANAGER_HOLDER,CODE_CREDIT_MANAGER_ASSISTANT,CODE_AUTHORIZING_OFFICER_HOLDER
 			,CODE_AUTHORIZING_OFFICER_ASSISTANT,CODE_FINANCIAL_CONTROLLER_HOLDER,CODE_FINANCIAL_CONTROLLER_ASSISTANT,CODE_ACCOUNTING_HOLDER,CODE_ACCOUNTING_ASSISTANT);

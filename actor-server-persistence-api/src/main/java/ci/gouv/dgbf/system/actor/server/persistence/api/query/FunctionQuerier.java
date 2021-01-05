@@ -55,6 +55,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	Long count();
 	
+	String QUERY_IDENTIFIER_READ_BY_CODE = QueryIdentifierBuilder.getInstance().build(Function.class, "readByCode");
+	Function readByCode(String code);
+	
 	/* read by types codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readByTypesCodes");
 	Collection<Function> readByTypesCodes(Collection<String> typesCodes);
@@ -155,6 +158,12 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 							.map(scopeTypeFunction -> scopeTypeFunction.getScopeType()).collect(Collectors.toList()));
 				});	
 			return functions;
+		}
+		
+		@Override
+		public Function readByCode(String code) {
+			return QueryExecutor.getInstance().executeReadOne(Function.class,new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_CODE).addFilterFieldsValues(PARAMETER_NAME_CODE,code));
 		}
 		
 		@Override
@@ -370,6 +379,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				
 				,Query.buildSelect(Function.class, QueryIdentifierGetter.getInstance().get(Function.class, QueryName.READ_BY_BUSINESS_IDENTIFIERS)
 						, jpql(select("t"),from("Function t"),where("t.code IN :"+PARAMETER_NAME_IDENTIFIERS),order(asc("t", "code"))))
+				
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_CODE
+						, jpql(select("t"),from("Function t"),where("t.code = :"+PARAMETER_NAME_CODE)))
 				
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI
 						, jpql(select("t"),from("Function t"),where("t.code = :"+PARAMETER_NAME_CODE)))

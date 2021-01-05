@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountingServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
@@ -31,6 +32,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficer
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FinancialControllerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationAttributeQuerier;
@@ -117,6 +119,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		ActivityCategoryQuerier.initialize();
 		LocalityQuerier.initialize();
 		AuthorizingOfficerServiceQuerier.initialize();
+		FinancialControllerServiceQuerier.initialize();
+		AccountingServiceQuerier.initialize();
 		
 		MenuQuerier.initialize();
 		ServiceQuerier.initialize();

@@ -104,6 +104,21 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 	}
 	
 	@Override
+	public Response deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).deriveHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response codifyAll() {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
@@ -134,6 +149,21 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 	}
 	
 	@Override
+	public Response codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response deleteByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
@@ -142,6 +172,21 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 					@Override
 					public void run() {
 						__inject__(ScopeFunctionBusiness.class).deleteByFunctionsIdentifiers(functionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(ScopeFunctionBusiness.class).deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers);
 					}
 				};
 			}
