@@ -36,6 +36,7 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@ManyToOne @JoinColumn(name = COLUMN_ACTIVITY) private Activity activity;
 	@Column(name = COLUMN_ACTIVITY_CODE) private String activityCode;
 	@Column(name = COLUMN_ACTIVITY_CODE_NAME) private String activityCodeName;
+	@Column(name = COLUMN_ACTIVITY_LOCALITY_CODE) private String activityLocalityCode;
 	
 	@Column(name = COLUMN_ECONOMIC_NATURE_CODE) private String economicNatureCode;
 	@Column(name = COLUMN_ECONOMIC_NATURE_CODE_NAME) private String economicNatureCodeName;
@@ -44,6 +45,11 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_CODE) private String administrativeUnitCode;
 	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME) private String administrativeUnitCodeName;	
 	@Column(name = COLUMN_ADMINISTRATIVE_UNIT_LOCALITY_CODE) private String administrativeUnitLocalityCode;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_MANAGER) private AdministrativeUnit manager;
+	@Column(name = COLUMN_MANAGER_CODE) private String managerCode;
+	@Column(name = COLUMN_MANAGER_CODE_NAME) private String managerCodeName;	
+	@Column(name = COLUMN_MANAGER_LOCALITY_CODE) private String managerLocalityCode;
 	
 	@Column(name = COLUMN_ACTIVITY_CATEGORY_CODE_NAME) private String activityCategoryCodeName;
 	
@@ -100,11 +106,18 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ACTIVITY = "activity";
 	public static final String FIELD_ACTIVITY_CODE = "activityCode";
 	public static final String FIELD_ACTIVITY_CODE_NAME = "activityCodeName";
+	public static final String FIELD_ACTIVITY_LOCALITY_CODE = "activityLocalityCode";
 	public static final String FIELD_ECONOMIC_NATURE_CODE = "economicNatureCode";
 	public static final String FIELD_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE = "administrativeUnitCode";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
+	
+	public static final String FIELD_MANAGER = "manager";
+	public static final String FIELD_MANAGER_CODE = "managerCode";
+	public static final String FIELD_MANAGER_CODE_NAME = "managerCodeName";
+	public static final String FIELD_MANAGER_LOCALITY_CODE = "managerLocalityCode";
+	
 	public static final String FIELD_ADMINISTRATIVE_UNIT_LOCALITY_CODE = "administrativeUnitLocalityCode";
 	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
 	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
@@ -121,11 +134,18 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_ACTIVITY = "ACTIVITE";
 	public static final String COLUMN_ACTIVITY_CODE = "ACTIVITE_CODE";
 	public static final String COLUMN_ACTIVITY_CODE_NAME = "ACTIVITE_CODE_LIBELLE";
+	public static final String COLUMN_ACTIVITY_LOCALITY_CODE = "ACTIVITE_LOCALITE_CODE";
 	public static final String COLUMN_ECONOMIC_NATURE_CODE = "NATURE_ECONOMIQUE_CODE";
 	public static final String COLUMN_ECONOMIC_NATURE_CODE_NAME = "NATURE_ECONOMIQUE_CODE_LIBELLE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT = "UA";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE = "UA_CODE";
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_CODE_NAME = "UA_CODE_LIBELLE";
+	
+	public static final String COLUMN_MANAGER = "GESTIONNAIRE";
+	public static final String COLUMN_MANAGER_CODE = "GESTIONNAIRE_CODE";
+	public static final String COLUMN_MANAGER_CODE_NAME = "GESTIONNAIRE_CODE_LIBELLE";
+	public static final String COLUMN_MANAGER_LOCALITY_CODE = "GESTIONNAIRE_LOCALITE_CODE";
+	
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_LOCALITY_CODE = "UA_LOCALITE_CODE";
 	
 	public static final String COLUMN_ACTIVITY_CATEGORY_CODE_NAME = "CA_CODE_LIBELLE";

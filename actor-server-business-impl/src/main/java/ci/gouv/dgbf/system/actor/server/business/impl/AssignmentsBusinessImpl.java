@@ -37,7 +37,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerS
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ApplicationScoped
@@ -149,25 +148,32 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	private static void setScopeFunctions(Assignments assignments,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices) {
-		assignments.setCreditManagerHolder(findCreditManagerHolderScopeFunction(assignments.getExecutionImputation().getAdministrativeUnitCode(), scopeFunctions));
+		String managerCode = assignments.getExecutionImputation().getManagerCode();
+		if(StringHelper.isBlank(managerCode))
+			managerCode = assignments.getExecutionImputation().getAdministrativeUnitCode();
+		assignments.setCreditManagerHolder(findCreditManagerHolderScopeFunction(managerCode, scopeFunctions));
 		assignments.setCreditManagerAssistant(findAssistantScopeFunction(assignments.getCreditManagerHolder(),Function.CODE_CREDIT_MANAGER_ASSISTANT, scopeFunctions));
 		
-		assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceHolderScopeFunction(assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
-				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(),authorizingOfficerServices, scopeFunctions));
+		assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceHolderScopeFunction(managerCode
+				,assignments.getExecutionImputation().getManagerLocalityCode()
+				,assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
+				,authorizingOfficerServices, scopeFunctions));
 		assignments.setAuthorizingOfficerAssistant(findAssistantScopeFunction(assignments.getAuthorizingOfficerHolder(),Function.CODE_AUTHORIZING_OFFICER_ASSISTANT, scopeFunctions));
 		
-		assignments.setFinancialControllerHolder(findFinancialControllerServiceHolderScopeFunction(assignments.getExecutionImputation().getSectionCode()
-				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(), financialControllerServices, scopeFunctions));
+		assignments.setFinancialControllerHolder(findFinancialControllerServiceHolderScopeFunction(managerCode
+				,assignments.getExecutionImputation().getSectionCode()
+				,assignments.getExecutionImputation().getManagerLocalityCode(), financialControllerServices, scopeFunctions));
 		assignments.setFinancialControllerAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT, scopeFunctions));
 		
-		assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(assignments.getExecutionImputation().getSectionCode()
-				,assignments.getExecutionImputation().getAdministrativeUnitLocalityCode(), accountingServices, scopeFunctions));
+		assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(managerCode
+				,assignments.getExecutionImputation().getSectionCode()
+				,assignments.getExecutionImputation().getManagerLocalityCode(), accountingServices, scopeFunctions));
 		assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
 	}
 	
-	private static ScopeFunction findCreditManagerHolderScopeFunction(String scopeCode,Collection<ScopeFunction> scopeFunctions) {
+	private static ScopeFunction findCreditManagerHolderScopeFunction(String managerCode,Collection<ScopeFunction> scopeFunctions) {
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			if(scopeFunction.getScopeCode().equals(scopeCode) && scopeFunction.getFunctionAsString().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
+			if(scopeFunction.getScopeCode().equals(managerCode) && scopeFunction.getFunctionAsString().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
 				return scopeFunction;
 		}
 		return null;
@@ -183,9 +189,35 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return null;
 	}
 	
-	private static ScopeFunction findAuthorizingOfficerServiceHolderScopeFunction(String budgetSpecializationUnitCode,String localityCode
+	private static ScopeFunction findAuthorizingOfficerServiceHolderScopeFunction(String managerCode,String localityCode,String budgetSpecializationUnitCode
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<ScopeFunction> scopeFunctions) {
-		for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
+		if(StringHelper.isBlank(managerCode))
+			return null;
+		if(managerCode.startsWith("1")) {
+			//Find Délégué
+			for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
+				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
+						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}
+		}else {
+			//Find Secondaire
+			for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
+				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
+						&& StringHelper.isNotBlank(localityCode) && localityCode.equals(authorizingOfficerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}
+		}
+		/*
+		for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {		
 			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
 				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
 						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
@@ -204,11 +236,47 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				}
 			}			
 		}
+		*/
 		return null;
 	}
 	
-	private static ScopeFunction findFinancialControllerServiceHolderScopeFunction(String sectionCode,String localityCode
+	private static ScopeFunction findFinancialControllerServiceHolderScopeFunction(String managerCode,String sectionCode,String localityCode
 			,Collection<FinancialControllerService> financialControllerServices,Collection<ScopeFunction> scopeFunctions) {
+		if(sectionCode.startsWith("1")) {
+			//Find institution's financial controller service
+			for(FinancialControllerService financialControllerService : financialControllerServices) {
+				if(financialControllerService.getCode().equals(FinancialControllerService.CODE_INSTITUTIONS)) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}
+		}else {
+			if(managerCode.startsWith("1")) {
+				//Find section's financial controller service
+				for(FinancialControllerService financialControllerService : financialControllerServices) {
+					if(StringHelper.isNotBlank(sectionCode) && sectionCode.equals(financialControllerService.getSectionCode())) {
+						for(ScopeFunction scopeFunction : scopeFunctions)
+							if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+								return scopeFunction;
+						break;
+					}
+				}
+			}else {
+				//Find locality's financial controller service
+				for(FinancialControllerService financialControllerService : financialControllerServices) {
+					if(StringHelper.isNotBlank(localityCode) && localityCode.equals(financialControllerService.getLocalityCode())) {
+						for(ScopeFunction scopeFunction : scopeFunctions)
+							if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+								return scopeFunction;
+						break;
+					}	
+				}
+			}
+		}
+		
+		/*
 		for(FinancialControllerService financialControllerService : financialControllerServices) {
 			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
 				
@@ -221,11 +289,28 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				}
 			}			
 		}
+		*/
 		return null;
 	}
 	
-	private static ScopeFunction findAccountingServiceHolderScopeFunction(String sectionCode,String localityCode
+	private static ScopeFunction findAccountingServiceHolderScopeFunction(String managerCode,String sectionCode,String localityCode
 			,Collection<AccountingService> accountingServices,Collection<ScopeFunction> scopeFunctions) {
+		
+		if(managerCode.startsWith("1")) {
+			
+		}else {
+			//Find locality's accounting service
+			for(AccountingService accountingService : accountingServices) {
+				if(StringHelper.isNotBlank(localityCode) && localityCode.equals(accountingService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getScopeIdentifier().equals(accountingService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}
+		}
+		
+		/*
 		for(AccountingService accountingService : accountingServices) {
 			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
 				
@@ -238,6 +323,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				}
 			}			
 		}
+		*/
 		return null;
 	}
 	

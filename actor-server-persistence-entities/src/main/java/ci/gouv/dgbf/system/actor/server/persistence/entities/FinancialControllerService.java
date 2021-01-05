@@ -20,6 +20,10 @@ import lombok.experimental.Accessors;
 public class FinancialControllerService extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@Transient private String sectionAsString;
+	@Transient private String sectionCode;
+	
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
 	@Transient private String localityAsString;
 	@Transient private String localityCode;
@@ -29,11 +33,20 @@ public class FinancialControllerService extends AbstractIdentifiableSystemScalar
 		return (FinancialControllerService) super.setIdentifier(identifier);
 	}
 	
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
+	public static final String FIELD_SECTION_CODE = "sectionCode";
+	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
 	public static final String FIELD_LOCALITY_CODE = "localityCode";
 	
 	public static final String TABLE_NAME = "SERVICE_CF";
 	
+	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_LOCALITY = "LOCALITE";
+	
+	public static final String IDENTIFIER_INSTITUTIONS = "CFINSTITUTIONS";
+	
+	public static final String CODE_INSTITUTIONS = "CFINSTITUTIONS";
 }
