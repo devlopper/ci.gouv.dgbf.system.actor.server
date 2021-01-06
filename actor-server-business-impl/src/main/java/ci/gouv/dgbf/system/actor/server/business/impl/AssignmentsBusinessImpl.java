@@ -168,7 +168,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(managerCode
 				,assignments.getExecutionImputation().getSectionCode()
 				,assignments.getExecutionImputation().getManagerLocalityCode(), accountingServices, scopeFunctions));
-		assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
+		assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getAccountingHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
 	}
 	
 	private static ScopeFunction findCreditManagerHolderScopeFunction(String managerCode,Collection<ScopeFunction> scopeFunctions) {
@@ -183,7 +183,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		if(holder == null)
 			return null;
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getScopeCode().startsWith(holder.getCode()))
+			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getCode().startsWith(holder.getCode()))
 				return scopeFunction;
 		}
 		return null;
@@ -199,7 +199,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
 						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
 					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) && scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
 							return scopeFunction;
 					break;
 				}
@@ -210,7 +210,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
 						&& StringHelper.isNotBlank(localityCode) && localityCode.equals(authorizingOfficerService.getLocalityCode())) {
 					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) && scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
 							return scopeFunction;
 					break;
 				}
@@ -247,7 +247,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			for(FinancialControllerService financialControllerService : financialControllerServices) {
 				if(financialControllerService.getCode().equals(FinancialControllerService.CODE_INSTITUTIONS)) {
 					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) && scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
 							return scopeFunction;
 					break;
 				}
@@ -258,7 +258,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				for(FinancialControllerService financialControllerService : financialControllerServices) {
 					if(StringHelper.isNotBlank(sectionCode) && sectionCode.equals(financialControllerService.getSectionCode())) {
 						for(ScopeFunction scopeFunction : scopeFunctions)
-							if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) && scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
 								return scopeFunction;
 						break;
 					}
@@ -268,7 +268,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				for(FinancialControllerService financialControllerService : financialControllerServices) {
 					if(StringHelper.isNotBlank(localityCode) && localityCode.equals(financialControllerService.getLocalityCode())) {
 						for(ScopeFunction scopeFunction : scopeFunctions)
-							if(scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) && scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
 								return scopeFunction;
 						break;
 					}	
@@ -303,7 +303,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			for(AccountingService accountingService : accountingServices) {
 				if(StringHelper.isNotBlank(localityCode) && localityCode.equals(accountingService.getLocalityCode())) {
 					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getScopeIdentifier().equals(accountingService.getIdentifier()))
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_ACCOUNTING_HOLDER) && scopeFunction.getScopeIdentifier().equals(accountingService.getIdentifier()))
 							return scopeFunction;
 					break;
 				}

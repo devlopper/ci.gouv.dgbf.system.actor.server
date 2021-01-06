@@ -408,6 +408,15 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void scopeFunction_readWhereFilterForUI_cf(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"CF");
+		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {System.out.println(x+" - "+x);});
+	}
+	
+	@Test
 	public void scopeFunction_readByFunctionCodes(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		ScopeFunctionQuerier.getInstance().readByFunctionsCodes(Function.CODE_FINANCIAL_CONTROLLER_HOLDER).forEach(x -> {System.out.println(x);});

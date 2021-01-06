@@ -54,18 +54,18 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	
 	@Test
 	public void assignments_all(){
-		__inject__(AssignmentsBusiness.class).deleteAll();		
+		//__inject__(AssignmentsBusiness.class).deleteAll();		
 		try {
-			__inject__(AssignmentsBusiness.class).initialize();
+			//__inject__(AssignmentsBusiness.class).initialize();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
-		/*Assignments model = new Assignments();
+		}
+		
+		Assignments model = new Assignments();
 		Filter filter = new Filter();
-		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");
-		*/
-		//__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");		
+		__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
 	}
 	
 	//@Test
