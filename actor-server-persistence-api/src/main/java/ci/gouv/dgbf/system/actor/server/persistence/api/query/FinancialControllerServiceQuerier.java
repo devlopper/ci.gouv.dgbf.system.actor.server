@@ -54,11 +54,11 @@ public interface FinancialControllerServiceQuerier extends Querier.CodableAndNam
 		//Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
 		QueryHelper.addQueries(
 			Query.buildSelect(FinancialControllerService.class, QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION
-					, "SELECT t.identifier,t.code,section.code,locality.code FROM FinancialControllerService t "
+					, "SELECT t.identifier,t.code,section.code,locality.code,t.activityIdentifier FROM FinancialControllerService t "
 							+ "LEFT JOIN Locality locality ON locality = t.locality "
 							+ "LEFT JOIN Section section ON section = t.section")
 			.setTupleFieldsNamesIndexesFromFieldsNames(FinancialControllerService.FIELD_IDENTIFIER,FinancialControllerService.FIELD_CODE
-					,FinancialControllerService.FIELD_SECTION_CODE,FinancialControllerService.FIELD_LOCALITY_CODE)
+					,FinancialControllerService.FIELD_SECTION_CODE,FinancialControllerService.FIELD_LOCALITY_CODE,FinancialControllerService.FIELD_ACTIVITY_IDENTIFIER)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_ALL, "SELECT COUNT(t.identifier) FROM FinancialControllerService t")
 		);
 		

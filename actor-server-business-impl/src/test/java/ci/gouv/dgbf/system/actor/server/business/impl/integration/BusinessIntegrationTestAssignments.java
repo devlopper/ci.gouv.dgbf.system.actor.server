@@ -1,7 +1,10 @@
 package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -73,6 +76,17 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	public void assignments_deriveAllValues(){
 		try {
 			__inject__(AssignmentsBusiness.class).deriveAllValues(null);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	//@Test
+	public void assignments_deriveValues(){
+		Assignments assignments = EntityFinder.getInstance().find(Assignments.class, "294a1375-0419-4235-9e80-ccaa829eae13");
+		Collection<Assignments> collection = List.of(assignments);
+		try {
+			__inject__(AssignmentsBusiness.class).deriveValues(collection,null);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}

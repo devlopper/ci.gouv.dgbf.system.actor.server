@@ -42,6 +42,21 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 			}
 		});
 	}
+	
+	@Override
+	public Response deriveAllValues(Boolean overridable) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(AssignmentsBusiness.class).deriveAllValues(overridable);
+					}
+				};
+			}
+		});
+	}
 
 	@Override
 	public Response applyModel(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames) {

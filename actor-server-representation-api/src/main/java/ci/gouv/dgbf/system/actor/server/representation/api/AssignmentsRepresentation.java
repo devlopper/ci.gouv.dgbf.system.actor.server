@@ -5,6 +5,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -23,6 +24,13 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Initialiser les affectations")
 	Response initialize();
+	
+	@POST
+	@Path(PATH_DERIVE_ALL_VALUES)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Initialiser les affectations")
+	Response deriveAllValues(@QueryParam(QUERY_PARAMETER_OVERRIDABLE) Boolean overridable);
 	
 	@POST
 	@Path(PATH_APPLY_MODEL)
@@ -46,11 +54,14 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	Response saveScopeFunctions(List<AssignmentsDto> collection);
 	
 	String PATH = "affectations";
+	String PATH_DERIVE_ALL_VALUES = "derivertouteslesvaleurs";
 	String PATH_INITIALIZE = "initialize";
 	String PATH_APPLY_MODEL = "applyModel";
 	String PATH_APPLY_MODEL_INTERNAL = "applyModelInternal";
 	String PATH_SAVE_SCOPE_FUNCTIONS = "saveScopeFunctions";
 	String TAG = "Affectations";
+	
+	String QUERY_PARAMETER_OVERRIDABLE = "ecraser";
 	
 	static AssignmentsRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(AssignmentsRepresentation.class);
