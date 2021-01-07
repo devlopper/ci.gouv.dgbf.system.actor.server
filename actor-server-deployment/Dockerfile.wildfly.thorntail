@@ -6,6 +6,7 @@ ENV SIIB_DB_USER acteur
 ENV SIIB_DB_PASSWORD acteur
 ENV KEYCLOAK_REALM SIIBTEST
 #ENV security.single.sign.on.system.keycloak.prod.realm.name SIIBTEST
+ENV security.single.sign.on.system.keycloak.prod.url http://10.3.4.60:8080/auth
 ENV security.single.sign.on.system.keycloak.prod.client.identifier admin-cli
 ENV security.single.sign.on.system.keycloak.prod.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
 ENV security.single.sign.on.system.keycloak.prod.credential.username mic-acteur-api

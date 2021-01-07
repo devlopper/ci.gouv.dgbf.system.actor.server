@@ -48,6 +48,7 @@ public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringImpl i
 	
 	private Filter.Dto filter;
 	private List<String> overridablesFieldsNames;
+	private Boolean overridable;
 	
 	@Override
 	public AssignmentsDto setIdentifier(String identifier) {

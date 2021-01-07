@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -18,11 +19,11 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=ExecutionImputation.TABLE_NAME)
-/*@SecondaryTables(value= @SecondaryTable(name = ExecutionImputation.VIEW_NAME))
+/*@SecondaryTables(value= @SecondaryTable(name = ExecutionImputation.VIEW_NAME))*/
 @NamedStoredProcedureQuery(
 	name = ExecutionImputation.PROCEDURE_REFRESH_MATERIALIZED_VIEW, 
 	procedureName = "PROC_REFRESH_VM_APP_EX_IP"
-)*/
+)
 public class ExecutionImputation extends AbstractImputation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

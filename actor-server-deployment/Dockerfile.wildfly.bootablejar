@@ -14,11 +14,13 @@ ENV ORACLE_PASSWORD '${env.SIIB_DB_PASSWORD}'
 
 # -- SIGNLE SING ON SYSTEM : KEYCLOAK --
 ENV KEYCLOAK_REALM SIIBTEST
-ENV security.single.sign.on.system.keycloak.prod.realm.name SIIBTEST
-ENV security.single.sign.on.system.keycloak.prod.client.identifier admin-cli
-ENV security.single.sign.on.system.keycloak.prod.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
-ENV security.single.sign.on.system.keycloak.prod.credential.username mic-acteur-api
-ENV security.single.sign.on.system.keycloak.prod.credential.password mic-@cteur-@pi@2O2o
+ENV cyk.variable.keycloak.enabled true
+ENV cyk.variable.keycloak.server.url http://10.3.4.60:8080/auth
+ENV cyk.variable.keycloak.realm.name SIIBTEST
+ENV cyk.variable.keycloak.client.identifier admin-cli
+ENV cyk.variable.keycloak.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
+ENV cyk.variable.keycloak.credential.username mic-acteur-api
+ENV cyk.variable.keycloak.credential.password mic-@cteur-@pi@2O2o
 
 # -- REPORT SERVER : JASPER --
 ENV cyk.variable.jasper.server.enabled=true

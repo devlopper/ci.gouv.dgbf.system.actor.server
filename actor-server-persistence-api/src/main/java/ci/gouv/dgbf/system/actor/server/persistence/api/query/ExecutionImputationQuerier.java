@@ -475,7 +475,6 @@ public interface ExecutionImputationQuerier extends Querier.CodableAndNamable<Ex
 	
 	/**/
 	
-	@Deprecated
 	static void refreshMaterializedView(){
 		ProcedureExecutor.getInstance().executeRefreshMaterializedView(ExecutionImputation.class);
 	}
