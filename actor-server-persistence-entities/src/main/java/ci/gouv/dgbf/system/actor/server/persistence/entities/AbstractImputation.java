@@ -21,6 +21,8 @@ import lombok.experimental.Accessors;
 public abstract class AbstractImputation extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Column(name = COLUMN_REFERENCED_IDENTIFIER) private String referencedIdentifier;
+	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@Column(name = COLUMN_SECTION_CODE) private String sectionCode;
 	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
@@ -94,6 +96,7 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 		return code+" "+name;
 	}
 	
+	public static final String FIELD_REFERENCED_IDENTIFIER = "referencedIdentifier";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE = "sectionCode";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
@@ -122,6 +125,7 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";
 	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	
+	public static final String COLUMN_REFERENCED_IDENTIFIER = "LDEP_ID";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_SECTION_CODE = "SECTION_CODE";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";

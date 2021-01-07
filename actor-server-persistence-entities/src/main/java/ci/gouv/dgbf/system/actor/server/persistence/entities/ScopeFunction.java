@@ -48,7 +48,15 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private String localityIdentifier;
 	@Transient private String localityCode;
 	
+	//@ManyToOne @JoinColumn(name = COLUMN_ACTIVITY) private Activity activity;
+	@Column(name = COLUMN_ACTIVITY_IDENTIFIER) private String activityIdentifier;
+	//@Transient private String activityAsString;
+	//@Transient private String activityIdentifier;
+	//@Transient private String activityCode;
+	
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	
+	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
 	
 	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
 	
@@ -242,18 +250,23 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_LOCALITY_IDENTIFIER = "localityIdentifier";
 	public static final String FIELD_LOCALITY_CODE = "localityCode";
 	
+	public static final String FIELD_ACTIVITY_IDENTIFIER = "activityIdentifier";
+	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
 	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
+	public static final String FIELD_DOCUMENT_NUMBER = "documentNumber";
 	
 	public static final String TABLE_NAME = "POSTE";
 	
-	public static final String COLUMN_SCOPE = "domaine";
-	public static final String COLUMN_FUNCTION = "fonction";
-	public static final String COLUMN_LOCALITY = "localite";
-	public static final String COLUMN_NUMBER_OF_ACTOR = "nombre_acteur";
-	public static final String COLUMN_PARENT_IDENTIFIER = "parent";
+	public static final String COLUMN_SCOPE = "DOMAINE";
+	public static final String COLUMN_FUNCTION = "FONCTION";
+	public static final String COLUMN_LOCALITY = "LOCALITE";
+	public static final String COLUMN_NUMBER_OF_ACTOR = "NOMBRE_ACTEUR";
+	public static final String COLUMN_PARENT_IDENTIFIER = "PARENT";
+	public static final String COLUMN_ACTIVITY_IDENTIFIER = "ACTIVITE";
+	public static final String COLUMN_DOCUMENT_NUMBER = "NUMERO_DOCUMENT";
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT = "code_%s";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT = "libelle_%s";
@@ -278,6 +291,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		
 		/* Localities */
 		public CodeName localite = new CodeName();
+		
+		/* Activities */
+		public CodeName activite = new CodeName();
 		
 		/**/
 		
@@ -320,6 +336,13 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 				}
 			}
 			
+			if(StringHelper.isBlank(scopeFunction.activityIdentifier)) {
+				scriptDto.activite = null;
+			}else {
+				scriptDto.activite.code = scopeFunction.activityIdentifier;
+				scriptDto.activite.libelle = scopeFunction.activityIdentifier;
+			}
+			
 			/* Functions */
 			scriptDto.fonction.code = scopeFunction.function.getCode();
 			scriptDto.fonction.libelle = scopeFunction.function.getName();
@@ -330,6 +353,14 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			}else {
 				scriptDto.localite.code = scopeFunction.locality.getCode();
 				scriptDto.localite.libelle = scopeFunction.locality.getName();
+			}
+			
+			/* Activities */
+			if(StringHelper.isBlank(scopeFunction.activityIdentifier)) {
+				scriptDto.activite = null;
+			}else {
+				scriptDto.activite.code = scopeFunction.activityIdentifier;
+				scriptDto.activite.libelle = scopeFunction.activityIdentifier;
 			}
 			return scriptDto;
 		}

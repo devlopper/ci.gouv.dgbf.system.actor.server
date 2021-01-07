@@ -37,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerS
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ApplicationScoped
@@ -44,6 +45,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	private static final long serialVersionUID = 1L;
 
 	public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE = 15000;
+	public static Integer DERIVE_VALUES_READ_BATCH_SIZE = 15000;
 	public static Integer READ_BATCH_SIZE = 10000;
 	
 	//public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE = 25;
@@ -109,6 +111,100 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return transactionResult;
 	}
 
+	@Override
+	public TransactionResult deriveValues(Collection<Assignments> collection, Boolean nullValueOnly) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public TransactionResult deriveAllValues(Boolean nullValueOnly) {
+		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
+		
+		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
+		Long t = System.currentTimeMillis();
+		Long numberOfAssignments = AssignmentsQuerier.getInstance().countWhereFilter(null);
+		LogHelper.logInfo(String.format("%s affectations à traiter compté en %s", numberOfAssignments,TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		if(NumberHelper.isLessThanOrEqualZero(numberOfAssignments))
+			return null;
+		Integer numberOfBatches = (int) (numberOfAssignments / READ_BATCH_SIZE) + (numberOfAssignments % READ_BATCH_SIZE == 0 ? 0 : 1);
+		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",READ_BATCH_SIZE,numberOfBatches), getClass());
+		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(READ_BATCH_SIZE);
+		
+		//2 - get scopes functions to assign
+		Long numberOfScopeFunctions = ScopeFunctionQuerier.getInstance().count();
+		LogHelper.logInfo(String.format("%s poste(s)",numberOfScopeFunctions), getClass());
+		if(NumberHelper.isEqualToZero(numberOfScopeFunctions))
+			return null;
+		LogHelper.logInfo(String.format("Chargement de %s poste(s) en mémoire...",numberOfScopeFunctions), getClass());
+		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly(new QueryExecutorArguments());
+		LogHelper.logInfo(String.format("%s poste(s) chargé(s)",scopeFunctions.size()), getClass());
+		
+		//3 - get authorizing officer services to assign
+		Long numberOfAuthorizingOfficerServices = AuthorizingOfficerServiceQuerier.getInstance().countAll();
+		LogHelper.logInfo(String.format("Chargement de %s service(s) d'ordonnateur(s) en mémoire...",numberOfAuthorizingOfficerServices), getClass());
+		Collection<AuthorizingOfficerService> authorizingOfficerServices = AuthorizingOfficerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
+		LogHelper.logInfo(String.format("%s service(s) d'ordonnateur(s) chargé(s)",authorizingOfficerServices.size()), getClass());
+		
+		//4 - get financial controller services to assign
+		Long numberOfFinancialControllerServices = FinancialControllerServiceQuerier.getInstance().countAll();
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de controleur(s) financier(s) en mémoire...",numberOfFinancialControllerServices), getClass());
+		Collection<FinancialControllerService> financialControllerServices = FinancialControllerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
+		LogHelper.logInfo(String.format("%s service(s) de controleur(s) financier(s) chargé(s)",financialControllerServices.size()), getClass());
+		
+		//5 - get accounting services to assign
+		Long numberOfAccountingServices = AccountingServiceQuerier.getInstance().countAll();
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de comptable(s) en mémoire...",numberOfAccountingServices), getClass());
+		Collection<AccountingService> accountingServices = AccountingServiceQuerier.getInstance().readAllForAssignmentsInitialization();
+		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",accountingServices.size()), getClass());
+		
+		LogHelper.logInfo(String.format("Read batch size = %s",DERIVE_VALUES_READ_BATCH_SIZE), getClass());
+		
+		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
+			deriveAllValues(nullValueOnly,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices
+					, queryExecutorArguments.setFirstTupleIndex(index * DERIVE_VALUES_READ_BATCH_SIZE),transactionResult);
+		}		
+		transactionResult.log(getClass());
+		return transactionResult;
+	}
+	
+	private void deriveAllValues(Boolean nullValueOnly,Collection<ScopeFunction> scopeFunctions
+			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
+			,Collection<AccountingService> accountingServices,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
+		Long t = System.currentTimeMillis();
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(queryExecutorArguments);	
+		LogHelper.logInfo(String.format("\tChargement de %s affectation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
+				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		if(CollectionHelper.isEmpty(collection))
+			return;
+		deriveValues(collection, scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		t = System.currentTimeMillis();
+		
+		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
+		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
+		updaterQueryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
+		EntityUpdater.getInstance().update(updaterQueryExecutorArguments);
+		LogHelper.logInfo(String.format("\tEnregistrement en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		transactionResult.setNumberOfUpdate(NumberHelper.add(transactionResult.getNumberOfUpdate(),collection.size()).longValue());
+		collection.clear();
+		collection = null;
+	}
+	
+	private void deriveValues(Collection<Assignments> collection,Collection<ScopeFunction> scopeFunctions
+			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
+			,Collection<AccountingService> accountingServices) {
+		if(CollectionHelper.isEmpty(collection))
+			return;
+		Long t = System.currentTimeMillis();
+		LogHelper.logInfo(String.format("\tDerivation des valeurs de %s ligne(s) d'affectation(s)",collection.size()), getClass());
+		collection.parallelStream().forEach(assignments -> {
+			setScopeFunctions(assignments, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
+		});
+		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) dérivée(s) en %s",collection.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+	}
+	
 	private void initialize(Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
 			,Collection<FinancialControllerService> financialControllerServices,Collection<AccountingService> accountingServices
 			,TransactionResult transactionResult) {
@@ -118,31 +214,32 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("\t%s imputation(s) chargée(s) en %s",CollectionHelper.getSize(executionImputations),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(executionImputations))
 			return;
-		t = System.currentTimeMillis();
+		LogHelper.logInfo(String.format("\tInstantiation des ligne(s) d'affectation(s)"), getClass());
+		t = System.currentTimeMillis();		
 		Collection<Assignments> collection = new ArrayList<>();
 		for(ExecutionImputation executionImputation : executionImputations)
-			collection.add(new Assignments().setExecutionImputation(executionImputation));
+			collection.add(new Assignments().setIdentifier(executionImputation.getReferencedIdentifier()).setExecutionImputation(executionImputation));
+		LogHelper.logInfo(String.format("\tLigne(s) instantiée(s) en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		executionImputations.clear();
 		
+		deriveValues(collection, scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		/*
 		collection.parallelStream().forEach(assignments -> {
 			setScopeFunctions(assignments, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
-		});		
-		LogHelper.logInfo(String.format("\tPostes attribués en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
-		t = System.currentTimeMillis();
+		});
+		*/
+		//LogHelper.logInfo(String.format("\tPostes attribués en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
 		queryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
-		EntityCreator.getInstance().create(queryExecutorArguments); //USE NATIVE SQL
-		
-		/*
-		IdentifiableSystem.setManyIfNull(collection);
-		String sql = __inject__(NativeQueryStringBuilder.class).buildInsertMany(Assignments.class, CollectionHelper.cast(Assignments.class, collection));
-		//System.out.println(sql);
-		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments().addQueriesStrings(sql));
-		*/
+		LogHelper.logInfo(String.format("\tCréation de %s ligne(s) d'affectation(s)",collection.size()), getClass());
+		t = System.currentTimeMillis();
+		EntityCreator.getInstance().create(queryExecutorArguments);
+		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) créée(s) en %s",collection.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		transactionResult.setNumberOfCreation(NumberHelper.add(transactionResult.getNumberOfCreation(),collection.size()).longValue());
 		collection.clear();
-		LogHelper.logInfo(String.format("\tCréation en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		
 	}
 	
 	private static void setScopeFunctions(Assignments assignments,Collection<ScopeFunction> scopeFunctions
@@ -183,7 +280,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		if(holder == null)
 			return null;
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getCode().startsWith(holder.getCode()))
+			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getCode().substring(2).equals(holder.getCode().substring(2)))
 				return scopeFunction;
 		}
 		return null;
@@ -258,8 +355,13 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				for(FinancialControllerService financialControllerService : financialControllerServices) {
 					if(StringHelper.isNotBlank(sectionCode) && sectionCode.equals(financialControllerService.getSectionCode())) {
 						for(ScopeFunction scopeFunction : scopeFunctions)
-							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) && scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier()))
+							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) && scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())
+									&& Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(scopeFunction.getLocalityCode()) ) {
+								//if("13010222".equals(managerCode)) {
+								//	System.out.println("A:: --- "+sectionCode+" --- "+localityCode+" - "+scopeFunction.getScopeCode());
+								//}
 								return scopeFunction;
+							}
 						break;
 					}
 				}
@@ -375,7 +477,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	private void applyModel(Assignments model, Collection<String> overridablesFieldsNames,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(queryExecutorArguments);	
-		LogHelper.logInfo(String.format("\tChargement de %s assignation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
+		LogHelper.logInfo(String.format("\tChargement de %s affectation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(collection))
 			return;

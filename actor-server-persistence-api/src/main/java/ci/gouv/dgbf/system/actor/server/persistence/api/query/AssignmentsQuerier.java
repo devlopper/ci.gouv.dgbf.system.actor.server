@@ -128,7 +128,7 @@ public interface AssignmentsQuerier extends Querier {
 		@Override
 		public Collection<Assignments> readWhereFilter(QueryExecutorArguments arguments) {
 			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(ExecutionImputation.class, QueryName.READ_WHERE_FILTER);
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QueryName.READ_WHERE_FILTER);
 			if(arguments.getQuery() == null)
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
 			prepareWhereFilter(arguments);
@@ -138,7 +138,7 @@ public interface AssignmentsQuerier extends Querier {
 		@Override
 		public Long countWhereFilter(QueryExecutorArguments arguments) {
 			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(ExecutionImputation.class, QueryName.COUNT_WHERE_FILTER);
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QueryName.COUNT_WHERE_FILTER);
 			if(arguments.getQuery() == null)
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
 			prepareWhereFilter(arguments);

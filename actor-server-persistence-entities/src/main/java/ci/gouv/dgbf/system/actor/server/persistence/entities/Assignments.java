@@ -86,6 +86,11 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringImpl impl
 		this.accountingAssistant = new ScopeFunction().setIdentifier(accountingAssistant);
 	}
 	
+	@Override
+	public Assignments setIdentifier(String identifier) {
+		return (Assignments) super.setIdentifier(identifier);
+	}
+	
 	/**/
 	
 	public static final String FIELD_EXECUTION_IMPUTATION = "executionImputation";

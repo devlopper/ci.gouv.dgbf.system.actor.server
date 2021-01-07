@@ -210,7 +210,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	private void __codify__(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
-		if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
+		Integer documentNumber = 0;
+		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
+			documentNumber = 10000;
+		}else if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
+			documentNumber = 40000;
 			List<String> authorizingOfficerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(authorizingOfficerServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -225,6 +229,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}else if(ScopeType.CODE_SERVICE_CF.equals(scopeTypeCode)) {
+			documentNumber = 60000;
 			List<String> financialControllerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(financialControllerServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -233,11 +238,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					for(FinancialControllerService financialControllerService : financialControllerServices)
 						if(scopeFunction.getScope().getIdentifier().equals(financialControllerService.getIdentifier())) {
 							scopeFunction.setLocality(financialControllerService.getLocality());
+							scopeFunction.setActivityIdentifier(financialControllerService.getActivityIdentifier());
 							break;
 						}
 				}
 			}			
 		}else if(ScopeType.CODE_SERVICE_CPT.equals(scopeTypeCode)) {
+			documentNumber = 70000;
 			List<String> accountingServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(accountingServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -251,6 +258,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}
+		for(ScopeFunction scopeFunction : scopeFunctions)
+			scopeFunction.setDocumentNumber(++documentNumber);
 		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions, codeScript, nameScript);
 		//find duplicates by code
 		Map<String,Collection<ScopeFunction>> map = new HashMap<>();		

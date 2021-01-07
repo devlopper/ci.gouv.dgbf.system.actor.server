@@ -287,10 +287,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT COUNT(sf.identifier) FROM ScopeFunction sf")
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
-						, "SELECT t.identifier,t.code,t.scope.identifier,t.scope.code,t.function.code,locality.identifier,locality.code FROM ScopeFunction t "
+						, "SELECT t.identifier,t.code,t.scope.identifier,t.scope.code,t.function.code,locality.identifier,locality.code,t.activityIdentifier FROM ScopeFunction t "
 								+ "LEFT JOIN Locality locality ON locality = t.locality")
 					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_SCOPE_IDENTIFIER
-							,ScopeFunction.FIELD_SCOPE_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_LOCALITY_IDENTIFIER,ScopeFunction.FIELD_LOCALITY_CODE)
+							,ScopeFunction.FIELD_SCOPE_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_LOCALITY_IDENTIFIER,ScopeFunction.FIELD_LOCALITY_CODE
+							,ScopeFunction.FIELD_ACTIVITY_IDENTIFIER)
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)

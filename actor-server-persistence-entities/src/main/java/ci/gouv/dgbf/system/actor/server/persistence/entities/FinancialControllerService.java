@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,6 +29,8 @@ public class FinancialControllerService extends AbstractIdentifiableSystemScalar
 	@Transient private String localityAsString;
 	@Transient private String localityCode;
 	
+	@Column(name = COLUMN_ACTIVITY) private String activityIdentifier;
+	
 	@Override
 	public FinancialControllerService setIdentifier(String identifier) {
 		return (FinancialControllerService) super.setIdentifier(identifier);
@@ -41,10 +44,13 @@ public class FinancialControllerService extends AbstractIdentifiableSystemScalar
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
 	public static final String FIELD_LOCALITY_CODE = "localityCode";
 	
+	public static final String FIELD_ACTIVITY_IDENTIFIER = "activityIdentifier";
+	
 	public static final String TABLE_NAME = "SERVICE_CF";
 	
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_LOCALITY = "LOCALITE";
+	public static final String COLUMN_ACTIVITY = "ACTIVITE";
 	
 	public static final String IDENTIFIER_INSTITUTIONS = "CFINSTITUTIONS";
 	

@@ -20,6 +20,12 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	
 	String INITIALIZE_MANY = "Assignments.initializeMany";
 	
+	String DERIVE_ALL_VALUES = "Assignments.deriveAllValues";
+	TransactionResult deriveAllValues(Boolean nullValueOnly);
+	
+	String DERIVE_VALUES = "Assignments.deriveValues";
+	TransactionResult deriveValues(Collection<Assignments> collection,Boolean nullValueOnly);
+	
 	String SAVE_SCOPE_FUNCTIONS = "Assignments.saveScopeFunctions";
 	@Transactional
 	TransactionResult saveScopeFunctions(Collection<Assignments> collection);
