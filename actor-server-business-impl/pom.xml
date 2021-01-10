@@ -20,9 +20,22 @@
 			<artifactId>actor-server-business-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>ci.gouv.dgbf.system.actor.server.persistence</groupId>
 			<artifactId>actor-server-persistence-impl</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.report.jasper.server</groupId>
+			<artifactId>jee-utility-report-jasper-server</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.mail</groupId>
+			<artifactId>jee-utility-mail</artifactId>
 			<version>0.1.0</version>
 		</dependency>
 	</dependencies>	

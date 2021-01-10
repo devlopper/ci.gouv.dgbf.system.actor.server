@@ -1,6 +1,5 @@
 package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -66,9 +65,9 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 		}
 		
 		
-		Assignments model = new Assignments();
-		Filter filter = new Filter();
-		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");		
+		//Assignments model = new Assignments();
+		//Filter filter = new Filter();
+		//filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");		
 		//__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
 	}
 	

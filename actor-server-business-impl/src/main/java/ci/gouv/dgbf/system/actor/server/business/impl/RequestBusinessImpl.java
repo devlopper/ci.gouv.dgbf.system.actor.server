@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,18 +20,20 @@ import org.cyk.utility.__kernel__.business.EntityUpdater;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.rest.RestHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.mail.MailSender;
+import org.cyk.utility.report.ReportGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
@@ -236,6 +239,13 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_SUBMITTED));
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		
+		//Non blocking operations
+		try {
+			notifySubmitted(request);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
 	}
 	
 	@Override @Transactional
@@ -378,12 +388,47 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}).start();		
 	}
 	
+	private static void notifySubmitted(Request request) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					org.cyk.utility.mail.Message message = new org.cyk.utility.mail.Message();
+					message.setSubject("SIGOBE - "+request.getType().getName());
+					message.setBody(FreeMarker.getRequestSubmittedMailMessage(request));
+					message.addReceivers(List.of(request.getElectronicMailAddress()));
+					ByteArrayOutputStream byteArrayOutputStream = ReportGetter.getInstance().get(request.getType().getReportIdentifier()
+							,Map.of("identifiant",request.getIdentifier()),FileType.PDF);
+					if(byteArrayOutputStream == null)
+						LogHelper.logSevere(String.format("Le flux de la fiche d'identification de %s est null", request.getIdentifier()), getClass());
+					else
+						message.setAttachment(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
+								.setName("fiche_d_identification"));
+					MailSender.getInstance().send(message);
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
 	private static void notifyAccepted(Request request) {
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
 				try {
-					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), FreeMarker.getRequestAcceptedMailMessage(request), request.getElectronicMailAddress());
+					org.cyk.utility.mail.Message message = new org.cyk.utility.mail.Message();
+					message.setSubject("SIGOBE - "+request.getType().getName());
+					message.setBody(FreeMarker.getRequestAcceptedMailMessage(request));
+					message.addReceivers(List.of(request.getElectronicMailAddress()));
+					ByteArrayOutputStream byteArrayOutputStream = ReportGetter.getInstance().get(request.getType().getSignatureSpecimenReportIdentifier()
+							,Map.of("identifiant",request.getIdentifier()),FileType.PDF);
+					if(byteArrayOutputStream == null)
+						LogHelper.logSevere(String.format("Le flux du spécimen de signature de %s est null", request.getIdentifier()), getClass());
+					else
+						message.setAttachment(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
+								.setName("specimen_de_signature"));
+					MailSender.getInstance().send(message);
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}	

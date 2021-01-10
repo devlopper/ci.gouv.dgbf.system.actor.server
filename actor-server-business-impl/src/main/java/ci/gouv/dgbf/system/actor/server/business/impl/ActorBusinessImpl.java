@@ -21,7 +21,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.EntityUpdater;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.__kernel__.protocol.smtp.MailSender;
+import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;

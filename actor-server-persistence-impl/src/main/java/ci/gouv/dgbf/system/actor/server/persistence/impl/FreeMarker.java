@@ -30,6 +30,13 @@ public class FreeMarker {
 		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_initialized.ftlh"), map);
 	}
 	
+	public static String getRequestSubmittedMailMessage(Request request) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		map.putAll(Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+		addAccessArguments(request, map);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_submitted.ftlh"), map);
+	}
+	
 	public static String getRequestAccessTokenMailMessage(Request request,String readUrl) {
 		Map<String,Object> map = new LinkedHashMap<>();
 		addAccessArguments(request, map);
@@ -56,7 +63,7 @@ public class FreeMarker {
 	public static String getRequestAcceptedMailMessage(Request request) {
 		Map<String,Object> map = new LinkedHashMap<>();
 		map.putAll(Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
-		addSignatureSpecimenArguments(request, map);
+		addAccessArguments(request, map);
 		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_accepted.ftlh"), map);
 	}
 	
