@@ -11,6 +11,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 
+	String CREATE_MANY = "ScopeFunction.createMany";
+	
 	String DERIVE_ALL = "ScopeFunction.deriveAll";
 	void deriveAll();
 	String DERIVE_BY_FUNCTIONS = "ScopeFunction.deriveByFunctions";

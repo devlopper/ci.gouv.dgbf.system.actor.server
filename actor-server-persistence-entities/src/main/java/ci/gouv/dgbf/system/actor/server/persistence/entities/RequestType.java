@@ -26,6 +26,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FORM) @NotNull private IdentificationForm form;
 	@Column(name = COLUMN_REPORT_IDENTIFIER) private String reportIdentifier;
+	@Column(name = COLUMN_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String signatureSpecimenReportIdentifier;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;	
 	
 	@Transient private String formAsString;
@@ -52,6 +53,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String FIELD_FORM = "form";
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
 	public static final String FIELD_REPORT_IDENTIFIER = "reportIdentifier";
+	public static final String FIELD_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "signatureSpecimenReportIdentifier";
 	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";		
 	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
 	
@@ -59,6 +61,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	
 	public static final String COLUMN_FORM = "FORMULAIRE";
 	public static final String COLUMN_REPORT_IDENTIFIER = "ETAT_IDENTIFIANT";
+	public static final String COLUMN_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_ID";
 	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
 	
 	public static final String CODE_DEMANDE_POSTES_BUDGETAIRES = "DEMANDE_POSTES_BUDGETAIRES";

@@ -268,6 +268,13 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance()
 			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER);
 	Long countWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Scope.class
+			, "readWhereCodeOrNameLikeByTypeIdentifier");
+	Collection<Scope> readWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance()
+			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER);
+	Long countWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments);
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeQuerier,Serializable {
@@ -458,10 +465,30 @@ public interface ScopeQuerier extends Querier {
 			return QueryExecutor.getInstance().executeCount(arguments);
 		}
 		
+		@Override
+		public Collection<Scope> readWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments) {
+			prepareWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Scope.class, arguments);
+		}
+		
+		@Override
+		public Long countWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments) {
+			prepareWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
 		private static void prepareWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldEquals(PARAMETER_NAME_TYPE_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
+			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		private static void prepareWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			filter.addFieldEquals(PARAMETER_NAME_TYPE_IDENTIFIER, arguments);
 			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			arguments.setFilter(filter);
@@ -504,6 +531,33 @@ public interface ScopeQuerier extends Querier {
 		return jpql(select("COUNT(t.identifier)"),From.ofTuple(Scope.class),getQueryValueReadWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifierWhere());
 	}
 	
+	static String getQueryValueReadWhereCodeOrNameLikeByTypeIdentifierWhere() {
+		return where(and(
+				parenthesis(or(
+						like("t", Scope.FIELD_CODE, PARAMETER_NAME_CODE)
+						,like("t", Scope.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					))
+				,"t.type.identifier = :"+PARAMETER_NAME_TYPE_IDENTIFIER
+			));
+	}
+	
+	static String getQueryValueReadWhereCodeOrNameLikeByTypeIdentifier() {
+		return jpql(
+				select(				
+					Select.fields("t",Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME)
+				)
+				,jpql(
+					From.ofTuple(Scope.class)
+				)
+				,getQueryValueReadWhereCodeOrNameLikeByTypeIdentifierWhere()
+				,order(Order.join(asc("t", Scope.FIELD_CODE)))
+			);
+	}
+	
+	static String getQueryCountReadWhereCodeOrNameLikeByTypeIdentifier() {
+		return jpql(select("COUNT(t.identifier)"),From.ofTuple(Scope.class),getQueryValueReadWhereCodeOrNameLikeByTypeIdentifierWhere());
+	}
+	
 	static void initialize() {
 		QueryHelper.addQueries(
 				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ALL_01,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
@@ -514,6 +568,13 @@ public interface ScopeQuerier extends Querier {
 				.setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME)
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER
 						, getQueryCountReadWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier())
+				
+				,Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER
+						, getQueryValueReadWhereCodeOrNameLikeByTypeIdentifier())
+				.setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME)
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER
+						, getQueryCountReadWhereCodeOrNameLikeByTypeIdentifier())
+				
 				,Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FUNCTION_DOES_NOT_EXIST_BY_TYPES_IDENTIFIERS
 						, "SELECT t FROM Scope t WHERE t.type.identifier IN :"+PARAMETER_NAME_TYPES_IDENTIFIERS
 						+" AND NOT EXISTS(SELECT sf FROM ScopeFunction sf WHERE sf.scope = t)")

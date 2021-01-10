@@ -1,10 +1,13 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -17,12 +20,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
+import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.script.ScriptExecutor;
 import org.cyk.utility.__kernel__.script.ScriptHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +36,13 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=ScopeFunction.TABLE_NAME)
-public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
+@AttributeOverrides(value= {
+		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+})
+public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
@@ -54,11 +65,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	//@Transient private String activityIdentifier;
 	//@Transient private String activityCode;
 	
-	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
-	
+	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;	
 	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
-	
+	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
 	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
+	@Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
 	
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
@@ -202,21 +213,25 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return null;
 	}
 	
-	public static void computeCodeAndName(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
+	public static void computeCodeAndName(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,Integer orderNumber,String codeScript,String nameScript) {
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
-		String script = formatScript(scopeTypeCode,codeScript, nameScript);
+		String script = formatScript(scopeTypeCode,orderNumber,codeScript, nameScript);
 		Collection<ScriptDto> dtos = ScriptDto.collect(scopeFunctions);
+		LogHelper.logInfo(String.format("Codification du code et du libelle de %s poste(s) en cours...", scopeFunctions.size()), ScopeFunction.class);
+		Long t = System.currentTimeMillis();
 		ScriptExecutor.getInstance().execute(script, "l",dtos);
+		LogHelper.logInfo(String.format("Codification du code et du libelle de %s poste(s) éffectué(s) en %s", scopeFunctions.size()
+				,TimeHelper.formatDuration(System.currentTimeMillis()-t)), ScopeFunction.class);
 	}
 	
-	public static String formatScript(String scopeTypeCode,String codeScript,String nameScript) { 
+	public static String formatScript(String scopeTypeCode,Integer orderNumber,String codeScript,String nameScript) { 
 		return StringUtils.join(
 				ScriptHelper.formatFunction("generateCode", ScriptHelper.formatReturnIfNotExist(codeScript), "poste")
 				,ScriptHelper.formatFunction("generateName", ScriptHelper.formatReturnIfNotExist(nameScript), "poste")
 				)
-				+"var numero_ordre = 0;"
-				+ScriptHelper.join(
+				+String.format("var numero_ordre = %s;",orderNumber)
+				+ScriptHelper.join(						
 						"var numero_ordre_1 = 0;"
 						,"var numero_ordre_2 = 0;"
 						,"var numero_ordre_3 = 0;"
@@ -257,6 +272,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
 	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
 	public static final String FIELD_DOCUMENT_NUMBER = "documentNumber";
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_CODIFICATION_DATE = "codificationDate";
 	
 	public static final String TABLE_NAME = "POSTE";
 	
@@ -267,6 +284,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_PARENT_IDENTIFIER = "PARENT";
 	public static final String COLUMN_ACTIVITY_IDENTIFIER = "ACTIVITE";
 	public static final String COLUMN_DOCUMENT_NUMBER = "NUMERO_DOCUMENT";
+	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
+	public static final String COLUMN_CODIFICATION_DATE = "DATE_CODIFICATION";
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT = "code_%s";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT = "libelle_%s";

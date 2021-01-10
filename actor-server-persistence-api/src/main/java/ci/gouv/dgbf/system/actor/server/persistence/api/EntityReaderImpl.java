@@ -175,6 +175,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ScopeQuerier.getInstance().readWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);
 			
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) ScopeQuerier.getInstance().readWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			
 			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AccountRequestQuerier.getInstance().readWhereFilter(arguments);
 			

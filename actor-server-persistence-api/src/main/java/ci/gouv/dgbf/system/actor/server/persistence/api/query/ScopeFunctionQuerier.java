@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.Language.From;
 import org.cyk.utility.__kernel__.persistence.query.Language.Order;
 import org.cyk.utility.__kernel__.persistence.query.Language.Select;
@@ -60,6 +61,10 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
 	
+	String QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers");
+	Collection<ScopeFunction> readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
+	
+	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsCodes");
 	Collection<ScopeFunction> readByFunctionsCodes(QueryExecutorArguments arguments);
 	Collection<ScopeFunction> readByFunctionsCodes(Collection<String> functionsCodes);
@@ -93,6 +98,16 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_WHERE_FILTER_FOR_UI);
 	Collection<ScopeFunction> readWhereFilterForUI(QueryExecutorArguments arguments);
+	
+	default Integer readMaxOrderNumberByFunctionCode(String functionCode) {
+		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.orderNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
+				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
+	}
+	
+	default Integer readMaxDocumentNumberByFunctionCode(String functionCode) {
+		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.documentNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
+				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
+	}
 	
 	/**/
 	
@@ -148,6 +163,12 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		@Override
 		public Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers, Collection<String> functionsIdentifiers) {
 			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+					,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS,scopeTypesIdentifiers,PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers);
+		}
+		
+		@Override
+		public Collection<ScopeFunction> readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers, Collection<String> functionsIdentifiers) {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
 					,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS,scopeTypesIdentifiers,PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers);
 		}
 		
@@ -300,6 +321,10 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
 						, String.format("SELECT t FROM ScopeFunction t WHERE t.scope.type.identifier IN :%s AND t.function.identifier IN :%s ORDER BY t.function.code ASC,t.scope.code ASC"
+								,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS))
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS
+						, String.format("SELECT t FROM ScopeFunction t WHERE t.codificationDate IS NULL and t.scope.type.identifier IN :%s AND t.function.identifier IN :%s ORDER BY t.function.code ASC,t.scope.code ASC"
 								,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS))
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES

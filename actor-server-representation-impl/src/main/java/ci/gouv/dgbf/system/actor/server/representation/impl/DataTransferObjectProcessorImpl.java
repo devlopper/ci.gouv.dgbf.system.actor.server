@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.representation.DataTransferObjectProcessor;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.report.ReportRepresentation;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -17,9 +18,17 @@ public class DataTransferObjectProcessorImpl extends DataTransferObjectProcessor
 	protected <T> void __processRead__(Class<T> klass, Arguments arguments, T dto) {
 		super.__processRead__(klass, arguments, dto);
 		if(RequestDto.class.equals(klass)) {
-			if(StringHelper.isNotBlank(((RequestDto)dto).getIdentifier()) &&  ((RequestDto)dto).getType() != null && StringHelper.isNotBlank(((RequestDto)dto).getType().getReportIdentifier()))
+			if(StringHelper.isNotBlank(((RequestDto)dto).getIdentifier()) &&  ((RequestDto)dto).getType() != null && StringHelper.isNotBlank(((RequestDto)dto).getType().getReportIdentifier())) {
 				((RequestDto)dto).setReadReportURIQuery(ReportRepresentation.buildURIQuery(((RequestDto)dto).getType().getReportIdentifier()
 						, Map.of(REQUEST_REPORT_PARAMETER_IDENTIFIER, ((RequestDto)dto).getIdentifier()), null, null));
+			}
+			
+			if(StringHelper.isNotBlank(((RequestDto)dto).getIdentifier()) &&  ((RequestDto)dto).getType() != null && StringHelper.isNotBlank(((RequestDto)dto).getType().getSignatureSpecimenReportIdentifier())) {
+				if(((RequestDto)dto).getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(((RequestDto)dto).getStatus().getCode())) {
+					((RequestDto)dto).setSignatureSpecimenReadReportURIQuery(ReportRepresentation.buildURIQuery(((RequestDto)dto).getType().getSignatureSpecimenReportIdentifier()
+						, Map.of(REQUEST_REPORT_PARAMETER_IDENTIFIER, ((RequestDto)dto).getIdentifier()), null, null));
+				}
+			}
 		}
 	}
 	

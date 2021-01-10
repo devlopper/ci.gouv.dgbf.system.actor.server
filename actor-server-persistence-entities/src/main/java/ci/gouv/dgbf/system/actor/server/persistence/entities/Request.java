@@ -107,6 +107,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Transient private String readReportURIQuery;
 	@Transient private String readPageURL;
+	@Transient private String signatureSpecimenReadPageURL;
 	
 	@Transient private Boolean isAdministrator;
 	

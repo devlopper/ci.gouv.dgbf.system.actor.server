@@ -18,17 +18,18 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.__kernel__.runnable.Executor;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessEntity;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionModifier;
+import org.cyk.utility.server.business.BusinessServiceProvider;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
@@ -53,7 +54,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	@Override
 	protected void __listenExecuteCreateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(scopeFunction, properties, function);
-		__listenExecuteCreateOrUpdateBefore__(scopeFunction);		
+		__listenExecuteCreateOrUpdateBefore__(scopeFunction);
 	}
 	
 	@Override
@@ -65,6 +66,28 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	private void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
 		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
 		__codify__(List.of(scopeFunction));
+	}
+	
+	@Override @Transactional
+	public BusinessServiceProvider<ScopeFunction> createMany(Collection<ScopeFunction> scopeFunctions, Properties properties) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
+		//add assistants where possible
+		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(scopeFunction.getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER)) {
+				Function function = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
+				if(function == null)
+					continue;
+				if(allScopeFunctions == null)
+					allScopeFunctions = new ArrayList<>();
+				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(function).setShared(Boolean.TRUE));
+			}
+		}
+		allScopeFunctions.forEach(scopeFunction -> {
+			__listenExecuteCreateOrUpdateBefore__(scopeFunction);
+		});
+		__persistence__.createMany(allScopeFunctions);
+		return this;
 	}
 	
 	@Override
@@ -80,7 +103,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					.filter(scopeTypeFunction -> scopeTypeFunction.getFunction().equals(function) && Boolean.TRUE.equals(scopeTypeFunction.getScopeFunctionDerivable())).collect(Collectors.toList()); 
 			LogHelper.logInfo(String.format("\tNombre d'association(s) avec type de domaine où l'option dérivable est vrai : %s",scopeTypeFunctionsOfFunction.size()), getClass());
 			if(CollectionHelper.isEmpty(scopeTypeFunctionsOfFunction))
-				continue;
+				continue;		
 			for(ScopeTypeFunction scopeTypeFunction : scopeTypeFunctionsOfFunction) {
 				LogHelper.logInfo(String.format("\t\tChargement des %s n'ayant pas de %s",scopeTypeFunction.getScopeType().getCode(),scopeTypeFunction.getFunction().getCode()), getClass());
 				Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereFunctionDoesNotExistByTypesIdentifiersByFunctionsIdentifiers(
@@ -115,7 +138,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					return;
 				LogHelper.logInfo(String.format("\t\tCodification des postes",scopeFunctions.size()), getClass());
-				__codify__(scopeTypeFunction.getScopeType().getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
+				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript()
+						,scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement des postes",scopeFunctions.size()), getClass());
 				EntityCreator.getInstance().createMany(CollectionHelper.cast(Object.class, scopeFunctions));
 			}
@@ -208,13 +232,21 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	}
 	*/
 	
-	private void __codify__(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,String codeScript,String nameScript) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
-		Integer documentNumber = 0;
+	private void __codify__(String scopeTypeCode,String functionCode,Collection<ScopeFunction> pScopeFunctions,String codeScript,String nameScript) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", pScopeFunctions);
+		Collection<ScopeFunction> scopeFunctions = pScopeFunctions.stream().filter(x -> x.getCodificationDate() == null).collect(Collectors.toList());
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return;
+		Long count = ScopeFunctionQuerier.getInstance().countByFunctionsCodes(functionCode);
+		Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
+		LogHelper.logInfo(String.format("Numéro d'ordre à partir de %s", orderNumber), getClass());
+		Integer documentNumber = count == 0 ? null : ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode) + 1;		
 		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
-			documentNumber = 10000;
+			if(documentNumber == null)
+				documentNumber = 10000;
 		}else if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
-			documentNumber = 40000;
+			if(documentNumber == null)
+				documentNumber = 40000;
 			List<String> authorizingOfficerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(authorizingOfficerServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -229,7 +261,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}else if(ScopeType.CODE_SERVICE_CF.equals(scopeTypeCode)) {
-			documentNumber = 60000;
+			if(documentNumber == null)
+				documentNumber = 60000;
 			List<String> financialControllerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(financialControllerServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -244,7 +277,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}else if(ScopeType.CODE_SERVICE_CPT.equals(scopeTypeCode)) {
-			documentNumber = 70000;
+			if(documentNumber == null)
+				documentNumber = 70000;
 			List<String> accountingServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
 			List<List<String>> batches = CollectionHelper.getBatches(accountingServiceIdentifiers, 900);
 			for(List<String> identifiers : batches) {
@@ -258,9 +292,12 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}
-		for(ScopeFunction scopeFunction : scopeFunctions)
-			scopeFunction.setDocumentNumber(++documentNumber);
-		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions, codeScript, nameScript);
+		LogHelper.logInfo(String.format("Numéro document à partir de %s", documentNumber), getClass());
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			scopeFunction.setOrderNumber(orderNumber++);
+			scopeFunction.setDocumentNumber(documentNumber++);
+		}
+		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions,orderNumber, codeScript, nameScript);
 		//find duplicates by code
 		Map<String,Collection<ScopeFunction>> map = new HashMap<>();		
 		for(String code : scopeFunctions.stream().map(x -> x.getCode()).collect(Collectors.toSet())) {
@@ -275,43 +312,37 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			for(Map.Entry<String,Collection<ScopeFunction>> entry : map.entrySet())
 				stringBuilder.append(entry.getKey()+"\r\n");
 			throw new RuntimeException(stringBuilder.toString());
-		}else
-			LogHelper.logInfo("No duplicate found", getClass());
+		}
 	}
 	
 	private void __codify__(Collection<ScopeFunction> scopeFunctions) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
-		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().read();		
-		scopeFunctions.parallelStream().forEach(scopeFunction -> {
-			scopeFunction.setScopeTypeFunction(CollectionHelper.getFirst(scopeTypeFunctions.stream()
-					.filter(index -> index.getScopeType().equals(scopeFunction.getScope().getType()) 
-					&& index.getFunction().equals(scopeFunction.getFunction())).collect(Collectors.toList())));
-		});		
-		Executor<Runnable> executor = new Executor<Runnable>().setName("Générateur des codes et des libellés").setNumberOfRunnablesToBeExecuted(scopeFunctions.size())
-				//.setExecutorService(RunnableHelper.instantiateExecutorService(1, 100, 3l, TimeUnit.MINUTES, null, scopeFunctions.size(), null, null))
-				;
-		//executor.start();		
-		scopeFunctions.forEach(scopeFunction -> {
-			executor.addRunnables(new Runnable() {
-				@Override
-				public void run() {
-					scopeFunction.computeAndSetCode(
-							scopeFunction.getScopeTypeFunction() == null ? null : scopeFunction.getScopeTypeFunction().getScopeFunctionCodeScript()
-							, scopeFunction.getScopeTypeFunction() == null ? null : scopeFunction.getScope().getType().getCode()
-							, scopeFunction.getScope().getCode(), scopeFunction.getFunction().getCode());
-					scopeFunction.computeAndSetName(
-							scopeFunction.getScopeTypeFunction() == null ? null : scopeFunction.getScopeTypeFunction().getScopeFunctionNameScript()
-							, scopeFunction.getScopeTypeFunction() == null ? null : scopeFunction.getScope().getType().getCode()
-							, scopeFunction.getScope().getName(), scopeFunction.getFunction().getName());
-				}			
-			});
-		});		
-		//executor.join();
-		executor.run();
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return;
+		Collection<ScopeType> scopeTypes = scopeFunctions.stream().map(x -> x.getScope().getType()).collect(Collectors.toList());
+		if(CollectionHelper.isEmpty(scopeTypes))
+			return;
+		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByScopeTypesCodes(scopeTypes.stream().map(x -> x.getCode())
+				.collect(Collectors.toList()));
+		for(ScopeType scopeType : scopeTypes) {
+			Collection<Function> functions = scopeFunctions.stream().filter(x -> x.getScope().getType().equals(scopeType))
+					.map(x -> x.getFunction()).collect(Collectors.toList());
+			for(Function function : functions) {
+				ScopeTypeFunction scopeTypeFunction = CollectionHelper.getFirst(scopeTypeFunctions.stream()
+						.filter(x -> x.getScopeType().equals(scopeType) && x.getFunction().equals(function))
+						.collect(Collectors.toList()));
+				scopeFunctions.stream()
+						.filter(x -> x.getScope().getType().equals(scopeType) && x.getFunction().equals(function))
+						.collect(Collectors.toList());
+				__codify__(scopeType.getCode(),function.getCode(), scopeFunctions.stream()
+						.filter(x -> x.getScope().getType().equals(scopeType) && x.getFunction().equals(function))
+						.collect(Collectors.toList()), scopeTypeFunction.getScopeFunctionCodeScript(), scopeTypeFunction.getScopeFunctionNameScript());
+			}			
+		}
 	}
 	
 	@Override @Transactional
 	public void codify(Collection<ScopeFunction> scopeFunctions) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
 		__codify__(scopeFunctions);
 		updateMany(scopeFunctions);
 	}
@@ -354,13 +385,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			if(CollectionHelper.isEmpty(scopeTypeFunctionsOfFunction))
 				continue;
 			for(ScopeTypeFunction scopeTypeFunction : scopeTypeFunctionsOfFunction) {
-				LogHelper.logInfo(String.format("\t\tChargement des %s ayant %s",scopeTypeFunction.getScopeType().getCode(),scopeTypeFunction.getFunction().getCode()), getClass());
-				Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readByScopeTypesIdentifiersByFunctionsIdentifiers(List.of(scopeTypeFunction.getScopeType().getIdentifier()),List.of(scopeTypeFunction.getFunction().getIdentifier()));
+				LogHelper.logInfo(String.format("\t\tChargement des %s non codifié(e)s ayant %s",scopeTypeFunction.getScopeType().getCode(),scopeTypeFunction.getFunction().getCode()), getClass());
+				Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(List.of(scopeTypeFunction.getScopeType().getIdentifier()),List.of(scopeTypeFunction.getFunction().getIdentifier()));
 				LogHelper.logInfo(String.format("\t\t%s chargée(s)",CollectionHelper.getSize(scopeFunctions)), getClass());
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					continue;
 				LogHelper.logInfo(String.format("\t\tCodification"), getClass());
-				__codify__(scopeTypeFunction.getScopeType().getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
+				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement",scopeFunctions.size()), getClass());
 				QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 				queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class,scopeFunctions));

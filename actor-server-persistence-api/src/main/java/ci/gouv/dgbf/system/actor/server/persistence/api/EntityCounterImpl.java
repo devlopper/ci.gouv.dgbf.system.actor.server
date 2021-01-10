@@ -73,6 +73,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return ScopeQuerier.getInstance().countWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);
 			
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return ScopeQuerier.getInstance().countWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			
 			if(ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return ActorQuerier.getInstance().countWhereFilter(arguments);
 			

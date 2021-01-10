@@ -42,7 +42,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttri
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
@@ -252,10 +251,12 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	public void accept(Request request) {
 		validate(request);
 		validateProcess(request);
+		/*
 		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
 			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
 				throw new RuntimeException("Le spécimen de signature est obligatoire");
-		}		
+		}
+		*/
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()

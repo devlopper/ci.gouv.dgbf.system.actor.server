@@ -1,0 +1,1 @@
+<p><a href="${signature_specimen_read_url}">Cliquez sur ce lien pour imprimer votre spécimen de signature</a></p>

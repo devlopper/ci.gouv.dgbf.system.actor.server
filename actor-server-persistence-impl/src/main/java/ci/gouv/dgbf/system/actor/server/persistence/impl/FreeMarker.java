@@ -42,9 +42,22 @@ public class FreeMarker {
 		map.put("read_url",ValueHelper.defaultToIfBlank(request.getReadPageURL(),ConfigurationHelper.getValueAsString(VARIABLE_NAME_REQUEST_READ_PAGE_URL)));
 	}
 	
+	public static String getRequestSignatureSpecimenMailMessage(Request request) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		addSignatureSpecimenArguments(request, map);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_access_token.ftlh"), map);
+	}
+	
+	public static void addSignatureSpecimenArguments(Request request,Map<String,Object> map) {
+		map.put("signature_specimen_read_url",ValueHelper.defaultToIfBlank(request.getSignatureSpecimenReadPageURL()
+				,ConfigurationHelper.getValueAsString(VARIABLE_NAME_REQUEST_SIGNATURE_SPECIMEN_READ_PAGE_URL)));
+	}
+	
 	public static String getRequestAcceptedMailMessage(Request request) {
-		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_accepted.ftlh")
-				, Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+		Map<String,Object> map = new LinkedHashMap<>();
+		map.putAll(Map.of("names",Identity.getNames(request.getCivility() == null ? null : request.getCivility().getName(),request.getFirstName(),request.getLastNames())));
+		addSignatureSpecimenArguments(request, map);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_accepted.ftlh"), map);
 	}
 	
 	public static String getRequestRejectedMailMessage(Request request) {
@@ -95,4 +108,5 @@ public class FreeMarker {
 	}
 	
 	public static final String VARIABLE_NAME_REQUEST_READ_PAGE_URL = VariableName.build("request.read.page.url");
+	public static final String VARIABLE_NAME_REQUEST_SIGNATURE_SPECIMEN_READ_PAGE_URL = VariableName.build("request.signature.specimen.read.page.url");
 }

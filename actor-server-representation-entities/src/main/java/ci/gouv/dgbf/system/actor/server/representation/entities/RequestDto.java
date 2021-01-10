@@ -78,9 +78,11 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	/* Report identifier */
 	
 	private String readReportURIQuery;
+	private String signatureSpecimenReadReportURIQuery;
 	
 	/**/
 	
 	private String readPageURL;
+	private String signatureSpecimenReadPageURL;
 	private Boolean isAdministrator;
 }
