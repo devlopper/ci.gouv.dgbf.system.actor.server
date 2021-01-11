@@ -54,6 +54,11 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(readQueryIdentifier))
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		
+		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER;
+		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER;
+		
 		if(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return ScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		

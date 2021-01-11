@@ -193,6 +193,10 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForUI(arguments);
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AssignmentsQuerier.getInstance().readFullyAssignedWhereFilterForUI(arguments);
+			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return (Collection<T>) AssignmentsQuerier.getInstance().readNotFullyAssignedWhereFilterForUI(arguments);
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForEdit(arguments);
 		}

@@ -15,7 +15,6 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -84,7 +83,7 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readWhereFilterForEdit");
 	Collection<Assignments> readWhereFilterForEdit(QueryExecutorArguments arguments);
-	/*
+	
 	String QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readFullyAssignedWhereFilter");
 	Collection<Assignments> readFullyAssignedWhereFilter(QueryExecutorArguments arguments);
 	
@@ -96,7 +95,13 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
 	Long countNotFullyAssignedWhereFilter(QueryExecutorArguments arguments);
-	*/
+	
+	String QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readFullyAssignedWhereFilterForUI");
+	Collection<Assignments> readFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readNotFullyAssignedWhereFilterForUI");
+	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AssignmentsQuerier,Serializable {		
@@ -112,6 +117,16 @@ public interface AssignmentsQuerier extends Querier {
 		public Collection<Assignments> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readFullyAssignedWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readNotFullyAssignedWhereFilter(arguments);
+
+			if(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readFullyAssignedWhereFilterForUI(arguments);
+			if(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readNotFullyAssignedWhereFilterForUI(arguments);
+			
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilterForApplyModel(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -125,6 +140,10 @@ public interface AssignmentsQuerier extends Querier {
 		public Long count(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countFullyAssignedWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countNotFullyAssignedWhereFilter(arguments);
 			/*if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
 				return countWhereFilterWithAll(arguments);
 			*/
@@ -160,6 +179,11 @@ public interface AssignmentsQuerier extends Querier {
 		
 		private void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
+			prepareWhereFilter(filter, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		private void prepareWhereFilter(Filter filter,QueryExecutorArguments arguments) {
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
@@ -177,8 +201,6 @@ public interface AssignmentsQuerier extends Querier {
 			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT);
 			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_HOLDER);
 			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_ASSISTANT);
-
-			arguments.setFilter(filter);
 		}
 		
 		private void prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(QueryExecutorArguments arguments,Filter filter,String parameterName) {
@@ -212,6 +234,71 @@ public interface AssignmentsQuerier extends Querier {
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT);
 			return readWhereFilter(arguments);
 		}
+		
+		@Override
+		public Collection<Assignments> readFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER);
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER);
+			prepareFullyAssignedWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
+		}
+		
+		@Override
+		public Long countFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER);
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER);
+			prepareFullyAssignedWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		private void prepareFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
+			Filter filter = new Filter();
+			prepareWhereFilter(filter, arguments);
+			arguments.setFilter(filter);
+		}
+		
+		@Override
+		public Collection<Assignments> readNotFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
+			prepareFullyAssignedWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
+		}
+		
+		@Override
+		public Long countNotFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER);
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER);
+			prepareFullyAssignedWhereFilter(arguments);
+			return QueryExecutor.getInstance().executeCount(arguments);
+		}
+		
+		@Override
+		public Collection<Assignments> readFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
+			return readFullyAssignedWhereFilter(arguments);
+		}
+		
+		@Override
+		public Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments) {
+			if(arguments == null)
+				arguments = new QueryExecutorArguments();
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
+			return readNotFullyAssignedWhereFilter(arguments);
+		}
+		
 	}
 	
 	/**/
@@ -228,9 +315,18 @@ public interface AssignmentsQuerier extends Querier {
 				, jpql(getForEditSelect(),getReadWhereFilterFrom(),"WHERE t.identifier = :identifier"					
 				)).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
 			
-			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))
-			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))			
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("t")
+					,getReadFullyAssignedWhereFilterFromWhere(Boolean.TRUE),getOrderBy()))			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("COUNT(t.identifier)")
+					,getReadFullyAssignedWhereFilterFromWhere(Boolean.TRUE)))
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("t")
+					,getReadFullyAssignedWhereFilterFromWhere(Boolean.FALSE),getOrderBy()))			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("COUNT(t.identifier)")
+					,getReadFullyAssignedWhereFilterFromWhere(Boolean.FALSE)))
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL, jpql("SELECT t",getReadWhereFilterFromWhere(),getOrderBy()))
 			
@@ -260,6 +356,16 @@ public interface AssignmentsQuerier extends Querier {
 					,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
 					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
 					,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING)
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI
+					, jpql(getReadWhereFilterForUISelect(),getReadFullyAssignedWhereFilterFromWhere(Boolean.TRUE),getOrderBy())
+					)
+			.setTupleFieldsNamesIndexesFromFieldsNames(getReadWhereFilterForUITupleFieldsNamesIndexesFromFieldsNames())
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI
+					, jpql(getReadWhereFilterForUISelect(),getReadFullyAssignedWhereFilterFromWhere(Boolean.FALSE),getOrderBy())
+					)
+			.setTupleFieldsNamesIndexesFromFieldsNames(getReadWhereFilterForUITupleFieldsNamesIndexesFromFieldsNames())
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT
 					, jpql(getForEditSelect(),getReadWhereFilterFromWhere(),getOrderBy())
@@ -318,28 +424,20 @@ public interface AssignmentsQuerier extends Querier {
 	
 	/* read fully assigned where filter */
 	
+	static String getReadFullyAssignedWhereFilterFromWhere(Boolean isFullyAssigned) {
+		return jpql(getReadWhereFilterFrom(),where(getReadFullyAssignedWhereFilterWherePredicate(isFullyAssigned)));
+	}
+	
 	static String getReadFullyAssignedWhereFilterWherePredicate(Boolean isFullyAssigned) {
-		String fullyAssigned;
+		String predicate;
 		if(Boolean.TRUE.equals(isFullyAssigned))
-			fullyAssigned = String.format("("+StringUtils.repeat("t.%s IS NOT NULL", 8)+")"
-					,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
-					,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
-					,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
-					,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
-					);
+			predicate = Language.Where.allNotNull("t",Assignments.FIELDS_SCOPES_FUNCTIONS);
 		else
-			fullyAssigned = String.format("("+StringUtils.repeat("t.%s IS NULL", 8)+")"
-					,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
-					,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
-					,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
-					,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
-					);
-		return and(getReadWhereFilterWherePredicate(),fullyAssigned);
+			predicate = Language.Where.oneNull("t",Assignments.FIELDS_SCOPES_FUNCTIONS);
+		return and(getReadWhereFilterWherePredicate(),parenthesis(predicate));
 	}
 	
 	/* read not fully assigned where filter */
-	
-	
 	
 	static String getLeftJoinScopeFunction(String holderFieldName,String holderVariableName) {
 		return String.format("LEFT JOIN ScopeFunction %2$s ON %2$s = t.%1$s", holderFieldName,holderVariableName);
@@ -368,6 +466,35 @@ public interface AssignmentsQuerier extends Querier {
 						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
 						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
 						,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT};
+	}
+	
+	static String getReadWhereFilterForUISelect() {
+		return select(
+				fields("t",Assignments.FIELD_IDENTIFIER)
+				,fields("t."+Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE_NAME
+						,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME,ExecutionImputation.FIELD_ACTION_CODE_NAME
+						,ExecutionImputation.FIELD_ACTIVITY_CODE_NAME,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME
+						,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+						,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME)
+				,Language.Select.concatCodeName(
+						Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+						,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+						,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+						,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
+						)
+			);
+	}
+	
+	static String[] getReadWhereFilterForUITupleFieldsNamesIndexesFromFieldsNames() {
+		return new String[] {
+				Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING
+				,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
+				,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+				,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING	
+		};
 	}
 	
 	static String getOrderBy() {

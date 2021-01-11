@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -129,6 +130,13 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String FIELD_ACCOUNTING_HOLDER_AS_STRING = "accountingHolderAsString";
 	public static final String FIELD_ACCOUNTING_ASSISTANT_AS_STRING = "accountingAssistantAsString";
 	
+	public static final List<String> FIELDS_SCOPES_FUNCTIONS = List.of(
+			FIELD_CREDIT_MANAGER_HOLDER,FIELD_CREDIT_MANAGER_ASSISTANT
+			,FIELD_AUTHORIZING_OFFICER_HOLDER,FIELD_AUTHORIZING_OFFICER_ASSISTANT
+			,FIELD_FINANCIAL_CONTROLLER_HOLDER,FIELD_FINANCIAL_CONTROLLER_ASSISTANT
+			,FIELD_ACCOUNTING_HOLDER,FIELD_ACCOUNTING_ASSISTANT
+		);
+	
 	public static final String TABLE_NAME = "AFFECTATIONS";
 	
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
@@ -141,4 +149,11 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String COLUMN_FINANCIAL_CONTROLLER_ASSISTANT = "A"+COLUMN_FINANCIAL_CONTROLLER_HOLDER;
 	public static final String COLUMN_ACCOUNTING_HOLDER = "CPT";
 	public static final String COLUMN_ACCOUNTING_ASSISTANT = "A"+COLUMN_ACCOUNTING_HOLDER;
+	
+	public static final List<String> COLUMNS_SCOPES_FUNCTIONS = List.of(
+			COLUMN_CREDIT_MANAGER_HOLDER,COLUMN_CREDIT_MANAGER_ASSISTANT
+			,COLUMN_AUTHORIZING_OFFICER_HOLDER,COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+			,COLUMN_FINANCIAL_CONTROLLER_HOLDER,COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+			,COLUMN_ACCOUNTING_HOLDER,COLUMN_ACCOUNTING_ASSISTANT
+		);
 }

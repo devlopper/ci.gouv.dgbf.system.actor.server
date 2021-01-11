@@ -259,7 +259,54 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println("Size : "+CollectionHelper.getSize(collection));
 		if(collection != null)
 			collection.forEach(x -> {
-				System.out.println(x);
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
+	}
+	
+	@Test
+	public void assignments_readFullyAssignedWhereFilter_ua13010222(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readFullyAssignedWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
+	}
+	
+	@Test
+	public void assignments_readFullyAssignedWhereFilter_readNotFullyAssignedWhereFilter_ua13010222(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readFullyAssignedWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Full Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
+		collection = 
+				AssignmentsQuerier.getInstance().readNotFullyAssignedWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Not Full Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
+	}
+	
+	@Test
+	public void assignments_readFullyAssignedWhereFilterForUI_readNotFullyAssignedWhereFilterForUI_ua13010222(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readFullyAssignedWhereFilterForUI(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Full Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
+		collection = 
+				AssignmentsQuerier.getInstance().readNotFullyAssignedWhereFilterForUI(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Not Full Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getActivityAsString()+" - "+x.getEconomicNatureAsString());
 			});
 	}
 	
