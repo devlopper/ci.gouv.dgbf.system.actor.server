@@ -253,6 +253,17 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void assignments_readWhereFilter_ua13010222(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT, "13010222"));
+		System.out.println("Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x);
+			});
+	}
+	
+	@Test
 	public void assignments_readWhereFilter(){
 		Collection<Assignments> collection = 
 				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(1));

@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +65,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	private void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
 		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
-		__codify__(List.of(scopeFunction));
+		if(scopeFunction.getIdentifier() == null)
+			__codify__(List.of(scopeFunction));
 	}
 	
 	@Override @Transactional
@@ -84,6 +86,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		}
 		allScopeFunctions.forEach(scopeFunction -> {
 			__listenExecuteCreateOrUpdateBefore__(scopeFunction);
+			//System.out.println("POSTE : "+scopeFunction.getCode()+" - "+scopeFunction.getOrderNumber()+" - "+scopeFunction.getDocumentNumber());
 		});
 		__persistence__.createMany(allScopeFunctions);
 		return this;
@@ -292,11 +295,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			}			
 		}
 		LogHelper.logInfo(String.format("Numéro document à partir de %s", documentNumber), getClass());
+		LocalDateTime codificationDate = LocalDateTime.now();
 		for(ScopeFunction scopeFunction : scopeFunctions) {
 			scopeFunction.setOrderNumber(orderNumber++);
 			scopeFunction.setDocumentNumber(documentNumber++);
+			scopeFunction.setCodificationDate(codificationDate);
 		}
-		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions,orderNumber, codeScript, nameScript);
+		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions,orderNumber-scopeFunctions.size(), codeScript, nameScript);
 		//find duplicates by code
 		Map<String,Collection<ScopeFunction>> map = new HashMap<>();		
 		for(String code : scopeFunctions.stream().map(x -> x.getCode()).collect(Collectors.toSet())) {

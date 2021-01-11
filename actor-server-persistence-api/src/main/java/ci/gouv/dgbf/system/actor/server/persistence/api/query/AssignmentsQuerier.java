@@ -15,6 +15,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.persistence.query.Language;
@@ -83,7 +84,19 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readWhereFilterForEdit");
 	Collection<Assignments> readWhereFilterForEdit(QueryExecutorArguments arguments);
+	/*
+	String QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readFullyAssignedWhereFilter");
+	Collection<Assignments> readFullyAssignedWhereFilter(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER);
+	Long countFullyAssignedWhereFilter(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readNotFullyAssignedWhereFilter");
+	Collection<Assignments> readNotFullyAssignedWhereFilter(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
+	Long countNotFullyAssignedWhereFilter(QueryExecutorArguments arguments);
+	*/
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AssignmentsQuerier,Serializable {		
@@ -254,6 +267,8 @@ public interface AssignmentsQuerier extends Querier {
 		);
 	}
 	
+	/* read where filter */
+	
 	static String getReadWhereFilterFrom() {
 		return from(
 				"Assignments t"
@@ -268,29 +283,29 @@ public interface AssignmentsQuerier extends Querier {
 			);
 	}
 	
+	static String getReadWhereFilterWherePredicate() {
+		return and(
+			like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_SECTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTION_CODE_NAME, PARAMETER_NAME_ACTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CODE_NAME, PARAMETER_NAME_ACTIVITY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME, PARAMETER_NAME_ECONOMIC_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT, PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT, PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_HOLDER, PARAMETER_NAME_ACCOUNTING_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)				
+		);
+	}
+	
 	static String getReadWhereFilterFromWhere() {
-		return jpql(
-				getReadWhereFilterFrom()
-				,where(and(
-					like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_SECTION_CODE_NAME, PARAMETER_NAME_SECTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTION_CODE_NAME, PARAMETER_NAME_ACTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CODE_NAME, PARAMETER_NAME_ACTIVITY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME, PARAMETER_NAME_ECONOMIC_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT, PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT, PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_HOLDER, PARAMETER_NAME_ACCOUNTING_HOLDER)
-					,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)
-					
-				))
-			);
+		return jpql(getReadWhereFilterFrom(),where(getReadWhereFilterWherePredicate()));
 	}
 	
 	static String getReadWhereFilterScopeFunctionPredicate(String holderVariableName,String holderParameterName) {
@@ -300,6 +315,31 @@ public interface AssignmentsQuerier extends Querier {
 				,like(holderVariableName, ScopeFunction.FIELD_NAME, holderParameterName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			));
 	}
+	
+	/* read fully assigned where filter */
+	
+	static String getReadFullyAssignedWhereFilterWherePredicate(Boolean isFullyAssigned) {
+		String fullyAssigned;
+		if(Boolean.TRUE.equals(isFullyAssigned))
+			fullyAssigned = String.format("("+StringUtils.repeat("t.%s IS NOT NULL", 8)+")"
+					,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+					,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+					,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+					,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
+					);
+		else
+			fullyAssigned = String.format("("+StringUtils.repeat("t.%s IS NULL", 8)+")"
+					,Assignments.COLUMN_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT
+					,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT
+					,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
+					,Assignments.COLUMN_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_ASSISTANT
+					);
+		return and(getReadWhereFilterWherePredicate(),fullyAssigned);
+	}
+	
+	/* read not fully assigned where filter */
+	
+	
 	
 	static String getLeftJoinScopeFunction(String holderFieldName,String holderVariableName) {
 		return String.format("LEFT JOIN ScopeFunction %2$s ON %2$s = t.%1$s", holderFieldName,holderVariableName);

@@ -55,7 +55,10 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 										if(!scopeFunction.getFunction().getIdentifier().equals(scopeFunctionDto.getFunction().getIdentifier()))
 											scopeFunction.setFunction(EntityFinder.getInstance().find(Function.class, scopeFunctionDto.getFunction().getIdentifier()));
 									}
-									
+									if(StringHelper.isNotBlank(scopeFunctionDto.getCode()))
+										scopeFunction.setCode(scopeFunctionDto.getCode());
+									if(StringHelper.isNotBlank(scopeFunctionDto.getName()))
+										scopeFunction.setName(scopeFunctionDto.getName());
 									scopeFunction.setShared(scopeFunctionDto.getShared());
 								}
 							}
