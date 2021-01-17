@@ -4,6 +4,8 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
 import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.desc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concat;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concatCodeName;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
@@ -27,7 +29,6 @@ import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -208,11 +209,11 @@ public interface RequestQuerier extends Querier {
 			Request request = readByIdentifier(identifier);
 			if(request == null)
 				return null;
-			prepareForUI(request,Boolean.TRUE,Boolean.TRUE);
+			prepareForUI(request,Boolean.TRUE,Boolean.TRUE,Boolean.TRUE);
 			return request;
 		}
 		
-		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsStringifiable) {
+		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsCollectionable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
 			
@@ -235,7 +236,7 @@ public interface RequestQuerier extends Querier {
 			if(request.getSignedRequestSheet() != null)
 				request.setSignedRequestSheetIdentifier(request.getIdentifier());
 			
-			if(request.getStatus() != null)
+			if(request.getStatus() != null && StringHelper.isBlank(request.getStatusAsString()))
 				request.setStatusAsString(request.getStatus().getName());
 			if(request.getActor() != null)
 				request.setActorCode(request.getActor().getCode());
@@ -252,7 +253,14 @@ public interface RequestQuerier extends Querier {
 			}
 			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
 				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+				request.computeHasBudgetaryScopeFunctionWhereFunctionCode(requestScopeFunctions);
 				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
+					if(Boolean.TRUE.equals(budgetariesScopeFunctionsCollectionable)) {
+						request.setBudgetariesScopeFunctions(requestScopeFunctions.stream()
+								.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getGranted()))
+								.map(x -> x.getScopeFunction())
+								.collect(Collectors.toList()));
+					}
 					if(Boolean.TRUE.equals(budgetariesScopeFunctionsStringifiable)) {
 						request.setBudgetariesScopeFunctionsAsStrings(requestScopeFunctions.stream()
 							.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getRequested()))
@@ -301,7 +309,7 @@ public interface RequestQuerier extends Querier {
 			Request request = readByAccessToken(accessToken);
 			if(request == null)
 				return null;
-			prepareForUI(request,null,null);
+			prepareForUI(request,null,null,null);
 			return request;
 		}
 		
@@ -324,7 +332,7 @@ public interface RequestQuerier extends Querier {
 			if(CollectionHelper.isEmpty(requests))
 				return null;
 			requests.forEach(request -> {
-				prepareForUI(request, null, null);
+				prepareForUI(request, Boolean.TRUE, null,Boolean.TRUE);
 			});			
 			//setFunctions(requests,Boolean.TRUE);
 			return requests;
@@ -411,14 +419,17 @@ public interface RequestQuerier extends Querier {
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
 			,Query.FIELD_VALUE,jpql(select(
-					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
-					,fields("a",Actor.FIELD_CODE),Language.Select.concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
-					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME)
+					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_ELECTRONIC_MAIL_ADDRESS
+							,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
+					,fields("a",Actor.FIELD_CODE),concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
+					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au")
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
-			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_COMMENT,Request.FIELD_CREATION_DATE_AS_STRING
-					,Request.FIELD_PROCESSING_DATE_AS_STRING,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING
-					,Request.FIELD_STATUS_AS_STRING)
+			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES
+					,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE_AS_STRING
+					,Request.FIELD_PROCESSING_DATE_AS_STRING
+					,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING,Request.FIELD_STATUS_AS_STRING
+					,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING)
 				
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -451,6 +462,7 @@ public interface RequestQuerier extends Querier {
 				,"LEFT JOIN Actor a ON a = t.actor"
 				,"LEFT JOIN RequestType rt ON rt = t.type"
 				,"LEFT JOIN RequestStatus rs ON rs = t.status"
+				,"LEFT JOIN AdministrativeUnit au ON au = t.administrativeUnit"
 				,getReadWhereFilterWhere()
 			);
 	}

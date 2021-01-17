@@ -5,8 +5,10 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
+import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
@@ -19,6 +21,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializatio
 	})
 public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamable<BudgetSpecializationUnit> {
 
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "read";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(BudgetSpecializationUnit.class, QUERY_NAME_READ);
@@ -26,6 +30,16 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 	
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	Long count();
+	
+	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(BudgetSpecializationUnit.class, "readBySectionIdentifier");
+	Collection<BudgetSpecializationUnit> readBySectionIdentifier(String sectionIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(BudgetSpecializationUnit.class, "readBySectionIdentifierForUI");
+	Collection<BudgetSpecializationUnit> readBySectionIdentifierForUI(String sectionIdentifier);
+	
+	String QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER);
+	Long countBySectionIdentifier(String sectionIdentifier);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<BudgetSpecializationUnit> implements BudgetSpecializationUnitQuerier,Serializable {
@@ -42,6 +56,10 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 		
 		@Override
 		public Collection<BudgetSpecializationUnit> readMany(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER))
+				return readBySectionIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI))
+				return readBySectionIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
 			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
 				return read();
 			return super.readMany(arguments);
@@ -49,9 +67,28 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 		
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER))
+				return countBySectionIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
 			if(QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier()))
 				return count();
 			return super.count(arguments);
+		}
+		
+		@Override
+		public Collection<BudgetSpecializationUnit> readBySectionIdentifier(String sectionIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER, PARAMETER_NAME_SECTION_IDENTIFIER
+					,sectionIdentifier);
+		}
+		
+		@Override
+		public Long countBySectionIdentifier(String sectionIdentifier) {
+			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier);
+		}
+		
+		@Override
+		public Collection<BudgetSpecializationUnit> readBySectionIdentifierForUI(String sectionIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
+					, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier);
 		}
 		
 		@Override
@@ -71,6 +108,17 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
-		
+		QueryHelper.addQueries(
+				Query.buildSelect(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER
+						, "SELECT t FROM BudgetSpecializationUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" ORDER BY t.code ASC")
+				
+				,Query.buildSelect(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER
+						, "SELECT COUNT(t.identifier) FROM BudgetSpecializationUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER)
+				
+				,Query.buildSelect(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
+						, "SELECT t.identifier,t.code,t.name FROM BudgetSpecializationUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER
+						+" ORDER BY t.code ASC")
+					.setTupleFieldsNamesIndexesFromFieldsNames(BudgetSpecializationUnit.FIELD_IDENTIFIER,BudgetSpecializationUnit.FIELD_CODE,BudgetSpecializationUnit.FIELD_NAME)
+			);
 	}
 }

@@ -31,6 +31,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String actorAsString,actorCode,actorNames;
 	private String firstName;
 	private String lastNames;
+	private String names;
 	private String registrationNumber;
 	private CivilityDto civility;
 	private IdentityGroupDto group;
@@ -48,6 +49,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	
 	private Integer budgetaryExercice;
 	private AdministrativeUnitDto administrativeUnit;
+	private String administrativeUnitAsString;
 	private String administrativeFunction;
 	private SectionDto section;
 	private BudgetSpecializationUnitDto budgetSpecializationUnit;
@@ -64,6 +66,11 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private ArrayList<ScopeFunctionDto> budgetariesScopeFunctions;
 	private ArrayList<String> budgetariesScopeFunctionsAsStrings;
 	private ArrayList<String> budgetariesScopeFunctionsGrantedAsStrings;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder;
+	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder;
 	
 	/* Others */
 	
@@ -79,6 +86,8 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	
 	private String readReportURIQuery;
 	private String signatureSpecimenReadReportURIQuery;
+	private String creditManagerSignatureSpecimenReadReportURIQuery;
+	private String authorizingOfficerSignatureSpecimenReadReportURIQuery;
 	
 	/**/
 	

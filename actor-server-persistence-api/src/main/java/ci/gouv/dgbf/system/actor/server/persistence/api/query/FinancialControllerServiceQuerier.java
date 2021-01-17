@@ -7,6 +7,7 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
@@ -18,7 +19,10 @@ public interface FinancialControllerServiceQuerier extends Querier.CodableAndNam
 	String QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION = QueryIdentifierBuilder.getInstance().build(FinancialControllerService.class, "readAllForAssignmentsInitialization");
 	Collection<FinancialControllerService> readAllForAssignmentsInitialization();
 	
-	String QUERY_IDENTIFIER_COUNT_ALL = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION);
+	String QUERY_IDENTIFIER_READ_ALL_FOR_UI = QueryIdentifierBuilder.getInstance().build(FinancialControllerService.class, "readAllForUI");
+	Collection<FinancialControllerService> readAllForUI();
+	
+	String QUERY_IDENTIFIER_COUNT_ALL = QueryIdentifierBuilder.getInstance().build(FinancialControllerService.class, "countAll");;
 	Long countAll();
 	
 	/**/
@@ -31,8 +35,27 @@ public interface FinancialControllerServiceQuerier extends Querier.CodableAndNam
 		}
 		
 		@Override
+		public Collection<FinancialControllerService> readAllForUI() {
+			return QueryExecutor.getInstance().executeReadMany(FinancialControllerService.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI);
+		}
+		
+		@Override
 		public Long countAll() {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT_ALL);
+		}
+		
+		@Override
+		public Collection<FinancialControllerService> readMany(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_ALL_FOR_UI))
+				return readAllForUI();
+			return super.readMany(arguments);
+		}
+		
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_ALL))
+				return countAll();
+			return super.count(arguments);
 		}
 		
 		@Override
@@ -59,6 +82,9 @@ public interface FinancialControllerServiceQuerier extends Querier.CodableAndNam
 							+ "LEFT JOIN Section section ON section = t.section")
 			.setTupleFieldsNamesIndexesFromFieldsNames(FinancialControllerService.FIELD_IDENTIFIER,FinancialControllerService.FIELD_CODE
 					,FinancialControllerService.FIELD_SECTION_CODE,FinancialControllerService.FIELD_LOCALITY_CODE,FinancialControllerService.FIELD_ACTIVITY_IDENTIFIER)
+			,Query.buildSelect(FinancialControllerService.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
+					, "SELECT t.identifier,t.code,t.name FROM FinancialControllerService t ORDER BY t.name ASC")
+			.setTupleFieldsNamesIndexesFromFieldsNames(FinancialControllerService.FIELD_IDENTIFIER,FinancialControllerService.FIELD_CODE,FinancialControllerService.FIELD_NAME)
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_ALL, "SELECT COUNT(t.identifier) FROM FinancialControllerService t")
 		);
 		

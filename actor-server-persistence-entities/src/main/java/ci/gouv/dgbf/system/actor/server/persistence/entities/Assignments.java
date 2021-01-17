@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -28,7 +29,7 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
 		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
 })
-public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
+public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedImpl implements MeaEntity,Serializable {
 
 	/* Imputation */
 	
@@ -67,6 +68,11 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	
 	/**/
 	
+	@Column(name = "ETAT") private String __mea_statut__;
+	@Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;
+	
+	/**/
+	
 	@Transient private String creditManagerHolderAsString;
 	@Transient private String creditManagerAssistantAsString;	
 	@Transient private String authorizingOfficerHolderAsString;
@@ -99,6 +105,13 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	@Override
 	public Assignments setIdentifier(String identifier) {
 		return (Assignments) super.setIdentifier(identifier);
+	}
+	
+	@Override
+	public MeaEntity writeStatus() {
+		__mea_statut__ = "MODI";
+		__mea_date_statut__ = LocalDateTime.now();
+		return this;
 	}
 	
 	/**/

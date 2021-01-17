@@ -64,6 +64,26 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return this;
 	}
 	
+	public Boolean isCodeBelongsToExecutionAssisantsCodes() {
+		return EXECUTION_ASSISTANTS_CODES.contains(code);
+	}
+	
+	public Boolean isCodeEqualCreditManager() {
+		return CODE_CREDIT_MANAGER_HOLDER.equals(code);
+	}
+	
+	public Boolean isCodeEqualAuthorizingOfficer() {
+		return CODE_AUTHORIZING_OFFICER_HOLDER.equals(code);
+	}
+	
+	public Boolean isCodeEqualFinancialController() {
+		return CODE_FINANCIAL_CONTROLLER_HOLDER.equals(code);
+	}
+	
+	public Boolean isCodeEqualAccounting() {
+		return CODE_ACCOUNTING_HOLDER.equals(code);
+	}
+	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_PROFILES_AS_STRINGS = "profilesAsStrings";
 	public static final String FIELD_PROFILES_AS_STRING = "profilesAsString";
@@ -101,4 +121,7 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final Collection<String> EXECUTION_CODES = List.of(CODE_CREDIT_MANAGER_HOLDER,CODE_CREDIT_MANAGER_ASSISTANT,CODE_AUTHORIZING_OFFICER_HOLDER
 			,CODE_AUTHORIZING_OFFICER_ASSISTANT,CODE_FINANCIAL_CONTROLLER_HOLDER,CODE_FINANCIAL_CONTROLLER_ASSISTANT,CODE_ACCOUNTING_HOLDER,CODE_ACCOUNTING_ASSISTANT);
+	
+	public static final Collection<String> EXECUTION_ASSISTANTS_CODES = List.of(CODE_CREDIT_MANAGER_ASSISTANT,CODE_AUTHORIZING_OFFICER_ASSISTANT
+			,CODE_FINANCIAL_CONTROLLER_ASSISTANT,CODE_ACCOUNTING_ASSISTANT);
 }

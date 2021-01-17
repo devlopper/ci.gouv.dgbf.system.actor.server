@@ -34,5 +34,4 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		//be sure we can work with keycloak client
 		//KeycloakClientGetter.getInstance().get();
 	}
-
 }

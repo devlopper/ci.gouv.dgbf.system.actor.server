@@ -122,13 +122,16 @@
 				<cyk.variable.system.uri.host>localhost</cyk.variable.system.uri.host>
 				<cyk.variable.system.uri.port>8180</cyk.variable.system.uri.port>
 				<cyk.variable.request.read.page.url>http://localhost:8280/acteur/public/request/read.jsf</cyk.variable.request.read.page.url>
-				
-				<security.single.sign.on.system.keycloak.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.url>
-				<security.single.sign.on.system.keycloak.realm.name>SIIB</security.single.sign.on.system.keycloak.realm.name>
-				<security.single.sign.on.system.keycloak.client.identifier>admin-cli</security.single.sign.on.system.keycloak.client.identifier>
-				<security.single.sign.on.system.keycloak.client.secret>ee334d25-4f98-4a42-a1e5-6097e7494fb7</security.single.sign.on.system.keycloak.client.secret>
-				<security.single.sign.on.system.keycloak.credential.username>mic-acteur-api</security.single.sign.on.system.keycloak.credential.username>
-				<security.single.sign.on.system.keycloak.credential.password>mic-@cteur-@pi@2O2o</security.single.sign.on.system.keycloak.credential.password>
+				<!--
+				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
+				-->
+				<cyk.variable.keycloak.url>http://localhost:8230/auth</cyk.variable.keycloak.url>
+				<cyk.variable.keycloak.realm.name>SIIB</cyk.variable.keycloak.realm.name>
+				<cyk.variable.keycloak.client.identifier>admin-cli</cyk.variable.keycloak.client.identifier>
+				<cyk.variable.keycloak.client.secret>ee334d25-4f98-4a42-a1e5-6097e7494fb7</cyk.variable.keycloak.client.secret>
+				<cyk.variable.keycloak.credential.username>mic-acteur-api</cyk.variable.keycloak.credential.username>
+				<cyk.variable.keycloak.credential.password>mic-@cteur-@pi@2O2o</cyk.variable.keycloak.credential.password>
 				
 				<cyk.variable.jasper.server.url>http://localhost:9080/jasperserver/</cyk.variable.jasper.server.url>
 				<cyk.variable.jasper.server.enabled>true</cyk.variable.jasper.server.enabled>

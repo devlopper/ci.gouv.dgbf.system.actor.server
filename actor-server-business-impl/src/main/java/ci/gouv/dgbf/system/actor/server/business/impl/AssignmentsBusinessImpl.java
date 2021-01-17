@@ -312,6 +312,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			if(scopeFunction.getScopeCode().equals(managerCode) && scopeFunction.getFunctionAsString().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
 				return scopeFunction;
 		}
+		System.out.println("GC NON TROUVE : "+managerCode);
 		return null;
 	}
 	
@@ -345,6 +346,16 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
 				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
 						&& StringHelper.isNotBlank(localityCode) && localityCode.equals(authorizingOfficerService.getLocalityCode())) {
+					for(ScopeFunction scopeFunction : scopeFunctions)
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) && scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+							return scopeFunction;
+					break;
+				}
+			}
+			//Secondaire Not Found -> Délégué
+			for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
+				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
+						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
 					for(ScopeFunction scopeFunction : scopeFunctions)
 						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) && scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
 							return scopeFunction;
@@ -411,6 +422,19 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 								return scopeFunction;
 						break;
 					}	
+				}
+				
+				//Find section's financial controller service
+				for(FinancialControllerService financialControllerService : financialControllerServices) {
+					if(StringHelper.isBlank(financialControllerService.getLocalityCode()) && StringHelper.isNotBlank(sectionCode) 
+							&& sectionCode.equals(financialControllerService.getSectionCode()) ) {
+						for(ScopeFunction scopeFunction : scopeFunctions)
+							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) 
+									&& scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())							 ) {
+								return scopeFunction;
+							}
+						break;
+					}
 				}
 			}
 		}

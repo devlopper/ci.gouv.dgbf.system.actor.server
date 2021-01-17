@@ -58,6 +58,9 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	String QUERY_IDENTIFIER_READ_BY_CODE = QueryIdentifierBuilder.getInstance().build(Function.class, "readByCode");
 	Function readByCode(String code);
 	
+	String QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI = QueryIdentifierBuilder.getInstance().build(Function.class, "readByCodesForUI");
+	Collection<Function> readByCodesForUI(Collection<String> codes);
+	
 	/* read by types codes order by code ascending */
 	String QUERY_IDENTIFIER_READ_BY_TYPES_CODES = QueryIdentifierBuilder.getInstance().build(Function.class, "readByTypesCodes");
 	Collection<Function> readByTypesCodes(Collection<String> typesCodes);
@@ -164,6 +167,12 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		public Function readByCode(String code) {
 			return QueryExecutor.getInstance().executeReadOne(Function.class,new QueryExecutorArguments()
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_CODE).addFilterFieldsValues(PARAMETER_NAME_CODE,code));
+		}
+		
+		@Override
+		public Collection<Function> readByCodesForUI(Collection<String> codes) {
+			return QueryExecutor.getInstance().executeReadMany(Function.class,new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI).addFilterFieldsValues(PARAMETER_NAME_CODES,codes));
 		}
 		
 		@Override
@@ -322,6 +331,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI);
 			if(QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
+			if(QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByCodesForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_CODES));
 			return super.readMany(arguments);
 		}
 		
@@ -385,6 +396,11 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				
 				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI
 						, jpql(select("t"),from("Function t"),where("t.code = :"+PARAMETER_NAME_CODE)))
+				
+				,Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
+						, jpql(select(fields("t",Function.FIELD_IDENTIFIER,Function.FIELD_CODE,Function.FIELD_NAME)),from("Function t")
+								,where("t.code IN :"+PARAMETER_NAME_CODES)))
+					.setTupleFieldsNamesIndexesFromFieldsNames(Function.FIELD_IDENTIFIER,Function.FIELD_CODE,Function.FIELD_NAME)
 			);
 		
 		QueryHelper.addQueries(

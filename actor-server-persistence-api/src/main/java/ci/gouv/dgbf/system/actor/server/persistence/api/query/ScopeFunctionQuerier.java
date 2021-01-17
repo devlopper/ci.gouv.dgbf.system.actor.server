@@ -51,6 +51,13 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");	
 	Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments);
+	/*
+	String QUERY_IDENTIFIER_READ_BY_SCOPES_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByScopesIdentifiers");
+	Collection<ScopeFunction> readByScopesIdentifiers(Collection<String> scopesIdentifiers);
+	
+	String QUERY_IDENTIFIER_COUNT_BY_SCOPES_IDENTIFIERS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SCOPES_IDENTIFIERS);
+	Long countByScopesIdentifiers(Collection<String> scopesIdentifiers);
+	*/
 	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByFunctionsIdentifiers(Collection<String> functionsIdentifiers);

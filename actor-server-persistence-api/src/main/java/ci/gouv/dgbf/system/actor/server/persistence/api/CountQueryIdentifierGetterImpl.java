@@ -5,7 +5,9 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -46,6 +48,14 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_IDENTIFIERS;
 		if(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ_FOR_UI.equals(readQueryIdentifier))
 			return ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_COUNT;
+		
+		if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI.equals(readQueryIdentifier))
+			return AdministrativeUnitQuerier.QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER;
+		if(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS_FOR_UI.equals(readQueryIdentifier))
+			return AdministrativeUnitQuerier.QUERY_IDENTIFIER_COUNT_BY_SECTIONS_IDENTIFIERS;
+		
+		if(BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI.equals(readQueryIdentifier))
+			return BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER;
 		
 		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL.equals(readQueryIdentifier))
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;

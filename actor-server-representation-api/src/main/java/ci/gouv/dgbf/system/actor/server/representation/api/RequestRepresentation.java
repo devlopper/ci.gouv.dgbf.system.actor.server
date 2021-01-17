@@ -120,7 +120,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande à soumettre",required = true
 					,example = "01",style = ParameterStyle.SIMPLE)
 	})
-	Response submitByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier);
+	Response submitByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
 	@POST
 	@Path(PATH_ACCEPT_BY_IDENTIFIER)
@@ -135,7 +135,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier
 			,@QueryParam(QUERY_PARAMETER_NAME_BUDGETAIRES_SCOPE_FUNCTIONS_IDENTIFIERS)List<String> budgetariesScopeFunctionsIdentifiers
 			,@QueryParam(QUERY_PARAMETER_NAME_COMMENT) String comment			
-			,byte[] bytes);
+			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
 	@POST
 	@Path(PATH_REJECT_BY_IDENTIFIER)
@@ -148,7 +148,8 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			,@Parameter(name = "Motif de rejet",allowEmptyValue = false,description = "Motif de rejet de la demande",required = true
 					,example = "Informations incorrectes",style = ParameterStyle.SIMPLE)
 	})
-	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason);
+	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason
+			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
 	@GET
 	@Path(PATH_GET_PHOTO_BY_IDENTIFIER)

@@ -215,11 +215,13 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getComment());
 		System.out.println(request.getCreationDateAsString());
 		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
+		System.out.println(request.getAdministrativeUnitAsString());
+		System.out.println(request.getMobilePhoneNumber());
 	}
 	
 	@Test
 	public void request_readByIdentifierForUI(){
-		Request request = RequestQuerier.getInstance().readByIdentifierForUI("5843623c-eda1-4143-bb53-76aa893bd5d6");
+		Request request = RequestQuerier.getInstance().readByIdentifierForUI("4f5ec170-0419-472e-b9a4-7bca32482610");
 		System.out.println(request.getActorCode());
 		System.out.println(request.getActorNames());
 		System.out.println(request.getStatusAsString());
@@ -228,6 +230,10 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getCreationDateAsString());
 		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
 		System.out.println(request.getBudgetariesScopeFunctionsGrantedAsStrings());
+		System.out.println(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder());
+		System.out.println(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder());
+		System.out.println(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder());
+		System.out.println(request.getHasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder());
 	}
 	
 	@Test

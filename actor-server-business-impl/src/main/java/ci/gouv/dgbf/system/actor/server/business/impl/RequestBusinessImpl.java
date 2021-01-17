@@ -41,10 +41,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
@@ -52,7 +54,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, RequestPersistence> implements RequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private void validate(Request request) {
+	private void validate(Request request,Boolean budgetariesScopeFunctionsIncludable) {
 		if(request == null)
 			throw new RuntimeException("La demande est obligatoire");
 		if(request.getType() == null)
@@ -66,6 +68,10 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(StringHelper.isBlank(request.getElectronicMailAddress()))
 				throw new RuntimeException("Le mail du demandeur est obligatoire");
 		}
+		if(Boolean.TRUE.equals(budgetariesScopeFunctionsIncludable) && RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
+				throw new RuntimeException("La fonction budgétaire est obligatoire");
+		}		
 	}
 	
 	private void validateProcess(Request request) {
@@ -76,7 +82,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private void validateRecord(Request request) {
-		validate(request);
+		validate(request,Boolean.TRUE);
 		if(Boolean.TRUE.equals(request.getIsAdministrator())) {
 			
 		}else {
@@ -134,7 +140,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	@Override @Transactional
 	public void initialize(Request request) {
-		validate(request);
+		validate(request,Boolean.TRUE);
+		request.set__auditFunctionality__("Initialisation");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		setFields(request);
 		request.setIdentifier(IdentifiableSystem.generateRandomly());
@@ -155,6 +162,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void record(Request request) {
 		validateRecord(request);
+		request.set__auditFunctionality__("Modification");
 		setFields(request);
 		EntityManager entityManager = __inject__(EntityManager.class);
 		saveBudgetariesScopeFunctions(request,entityManager);
@@ -166,6 +174,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void recordPhoto(Request request) {
 		validateRecord(request);
+		request.set__auditFunctionality__("Modification Photo");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
@@ -183,6 +192,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void recordActOfAppointment(Request request) {
 		validateRecord(request);
+		request.set__auditFunctionality__("Modification Acte de nomination");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
@@ -233,10 +243,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	@Override @Transactional
 	public void submit(Request request) {
-		validate(request);
+		validate(request,Boolean.FALSE);
 		if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
 			throw new RuntimeException("La demande a déja été soumise");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_SUBMITTED));
+		request.set__auditFunctionality__("Soumission");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
 		
@@ -249,18 +260,19 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void submitByIdentifier(String identifier) {
+	public void submitByIdentifier(String identifier,String readPageURL) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
-				);
+				).setReadPageURL(readPageURL);
 		submit(request);
 	}
 	
 	@Override @Transactional
 	public void accept(Request request) {
-		validate(request);
+		validate(request,Boolean.FALSE);
 		validateProcess(request);
+		request.set__auditFunctionality__("Acceptation");
 		/*
 		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
 			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
@@ -271,20 +283,25 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+		Collection<ScopeFunction> scopeFunctions = requestScopeFunctions == null ? null : requestScopeFunctions.stream().filter(x -> Boolean.TRUE.equals(x.getGranted()))
+				.map(x -> x.getScopeFunction())
+				.collect(Collectors.toList());
+		
 		//Non blocking operations
 		try {
-			notifyAccepted(request);
+			notifyAccepted(request,scopeFunctions);
 		} catch (Exception exception) {
 			LogHelper.log(exception, getClass());
 		}
 	}
 	
 	@Override @Transactional
-	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes) {
+	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
-				);
+				).setReadPageURL(readPageURL);
 		//update granted
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
@@ -317,10 +334,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	@Override @Transactional
 	public void reject(Request request) {
-		validate(request);
+		validate(request,Boolean.FALSE);
 		validateProcess(request);
 		if(StringHelper.isBlank(request.getRejectionReason()))
 			throw new RuntimeException("Le motif de rejet est obligatoire");
+		request.set__auditFunctionality__("Rejet");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
@@ -328,11 +346,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void rejectByIdentifier(String identifier, String rejectionReason) {
+	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
-				);
+				).setReadPageURL(readPageURL);
 		request.setRejectionReason(rejectionReason);
 		reject(request);
 	}
@@ -354,11 +372,15 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	/**/
 	
-	private static void notifyAccessToken(Request request) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request", request);
+	private static void setReadPageURL(Request request) {
 		if(StringHelper.isBlank(request.getReadPageURL()))
 			request.setReadPageURL(ValueHelper.defaultToIfBlank(ConfigurationHelper.getValueAsString(FreeMarker.VARIABLE_NAME_REQUEST_READ_PAGE_URL)
 					, "http://siib"+("test".equals(ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT")) ? "test" : "")+".dgbf.ci/acteur/public/request/read.jsf"));
+	}
+	
+	private static void notifyAccessToken(Request request) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request", request);
+		setReadPageURL(request);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -374,6 +396,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private static void notifyInitialized(Request request) {
+		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
@@ -389,6 +412,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private static void notifySubmitted(Request request) {
+		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
@@ -402,7 +426,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					if(byteArrayOutputStream == null)
 						LogHelper.logSevere(String.format("Le flux de la fiche d'identification de %s est null", request.getIdentifier()), getClass());
 					else
-						message.setAttachment(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
+						message.addAttachments(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
 								.setName("fiche_d_identification"));
 					MailSender.getInstance().send(message);
 				} catch (Exception exception) {
@@ -412,7 +436,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}).start();		
 	}
 	
-	private static void notifyAccepted(Request request) {
+	private static void notifyAccepted(Request request,Collection<ScopeFunction> scopeFunctions) {
+		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override
 			public void run() {
@@ -421,18 +446,34 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					message.setSubject("SIGOBE - "+request.getType().getName());
 					message.setBody(FreeMarker.getRequestAcceptedMailMessage(request));
 					message.addReceivers(List.of(request.getElectronicMailAddress()));
-					ByteArrayOutputStream byteArrayOutputStream = ReportGetter.getInstance().get(request.getType().getSignatureSpecimenReportIdentifier()
-							,Map.of("identifiant",request.getIdentifier()),FileType.PDF);
-					if(byteArrayOutputStream == null)
-						LogHelper.logSevere(String.format("Le flux du spécimen de signature de %s est null", request.getIdentifier()), getClass());
-					else
-						message.setAttachment(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
-								.setName("specimen_de_signature"));
+					if(CollectionHelper.isNotEmpty(scopeFunctions)) {
+						for(ScopeFunction scopeFunction : scopeFunctions) {
+							if(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())
+								continue;
+							String reportIdentifier = null;
+							if(Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunction().getCode()))
+								reportIdentifier = request.getType().getCreditManagerSignatureSpecimenReportIdentifier();
+							else if(Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(scopeFunction.getFunction().getCode()))
+								reportIdentifier = request.getType().getAuthorizingOfficerSignatureSpecimenReportIdentifier();
+							
+							if(StringHelper.isBlank(reportIdentifier))
+								continue;
+							
+							ByteArrayOutputStream byteArrayOutputStream = ReportGetter.getInstance().get(reportIdentifier
+									,Map.of("identifiant",request.getIdentifier(),"poste",scopeFunction.getIdentifier()),FileType.PDF);
+							if(byteArrayOutputStream == null) {
+								LogHelper.logSevere(String.format("Le flux du spécimen de signature de %s est null", request.getIdentifier()), getClass());
+								continue;
+							}
+							message.addAttachments(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
+									.setName("specimen_de_signature_"+scopeFunction.getFunction().getCode()));
+						}
+					}
 					MailSender.getInstance().send(message);
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
-				}	
+				}
 			}
-		}).start();		
+		}).start();
 	}
 }

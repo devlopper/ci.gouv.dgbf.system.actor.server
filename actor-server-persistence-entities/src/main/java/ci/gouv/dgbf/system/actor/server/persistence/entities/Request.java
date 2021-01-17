@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -21,7 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
@@ -32,7 +35,13 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Request.TABLE_NAME)
-public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
+@AttributeOverrides(value= {
+		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+})
+public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/* Initialization */
@@ -40,7 +49,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
 	@Transient private String typeAsString,creationDateAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
-	@Transient private String statusAsString;	
+	@Transient private String statusAsString;
+	//@Transient private Boolean isAcceptedStatus;
+	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	@Transient private String authenticationRequiredAsString;
@@ -69,6 +80,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Column(name = COLUMN_BUDGETARY_EXERCICE) private Integer budgetaryExercice;
 	@ManyToOne @JoinColumn(name = COLUMN_ADMINISTRATIVE_UNIT) private AdministrativeUnit administrativeUnit;
+	@Transient private String administrativeUnitAsString;
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;	
@@ -91,6 +103,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions;
 	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
 	@Transient private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
+	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
+	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
+	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;
+	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder;
+	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder;
 	
 	/* Others */
 	
@@ -138,6 +155,41 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 		return fieldsNames;
 	}
 	
+	public Boolean hasStatus(String code) {
+		if(StringHelper.isBlank(code))
+			return Boolean.FALSE;
+		return status != null && code.equals(status.getCode());
+	}
+	
+	public void computeHasBudgetaryScopeFunctionWhereFunctionCode(Collection<RequestScopeFunction> requestScopeFunctions) {
+		//if(hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes != null)
+		//	return hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
+		if(CollectionHelper.isEmpty(requestScopeFunctions)) {
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder = Boolean.FALSE;
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder = Boolean.FALSE;
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder = Boolean.FALSE;
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder = Boolean.FALSE;
+			hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes = Boolean.FALSE;
+		}else {
+			Boolean isHasStatusAccepted = Boolean.TRUE.equals(hasStatus(RequestStatus.CODE_ACCEPTED));
+			Collection<RequestScopeFunction> collection = null;
+			if(isHasStatusAccepted)
+				collection = requestScopeFunctions.stream().filter(x -> Boolean.TRUE.equals(x.getGranted())).collect(Collectors.toList());
+			else
+				collection = requestScopeFunctions;
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder = !collection.stream().filter(x -> x.getScopeFunction().getFunction().isCodeEqualCreditManager())
+					.collect(Collectors.toList()).isEmpty();
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder = !collection.stream().filter(x -> x.getScopeFunction().getFunction().isCodeEqualAuthorizingOfficer())
+					.collect(Collectors.toList()).isEmpty();
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsFinancialControllerHolder = !collection.stream().filter(x -> x.getScopeFunction().getFunction().isCodeEqualFinancialController())
+					.collect(Collectors.toList()).isEmpty();
+			hasBudgetaryScopeFunctionWhereFunctionCodeIsAccountingHolder = !collection.stream().filter(x -> x.getScopeFunction().getFunction().isCodeEqualAccounting())
+					.collect(Collectors.toList()).isEmpty();
+			hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes = !collection.stream().filter(x -> x.getScopeFunction().getFunction().isCodeBelongsToExecutionAssisantsCodes())
+					.collect(Collectors.toList()).isEmpty();
+		}
+	}
+	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
@@ -167,6 +219,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";

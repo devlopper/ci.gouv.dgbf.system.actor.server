@@ -335,14 +335,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response submitByIdentifier(String identifier) {
+	public Response submitByIdentifier(String identifier,String readPageURL) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).submitByIdentifier(identifier);
+						__inject__(RequestBusiness.class).submitByIdentifier(identifier,readPageURL);
 					}
 				};
 			}
@@ -350,14 +350,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes) {
+	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,comment,signedRequestSheetBytes);
+						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,comment,readPageURL);
 					}
 				};
 			}
@@ -365,14 +365,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response rejectByIdentifier(String identifier, String rejectionReason) {
+	public Response rejectByIdentifier(String identifier, String rejectionReason,String readPageURL) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).rejectByIdentifier(identifier, rejectionReason);
+						__inject__(RequestBusiness.class).rejectByIdentifier(identifier, rejectionReason,readPageURL);
 					}
 				};
 			}

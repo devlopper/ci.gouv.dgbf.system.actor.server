@@ -66,6 +66,8 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 								continue;
 							if(scopeFunctions == null)
 								scopeFunctions = new ArrayList<>();
+							scopeFunction.set__auditWho__(scopeFunctionDto.get__auditWho__());
+							scopeFunction.set__auditFunctionality__(scopeFunctionDto.get__auditFunctionality__());
 							scopeFunctions.add(scopeFunction);
 						}
 						ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);

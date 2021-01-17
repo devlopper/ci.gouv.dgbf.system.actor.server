@@ -44,19 +44,19 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void submit(Request request);
 	
 	@Transactional
-	void submitByIdentifier(String identifier);
+	void submitByIdentifier(String identifier,String readPageURL);
 	
 	@Transactional
 	void accept(Request request);
 	
 	@Transactional
-	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,byte[] signedRequestSheetBytes);
+	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL);
 	
 	@Transactional
 	void reject(Request request);
 	
 	@Transactional
-	void rejectByIdentifier(String identifier,String rejectionReason);
+	void rejectByIdentifier(String identifier,String rejectionReason,String readPageURL);
 	
 	Integer notifyAccessTokens(String electronicMailAddress,String readPageURL);
 	

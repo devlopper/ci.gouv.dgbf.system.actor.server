@@ -42,7 +42,7 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
 		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
 })
-public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
+public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements MeaEntity,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
@@ -71,9 +71,19 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
 	@Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
 	
+	@Column(name = "ETAT") private String __mea_statut__;
+	@Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;
+	
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
 	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
+	
+	@Override
+	public MeaEntity writeStatus() {
+		__mea_statut__ = "MODI";
+		__mea_date_statut__ = LocalDateTime.now();
+		return this;
+	}
 	
 	@Override
 	public ScopeFunction setIdentifier(String identifier) {

@@ -17,6 +17,14 @@ public class ScopeFunctionPersistenceImpl extends AbstractPersistenceEntityImpl<
 	protected void __listenExecuteReadAfter__(ScopeFunction scopeFunction, Properties properties) {
 		super.__listenExecuteReadAfter__(scopeFunction, properties);
 		scopeFunction.setShared(ScopeFunctionPersistence.computeShared(scopeFunction.getNumberOfActor()));
+		scopeFunction.set__auditWhen__(null);
 	}
 	
+	@Override
+	public ScopeFunction readBySystemIdentifier(Object identifier, Properties properties) {
+		ScopeFunction scopeFunction = super.readBySystemIdentifier(identifier, properties);
+		if(scopeFunction != null)
+			scopeFunction.set__auditWhen__(null);
+		return scopeFunction;
+	}
 }
