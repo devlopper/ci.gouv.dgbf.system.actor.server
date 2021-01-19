@@ -35,4 +35,13 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	TransactionResult applyModel(Assignments model,Filter filter,Collection<String> overridablesFieldsNames);
 	
 	String DELETE_ALL = "Assignments.deleteAll";
+	
+	String CLEAN = "Assignments.clean";
+	void clean(String actorCode);
+	
+	String IMPORT = "Assignments.import";
+	void import_(String actorCode);
+	
+	String EXPORT = "Assignments.export";
+	void export(String actorCode);
 }

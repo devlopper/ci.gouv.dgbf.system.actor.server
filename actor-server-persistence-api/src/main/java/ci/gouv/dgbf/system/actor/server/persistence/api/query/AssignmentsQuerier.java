@@ -14,9 +14,11 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
 import org.cyk.utility.__kernel__.persistence.query.Language;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -101,6 +103,10 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readNotFullyAssignedWhereFilterForUI");
 	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
+	
+	void clean(String actor,String functionality,String action,Date date);
+	void import_(String actor,String functionality,String action,Date date);
+	void export(String actor,String functionality,String action,Date date);
 	
 	/**/
 	
@@ -298,7 +304,36 @@ public interface AssignmentsQuerier extends Querier {
 				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
 			return readNotFullyAssignedWhereFilter(arguments);
 		}
+	
+		@Override
+		public void clean(String actor, String functionality, String action, Date date) {
+			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN
+					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
+				);
+		}
 		
+		@Override
+		public void import_(String actor, String functionality, String action, Date date) {
+			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT
+					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
+				);
+		}
+		
+		@Override
+		public void export(String actor, String functionality, String action, Date date) {
+			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
+					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
+				);
+		}		
 	}
 	
 	/**/

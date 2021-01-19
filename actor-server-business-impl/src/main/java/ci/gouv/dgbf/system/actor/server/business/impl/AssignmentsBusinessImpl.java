@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import org.cyk.utility.__kernel__.business.TransactionResult;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
@@ -20,6 +22,7 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessEntity;
 
@@ -579,5 +582,23 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public BusinessEntity<Assignments> deleteAll() {
 		QueryExecutor.getInstance().executeUpdateOrDelete(new QueryExecutorArguments().setQuery(new Query().setValue("DELETE FROM Assignments")));
 		return this;
+	}
+
+	@Override
+	public void clean(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
+		AssignmentsQuerier.getInstance().clean(actorCode, "effacement", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+	}
+	
+	@Override
+	public void import_(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
+		AssignmentsQuerier.getInstance().import_(actorCode, "import", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+	}
+	
+	@Override
+	public void export(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
+		AssignmentsQuerier.getInstance().export(actorCode, "export", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 }

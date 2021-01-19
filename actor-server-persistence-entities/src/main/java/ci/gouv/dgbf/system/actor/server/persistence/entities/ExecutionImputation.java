@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -19,11 +20,12 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=ExecutionImputation.TABLE_NAME)
-/*@SecondaryTables(value= @SecondaryTable(name = ExecutionImputation.VIEW_NAME))*/
-@NamedStoredProcedureQuery(
-	name = ExecutionImputation.PROCEDURE_REFRESH_MATERIALIZED_VIEW, 
-	procedureName = "PROC_REFRESH_VM_APP_EX_IP"
-)
+@NamedStoredProcedureQueries(value = {
+	@NamedStoredProcedureQuery(
+		name = ExecutionImputation.PROCEDURE_REFRESH_MATERIALIZED_VIEW, 
+		procedureName = ExecutionImputation.PROCEDURE_NAME_REFRESH_MATERIALIZED_VIEW
+	)
+})
 public class ExecutionImputation extends AbstractImputation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -407,6 +409,7 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	public static final String FIELD_ACCOUNTING_ASSISTANT_SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER = buildScopeFunctionExecutionImputationAssistantIdentifierFieldName(FIELD_ACCOUNTING);
 	
 	public static final String TABLE_NAME = "VM_APP_EX_IMPUTATION";
+	public static final String PROCEDURE_NAME_REFRESH_MATERIALIZED_VIEW = "P_RAFFRAICHIR_VM_APP_EX_IMP";
 	//public static final String VIEW_NAME = "VM_APP_EX_IMPUTATION_POSTE";
 	
 	//Holder

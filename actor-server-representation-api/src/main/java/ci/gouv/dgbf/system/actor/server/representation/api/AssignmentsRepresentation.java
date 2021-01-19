@@ -53,12 +53,36 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	//@Operation(description = "Enregistrer des affectations")
 	Response saveScopeFunctions(List<AssignmentsDto> collection);
 	
+	@POST
+	@Path(PATH_CLEAN)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response clean(String actorCode);
+	
+	@POST
+	@Path(PATH_IMPORT)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response import_(String actorCode);
+	
+	@POST
+	@Path(PATH_EXPORT)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response export(String actorCode);
+	
 	String PATH = "affectations";
 	String PATH_DERIVE_ALL_VALUES = "derivertouteslesvaleurs";
 	String PATH_INITIALIZE = "initialize";
 	String PATH_APPLY_MODEL = "applyModel";
 	String PATH_APPLY_MODEL_INTERNAL = "applyModelInternal";
 	String PATH_SAVE_SCOPE_FUNCTIONS = "saveScopeFunctions";
+	String PATH_CLEAN = "effacer";
+	String PATH_IMPORT = "importer";
+	String PATH_EXPORT = "exporter";
 	String TAG = "Affectations";
 	
 	String QUERY_PARAMETER_OVERRIDABLE = "ecraser";

@@ -138,6 +138,51 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 			}
 		});
 	}
+
+	@Override
+	public Response clean(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(AssignmentsBusiness.class).clean(actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response import_(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(AssignmentsBusiness.class).import_(actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response export(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(AssignmentsBusiness.class).export(actorCode);
+					}
+				};
+			}
+		});
+	}
 	
 	private static void setScopeFunctionFromString(Assignments assignments,String fieldName,AssignmentsDto dto) {
 		String identifier = (String)FieldHelper.read(dto, fieldName+"AsString");

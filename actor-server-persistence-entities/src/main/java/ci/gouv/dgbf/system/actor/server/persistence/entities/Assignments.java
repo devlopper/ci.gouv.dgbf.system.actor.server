@@ -10,6 +10,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -28,6 +32,37 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
 		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
 		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+})
+@NamedStoredProcedureQueries(value = {
+	@NamedStoredProcedureQuery(
+			name = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN, 
+			procedureName = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN
+			,parameters = {
+				@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR , mode = ParameterMode.IN,type = String.class)
+				,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY , mode = ParameterMode.IN,type = String.class)
+				,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION , mode = ParameterMode.IN,type = String.class)
+				,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
+			}
+	),@NamedStoredProcedureQuery(
+			name = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT, 
+			procedureName = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT
+			,parameters = {
+					@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
+				}
+		)
+	,@NamedStoredProcedureQuery(
+			name = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT, 
+			procedureName = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
+			,parameters = {
+					@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
+				}
+		)
 })
 public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedImpl implements MeaEntity,Serializable {
 
@@ -151,6 +186,14 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 		);
 	
 	public static final String TABLE_NAME = "AFFECTATIONS";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN = "P_EFFACER_AFFECTATIONS";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT = "P_IMPORTER_AFFECTATIONS";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT = "P_EXPORTER_AFFECTATIONS";
+	
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR = "audit_acteur";
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY = "audit_fonctionalite";
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION = "audit_action";
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE = "audit_date";
 	
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_EXECUTION_IMPUTATION = "IMPUTATION";
