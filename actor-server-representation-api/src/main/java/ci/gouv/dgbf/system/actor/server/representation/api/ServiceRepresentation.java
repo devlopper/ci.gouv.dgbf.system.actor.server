@@ -5,6 +5,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -73,6 +74,13 @@ public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> 
 	Response deriveKeycloakAuthorizationsFromScratch(Collection<ServiceDto> services);
 	
 	@POST
+	@Path(PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH_BY_CODE)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Dériver les autorisations de keycloak à partir de zéro")
+	Response deriveKeycloakAuthorizationsFromScratchByCode(@QueryParam("code") String serviceCode);
+	
+	@POST
 	@Path(PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -95,6 +103,7 @@ public interface ServiceRepresentation extends RepresentationEntity<ServiceDto> 
 	String PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS = "deriveKeycloakAuthorizations";
 	String PATH_DELETE_KEYCLOAK_AUTHORIZATIONS = "deleteKeycloakAuthorizations";
 	String PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveKeycloakAuthorizationsFromScratch";
+	String PATH_DERIVE_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH_BY_CODE = "deriveKeycloakAuthorizationsFromScratchByCode";
 	String PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS = "deriveAllKeycloakAuthorizations";
 	String PATH_DERIVE_ALL_KEYCLOAK_AUTHORIZATIONS_FROM_SCRATCH = "deriveAllKeycloakAuthorizationsFromScratch";
 	

@@ -287,10 +287,33 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		Collection<ScopeFunction> scopeFunctions = requestScopeFunctions == null ? null : requestScopeFunctions.stream().filter(x -> Boolean.TRUE.equals(x.getGranted()))
 				.map(x -> x.getScopeFunction())
 				.collect(Collectors.toList());
-		
+		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s)", scopeFunctions.size()), getClass());
 		//Non blocking operations
 		try {
 			notifyAccepted(request,scopeFunctions);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
+	}
+	
+	public void accept(Request request,Collection<ScopeFunction> grantedScopeFunctions) {
+		validate(request,Boolean.FALSE);
+		validateProcess(request);
+		request.set__auditFunctionality__("Acceptation");
+		/*
+		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
+				throw new RuntimeException("Le spécimen de signature est obligatoire");
+		}
+		*/
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
+		request.setProcessingDate(LocalDateTime.now());
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+			
+		//Non blocking operations
+		try {
+			notifyAccepted(request,grantedScopeFunctions);
 		} catch (Exception exception) {
 			LogHelper.log(exception, getClass());
 		}
@@ -302,12 +325,18 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
+		Collection<ScopeFunction> grantedScopeFunctions = null;
 		//update granted
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
 			for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
 				requestScopeFunction
 					.setGranted(CollectionHelper.contains(budgetariesScopeFunctionsIdentifiers, requestScopeFunction.getScopeFunction().getIdentifier()));
+				if(Boolean.TRUE.equals(requestScopeFunction.getGranted())) {
+					if(grantedScopeFunctions == null)
+						grantedScopeFunctions = new ArrayList<>();
+					grantedScopeFunctions.add(requestScopeFunction.getScopeFunction());
+				}
 			}
 			EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, requestScopeFunctions));
 		}
@@ -321,15 +350,25 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					continue;
 				if(creatables == null)
 					creatables = new ArrayList<>();
-				creatables.add(new RequestScopeFunction().setRequest(request).setScopeFunction(EntityFinder.getInstance().find(ScopeFunction.class
-					, scopeFunctionIdentifier)).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
+				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, scopeFunctionIdentifier);
+				if(grantedScopeFunctions == null)
+					grantedScopeFunctions = new ArrayList<>();
+				grantedScopeFunctions.add(scopeFunction);
+				creatables.add(new RequestScopeFunction().setRequest(request).setScopeFunction(scopeFunction).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
 			}
 			if(CollectionHelper.isNotEmpty(creatables))
 				EntityCreator.getInstance().createMany(creatables);
 		}
+		
+		if(CollectionHelper.isEmpty(grantedScopeFunctions))
+			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
+		
 		request.setComment(comment);
-		//request.setSignedRequestSheet(signedRequestSheetBytes);
-		accept(request);
+		
+		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedScopeFunctions.size(),grantedScopeFunctions.stream().map(x -> x.getCode())
+				.collect(Collectors.joining(","))), getClass());
+		
+		accept(request,grantedScopeFunctions);
 	}
 	
 	@Override @Transactional
@@ -468,6 +507,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 							message.addAttachments(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
 									.setName("specimen_de_signature_"+scopeFunction.getFunction().getCode()));
 						}
+						LogHelper.logInfo(String.format("%s fichier(s) joint(s) à envoyer", CollectionHelper.getSize(message.getAttachments())), getClass());
 					}
 					MailSender.getInstance().send(message);
 				} catch (Exception exception) {

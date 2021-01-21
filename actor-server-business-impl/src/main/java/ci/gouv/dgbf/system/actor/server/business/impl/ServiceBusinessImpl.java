@@ -11,10 +11,10 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.security.keycloak.server.ClientManager;
-import org.cyk.utility.security.keycloak.server.Resource;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.security.keycloak.server.ClientManager;
+import org.cyk.utility.security.keycloak.server.Resource;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ServiceBusiness;
@@ -67,9 +67,19 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 	
 	@Override
 	public void deriveKeycloakAuthorizationsFromScratch(Collection<Service> services) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("services", services);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("services", services);
 		deleteKeycloakAuthorizations(services);
 		deriveKeycloakAuthorizations(services);
+	}
+	
+	@Override
+	public void deriveKeycloakAuthorizationsFromScratchByCode(String serviceCode) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("service code", serviceCode);
+		Service service = ServiceQuerier.getInstance().readByCode(serviceCode);
+		if(service == null)
+			throw new RuntimeException("Service with code "+serviceCode+" does not exist");
+		List<Service> services = CollectionHelper.listOf(service);
+		deriveKeycloakAuthorizationsFromScratch(services);
 	}
 	
 	@Override

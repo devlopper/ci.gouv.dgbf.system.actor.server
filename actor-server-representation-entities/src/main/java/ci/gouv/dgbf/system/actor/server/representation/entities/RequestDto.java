@@ -87,7 +87,9 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String readReportURIQuery;
 	private String signatureSpecimenReadReportURIQuery;
 	private String creditManagerSignatureSpecimenReadReportURIQuery;
+	private ArrayList<String> creditManagerSignatureSpecimenReadReportURIsQueries;
 	private String authorizingOfficerSignatureSpecimenReadReportURIQuery;
+	private ArrayList<String> authorizingOfficerSignatureSpecimenReadReportURIsQueries;
 	
 	/**/
 	

@@ -6,11 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
-import org.cyk.utility.security.keycloak.server.ClientManager;
-
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -18,7 +14,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		ClientManager.IDENTIFIERS_EXCLUDABLE.addAll(CollectionHelper.listOf(Service.CODE_MIC_ACTEUR));
+		//ClientManager.IDENTIFIERS_EXCLUDABLE.addAll(CollectionHelper.listOf(Service.CODE_MIC_ACTEUR));
 		
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class);
 		
