@@ -105,7 +105,7 @@ public interface AssignmentsQuerier extends Querier {
 	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
 	
 	void clean(String actor,String functionality,String action,Date date);
-	void import_(String actor,String functionality,String action,Date date);
+	void import_(String actor,String functionality,String actionCreate,String actionUpdate,Date date);
 	void export(String actor,String functionality,String action,Date date);
 	
 	/**/
@@ -316,11 +316,12 @@ public interface AssignmentsQuerier extends Querier {
 		}
 		
 		@Override
-		public void import_(String actor, String functionality, String action, Date date) {
+		public void import_(String actor, String functionality, String actionCreate,String actionUpdate, Date date) {
 			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT
 					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
 					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_CREATE,actionCreate
+					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_UPDATE,actionUpdate
 					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
 				);
 		}

@@ -29,14 +29,14 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Response initialize() {
+	public Response initialize(String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(AssignmentsBusiness.class).initialize();
+						__inject__(AssignmentsBusiness.class).initialize(actorCode);
 					}
 				};
 			}
@@ -44,14 +44,14 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	}
 	
 	@Override
-	public Response deriveAllValues(Boolean overridable) {
+	public Response deriveAllValues(Boolean overridable,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(AssignmentsBusiness.class).deriveAllValues(overridable);
+						__inject__(AssignmentsBusiness.class).deriveAllValues(overridable,actorCode);
 					}
 				};
 			}
@@ -59,7 +59,7 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	}
 
 	@Override
-	public Response applyModel(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames) {
+	public Response applyModel(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
@@ -78,7 +78,7 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, assignmentsDto);
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, assignmentsDto);
 						Filter filter = MappingHelper.getDestination(filterDto, Filter.class);
-						__inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames);
+						__inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode);
 					}
 				};
 			}
@@ -86,8 +86,8 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	}
 	
 	@Override
-	public Response applyModel(AssignmentsDto assignmentsDto) {
-		return applyModel(assignmentsDto,assignmentsDto.getFilter(),assignmentsDto.getOverridablesFieldsNames());
+	public Response applyModel(AssignmentsDto assignmentsDto,String actorCode) {
+		return applyModel(assignmentsDto,assignmentsDto.getFilter(),assignmentsDto.getOverridablesFieldsNames(),actorCode);
 	}
 	
 	@Override
@@ -118,6 +118,7 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 						Collection<Assignments> assignmentsCollection = new ArrayList<>();
 						collection.forEach(index -> {
 							Assignments assignments = EntityFinder.getInstance().find(Assignments.class, index.getIdentifier());
+							assignments.set__auditWho__(index.get__auditWho__());
 							if(assignments != null) {
 								assignmentsCollection.add(assignments);
 								setScopeFunctionFromString(assignments, Assignments.FIELD_CREDIT_MANAGER_HOLDER, index);

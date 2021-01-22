@@ -135,7 +135,8 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 			@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier
 			,@QueryParam(QUERY_PARAMETER_NAME_BUDGETAIRES_SCOPE_FUNCTIONS_IDENTIFIERS)List<String> budgetariesScopeFunctionsIdentifiers
 			,@QueryParam(QUERY_PARAMETER_NAME_COMMENT) String comment			
-			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
+			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL
+			,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_REJECT_BY_IDENTIFIER)
@@ -149,7 +150,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 					,example = "Informations incorrectes",style = ParameterStyle.SIMPLE)
 	})
 	Response rejectByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_REJECTION_REASON) String rejectionReason
-			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
+			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@GET
 	@Path(PATH_GET_PHOTO_BY_IDENTIFIER)

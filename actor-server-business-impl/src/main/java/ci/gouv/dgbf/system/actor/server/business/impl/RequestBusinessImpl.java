@@ -296,7 +296,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
-	public void accept(Request request,Collection<ScopeFunction> grantedScopeFunctions) {
+	private void accept(Request request,Collection<ScopeFunction> grantedScopeFunctions) {
 		validate(request,Boolean.FALSE);
 		validateProcess(request);
 		request.set__auditFunctionality__("Acceptation");
@@ -320,11 +320,12 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL) {
+	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL,String actorCode) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
+		request.set__auditWho__(actorCode);
 		Collection<ScopeFunction> grantedScopeFunctions = null;
 		//update granted
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
@@ -385,12 +386,13 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL) {
+	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String actorCode) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
 		request.setRejectionReason(rejectionReason);
+		request.set__auditWho__(actorCode);
 		reject(request);
 	}
 

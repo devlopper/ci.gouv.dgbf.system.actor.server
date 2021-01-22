@@ -49,7 +49,8 @@ import lombok.experimental.Accessors;
 			,parameters = {
 					@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR , mode = ParameterMode.IN,type = String.class)
 					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY , mode = ParameterMode.IN,type = String.class)
-					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_CREATE , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_UPDATE , mode = ParameterMode.IN,type = String.class)
 					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
 				}
 		)
@@ -193,6 +194,8 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR = "audit_acteur";
 	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY = "audit_fonctionalite";
 	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION = "audit_action";
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_CREATE = "audit_action_creer";
+	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_UPDATE = "audit_action_modifier";
 	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE = "audit_date";
 	
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";

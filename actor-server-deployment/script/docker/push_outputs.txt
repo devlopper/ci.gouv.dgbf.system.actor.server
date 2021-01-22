@@ -110,3 +110,17 @@ f1b5933fe4b5: Layer already exists
 21265eb26138: Pushed
 v0.0.0-202101211209: digest: sha256:11fe0f090c90d89aea030633d7eb4aca133833d9af43b849abe8fe1e14b7d2be size: 1377
 Deploying with time stamp : v0.0.0-202101211209 
+Publishing with time stamp : v0.0.0-202101211234 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+97333cc9ac7e: Preparing
+e78cf559b52b: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+e78cf559b52b: Layer already exists
+f1b5933fe4b5: Layer already exists
+849cb74592b3: Layer already exists
+97333cc9ac7e: Pushed
+v0.0.0-202101211234: digest: sha256:38f4b7713b57b912fb2c5ae009cf975e3e1f96fcb7139f8c1e1a508d0ecb5f07 size: 1377
+Deploying with time stamp : v0.0.0-202101211234 

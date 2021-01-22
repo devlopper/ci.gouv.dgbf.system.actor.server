@@ -3,7 +3,7 @@ package ci.gouv.dgbf.system.actor.server.representation.entities;
 import java.io.Serializable;
 import java.util.List;
 
-import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringAuditedImpl;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/* Imputation */

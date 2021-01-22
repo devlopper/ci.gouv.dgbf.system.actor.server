@@ -57,7 +57,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	 * NB : Aucune ligne n'est supprimées suite à l'exécution de cette fonction
 	 */
 	@Override
-	public TransactionResult initialize() {
+	public TransactionResult initialize(String actorCode) {
 		TransactionResult transactionResult = new TransactionResult().setName("Initialisation").setTupleName("Affectation");
 		//1 - get execution imputation identifiers not yet in assignments
 		Long numberOfExecutionImputations = ExecutionImputationQuerier.getInstance().countIdentifiersNotInAssignments();
@@ -96,7 +96,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			LogHelper.logInfo(String.format("%s imputation(s) à initialiser", numberOfExecutionImputations), getClass());
 			if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 				break;
-			initialize(Boolean.TRUE,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices,transactionResult);
+			initialize(Boolean.TRUE,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices,transactionResult);
 			System.gc();
 			//break;
 		}while(true);
@@ -115,7 +115,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 
 	@Override
 	@Transactional
-	public TransactionResult deriveValues(Collection<Assignments> collection, Boolean overridable) {
+	public TransactionResult deriveValues(Collection<Assignments> collection, Boolean overridable,String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("affectations", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
 		
@@ -146,7 +146,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		Collection<AccountingService> accountingServices = AccountingServiceQuerier.getInstance().readAllForAssignmentsInitialization();
 		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",accountingServices.size()), getClass());
 		
-		deriveValues(collection,overridable, scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		__persistence__.updateMany(collection);
 		transactionResult.setNumberOfUpdateFromSavables(collection);
 		transactionResult.log(getClass());
@@ -154,7 +154,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	}
 	
 	@Override
-	public TransactionResult deriveAllValues(Boolean overridable) {
+	public TransactionResult deriveAllValues(Boolean overridable,String actorCode) {
 		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
 		
 		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
@@ -199,14 +199,14 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("Read batch size = %s",DERIVE_VALUES_READ_BATCH_SIZE), getClass());
 		
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			deriveAllValues(overridable,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices
+			deriveAllValues(overridable,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices
 					, queryExecutorArguments.setFirstTupleIndex(index * DERIVE_VALUES_READ_BATCH_SIZE),transactionResult);
 		}		
 		transactionResult.log(getClass());
 		return transactionResult;
 	}
 	
-	private void deriveAllValues(Boolean overridable,Collection<ScopeFunction> scopeFunctions
+	private void deriveAllValues(Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
@@ -215,9 +215,8 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(collection))
 			return;
-		deriveValues(collection,overridable, scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		t = System.currentTimeMillis();
-		
 		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
 		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
 		updaterQueryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
@@ -228,7 +227,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		collection = null;
 	}
 	
-	private void deriveValues(Collection<Assignments> collection,Boolean overridable,Collection<ScopeFunction> scopeFunctions
+	private void deriveValues(Collection<Assignments> collection,Boolean overridable,String actorCode,String functionality,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices) {
 		if(CollectionHelper.isEmpty(collection))
@@ -236,12 +235,14 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		Long t = System.currentTimeMillis();
 		LogHelper.logInfo(String.format("\tDerivation des valeurs de %s ligne(s) d'affectation(s)",collection.size()), getClass());
 		collection.parallelStream().forEach(assignments -> {
+			assignments.set__auditWho__(actorCode);
+			assignments.set__auditFunctionality__(functionality);
 			setScopeFunctions(assignments,overridable, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
 		});
 		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) dérivée(s) en %s",collection.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 	}
 	
-	private void initialize(Boolean overridable,Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
+	private void initialize(Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
 			,Collection<FinancialControllerService> financialControllerServices,Collection<AccountingService> accountingServices
 			,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
@@ -253,12 +254,14 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("\tInstantiation des ligne(s) d'affectation(s)"), getClass());
 		t = System.currentTimeMillis();		
 		Collection<Assignments> collection = new ArrayList<>();
-		for(ExecutionImputation executionImputation : executionImputations)
-			collection.add(new Assignments().setIdentifier(executionImputation.getReferencedIdentifier()).setExecutionImputation(executionImputation));
+		for(ExecutionImputation executionImputation : executionImputations) {
+			Assignments assignments = new Assignments().setIdentifier(executionImputation.getReferencedIdentifier()).setExecutionImputation(executionImputation);
+			collection.add(assignments);
+		}
 		LogHelper.logInfo(String.format("\tLigne(s) instantiée(s) en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		executionImputations.clear();
 		
-		deriveValues(collection,overridable, scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,overridable,actorCode,"initialisation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
@@ -501,6 +504,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
+		collection.forEach(x -> {
+			x.set__auditFunctionality__("Modification");
+		});
 		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
 		transactionResult.setNumberOfUpdateFromSavables(collection);
 		transactionResult.log(getClass());
@@ -512,7 +518,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	 * NB : Si une valeur est non nulle alors elle sera écrasée si cela à été explicitement spécifié.
 	 */
 	@Override
-	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames) {
+	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("model", model);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
 		TransactionResult transactionResult = new TransactionResult().setName("Application de modèle").setTupleName("Affectation");
@@ -530,7 +536,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",READ_BATCH_SIZE,numberOfBatches), getClass());
 		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(READ_BATCH_SIZE);
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			applyModel(model, overridablesFieldsNames, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult);
+			applyModel(model, overridablesFieldsNames,actorCode, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult);
 			//TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize
 			//		,DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE);			
 		}
@@ -538,7 +544,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return transactionResult;
 	}
 	
-	private void applyModel(Assignments model, Collection<String> overridablesFieldsNames,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
+	private void applyModel(Assignments model, Collection<String> overridablesFieldsNames,String actorCode,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(queryExecutorArguments);	
 		LogHelper.logInfo(String.format("\tChargement de %s affectation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
@@ -546,6 +552,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		if(CollectionHelper.isEmpty(collection))
 			return;
 		collection.parallelStream().forEach(index -> {
+			index.set__auditWho__(actorCode);
+			index.set__auditFunctionality__("Modification en masse");
+			
 			if(index.getCreditManagerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_HOLDER))
 				index.setCreditManagerHolder(model.getCreditManagerHolder());
 			if(index.getCreditManagerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT))
@@ -586,19 +595,20 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 
 	@Override
 	public void clean(String actorCode) {
-		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().clean(actorCode, "effacement", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
 	@Override
 	public void import_(String actorCode) {
-		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
-		AssignmentsQuerier.getInstance().import_(actorCode, "import", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		AssignmentsQuerier.getInstance().import_(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue()
+				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
 	@Override
 	public void export(String actorCode) {
-		actorCode = ValueHelper.defaultToIfBlank(actorCode, "ANONYME");
-		AssignmentsQuerier.getInstance().export(actorCode, "export", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 }

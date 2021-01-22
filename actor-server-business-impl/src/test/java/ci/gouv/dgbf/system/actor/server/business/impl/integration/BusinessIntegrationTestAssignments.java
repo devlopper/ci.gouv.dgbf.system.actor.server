@@ -58,7 +58,7 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	public void assignments_all(){
 		__inject__(AssignmentsBusiness.class).deleteAll();				
 		try {
-			__inject__(AssignmentsBusiness.class).initialize();
+			__inject__(AssignmentsBusiness.class).initialize(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	@Test
 	public void assignments_deriveAllValues(){
 		try {
-			__inject__(AssignmentsBusiness.class).deriveAllValues(null);
+			__inject__(AssignmentsBusiness.class).deriveAllValues(null,null);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
@@ -85,7 +85,7 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 		Assignments assignments = EntityFinder.getInstance().find(Assignments.class, "294a1375-0419-4235-9e80-ccaa829eae13");
 		Collection<Assignments> collection = List.of(assignments);
 		try {
-			__inject__(AssignmentsBusiness.class).deriveValues(collection,null);
+			__inject__(AssignmentsBusiness.class).deriveValues(collection,null,null);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
@@ -94,7 +94,7 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	//@Test
 	public void assignments_initialize(){
 		try {
-			__inject__(AssignmentsBusiness.class).initialize();
+			__inject__(AssignmentsBusiness.class).initialize(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,10 +103,10 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 	
 	//@Test
 	public void assignments_applyModel(){
-		__inject__(AssignmentsBusiness.class).initialize();
+		__inject__(AssignmentsBusiness.class).initialize(null);
 		Assignments model = new Assignments();
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE, "0");
-		__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
+		__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER),null);
 	}
 }

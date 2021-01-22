@@ -23,28 +23,28 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Initialiser les affectations")
-	Response initialize();
+	Response initialize(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_DERIVE_ALL_VALUES)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Initialiser les affectations")
-	Response deriveAllValues(@QueryParam(QUERY_PARAMETER_OVERRIDABLE) Boolean overridable);
+	Response deriveAllValues(@QueryParam(QUERY_PARAMETER_OVERRIDABLE) Boolean overridable,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_APPLY_MODEL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Appliquer un modèle")
-	Response applyModel(AssignmentsDto assignments,Filter.Dto filter,List<String> overridablesFieldsNames);
+	Response applyModel(AssignmentsDto assignments,Filter.Dto filter,List<String> overridablesFieldsNames,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_APPLY_MODEL_INTERNAL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Appliquer un modèle")
-	Response applyModel(AssignmentsDto assignments);
+	Response applyModel(AssignmentsDto assignments,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_SAVE_SCOPE_FUNCTIONS)
@@ -58,21 +58,21 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Enregistrer des affectations")
-	Response clean(String actorCode);
+	Response clean(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_IMPORT)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Enregistrer des affectations")
-	Response import_(String actorCode);
+	Response import_(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_EXPORT)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Enregistrer des affectations")
-	Response export(String actorCode);
+	Response export(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	String PATH = "affectations";
 	String PATH_DERIVE_ALL_VALUES = "derivertouteslesvaleurs";

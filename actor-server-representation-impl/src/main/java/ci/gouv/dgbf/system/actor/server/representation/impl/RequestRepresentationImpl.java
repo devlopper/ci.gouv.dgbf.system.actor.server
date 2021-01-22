@@ -350,14 +350,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL) {
+	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,comment,readPageURL);
+						__inject__(RequestBusiness.class).acceptByIdentifier(identifier,budgetariesScopeFunctionsIdentifiers,comment,readPageURL,actorCode);
 					}
 				};
 			}
@@ -365,14 +365,14 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
-	public Response rejectByIdentifier(String identifier, String rejectionReason,String readPageURL) {
+	public Response rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(RequestBusiness.class).rejectByIdentifier(identifier, rejectionReason,readPageURL);
+						__inject__(RequestBusiness.class).rejectByIdentifier(identifier, rejectionReason,readPageURL,actorCode);
 					}
 				};
 			}
