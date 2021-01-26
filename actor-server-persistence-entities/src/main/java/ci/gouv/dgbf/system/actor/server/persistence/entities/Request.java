@@ -49,7 +49,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
 	@Transient private String typeAsString,creationDateAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
-	@Transient private String statusAsString;
+	@Transient private String statusAsString;	
 	//@Transient private Boolean isAcceptedStatus;
 	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
@@ -63,6 +63,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String actorAsString,actorCode,actorNames;
 	@Column(name = COLUMN_FIRST_NAME) private String firstName;
 	@Column(name = COLUMN_LAST_NAMES) private String lastNames;
+	@Transient private String firstNameAndLastNames;
 	@Column(name = COLUMN_REGISTRATION_NUMBER) private String registrationNumber;
 	@ManyToOne @JoinColumn(name = COLUMN_CIVILITY) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private Civility civility;
 	@ManyToOne @JoinColumn(name = COLUMN_GROUP) /*@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)*/ private IdentityGroup group;
@@ -119,6 +120,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String processingDateAsString;
 	@Column(name = COLUMN_ACCEPTATION_COMMENT) private String acceptationComment;
 	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
+	@ManyToOne @JoinColumn(name = COLUMN_DISPATCH_SLIP) private RequestDispatchSlip dispatchSlip;
+	@Transient private String dispatchSlipAsString;
 	
 	/* Links */
 	
@@ -239,6 +242,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
+	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	
@@ -279,6 +283,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_PROCESSING_DATE = "DATE_TRAITEMENT";
 	public static final String COLUMN_ACCEPTATION_COMMENT = "COMMENTAIRE_ACCEPTATION";
 	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
+	public static final String COLUMN_DISPATCH_SLIP = "BORDEREAU";
 	
 	public static final Collection<String> COLUMNS_FIELDS_NAMES = new ArrayList<>();
 	static {

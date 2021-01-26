@@ -21,6 +21,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -39,6 +40,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -81,6 +83,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 				return (T) RequestQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
+				return (T) RequestDispatchSlipQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, IdentificationFormAttribute.class)))
 				return (T) IdentificationFormAttributeQuerier.getInstance().readOne(arguments);
@@ -150,6 +155,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return (Collection<T>) RequestQuerier.getInstance().readMany(arguments);
 			
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
+			return (Collection<T>) RequestDispatchSlipQuerier.getInstance().readMany(arguments);
+		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, IdentificationFormAttribute.class)))
 			return (Collection<T>) IdentificationFormAttributeQuerier.getInstance().readMany(arguments);
 		

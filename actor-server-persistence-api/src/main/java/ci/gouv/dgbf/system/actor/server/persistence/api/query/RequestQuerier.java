@@ -54,14 +54,27 @@ public interface RequestQuerier extends Querier {
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_ACCESS_TOKEN = "accessToken";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
-	String PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE = PARAMETER_NAME_ACTOR_IDENTIFIER+"Nullable";
+	String PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE = PARAMETER_NAME_ACTOR_IDENTIFIER+"Nullable";	
+	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
+
 	String PARAMETER_NAME_STATUS_IDENTIFIER = "statusIdentifier";
 	String PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE = PARAMETER_NAME_STATUS_IDENTIFIER+"Nullable";
-	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
+	
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
+	
+	String PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER = "dispatchSlipIdentifier";
+	String PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER_NULLABLE = PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER+"Nullable";
+	String PARAMETER_NAME_DISPATCH_SLIP_IS_NULL = "dispatchSlipIsNull";
+	String PARAMETER_NAME_DISPATCH_SLIP_IS_NULL_NULLABLE = PARAMETER_NAME_DISPATCH_SLIP_IS_NULL+"Nullable";
+	String PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL = "dispatchSlipIsNotNull";
+	String PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL_NULLABLE = PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL+"Nullable";
+	
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NULL = "processingDateIsNull";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE = PARAMETER_NAME_PROCESSING_DATE_IS_NULL+"Nullable";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL = "processingDateIsNotNull";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE = PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL+"Nullable";
+	String PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER = "requestDispatchSlipIdentifier";
 	
 	Request readOne(QueryExecutorArguments arguments);
 	Collection<Request> readMany(QueryExecutorArguments arguments);
@@ -99,6 +112,13 @@ public interface RequestQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Request.class, "readByElectronicMailAddress");
 	Collection<Request> readByElectronicMailAddress(String electronicMailAddress);
+	
+	String QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readByDispatchSlipIdentifier");
+	Collection<Request> readByDispatchSlipIdentifier(String dispatchSlipIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class
+			, QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER+"ForUI");
+	Collection<Request> readByDispatchSlipIdentifierForUI(String dispatchSlipIdentifier);
 	
 	String QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readPhotoByIdentifier");
 	byte[] readPhotoByIdentifier(String identifier);
@@ -140,6 +160,10 @@ public interface RequestQuerier extends Querier {
 				return readWhereFilter(arguments);
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI))
 				return readWhereFilterForUI(arguments);
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER))
+				return readByDispatchSlipIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER_FOR_UI))
+				return readByDispatchSlipIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -251,6 +275,9 @@ public interface RequestQuerier extends Querier {
 						.format(request.getActOfAppointmentSignatureDate()));
 				request.setActOfAppointmentSignatureDate(null);
 			}
+			
+			request.setFirstNameAndLastNames(request.getFirstName()+" "+request.getLastNames());
+			
 			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
 				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 				request.computeHasBudgetaryScopeFunctionWhereFunctionCode(requestScopeFunctions);
@@ -350,10 +377,18 @@ public interface RequestQuerier extends Querier {
 		
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
-			filter.addFieldsNullable(arguments, PARAMETER_NAME_ACTOR_IDENTIFIER,PARAMETER_NAME_STATUS_IDENTIFIER,PARAMETER_NAME_PROCESSING_DATE_IS_NULL
-					,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL);
+			filter.addFieldsNullable(arguments
+					, PARAMETER_NAME_ACTOR_IDENTIFIER
+					,PARAMETER_NAME_STATUS_IDENTIFIER
+					,PARAMETER_NAME_FUNCTION_IDENTIFIER
+					,PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER
+					,PARAMETER_NAME_PROCESSING_DATE_IS_NULL,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL
+					,PARAMETER_NAME_DISPATCH_SLIP_IS_NULL,PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL
+					);
 			filter.addFieldEquals(PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_STATUS_IDENTIFIER, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, arguments);
 			arguments.setFilter(filter);
 		}
 		
@@ -361,6 +396,23 @@ public interface RequestQuerier extends Querier {
 		public Collection<Request> readByElectronicMailAddress(String electronicMailAddress) {
 			return QueryExecutor.getInstance().executeReadMany(Request.class, QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS,PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS
 					,electronicMailAddress);
+		}
+		
+		@Override
+		public Collection<Request> readByDispatchSlipIdentifier(String dispatchSlipIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(Request.class, QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER,PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER
+					,dispatchSlipIdentifier);
+		}
+		
+		@Override
+		public Collection<Request> readByDispatchSlipIdentifierForUI(String dispatchSlipIdentifier) {
+			Collection<Request> requests = QueryExecutor.getInstance().executeReadMany(Request.class, QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER,PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER
+					,dispatchSlipIdentifier);
+			if(CollectionHelper.isEmpty(requests))
+				return null;
+			for(Request request : requests)
+				prepareForUI(request, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
+			return requests;
 		}
 		
 		@Override
@@ -445,6 +497,10 @@ public interface RequestQuerier extends Querier {
 							,where("t.identifier = :"+PARAMETER_NAME_IDENTIFIER))
 					)*/
 			
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER, "SELECT t FROM Request t WHERE t.dispatchSlip.identifier = :"+PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER)
+			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER_FOR_UI, "SELECT t FROM Request t WHERE t.dispatchSlip.identifier = :"
+					+PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER)
+			
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_PHOTO_BY_IDENTIFIER, "SELECT t.photo FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_PHOTO)
 			,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_ACT_OF_APPOINTMENT_BY_IDENTIFIER, "SELECT t.actOfAppointment FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
@@ -463,16 +519,30 @@ public interface RequestQuerier extends Querier {
 				,"LEFT JOIN RequestType rt ON rt = t.type"
 				,"LEFT JOIN RequestStatus rs ON rs = t.status"
 				,"LEFT JOIN AdministrativeUnit au ON au = t.administrativeUnit"
+				,"LEFT JOIN RequestDispatchSlip rds ON rds = t.dispatchSlip"
 				,getReadWhereFilterWhere()
 			);
 	}
 	
 	static String getReadWhereFilterWhere() {
 		return where(and(
+				/* Actor */
 				parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE),"a.identifier = :"+PARAMETER_NAME_ACTOR_IDENTIFIER))
+				/* Status */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE),"rs.identifier = :"+PARAMETER_NAME_STATUS_IDENTIFIER))
+				/* Processing date */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE),"t.processingDate IS NOT NULL"))
+				/* Function */
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE)
+						,"EXISTS(SELECT rsf FROM RequestScopeFunction rsf WHERE rsf.request = t AND rsf.scopeFunction.function.identifier = :"
+								+PARAMETER_NAME_FUNCTION_IDENTIFIER+")"))
+				/* Dispatch slip*/
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_DISPATCH_SLIP_IS_NULL_NULLABLE),"rds IS NULL"))
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL_NULLABLE),"rds IS NOT NULL"))
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER_NULLABLE),"rds.identifier = :"+PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER))
+				
+				//,isNullableOrIsNull("rds", Request.FIELD_DISPATCH_SLIP, PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABL)
 		));
 	}
 	

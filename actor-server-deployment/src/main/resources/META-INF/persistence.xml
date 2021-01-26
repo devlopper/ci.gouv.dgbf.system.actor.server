@@ -55,6 +55,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>

@@ -31,6 +31,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String actorAsString,actorCode,actorNames;
 	private String firstName;
 	private String lastNames;
+	private String firstNameAndLastNames;
 	private String names;
 	private String registrationNumber;
 	private CivilityDto civility;
@@ -96,4 +97,18 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String readPageURL;
 	private String signatureSpecimenReadPageURL;
 	private Boolean isAdministrator;
+	
+	/**/
+	
+	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
+	public static class Acceptation {
+		private String identifier;
+		private String comment;
+	}
+	
+	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
+	public static class Rejection {
+		private String identifier;
+		private String reason;
+	}
 }

@@ -16,6 +16,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputatio
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -30,6 +31,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -58,6 +60,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return RequestQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
+			return RequestDispatchSlipQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))

@@ -13,6 +13,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
@@ -77,6 +79,12 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 		
 		if(ClusterPrivilegesQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return ClusterPrivilegesQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		
+		if(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return RequestQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		
+		if(RequestDispatchSlipQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return RequestDispatchSlipQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		
 		return super.__get__(readQueryIdentifier);
 	}

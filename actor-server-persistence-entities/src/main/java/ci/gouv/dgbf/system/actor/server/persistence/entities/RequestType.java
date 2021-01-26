@@ -25,14 +25,15 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FORM) @NotNull private IdentificationForm form;
+	@Transient private String formAsString;
 	@Column(name = COLUMN_REPORT_IDENTIFIER) private String reportIdentifier;
 	@Column(name = COLUMN_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String signatureSpecimenReportIdentifier;
 	@Column(name = COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String creditManagerSignatureSpecimenReportIdentifier;
 	@Column(name = COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String authorizingOfficerSignatureSpecimenReportIdentifier;
-	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;	
-	
-	@Transient private String formAsString;
+	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	@Transient private String authenticationRequiredAsString;
+	@Column(name = COLUMN_NOTIFIABLE_BY_EMAIL) private Boolean notifiableByEmail;
+	@Transient private String notifiableByEmailAsString;
 	
 	@Override
 	public RequestType setIdentifier(String identifier) {
@@ -58,6 +59,8 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String FIELD_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "signatureSpecimenReportIdentifier";
 	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";		
 	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
+	public static final String FIELD_NOTIFIABLE_BY_EMAIL = "notifiableByEmail";
+	public static final String FIELD_NOTIFIABLE_BY_EMAIL_AS_STRING = "notifiableByEmailAsString";
 	
 	public static final String TABLE_NAME = "DM_TYPE";
 	
@@ -67,6 +70,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_GC_ID";
 	public static final String COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_ORD_ID";
 	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
+	public static final String COLUMN_NOTIFIABLE_BY_EMAIL = "NOTIFIABLE_PAR_EMAIL";
 	
 	public static final String CODE_DEMANDE_POSTES_BUDGETAIRES = "DEMANDE_POSTES_BUDGETAIRES";
 }

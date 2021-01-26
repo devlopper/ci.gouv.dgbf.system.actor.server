@@ -54,7 +54,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, RequestPersistence> implements RequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private void validate(Request request,Boolean budgetariesScopeFunctionsIncludable) {
+	private static void validate(Request request,Boolean budgetariesScopeFunctionsIncludable) {
 		if(request == null)
 			throw new RuntimeException("La demande est obligatoire");
 		if(request.getType() == null)
@@ -72,13 +72,6 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
 				throw new RuntimeException("La fonction budgétaire est obligatoire");
 		}		
-	}
-	
-	private void validateProcess(Request request) {
-		if(request.getStatus() != null 
-			&& (RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()) || RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode())) 
-		)
-			throw new RuntimeException("La demande a déja été traitée");
 	}
 	
 	private void validateRecord(Request request) {
@@ -271,7 +264,6 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void accept(Request request) {
 		validate(request,Boolean.FALSE);
-		validateProcess(request);
 		request.set__auditFunctionality__("Acceptation");
 		/*
 		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
@@ -298,7 +290,6 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	private void accept(Request request,Collection<ScopeFunction> grantedScopeFunctions) {
 		validate(request,Boolean.FALSE);
-		validateProcess(request);
 		request.set__auditFunctionality__("Acceptation");
 		/*
 		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
@@ -320,19 +311,20 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	@Override @Transactional
-	public void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL,String actorCode) {
+	public void acceptByIdentifier(String identifier,Collection<String> grantedBudgetariesScopeFunctionsIdentifiers,String acceptationComment,String readPageURL,String auditActor) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
-				).setReadPageURL(readPageURL);
-		request.set__auditWho__(actorCode);
+				).setAcceptationComment(acceptationComment).setReadPageURL(readPageURL);
+		request.set__auditWho__(auditActor);
+		
 		Collection<ScopeFunction> grantedScopeFunctions = null;
 		//update granted
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
 		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
 			for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
 				requestScopeFunction
-					.setGranted(CollectionHelper.contains(budgetariesScopeFunctionsIdentifiers, requestScopeFunction.getScopeFunction().getIdentifier()));
+					.setGranted(CollectionHelper.contains(grantedBudgetariesScopeFunctionsIdentifiers, requestScopeFunction.getScopeFunction().getIdentifier()));
 				if(Boolean.TRUE.equals(requestScopeFunction.getGranted())) {
 					if(grantedScopeFunctions == null)
 						grantedScopeFunctions = new ArrayList<>();
@@ -342,16 +334,16 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, requestScopeFunctions));
 		}
 		//create granted
-		if(CollectionHelper.isNotEmpty(budgetariesScopeFunctionsIdentifiers)) {
+		if(CollectionHelper.isNotEmpty(grantedBudgetariesScopeFunctionsIdentifiers)) {
 			Collection<String> requestScopeFunctionsIdentifiers = CollectionHelper.isEmpty(requestScopeFunctions) ? null 
 					: requestScopeFunctions.stream().map(x -> x.getScopeFunction().getIdentifier()).collect(Collectors.toList());
 			Collection<Object> creatables = null;
-			for(String scopeFunctionIdentifier : budgetariesScopeFunctionsIdentifiers) {
-				if(requestScopeFunctionsIdentifiers.contains(scopeFunctionIdentifier))
+			for(String grantedScopeFunctionIdentifier : grantedBudgetariesScopeFunctionsIdentifiers) {
+				if(requestScopeFunctionsIdentifiers.contains(grantedScopeFunctionIdentifier))
 					continue;
 				if(creatables == null)
 					creatables = new ArrayList<>();
-				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, scopeFunctionIdentifier);
+				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, grantedScopeFunctionIdentifier);
 				if(grantedScopeFunctions == null)
 					grantedScopeFunctions = new ArrayList<>();
 				grantedScopeFunctions.add(scopeFunction);
@@ -364,35 +356,82 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		if(CollectionHelper.isEmpty(grantedScopeFunctions))
 			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
 		
-		request.setComment(comment);
-		
 		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedScopeFunctions.size(),grantedScopeFunctions.stream().map(x -> x.getCode())
 				.collect(Collectors.joining(","))), getClass());
 		
 		accept(request,grantedScopeFunctions);
 	}
 	
-	@Override @Transactional
-	public void reject(Request request) {
+	public static void accept(Request request,Collection<RequestScopeFunction> requestScopeFunctions,Collection<ScopeFunction> grantedBudgetariesScopeFunctions
+			,String readPageURL,EntityManager entityManager) {
 		validate(request,Boolean.FALSE);
-		validateProcess(request);
-		if(StringHelper.isBlank(request.getRejectionReason()))
-			throw new RuntimeException("Le motif de rejet est obligatoire");
-		request.set__auditFunctionality__("Rejet");
-		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
+		if(request == null)
+			throw new RuntimeException("La demande à accepter est obligatoire");
+		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été acceptée");
+		if(CollectionHelper.isEmpty(grantedBudgetariesScopeFunctions))
+			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
+		
+		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedBudgetariesScopeFunctions.size(),grantedBudgetariesScopeFunctions.stream().map(x -> x.getCode())
+				.collect(Collectors.joining(","))), RequestBusinessImpl.class);
+		
+		request.set__auditFunctionality__("Acceptation demande");
+		
+		//update granted
+		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
+			for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
+				if(Boolean.TRUE.equals(CollectionHelper.contains(grantedBudgetariesScopeFunctions, requestScopeFunction.getScopeFunction()))) {
+					requestScopeFunction.setGranted(Boolean.TRUE);
+					entityManager.merge(requestScopeFunction);
+				}			
+			}
+		}
+		//create granted
+		if(CollectionHelper.isNotEmpty(grantedBudgetariesScopeFunctions)) {
+			Collection<ScopeFunction> scopeFunctionss = CollectionHelper.isEmpty(requestScopeFunctions) ? null 
+					: requestScopeFunctions.stream().map(x -> x.getScopeFunction()).collect(Collectors.toList());
+			for(ScopeFunction grantedScopeFunction : grantedBudgetariesScopeFunctions) {
+				if(scopeFunctionss.contains(grantedScopeFunction))
+					continue;
+				entityManager.persist(new RequestScopeFunction().setRequest(request).setScopeFunction(grantedScopeFunction).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
+			}
+		}
+
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
 		request.setProcessingDate(LocalDateTime.now());
-		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		
+		entityManager.merge(request);
+			
+		//Non blocking operations
+		try {
+			notifyAccepted(request,grantedBudgetariesScopeFunctions);
+		} catch (Exception exception) {
+			LogHelper.log(exception, RequestBusinessImpl.class);
+		}
 	}
 	
 	@Override @Transactional
-	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String actorCode) {
+	public void reject(Request request) {
+		validate(request,Boolean.FALSE);
+		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été rejetée");
+		if(StringHelper.isBlank(request.getRejectionReason()))
+			throw new RuntimeException("Le motif de rejet est obligatoire");
+		request.set__auditFunctionality__("Rejet demande");
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
+		request.setProcessingDate(LocalDateTime.now());
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+			.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+	}
+	
+	@Override @Transactional
+	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String auditActor) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
 		request.setRejectionReason(rejectionReason);
-		request.set__auditWho__(actorCode);
+		request.set__auditWho__(auditActor);
 		reject(request);
 	}
 
@@ -412,6 +451,15 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	/**/
+	
+	public static Boolean isNotifiableByEmail(Request request,Boolean loggableIfNot) {
+		if(request.getType() != null && Boolean.FALSE.equals(request.getType().getNotifiableByEmail())) {
+			if(Boolean.TRUE.equals(loggableIfNot))
+				LogHelper.logWarning(String.format("Aucune notification à envoyer par mail car le type de demande %s ne le permet pas",request.getType().getCode()), RequestBusinessImpl.class);
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
+	}
 	
 	private static void setReadPageURL(Request request) {
 		if(StringHelper.isBlank(request.getReadPageURL()))
@@ -437,6 +485,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private static void notifyInitialized(Request request) {
+		if(!Boolean.TRUE.equals(isNotifiableByEmail(request, Boolean.TRUE)))
+			return;
 		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override
@@ -453,6 +503,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private static void notifySubmitted(Request request) {
+		if(!Boolean.TRUE.equals(isNotifiableByEmail(request, Boolean.TRUE)))
+			return;
 		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override
@@ -478,6 +530,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private static void notifyAccepted(Request request,Collection<ScopeFunction> scopeFunctions) {
+		if(!Boolean.TRUE.equals(isNotifiableByEmail(request, Boolean.TRUE)))
+			return;
 		setReadPageURL(request);
 		new Thread(new Runnable() {				
 			@Override

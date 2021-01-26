@@ -26,6 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputatio
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -41,6 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -50,6 +52,19 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void requestDispatchSlip_readWhereFilterForUI(){
+		Collection<RequestDispatchSlip> requestDispatchSlips = RequestDispatchSlipQuerier.getInstance().readWhereFilterForUI(null);
+		RequestDispatchSlip requestDispatchSlip = CollectionHelper.getFirst(requestDispatchSlips);
+		System.out.println(requestDispatchSlip.getIdentifier());
+		System.out.println(requestDispatchSlip.getCode());
+		System.out.println(requestDispatchSlip.getName());
+		System.out.println(requestDispatchSlip.getFunctionAsString());
+		System.out.println(requestDispatchSlip.getCreationDateAsString());
+		System.out.println(requestDispatchSlip.getSendingDateAsString());
+		System.out.println(requestDispatchSlip.getProcessingDateAsString());
 	}
 	
 	@Test

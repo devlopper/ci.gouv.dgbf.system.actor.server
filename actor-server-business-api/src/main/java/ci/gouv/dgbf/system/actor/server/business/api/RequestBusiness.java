@@ -50,13 +50,13 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void accept(Request request);
 	
 	@Transactional
-	void acceptByIdentifier(String identifier,Collection<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL,String actorCode);
+	void acceptByIdentifier(String identifier,Collection<String> grantedBudgetariesScopeFunctionsIdentifiers,String acceptationComment,String readPageURL,String auditActor);
 	
 	@Transactional
 	void reject(Request request);
 	
 	@Transactional
-	void rejectByIdentifier(String identifier,String rejectionReason,String readPageURL,String actorCode);
+	void rejectByIdentifier(String identifier,String rejectionReason,String readPageURL,String auditActor);
 	
 	Integer notifyAccessTokens(String electronicMailAddress,String readPageURL);
 	
