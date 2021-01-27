@@ -32,6 +32,8 @@ import lombok.experimental.Accessors;
 public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@Transient private String sectionAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Transient private String functionAsString;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
@@ -61,6 +63,8 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 		return (RequestDispatchSlip) super.setName(name);
 	}
 
+	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_CREATION_DATE = "creationDate";
@@ -73,6 +77,7 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	
 	public static final String TABLE_NAME = "DM_BORDEREAU";
 	
+	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_FUNCTION = "FONCTION";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_SENDING_DATE = "DATE_ENVOI";

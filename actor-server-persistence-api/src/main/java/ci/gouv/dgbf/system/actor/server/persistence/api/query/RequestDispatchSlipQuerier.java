@@ -118,6 +118,10 @@ public interface RequestDispatchSlipQuerier extends Querier {
 		private void prepareForUI(RequestDispatchSlip requestDispatchSlip) {
 			if(requestDispatchSlip == null)
 				return;
+			
+			if(StringHelper.isBlank(requestDispatchSlip.getSectionAsString()) && requestDispatchSlip.getSection() != null)
+				requestDispatchSlip.setSectionAsString(requestDispatchSlip.getSection().toString());
+			
 			if(StringHelper.isBlank(requestDispatchSlip.getFunctionAsString()) && requestDispatchSlip.getFunction() != null)
 				requestDispatchSlip.setFunctionAsString(requestDispatchSlip.getFunction().getName());
 			

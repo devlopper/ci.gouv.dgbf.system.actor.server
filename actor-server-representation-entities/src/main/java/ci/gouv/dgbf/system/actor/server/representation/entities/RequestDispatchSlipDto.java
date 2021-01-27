@@ -14,6 +14,10 @@ import lombok.experimental.Accessors;
 public class RequestDispatchSlipDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private SectionDto section;
+	private String sectionIdentifier;
+	private String sectionAsString;
+	
 	private FunctionDto function;
 	private String functionIdentifier;
 	private String functionAsString;

@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
@@ -35,6 +36,8 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 	private void validate(RequestDispatchSlip requestDispatchSlip,Boolean requestsValidatable) {
 		if(requestDispatchSlip == null)
 			throw new RuntimeException("Le bordereau est obligatoire");
+		if(requestDispatchSlip.getSection() == null)
+			throw new RuntimeException("La section du bordereau est obligatoire");
 		if(requestDispatchSlip.getFunction() == null)
 			throw new RuntimeException("La catégorie de fonction budgétaire du bordereau est obligatoire");
 		if(requestsValidatable == null || Boolean.TRUE.equals(requestsValidatable)) {
@@ -49,6 +52,13 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 					.map(request -> request.getIdentifier()).collect(Collectors.toList()));
 				ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 				for(Request request : requestDispatchSlip.getRequests()) {
+					if(request.getAdministrativeUnit().getSection() == null)
+						throwablesMessages.add(String.format("La demande N° %s doit avoir une section afin d'être portée sur un bordereau"
+								,request.getCode()));
+					if(!requestDispatchSlip.getSection().equals(request.getAdministrativeUnit().getSection()))
+						throwablesMessages.add(String.format("La demande N° %s ayant pour section %s ne peut être sur un bordereau de la section %s"
+								,request.getCode(),request.getAdministrativeUnit().getSection().getCode(),requestDispatchSlip.getSection().getCode()));
+					
 					Collection<ScopeFunction> scopeFunctions = requestScopeFunctions.stream()
 							.filter(requestScopeFunction -> requestScopeFunction.getRequest().equals(request) 
 									&& requestScopeFunction.getScopeFunction().getFunction().equals(requestDispatchSlip.getFunction()))
@@ -62,6 +72,14 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		}		
 	}
 	
+	private String generateCode(RequestDispatchSlip requestDispatchSlip) {
+		StringBuilder stringBuilder = new StringBuilder("B");
+		stringBuilder.append(requestDispatchSlip.getSection().getCode());
+		stringBuilder.append(TimeHelper.formatLocalDateTime(requestDispatchSlip.getCreationDate(), "yyMMdd"));
+		stringBuilder.append(RandomHelper.getAlphabetic(2).toUpperCase());
+		return stringBuilder.toString();
+	}
+	
 	@Override @Transactional
 	public void record(RequestDispatchSlip requestDispatchSlip) {
 		validate(requestDispatchSlip,Boolean.TRUE);
@@ -72,11 +90,14 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		EntityManager entityManager = EntityManagerGetter.getInstance().get();
 		if(requestDispatchSlip.getIdentifier() == null) {
 			requestDispatchSlip.set__auditFunctionality__("Création bordereau");
-			if(StringHelper.isBlank(requestDispatchSlip.getCode()))
-				requestDispatchSlip.setCode(String.format("%s%s%s","B","2021",RandomHelper.getAlphanumeric(5).toUpperCase()));
+			//if(StringHelper.isBlank(requestDispatchSlip.getCode()))
+			//	requestDispatchSlip.setCode(String.format("%s%s%s","B","2021",RandomHelper.getAlphanumeric(5).toUpperCase()));
 			if(StringHelper.isBlank(requestDispatchSlip.getName()))
-				requestDispatchSlip.setName("Bordereau de demande");
+				requestDispatchSlip.setName(String.format("Bordereau de demandes de %s de la section %s",requestDispatchSlip.getFunction().getName()
+						,requestDispatchSlip.getSection().getCode()));
 			requestDispatchSlip.setCreationDate(LocalDateTime.now());
+			if(StringHelper.isBlank(requestDispatchSlip.getCode()))
+				requestDispatchSlip.setCode(generateCode(requestDispatchSlip));
 			EntityCreator.getInstance().createOne(requestDispatchSlip,entityManager);
 			//entityManager.persist(requestDispatchSlip);
 			updateDispatchSlip(requestDispatchSlip, entityManager);

@@ -9,6 +9,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Select.conca
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.ArithmeticOperator;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -51,6 +54,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public interface RequestQuerier extends Querier {
 
+	Integer NUMBER_OF_WORDS = 6;
+	
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_ACCESS_TOKEN = "accessToken";
 	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
@@ -59,6 +64,19 @@ public interface RequestQuerier extends Querier {
 
 	String PARAMETER_NAME_STATUS_IDENTIFIER = "statusIdentifier";
 	String PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE = PARAMETER_NAME_STATUS_IDENTIFIER+"Nullable";
+	
+	String PARAMETER_NAME_REGISTRATION_NUMBER = "registrationNumber";
+	String PARAMETER_NAME_REGISTRATION_NUMBER_NULLABLE = PARAMETER_NAME_REGISTRATION_NUMBER+"Nullable";
+	
+	String PARAMETER_NAME_FIRST_NAME = "firstName";
+	String PARAMETER_NAME_LAST_NAMES = "lastNames";
+	
+	String PARAMETER_NAME_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
+	
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeunit";
+	
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER = PARAMETER_NAME_ADMINISTRATIVE_UNIT+"SectionIdentifier";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER+"Nullable";
 	
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
@@ -380,15 +398,33 @@ public interface RequestQuerier extends Querier {
 			filter.addFieldsNullable(arguments
 					, PARAMETER_NAME_ACTOR_IDENTIFIER
 					,PARAMETER_NAME_STATUS_IDENTIFIER
+					,PARAMETER_NAME_REGISTRATION_NUMBER
+					,PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER
 					,PARAMETER_NAME_FUNCTION_IDENTIFIER
 					,PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER
 					,PARAMETER_NAME_PROCESSING_DATE_IS_NULL,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL
 					,PARAMETER_NAME_DISPATCH_SLIP_IS_NULL,PARAMETER_NAME_DISPATCH_SLIP_IS_NOT_NULL
 					);
+			
 			filter.addFieldEquals(PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_STATUS_IDENTIFIER, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER, arguments);
+			
+			filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+			filter.addFieldContains(PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, arguments);
+			filter.addFieldContains(PARAMETER_NAME_FIRST_NAME, arguments);
+			filter.addFieldContains(PARAMETER_NAME_REGISTRATION_NUMBER, arguments);
+			filter.addFieldContainsStringOrWords(PARAMETER_NAME_LAST_NAMES, NUMBER_OF_WORDS, arguments);			
+			//filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS, arguments);
+			
+			@SuppressWarnings("unchecked")
+			Collection<String> excludedIdentifiers = (Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_EXCLUDED_IDENTIFIERS);
+			if(CollectionHelper.isEmpty(excludedIdentifiers))
+				excludedIdentifiers = ConstantEmpty.STRINGS_WITH_ONE_ELEMENT;
+			filter.addField(PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers,null,ArithmeticOperator.IN);
+			
 			arguments.setFilter(filter);
 		}
 		
@@ -471,15 +507,16 @@ public interface RequestQuerier extends Querier {
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
 			,Query.FIELD_VALUE,jpql(select(
-					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_ELECTRONIC_MAIL_ADDRESS
-							,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
+					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+							,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
+							,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
 					,fields("a",Actor.FIELD_CODE),concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
 					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au")
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
 			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES
-					,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE_AS_STRING
-					,Request.FIELD_PROCESSING_DATE_AS_STRING
+					,Request.FIELD_REGISTRATION_NUMBER,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
+					,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING
 					,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING,Request.FIELD_STATUS_AS_STRING
 					,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING)
 				
@@ -526,10 +563,29 @@ public interface RequestQuerier extends Querier {
 	
 	static String getReadWhereFilterWhere() {
 		return where(and(
+				"t.identifier NOT IN :"+PARAMETER_NAME_EXCLUDED_IDENTIFIERS
 				/* Actor */
-				parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE),"a.identifier = :"+PARAMETER_NAME_ACTOR_IDENTIFIER))
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ACTOR_IDENTIFIER_NULLABLE),"a.identifier = :"+PARAMETER_NAME_ACTOR_IDENTIFIER))
 				/* Status */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_STATUS_IDENTIFIER_NULLABLE),"rs.identifier = :"+PARAMETER_NAME_STATUS_IDENTIFIER))
+				/* */
+				/*
+				,parenthesis(or(
+						like("au", AdministrativeUnit.FIELD_CODE, PARAMETER_NAME_ADMINISTRATIVE_UNIT)
+						,like("au", AdministrativeUnit.FIELD_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT,NUMBER_OF_WORDS)
+						))
+				*/
+				,parenthesis(like("t", Request.FIELD_CODE, PARAMETER_NAME_CODE))
+				,parenthesis(like("t", Request.FIELD_FIRST_NAME, PARAMETER_NAME_FIRST_NAME))
+				,parenthesis(like("t", Request.FIELD_LAST_NAMES, PARAMETER_NAME_LAST_NAMES,NUMBER_OF_WORDS))
+				,parenthesis(or(String.format(":%s = true",PARAMETER_NAME_REGISTRATION_NUMBER_NULLABLE)
+						,like("t", Request.FIELD_REGISTRATION_NUMBER, PARAMETER_NAME_REGISTRATION_NUMBER)))
+				,parenthesis(like("t", Request.FIELD_ELECTRONIC_MAIL_ADDRESS, PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS))
+				
+				/* Administrative Unit Section */
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER_NULLABLE)
+						,"au.section.identifier = :"+PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER))
+				
 				/* Processing date */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE),"t.processingDate IS NOT NULL"))

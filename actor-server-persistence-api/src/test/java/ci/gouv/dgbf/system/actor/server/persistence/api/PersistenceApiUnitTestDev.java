@@ -33,6 +33,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQueri
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -52,6 +53,11 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void section_readVisibles_christian(){
+		System.out.println(SectionQuerier.getInstance().readVisiblesByActorCodeForUI("christian"));
 	}
 	
 	@Test
@@ -222,7 +228,27 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void request_readWhereFilterForUI(){
-		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(null);
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
+				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_EXCLUDED_IDENTIFIERS,null));
+		System.out.println("PersistenceApiUnitTestDev.request_readWhereFilterForUI() COUNT : "+CollectionHelper.getSize(requests));
+		Request request = CollectionHelper.getFirst(requests);
+		System.out.println(request.getActorCode());
+		System.out.println(request.getActorNames());
+		System.out.println(request.getTypeAsString());
+		System.out.println(request.getComment());
+		System.out.println(request.getCreationDateAsString());
+		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
+		System.out.println(request.getAdministrativeUnitAsString());
+		System.out.println(request.getMobilePhoneNumber());
+	}
+	
+	@Test
+	public void request_readWhereFilterForUI_section(){
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
+				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER,"SECTIONf07cb924-5838-40c2-9de9-13084501d91e"));
+		System.out.println("PersistenceApiUnitTestDev.request_readWhereFilterForUI() COUNT : "+CollectionHelper.getSize(requests));
 		Request request = CollectionHelper.getFirst(requests);
 		System.out.println(request.getActorCode());
 		System.out.println(request.getActorNames());
