@@ -63,7 +63,7 @@ public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 			//		,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);
 			if(CollectionHelper.isEmpty(scopes))
 				return null;
-			return scopes.stream().map(x -> new Section().setCode(x.getCode()).setName(x.getName())).collect(Collectors.toList());
+			return scopes.stream().map(x -> new Section().setIdentifier(x.getIdentifier()).setCode(x.getCode()).setName(x.getName())).collect(Collectors.toList());
 		}
 		
 		@Override

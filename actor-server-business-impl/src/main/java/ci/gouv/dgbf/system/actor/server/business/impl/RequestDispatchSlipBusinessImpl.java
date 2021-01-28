@@ -74,7 +74,8 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 	
 	private String generateCode(RequestDispatchSlip requestDispatchSlip) {
 		StringBuilder stringBuilder = new StringBuilder("B");
-		stringBuilder.append(requestDispatchSlip.getSection().getCode());
+		stringBuilder.append(requestDispatchSlip.getFunction().getCode());
+		stringBuilder.append(requestDispatchSlip.getSection().getCode());		
 		stringBuilder.append(TimeHelper.formatLocalDateTime(requestDispatchSlip.getCreationDate(), "yyMMdd"));
 		stringBuilder.append(RandomHelper.getAlphabetic(2).toUpperCase());
 		return stringBuilder.toString();
