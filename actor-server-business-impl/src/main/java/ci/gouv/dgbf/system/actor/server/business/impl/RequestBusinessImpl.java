@@ -252,6 +252,12 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
+	@Override
+	public void return_(Request request) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override @Transactional
 	public void submitByIdentifier(String identifier,String readPageURL) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)

@@ -4,12 +4,15 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -116,7 +119,13 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		Querier.CodableAndNamable.initialize(AdministrativeUnit.class);
+		Querier.CodableAndNamable.initialize(AdministrativeUnit.class,Query.build(Query.FIELD_IDENTIFIER
+				,QueryIdentifierGetter.getInstance().get(AdministrativeUnit.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE)
+				,Query.FIELD_TUPLE_CLASS,AdministrativeUnit.class,Query.FIELD_RESULT_CLASS,AdministrativeUnit.class
+				,Query.FIELD_VALUE,Querier.CodableAndNamable.getQueryValueReadWhereCodeOrNameLike("AdministrativeUnit", "t.identifier,t.code,t.name,t.sectionCodeName")
+				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(AdministrativeUnit
+						.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME,AdministrativeUnit.FIELD_SECTION_CODE_NAME)));
+		
 		QueryHelper.addQueries(
 			Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER
 					, "SELECT t FROM AdministrativeUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" ORDER BY t.code ASC")

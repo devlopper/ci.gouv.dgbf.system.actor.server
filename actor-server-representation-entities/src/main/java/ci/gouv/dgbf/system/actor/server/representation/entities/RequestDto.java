@@ -53,6 +53,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String administrativeUnitAsString;
 	private String administrativeFunction;
 	private SectionDto section;
+	private String sectionAsString;
 	private BudgetSpecializationUnitDto budgetSpecializationUnit;
 	private String actOfAppointmentReference;
 	private String actOfAppointmentSignatory;

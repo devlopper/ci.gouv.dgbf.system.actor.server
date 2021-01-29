@@ -41,6 +41,9 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void recordSignedRequestSheetByIdentifier(String identifier,Boolean isAdministrator,byte[] bytes);
 	
 	@Transactional
+	void return_(Request request);
+	
+	@Transactional
 	void submit(Request request);
 	
 	@Transactional
@@ -68,6 +71,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	String RECORD = "Request.record";
 	String RECORD_PHOTO = "Request.record.photo";
 	String RECORD_SIGNATURE = "Request.record.signature";
+	String RETURN = "Request.return";
 	String SUBMIT = "Request.submit";
 	String ACCEPT = "Request.accept";
 	String REJECT = "Request.reject";

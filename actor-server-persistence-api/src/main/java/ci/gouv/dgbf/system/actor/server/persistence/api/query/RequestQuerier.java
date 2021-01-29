@@ -286,6 +286,11 @@ public interface RequestQuerier extends Querier {
 			if(request.getType() != null) {
 				request.setTypeAsString(request.getType().getName());
 				IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
+				
+				if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
+					if(request.getAdministrativeUnit() != null && request.getAdministrativeUnit().getSection() != null && StringHelper.isBlank(request.getSectionAsString()))
+						request.setSectionAsString(request.getAdministrativeUnit().getSection().toString());
+				}
 			}
 			if(request.getActOfAppointmentSignatureDate() != null) {
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());

@@ -12,6 +12,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 public class AdministrativeUnitDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	private SectionDto section;
+	private String sectionCodeName;
+	private String sectionAsString;
 	
 	@Override
 	public AdministrativeUnitDto setIdentifier(String identifier) {

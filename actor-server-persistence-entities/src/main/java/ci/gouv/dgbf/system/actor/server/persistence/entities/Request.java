@@ -84,6 +84,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String administrativeUnitAsString;
 	@Column(name = COLUMN_ADMINISTRATIVE_FUNCTION) private String administrativeFunction;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@Transient private String sectionAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;	
 	@Column(name = COLUMN_ACT_OF_APPOINTMENT) @Lob private byte[] actOfAppointment;
 	@Transient private String actOfAppointmentIdentifier;
@@ -223,6 +224,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_AS_STRING = "administrativeUnitAsString";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_ADMINISTRATIVE_FUNCTION = "administrativeFunction";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";

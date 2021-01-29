@@ -2,10 +2,12 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
@@ -23,6 +25,8 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@Column(name= COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
+	@Transient private String sectionAsString;
 	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {
@@ -48,8 +52,11 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	}
 	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	
 	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
 	
 	public static final String TABLE_NAME = "VM_APP_UNITE_ADMINISTRATIVE";	
 }
