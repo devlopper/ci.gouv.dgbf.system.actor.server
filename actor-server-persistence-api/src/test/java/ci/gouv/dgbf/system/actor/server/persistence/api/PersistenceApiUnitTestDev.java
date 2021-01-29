@@ -244,6 +244,15 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void request_readWhereFilterForUI_all_duration(){
+		System.out.println("Reading...");
+		Long t = System.currentTimeMillis();
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI));
+		System.out.println(requests.size()+" - "+TimeHelper.formatDuration(System.currentTimeMillis() - t));
+	}
+	
+	@Test
 	public void request_readWhereFilterForUI_section(){
 		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
 				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)

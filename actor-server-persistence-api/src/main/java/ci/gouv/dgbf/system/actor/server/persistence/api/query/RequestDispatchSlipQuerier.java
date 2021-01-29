@@ -6,6 +6,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Order.desc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concatCodeName;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
@@ -32,6 +33,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip
 
 public interface RequestDispatchSlipQuerier extends Querier {
 
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_SECTION_IDENTIFIER+"Nullable";
+	
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
+	
 	String PARAMETER_NAME_SENDING_DATE_IS_NULL = "sendingDateIsNull";
 	String PARAMETER_NAME_SENDING_DATE_IS_NULL_NULLABLE = PARAMETER_NAME_SENDING_DATE_IS_NULL+"Nullable";
 	String PARAMETER_NAME_SENDING_DATE_IS_NOT_NULL = "sendingDateIsNotNull";
@@ -196,7 +203,10 @@ public interface RequestDispatchSlipQuerier extends Querier {
 		private static void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
 			filter.addFieldsNullable(arguments,PARAMETER_NAME_PROCESSING_DATE_IS_NULL,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL
-					,PARAMETER_NAME_SENDING_DATE_IS_NULL,PARAMETER_NAME_SENDING_DATE_IS_NOT_NULL);
+					,PARAMETER_NAME_SENDING_DATE_IS_NULL,PARAMETER_NAME_SENDING_DATE_IS_NOT_NULL
+					,PARAMETER_NAME_SECTION_IDENTIFIER,PARAMETER_NAME_FUNCTION_IDENTIFIER);
+			filter.addFieldEquals(PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
+			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
 			arguments.setFilter(filter);
 		}
 	}
@@ -229,11 +239,11 @@ public interface RequestDispatchSlipQuerier extends Querier {
 						,Query.FIELD_TUPLE_CLASS,RequestDispatchSlip.class,Query.FIELD_RESULT_CLASS,RequestDispatchSlip.class
 						,Query.FIELD_VALUE,jpql(select(
 								fields("t",RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME)
-								,fields("f",Function.FIELD_NAME)
+								,concatCodeName("s"),fields("f",Function.FIELD_NAME)
 								)
 								,getReadWhereFilterFromWhere(),getOrderBy())
 						).setTupleFieldsNamesIndexesFromFieldsNames(RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
-								,RequestDispatchSlip.FIELD_FUNCTION_AS_STRING)
+								,RequestDispatchSlip.FIELD_SECTION_AS_STRING,RequestDispatchSlip.FIELD_FUNCTION_AS_STRING)
 				
 				,Query.buildSelect(RequestDispatchSlip.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM RequestDispatchSlip t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 			);
@@ -242,6 +252,7 @@ public interface RequestDispatchSlipQuerier extends Querier {
 	static String getReadWhereFilterFromWhere() {
 		return jpql(
 				"FROM RequestDispatchSlip t"
+				,"LEFT JOIN Section s ON s = t.section"
 				,"LEFT JOIN Function f ON f = t.function"
 				,getReadWhereFilterWhere()
 			);
@@ -259,6 +270,11 @@ public interface RequestDispatchSlipQuerier extends Querier {
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_SENDING_DATE_IS_NOT_NULL_NULLABLE),"t.sendingDate IS NOT NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE),"t.processingDate IS NOT NULL"))
+				
+				/* Section */
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_SECTION_IDENTIFIER_NULLABLE),"s.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER))
+				/* Function */
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE),"f.identifier = :"+PARAMETER_NAME_FUNCTION_IDENTIFIER))
 		));
 	}
 	
