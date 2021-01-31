@@ -2,12 +2,15 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.util.Collection;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 
 public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApiUnitTestValidate {
@@ -16,6 +19,16 @@ public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApi
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void assignments_readWhereFilter(){
+		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
+			Long t = System.currentTimeMillis();
+			Collection<Assignments> collection = 
+					AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(count));
+			System.out.println(CollectionHelper.getSize(collection)+" : "+TimeHelper.formatDuration(System.currentTimeMillis() - t));
+		}
 	}
 	
 	@Test

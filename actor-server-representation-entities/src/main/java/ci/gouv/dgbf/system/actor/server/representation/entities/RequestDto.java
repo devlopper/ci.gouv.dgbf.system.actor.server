@@ -81,8 +81,11 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	/* Processing */
 	
 	private String processingDateAsString;
+	private Boolean processed;
 	private String acceptationComment;
+	private Boolean accepted;
 	private String rejectionReason;
+	private Boolean rejected;
 	
 	/* Report identifier */
 	

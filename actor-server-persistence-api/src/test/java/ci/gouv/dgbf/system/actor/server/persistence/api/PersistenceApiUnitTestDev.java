@@ -375,9 +375,24 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void assignments_countWhereFilter(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		System.out.println("Toutes les lignes");
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilter(new QueryExecutorArguments()));
+		System.out.println("Les lignes avec tout les titulaires définis");
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE)));
+		System.out.println("Les lignes avec des titulaires non définis");
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilter(new QueryExecutorArguments()
+				.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED,Boolean.TRUE)));
+	}
+	
+	@Test
 	public void assignments_readWhereFilter(){
 		Collection<Assignments> collection = 
 				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(1));
+		if(collection == null)
+			return;
 		Assignments assignments = collection.iterator().next();
 		System.out.println(assignments.getExecutionImputation().getIdentifier());
 		System.out.println(assignments.getExecutionImputation().getCode());

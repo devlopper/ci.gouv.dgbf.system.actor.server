@@ -25,7 +25,7 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
-		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
+		//ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
 		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	

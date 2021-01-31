@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -62,6 +63,21 @@ public class QueryResultMapperImpl extends QueryResultMapper.AbstractImpl implem
 				request.setPhoto((byte[]) value);
 				return;
 			}
+		}else if(instance instanceof RequestDispatchSlip) {
+			RequestDispatchSlip requestDispatchSlip = (RequestDispatchSlip) instance;
+			if(RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING.equals(fieldName) && value != null) {
+				requestDispatchSlip.setCreationDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
+				return;
+			}
+			if(RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING.equals(fieldName) && value != null) {
+				requestDispatchSlip.setSendingDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
+				return;
+			}
+			if(RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING.equals(fieldName) && value != null) {
+				requestDispatchSlip.setProcessingDateAsString(TimeHelper.formatLocalDateTime((LocalDateTime) value,"dd/MM/yyyy à HH:mm"));
+				return;
+			}
+			
 		}
 		super.write(instance, fieldName, value);
 	}

@@ -11,6 +11,9 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.isNullable;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.isNull;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Where.isNotNull;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,6 +32,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.ParameterNameBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -48,21 +52,66 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_EXPENDITURE_NATURE = "expenditureNature";
 	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER = "creditManagerHolder";
-	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_NULLABLE = PARAMETER_NAME_CREDIT_MANAGER_HOLDER+"Nullable";
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, null, Boolean.TRUE);	
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.TRUE, null);
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.FALSE, null);
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT = "creditManagerAssistant";
-	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_NULLABLE = PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT+"Nullable";
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, null, Boolean.TRUE);	
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, Boolean.TRUE, null);
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, Boolean.FALSE, null);
+	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER = "authorizingOfficerHolder";
-	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_NULLABLE = PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER+"Nullable";
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, null, Boolean.TRUE);	
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.TRUE, null);
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.FALSE, null);
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT = "authorizingOfficerAssistant";
-	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_NULLABLE = PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT+"Nullable";
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, null, Boolean.TRUE);	
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, Boolean.TRUE, null);
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, Boolean.FALSE, null);
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER = "financialControllerHolder";
-	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_NULLABLE = PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER+"Nullable";
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, null, Boolean.TRUE);	
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.TRUE, null);
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.FALSE, null);
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT = "financialControllerAssistant";
-	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_NULLABLE = PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT+"Nullable";
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, null, Boolean.TRUE);	
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, Boolean.TRUE, null);
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, Boolean.FALSE, null);
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_ACCOUNTING_HOLDER = "accountingHolder";
-	String PARAMETER_NAME_ACCOUNTING_HOLDER_NULLABLE = PARAMETER_NAME_ACCOUNTING_HOLDER+"Nullable";
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, null, Boolean.TRUE);	
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.TRUE, null);
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.FALSE, null);
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.FALSE, Boolean.TRUE);
+	
 	String PARAMETER_NAME_ACCOUNTING_ASSISTANT = "accountingAssistant";
-	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_NULLABLE = PARAMETER_NAME_ACCOUNTING_ASSISTANT+"Nullable";
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_ASSISTANT, null, Boolean.TRUE);	
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_ASSISTANT, Boolean.TRUE, null);
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_ASSISTANT, Boolean.TRUE, Boolean.TRUE);	
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NOT_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_ASSISTANT, Boolean.FALSE, null);
+	String PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
+	
+	String PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED = "someHoldersNotDefined";
+	String PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED, null, Boolean.TRUE);
+	
+	String PARAMETER_NAME_ALL_HOLDERS_DEFINED = "allHoldersDefined";
+	String PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ALL_HOLDERS_DEFINED, null, Boolean.TRUE);
 	
 	Assignments readOne(QueryExecutorArguments arguments);
 	Collection<Assignments> readMany(QueryExecutorArguments arguments);
@@ -185,6 +234,32 @@ public interface AssignmentsQuerier extends Querier {
 		
 		private void prepareWhereFilter(QueryExecutorArguments arguments) {
 			Filter filter = new Filter();
+			
+			filter.addFieldsNullable(arguments
+					,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL
+					,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL
+					,PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NULL
+					,PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NOT_NULL
+					
+					,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL
+					,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL
+					,PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NULL
+					,PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NOT_NULL
+					
+					,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL
+					,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL
+					,PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NULL
+					,PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NOT_NULL
+					
+					,PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL
+					,PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL
+					,PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NULL
+					,PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NOT_NULL
+					
+					,PARAMETER_NAME_ALL_HOLDERS_DEFINED
+					,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
+					);
+			
 			prepareWhereFilter(filter, arguments);
 			arguments.setFilter(filter);
 		}
@@ -442,7 +517,23 @@ public interface AssignmentsQuerier extends Querier {
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_HOLDER, PARAMETER_NAME_ACCOUNTING_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)				
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)	
+			
+			,parenthesis(or(isNullable(PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
+					, parenthesis(and(isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
+							,isNotNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+							,isNotNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
+							,isNotNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
+							)))
+				)
+			
+			,parenthesis(or(isNullable(PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE)
+					, or(isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
+							,isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+							,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
+							,isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
+							))
+				)
 		);
 	}
 	
@@ -450,11 +541,15 @@ public interface AssignmentsQuerier extends Querier {
 		return jpql(getReadWhereFilterFrom(),where(getReadWhereFilterWherePredicate()));
 	}
 	
-	static String getReadWhereFilterScopeFunctionPredicate(String holderVariableName,String holderParameterName) {
-		return parenthesis(or(
-				String.format("(:%sNullable = true)", holderParameterName)
-				,like(holderVariableName, ScopeFunction.FIELD_CODE, holderParameterName)
-				,like(holderVariableName, ScopeFunction.FIELD_NAME, holderParameterName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+	static String getReadWhereFilterScopeFunctionPredicate(String variableName,String parameterName) {
+		return parenthesis(and(
+				parenthesis(or(
+				String.format("(:%sNullable = true)", parameterName)
+				,like(variableName, ScopeFunction.FIELD_CODE, parameterName)
+				,like(variableName, ScopeFunction.FIELD_NAME, parameterName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+				))
+				,parenthesis(or(String.format("(:%s = true)", ParameterNameBuilder.getInstance().build(parameterName, Boolean.TRUE, Boolean.TRUE)),variableName+" IS NULL"))
+				,parenthesis(or(String.format("(:%s = true)", ParameterNameBuilder.getInstance().build(parameterName, Boolean.FALSE, Boolean.TRUE)),variableName+" IS NOT NULL"))
 			));
 	}
 	

@@ -49,7 +49,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
 	@Transient private String typeAsString,creationDateAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
-	@Transient private String statusAsString;	
+	@Transient private String statusAsString;
 	//@Transient private Boolean isAcceptedStatus;
 	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
@@ -119,8 +119,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@Column(name = COLUMN_PROCESSING_DATE) private LocalDateTime processingDate;	
 	@Transient private String processingDateAsString;
+	@Transient private Boolean processed;
 	@Column(name = COLUMN_ACCEPTATION_COMMENT) private String acceptationComment;
+	@Transient private Boolean accepted;
 	@Column(name = COLUMN_REJECTION_REASON) private String rejectionReason;
+	@Transient private Boolean rejected;
 	@ManyToOne @JoinColumn(name = COLUMN_DISPATCH_SLIP) private RequestDispatchSlip dispatchSlip;
 	@Transient private String dispatchSlipAsString;
 	

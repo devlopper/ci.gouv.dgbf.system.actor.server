@@ -238,11 +238,14 @@ public interface RequestDispatchSlipQuerier extends Querier {
 				,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 						,Query.FIELD_TUPLE_CLASS,RequestDispatchSlip.class,Query.FIELD_RESULT_CLASS,RequestDispatchSlip.class
 						,Query.FIELD_VALUE,jpql(select(
-								fields("t",RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME)
+								fields("t",RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
+										,RequestDispatchSlip.FIELD_CREATION_DATE,RequestDispatchSlip.FIELD_SENDING_DATE,RequestDispatchSlip.FIELD_PROCESSING_DATE)
 								,concatCodeName("s"),fields("f",Function.FIELD_NAME)
 								)
 								,getReadWhereFilterFromWhere(),getOrderBy())
 						).setTupleFieldsNamesIndexesFromFieldsNames(RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
+								,RequestDispatchSlip.FIELD_CREATION_DATE_AS_STRING,RequestDispatchSlip.FIELD_SENDING_DATE_AS_STRING
+								,RequestDispatchSlip.FIELD_PROCESSING_DATE_AS_STRING
 								,RequestDispatchSlip.FIELD_SECTION_AS_STRING,RequestDispatchSlip.FIELD_FUNCTION_AS_STRING)
 				
 				,Query.buildSelect(RequestDispatchSlip.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM RequestDispatchSlip t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)

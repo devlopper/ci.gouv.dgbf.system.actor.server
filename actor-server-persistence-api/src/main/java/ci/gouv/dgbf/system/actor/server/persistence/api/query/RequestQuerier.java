@@ -278,8 +278,14 @@ public interface RequestQuerier extends Querier {
 			if(request.getSignedRequestSheet() != null)
 				request.setSignedRequestSheetIdentifier(request.getIdentifier());
 			
-			if(request.getStatus() != null && StringHelper.isBlank(request.getStatusAsString()))
-				request.setStatusAsString(request.getStatus().getName());
+			if(request.getStatus() != null) {
+				if(StringHelper.isBlank(request.getStatusAsString()))
+					request.setStatusAsString(request.getStatus().getName());
+				request.setAccepted(RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()));
+				request.setRejected(RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()));
+				request.setProcessed(Boolean.TRUE.equals(request.getAccepted()) || Boolean.TRUE.equals(request.getRejected()));
+			}
+			
 			if(request.getActor() != null)
 				request.setActorCode(request.getActor().getCode());
 			request.setActorNames(Identity.getNames((String)FieldHelper.readName(request.getCivility()), request.getFirstName(), request.getLastNames()));

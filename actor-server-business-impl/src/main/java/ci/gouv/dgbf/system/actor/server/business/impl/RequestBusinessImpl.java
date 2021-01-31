@@ -13,10 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.cyk.utility.__kernel__.business.EntityCreator;
 import org.cyk.utility.__kernel__.business.EntitySaver;
 import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
-import org.cyk.utility.__kernel__.business.EntityUpdater;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -24,6 +22,7 @@ import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
+import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
@@ -82,6 +81,13 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(request.getStatus() != null && RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
 				throw new RuntimeException("Aucune modification possible car la demande a déja été soumise");
 		}		
+	}
+	
+	private static void validateProcess(Request request) {
+		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été acceptée");
+		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException("La demande a déja été rejetée");
 	}
 	
 	private void setFields(Request request) {
@@ -270,50 +276,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void accept(Request request) {
 		validate(request,Boolean.FALSE);
-		request.set__auditFunctionality__("Acceptation");
-		/*
-		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
-			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
-				throw new RuntimeException("Le spécimen de signature est obligatoire");
-		}
-		*/
-		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
-		request.setProcessingDate(LocalDateTime.now());
-		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		request.set__auditFunctionality__("Acceptation de demande");
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
-		Collection<ScopeFunction> scopeFunctions = requestScopeFunctions == null ? null : requestScopeFunctions.stream().filter(x -> Boolean.TRUE.equals(x.getGranted()))
-				.map(x -> x.getScopeFunction())
-				.collect(Collectors.toList());
-		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s)", scopeFunctions.size()), getClass());
-		//Non blocking operations
-		try {
-			notifyAccepted(request,scopeFunctions);
-		} catch (Exception exception) {
-			LogHelper.log(exception, getClass());
-		}
-	}
-	
-	private void accept(Request request,Collection<ScopeFunction> grantedScopeFunctions) {
-		validate(request,Boolean.FALSE);
-		request.set__auditFunctionality__("Acceptation");
-		/*
-		if(RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
-			if(request.getSignedRequestSheet() == null)//TODO this has to be done based on required
-				throw new RuntimeException("Le spécimen de signature est obligatoire");
-		}
-		*/
-		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_ACCEPTED));
-		request.setProcessingDate(LocalDateTime.now());
-		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
-			
-		//Non blocking operations
-		try {
-			notifyAccepted(request,grantedScopeFunctions);
-		} catch (Exception exception) {
-			LogHelper.log(exception, getClass());
-		}
+		accept(request, requestScopeFunctions
+				, requestScopeFunctions.stream().map(x -> x.getScopeFunction()).collect(Collectors.toList())
+				, request.getReadPageURL(), EntityManagerGetter.getInstance().get());
 	}
 	
 	@Override @Transactional
@@ -323,7 +290,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setAcceptationComment(acceptationComment).setReadPageURL(readPageURL);
 		request.set__auditWho__(auditActor);
-		
+		/*
 		Collection<ScopeFunction> grantedScopeFunctions = null;
 		//update granted
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
@@ -366,22 +333,26 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.collect(Collectors.joining(","))), getClass());
 		
 		accept(request,grantedScopeFunctions);
+		*/
+		accept(request, RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()))
+				, grantedBudgetariesScopeFunctionsIdentifiers.stream()
+					.map(x -> EntityFinder.getInstance().find(ScopeFunction.class, x))
+					.filter(x -> x != null)
+					.collect(Collectors.toList())
+				, readPageURL, EntityManagerGetter.getInstance().get());
 	}
 	
 	public static void accept(Request request,Collection<RequestScopeFunction> requestScopeFunctions,Collection<ScopeFunction> grantedBudgetariesScopeFunctions
 			,String readPageURL,EntityManager entityManager) {
 		validate(request,Boolean.FALSE);
-		if(request == null)
-			throw new RuntimeException("La demande à accepter est obligatoire");
-		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été acceptée");
+		validateProcess(request);		
 		if(CollectionHelper.isEmpty(grantedBudgetariesScopeFunctions))
 			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
 		
 		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedBudgetariesScopeFunctions.size(),grantedBudgetariesScopeFunctions.stream().map(x -> x.getCode())
 				.collect(Collectors.joining(","))), RequestBusinessImpl.class);
 		
-		request.set__auditFunctionality__("Acceptation demande");
+		request.set__auditFunctionality__("Acceptation demande par bordereau");
 		
 		//update granted
 		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
@@ -419,8 +390,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void reject(Request request) {
 		validate(request,Boolean.FALSE);
-		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été rejetée");
+		validateProcess(request);		
 		if(StringHelper.isBlank(request.getRejectionReason()))
 			throw new RuntimeException("Le motif de rejet est obligatoire");
 		request.set__auditFunctionality__("Rejet demande");
