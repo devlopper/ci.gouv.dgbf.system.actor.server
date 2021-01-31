@@ -32,6 +32,20 @@ public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApi
 	}
 	
 	@Test
+	public void assignments_readWhereFilterUI(){
+		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
+			Long t = System.currentTimeMillis();
+			AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(count));
+			Long d1 = System.currentTimeMillis() - t;
+			t = System.currentTimeMillis();
+			AssignmentsQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments().setNumberOfTuples(count));
+			Long d2 = System.currentTimeMillis() - t;
+			
+			System.out.println(count+" : "+TimeHelper.formatDuration(d1)+" / "+TimeHelper.formatDuration(d2));
+		}
+	}
+	
+	@Test
 	public void executionImputation_readWhereFilter(){
 		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
