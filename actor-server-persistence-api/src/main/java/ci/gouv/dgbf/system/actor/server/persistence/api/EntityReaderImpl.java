@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -74,6 +75,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(ActivityQuerier.getInstance().isOwner(arguments)))
+				return (T) ActivityQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 				return (T) ClusterQuerier.getInstance().readOne(arguments);
@@ -142,6 +146,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		
 		if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) BudgetSpecializationUnitQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(ActivityQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) ActivityQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(AdministrativeUnitQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) AdministrativeUnitQuerier.getInstance().readMany(arguments);

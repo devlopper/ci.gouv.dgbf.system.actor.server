@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 public class BudgetSpecializationUnitDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private String sectionIdentifier;
+	
 	@Override
 	public BudgetSpecializationUnitDto setIdentifier(String identifier) {
 		return (BudgetSpecializationUnitDto) super.setIdentifier(identifier);

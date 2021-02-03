@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
@@ -33,6 +34,8 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
 	@Column(name = COLUMN_ACTION_CODE_NAME) private String actionCodeName;
+	
+	@Transient private String budgetSpecializationUnitIdentifier;
 	
 	@Override
 	public Activity setIdentifier(String identifier) {
@@ -86,6 +89,7 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String FIELD_CATEGORY = "category";
 	public static final String FIELD_CATEGORY_CODE_NAME = "categoryCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 	public static final String FIELD_ACTION = "action";
 	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";

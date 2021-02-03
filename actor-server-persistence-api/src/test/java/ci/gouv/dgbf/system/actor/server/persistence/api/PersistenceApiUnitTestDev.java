@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.Query;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
@@ -59,7 +60,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void administrativeUnit_readWhereCodeOrNameLike(){
-		System.out.println(AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(new QueryExecutorArguments()
+		QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		System.out.println(AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(new QueryExecutorArguments().setNumberOfTuples(1)
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(AdministrativeUnit.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE))));
 	}
 	

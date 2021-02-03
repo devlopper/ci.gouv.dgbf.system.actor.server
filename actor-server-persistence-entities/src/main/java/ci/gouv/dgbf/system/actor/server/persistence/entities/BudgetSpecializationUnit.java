@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
@@ -25,6 +26,7 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
 	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
+	@Transient private String sectionIdentifier;
 	
 	@Override
 	public BudgetSpecializationUnit setIdentifier(String identifier) {
