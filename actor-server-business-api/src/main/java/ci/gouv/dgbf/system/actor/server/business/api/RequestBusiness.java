@@ -63,6 +63,8 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	
 	Integer notifyAccessTokens(String electronicMailAddress,String readPageURL);
 	
+	void exportForAccountCreation(String actorCode);
+	
 	/**/
 	
 	/**/
@@ -76,6 +78,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	String ACCEPT = "Request.accept";
 	String REJECT = "Request.reject";
 	String NOTIFY_ACCESS_TOKENS = "Request.notifyAccessTokens";
+	String EXPORT_FOR_ACCOUNT_CREATION = "Request.exportForAccountCreation";
 	
 	/**/
 	

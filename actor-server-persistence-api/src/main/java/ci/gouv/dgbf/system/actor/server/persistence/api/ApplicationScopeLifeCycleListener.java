@@ -32,7 +32,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.CivilityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.EconomicNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FinancialControllerServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionTypeQuerier;
@@ -121,6 +123,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		BudgetSpecializationUnitQuerier.initialize();
 		ActivityQuerier.initialize();
 		ActivityCategoryQuerier.initialize();
+		ExpenditureNatureQuerier.initialize();
+		EconomicNatureQuerier.initialize();
 		LocalityQuerier.initialize();
 		AuthorizingOfficerServiceQuerier.initialize();
 		FinancialControllerServiceQuerier.initialize();

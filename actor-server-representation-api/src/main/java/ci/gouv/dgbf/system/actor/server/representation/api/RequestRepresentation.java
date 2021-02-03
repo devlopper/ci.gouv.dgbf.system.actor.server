@@ -218,6 +218,13 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response notifyAcessTokens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress
 			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
+	@POST
+	@Path(PATH_EXPORT_FOR_ACCOUNT_CREATION)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response exportForAccountCreation(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
+	
 	static RequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(RequestRepresentation.class);
 	}
@@ -242,6 +249,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_GET_ACT_OF_APPOINTMENT_BY_IDENTIFIER = "obteniractenominationparidentifiant";
 	String PATH_GET_SIGNATURE_BY_IDENTIFIER = "obtenirsignatureparidentifiant";
 	String PATH_GET_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = "obtenirfichedemandesigneeparidentifiant";
+	String PATH_EXPORT_FOR_ACCOUNT_CREATION = "exporterpourcreationcompte";
 	
 	String PATH_NOTIFY_ACCESS_TOKENS = "notifyaccesstokens";
 	

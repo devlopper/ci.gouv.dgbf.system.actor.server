@@ -5,8 +5,10 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
+import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
@@ -27,6 +29,9 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	Long count();
 	
+	String QUERY_IDENTIFIER_READ_ALL_FOR_UI = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, "readAllForUI");
+	Collection<ActivityCategory> readAllForUI();
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ActivityCategory> implements ActivityCategoryQuerier,Serializable {
@@ -44,6 +49,8 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 		public Collection<ActivityCategory> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
 				return read();
+			if(QUERY_IDENTIFIER_READ_ALL_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readAllForUI();
 			return super.readMany(arguments);
 		}
 		
@@ -52,6 +59,11 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 			if(QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier()))
 				return count();
 			return super.count(arguments);
+		}
+		
+		@Override
+		public Collection<ActivityCategory> readAllForUI() {
+			return QueryExecutor.getInstance().executeReadMany(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI);
 		}
 		
 		@Override
@@ -70,6 +82,8 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(ActivityCategory.class);
-		
+		QueryHelper.addQueries(Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
+				, "SELECT t.identifier,t.code,t.name FROM ActivityCategory t ORDER BY t.code ASC")
+				.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME));
 	}
 }

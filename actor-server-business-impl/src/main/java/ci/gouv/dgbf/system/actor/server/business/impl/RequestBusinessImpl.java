@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
@@ -547,5 +549,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				}
 			}
 		}).start();
+	}
+	
+	@Override
+	public void exportForAccountCreation(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		RequestQuerier.getInstance().exportForAccountCreation(actorCode, "export_pour_creation_compte", EntityLifeCycleListener.Event.READ.getValue(), new Date());
 	}
 }

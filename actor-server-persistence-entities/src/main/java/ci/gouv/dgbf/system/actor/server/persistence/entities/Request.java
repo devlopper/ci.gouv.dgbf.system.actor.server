@@ -17,6 +17,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -41,6 +43,12 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
 		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
 })
+@NamedStoredProcedureQueries(value = {
+		@NamedStoredProcedureQuery(
+				name = Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS, 
+				procedureName = Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS
+		)
+	})
 public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -250,6 +258,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";
 	
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_TYPE = "TYPE";

@@ -34,8 +34,8 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.cyk.jee.utility.mail</groupId>
-			<artifactId>jee-utility-mail</artifactId>
+			<groupId>org.cyk.jee.utility.mail.postmark</groupId>
+			<artifactId>jee-utility-mail-postmark</artifactId>
 			<version>0.1.0</version>
 		</dependency>
 	</dependencies>	

@@ -35,7 +35,11 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	@ManyToOne @JoinColumn(name = COLUMN_ACTION) private Action action;
 	@Column(name = COLUMN_ACTION_CODE_NAME) private String actionCodeName;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_EXPENDITURE_NATURE) private ExpenditureNature expenditureNature;
+	
 	@Transient private String budgetSpecializationUnitIdentifier;
+	@Transient private String expenditureNatureIdentifier;
+	@Transient private String categoryIdentifier;
 	
 	@Override
 	public Activity setIdentifier(String identifier) {
@@ -87,12 +91,15 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_CATEGORY = "category";
+	public static final String FIELD_CATEGORY_IDENTIFIER = "categoryIdentifier";
 	public static final String FIELD_CATEGORY_CODE_NAME = "categoryCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
 	public static final String FIELD_ACTION = "action";
 	public static final String FIELD_ACTION_CODE_NAME = "actionCodeName";
+	public static final String FIELD_EXPENDITURE_NATURE = "expenditureNature";
+	public static final String FIELD_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
 	
 	public static final String TABLE_NAME = "VM_APP_ACTIVITE";
 	
@@ -104,4 +111,5 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
 	public static final String COLUMN_ACTION = "ACTION";
 	public static final String COLUMN_ACTION_CODE_NAME = "ACTION_CODE_LIBELLE";
+	public static final String COLUMN_EXPENDITURE_NATURE = "NATURE_DEPENSE";
 }

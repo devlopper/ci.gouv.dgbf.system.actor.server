@@ -19,6 +19,8 @@ public class ActivityDto extends AbstractIdentifiableSystemScalarStringIdentifia
 	private String actionCodeName;	
 	
 	private String budgetSpecializationUnitIdentifier;
+	private String expenditureNatureIdentifier;
+	private String categoryIdentifier;
 	
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";

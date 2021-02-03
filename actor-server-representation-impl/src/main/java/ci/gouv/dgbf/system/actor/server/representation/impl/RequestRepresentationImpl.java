@@ -399,6 +399,21 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 		});
 	}
 	
+	@Override
+	public Response exportForAccountCreation(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).exportForAccountCreation(actorCode);
+					}
+				};
+			}
+		});
+	}
+	
 	/**/
 	
 	private void setFromDto(RequestDto requestDto,Request request) {

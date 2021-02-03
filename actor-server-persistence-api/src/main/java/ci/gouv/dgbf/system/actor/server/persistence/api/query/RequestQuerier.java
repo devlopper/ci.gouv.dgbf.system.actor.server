@@ -18,6 +18,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
+import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -149,6 +151,8 @@ public interface RequestQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignedRequestSheetByIdentifier");
 	byte[] readSignedRequestSheetByIdentifier(String identifier);
+	
+	void exportForAccountCreation(String actor,String functionality,String action,Date date);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
@@ -484,6 +488,11 @@ public interface RequestQuerier extends Querier {
 		public byte[] readSignedRequestSheetByIdentifier(String identifier) {
 			return EntityManagerGetter.getInstance().get().createNamedQuery(QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER
 					, byte[].class).setParameter(PARAMETER_NAME_IDENTIFIER,identifier).getSingleResult();
+		}
+		
+		@Override
+		public void exportForAccountCreation(String actor, String functionality, String action, Date date) {
+			ProcedureExecutor.getInstance().execute(Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS);
 		}
 		
 		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
