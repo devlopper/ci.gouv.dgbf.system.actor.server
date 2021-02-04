@@ -350,6 +350,21 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
+	public Response returnByIdentifier(String identifier,String readPageURL) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).returnByIdentifier(identifier,readPageURL);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response acceptByIdentifier(String identifier,List<String> budgetariesScopeFunctionsIdentifiers,String comment,String readPageURL,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override

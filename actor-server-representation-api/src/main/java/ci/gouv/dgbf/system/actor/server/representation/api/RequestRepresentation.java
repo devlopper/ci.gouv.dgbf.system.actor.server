@@ -123,6 +123,17 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response submitByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
 	
 	@POST
+	@Path(PATH_RETURN_BY_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Retourner une demande")
+	@Parameters(value = {
+			@Parameter(name = "Identifiant de la demande",allowEmptyValue = false,description = "Identifiant de la demande à retourner",required = true
+					,example = "01",style = ParameterStyle.SIMPLE)
+	})
+	Response returnByIdentifier(@QueryParam(QUERY_PARAMETER_NAME_IDENTIFIER) String identifier,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
+	
+	@POST
 	@Path(PATH_ACCEPT_BY_IDENTIFIER)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
@@ -243,6 +254,7 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	String PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = "enregistrerfichedemandesigneeparidentifiant";
 	String PATH_RECORD_SIGNED_REQUEST_SHEET_BY_IDENTIFIER_FOR_ADMIN = "enregistrerfichedemandesigneeparidentifiantforadmin";
 	String PATH_SUBMIT_BY_IDENTIFIER = "soumettreparidentifiant";
+	String PATH_RETURN_BY_IDENTIFIER = "retournerparidentifiant";
 	String PATH_ACCEPT_BY_IDENTIFIER = "accepterparidentifiant";
 	String PATH_REJECT_BY_IDENTIFIER = "rejeterparidentifiant";
 	String PATH_GET_PHOTO_BY_IDENTIFIER = "obtenirphotoparidentifiant";

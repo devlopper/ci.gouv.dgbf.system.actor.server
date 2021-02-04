@@ -41,13 +41,16 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	void recordSignedRequestSheetByIdentifier(String identifier,Boolean isAdministrator,byte[] bytes);
 	
 	@Transactional
-	void return_(Request request);
-	
-	@Transactional
 	void submit(Request request);
 	
 	@Transactional
 	void submitByIdentifier(String identifier,String readPageURL);
+	
+	@Transactional
+	void return_(Request request);
+	
+	@Transactional
+	void returnByIdentifier(String identifier,String readPageURL);
 	
 	@Transactional
 	void accept(Request request);

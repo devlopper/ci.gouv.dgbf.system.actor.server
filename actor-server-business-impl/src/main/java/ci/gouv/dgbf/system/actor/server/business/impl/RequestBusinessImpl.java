@@ -260,12 +260,6 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
-	@Override
-	public void return_(Request request) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	@Override @Transactional
 	public void submitByIdentifier(String identifier,String readPageURL) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
@@ -273,6 +267,33 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
 		submit(request);
+	}
+	
+	@Override @Transactional
+	public void return_(Request request) {
+		validate(request,Boolean.FALSE);
+		if(request.getStatus() != null && !RequestStatus.CODE_SUBMITTED.equals(request.getStatus().getCode()))
+			throw new RuntimeException(String.format("La demande est %s. elle ne peut être retournée",request.getStatus().getName()));
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
+		request.set__auditFunctionality__("Retour");
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+		
+		//Non blocking operations
+		try {
+			notifyReturned(request);
+		} catch (Exception exception) {
+			LogHelper.log(exception, getClass());
+		}
+	}
+	
+	@Override @Transactional
+	public void returnByIdentifier(String identifier, String readPageURL) {
+		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
+				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
+				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
+				).setReadPageURL(readPageURL);
+		return_(request);
 	}
 	
 	@Override @Transactional
@@ -499,6 +520,26 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					else
 						message.addAttachments(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension("pdf")
 								.setName("fiche_d_identification"));
+					MailSender.getInstance().send(message);
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}	
+			}
+		}).start();		
+	}
+	
+	private static void notifyReturned(Request request) {
+		if(!Boolean.TRUE.equals(isNotifiableByEmail(request, Boolean.TRUE)))
+			return;
+		setReadPageURL(request);
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					org.cyk.utility.mail.Message message = new org.cyk.utility.mail.Message();
+					message.setSubject("SIGOBE - "+request.getType().getName());
+					message.setBody(FreeMarker.getRequestReturnedMailMessage(request));
+					message.addReceivers(List.of(request.getElectronicMailAddress()));
 					MailSender.getInstance().send(message);
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
