@@ -20,20 +20,19 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 @Queries(value = {
-	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Section.class,name = SectionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Section t ORDER BY t.code ASC")
-	//,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
+	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Section.class,name = SectionQuerier.QUERY_NAME_READ_ALL,value = "SELECT t FROM Section t ORDER BY t.code ASC")
 })
 public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 
 	/* read order by code ascending */
-	String QUERY_NAME_READ = "read";
-	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(Section.class, QUERY_NAME_READ);
+	String QUERY_NAME_READ_ALL = "readAll";
+	String QUERY_IDENTIFIER_READ_ALL = QueryIdentifierBuilder.getInstance().build(Section.class, QUERY_NAME_READ_ALL);
 	Collection<Section> read();
 	
 	String QUERY_IDENTIFIER_READ_ALL_FOR_UI = QueryIdentifierBuilder.getInstance().build(Section.class, "readAllForUI");
 	Collection<Section> readAllForUI();
 	
-	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
+	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_ALL);
 	Long count();
 	
 	String QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(Section.class, "readVisiblesByActorCodeForUI");
@@ -44,7 +43,7 @@ public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Section> implements SectionQuerier,Serializable {
 		@Override
 		public Collection<Section> read() {
-			return QueryExecutor.getInstance().executeReadMany(Section.class, QUERY_IDENTIFIER_READ);
+			return QueryExecutor.getInstance().executeReadMany(Section.class, QUERY_IDENTIFIER_READ_ALL);
 		}
 		
 		@Override
@@ -73,7 +72,7 @@ public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 		
 		@Override
 		public Collection<Section> readMany(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
+			if(QUERY_IDENTIFIER_READ_ALL.equals(arguments.getQuery().getIdentifier()))
 				return read();
 			if(QUERY_IDENTIFIER_READ_ALL_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readAllForUI();

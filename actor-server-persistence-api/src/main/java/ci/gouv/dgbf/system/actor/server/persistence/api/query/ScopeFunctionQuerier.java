@@ -31,6 +31,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -44,6 +45,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_SCOPE_CODE_NAME = "scopeCodeName";
+	String PARAMETER_NAME_SCOPE_IDENTIFIER = "scopeIdentifier";
 	//String PARAMETER_NAME_SCOPE_CODE = "scopeCode";
 	//String PARAMETER_NAME_SCOPE_NAME = "scopeName";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
@@ -67,6 +69,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
+	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionCodeForUI");
+	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(String scopeIdentifier,String functionCode);
 	
 	String QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
@@ -130,6 +135,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				return readByFunctionsCodes(arguments);
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 				return readWhereCodeOrNameLikeByFunctionCode(arguments);
+			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByScopeIdentifierByFunctionCodeForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_SCOPE_IDENTIFIER)
+						, (String)arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTION_CODE));
 			return super.readMany(arguments);
 		}
 		
@@ -147,6 +155,14 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		@Override
 		public Collection<ScopeFunction> read() {
 			return super.read(ScopeFunction.class, QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ));
+		}
+		
+		@Override
+		public Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(String scopeIdentifier,String functionCode) {
+			if(StringHelper.isBlank(scopeIdentifier) || StringHelper.isBlank(functionCode))
+				return null;
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
+					,PARAMETER_NAME_SCOPE_IDENTIFIER,scopeIdentifier,PARAMETER_NAME_FUNCTION_CODE,functionCode);
 		}
 		
 		@Override
@@ -313,6 +329,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT sf FROM ScopeFunction sf ORDER BY sf.code ASC")
 				,Query.buildCount(QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.COUNT)
 						, "SELECT COUNT(sf.identifier) FROM ScopeFunction sf")
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
+						, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.code = :%s ORDER BY t.code ASC"
+								,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_CODE))
+					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
 						, "SELECT t.identifier,t.code,t.scope.identifier,t.scope.code,t.function.code,locality.identifier,locality.code,t.activityIdentifier FROM ScopeFunction t "

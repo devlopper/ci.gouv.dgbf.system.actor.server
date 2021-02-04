@@ -355,6 +355,9 @@ public interface RequestQuerier extends Querier {
 					.map(x -> x.getScopeFunction())
 					.collect(Collectors.toList()));				
 			}
+			if(request.getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
+				request.setSection(request.getAdministrativeUnit().getSection());
+			}
 			return request;
 		}
 		

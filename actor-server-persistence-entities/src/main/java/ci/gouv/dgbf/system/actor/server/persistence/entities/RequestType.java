@@ -73,4 +73,5 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String COLUMN_NOTIFIABLE_BY_EMAIL = "NOTIFIABLE_PAR_EMAIL";
 	
 	public static final String CODE_DEMANDE_POSTES_BUDGETAIRES = "DEMANDE_POSTES_BUDGETAIRES";
+	public static final String IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES = "DPB";
 }
