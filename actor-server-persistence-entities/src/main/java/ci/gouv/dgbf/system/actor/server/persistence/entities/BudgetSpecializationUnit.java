@@ -57,6 +57,7 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 	}
 	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	
 	public static final String COLUMN_SECTION = "SECTION";

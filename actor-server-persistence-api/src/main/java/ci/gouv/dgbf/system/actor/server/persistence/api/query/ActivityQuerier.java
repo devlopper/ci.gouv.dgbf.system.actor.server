@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -12,7 +13,12 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 
@@ -20,8 +26,14 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 	String PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
 	String PARAMETER_NAME_CATEGORY_IDENTIFIER = "categoryIdentifier";
 	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Activity.class, "readByIdentifier");
+	Activity readByIdentifier(String identifier);
+	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Activity.class, "readByIdentifierForUI");
 	Activity readByIdentifierForUI(String identifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI = QueryIdentifierBuilder.getInstance().build(Activity.class, "readByIdentifierWithCodesNamesForUI");
+	Activity readByIdentifierWithCodesNamesForUI(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Activity.class, "readByBudgetSpecializationUnitIdentifier");
 	Collection<Activity> readByBudgetSpecializationUnitIdentifier(String budgetSpecializationUnitIdentifier);
@@ -54,6 +66,10 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 		public Activity readOne(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
 				return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER))
+				return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI))
+				return readByIdentifierWithCodesNamesForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			return super.readOne(arguments);
 		}
 		
@@ -88,9 +104,27 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 		}
 		
 		@Override
+		public Activity readByIdentifier(String identifier) {
+			return QueryExecutor.getInstance().executeReadOne(Activity.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER)
+					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+		}
+		
+		@Override
 		public Activity readByIdentifierForUI(String identifier) {
 			return QueryExecutor.getInstance().executeReadOne(Activity.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI)
 					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+		}
+		
+		@Override
+		public Activity readByIdentifierWithCodesNamesForUI(String identifier) {
+			Activity activity = QueryExecutor.getInstance().executeReadOne(Activity.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
+					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+			activity.setSection(new Section().setCode(StringUtils.substringBefore(activity.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getSectionCodeName(), " ")));
+			activity.setBudgetSpecializationUnit(new BudgetSpecializationUnit().setCode(StringUtils.substringBefore(activity.getBudgetSpecializationUnitCodeName(), " ")).setName(StringUtils.substringAfter(activity.getBudgetSpecializationUnitCodeName(), " ")));
+			activity.setAction(new Action().setCode(StringUtils.substringBefore(activity.getActionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getActionCodeName(), " ")));
+			activity.setExpenditureNature(new ExpenditureNature().setCode(StringUtils.substringBefore(activity.getExpenditureNatureCodeName(), " ")).setName(StringUtils.substringAfter(activity.getExpenditureNatureCodeName(), " ")));
+			activity.setCategory(new ActivityCategory().setCode(StringUtils.substringBefore(activity.getCategoryCodeName(), " ")).setName(StringUtils.substringAfter(activity.getCategoryCodeName(), " ")));
+			return activity;
 		}
 		
 		@Override
@@ -202,16 +236,49 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 								+" AND ac.identifier = :"+PARAMETER_NAME_CATEGORY_IDENTIFIER
 								+" ORDER BY t.code ASC")
 					.setTupleFieldsNamesIndexesFromFieldsNames(Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME)	
-					
+				
+				,Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER, "SELECT t FROM Activity t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+
 				,Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
-						, "SELECT t.identifier,t.code,t.name,nd.identifier,ac.identifier,b.identifier FROM Activity t "
+						, "SELECT t.identifier,t.code,t.name"
+								+ ",s.identifier"
+								+ ",b.identifier"
+								+ ",en.identifier"
+								+ ",ac.identifier"
+								+ " FROM Activity t "
 								+ "LEFT JOIN Action a ON a = t.action "
-								+ "LEFT JOIN BudgetSpecializationUnit b ON b = a.budgetSpecializationUnit "
-								+ "LEFT JOIN ExpenditureNature nd ON nd = t.expenditureNature "
+								+ "LEFT JOIN BudgetSpecializationUnit b ON b = t.budgetSpecializationUnit "
+								+ "LEFT JOIN Section s ON s = t.section "
+								+ "LEFT JOIN ExpenditureNature en ON en = t.expenditureNature "
 								+ "LEFT JOIN ActivityCategory ac ON ac = t.category "
 								+ "WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
-					.setTupleFieldsNamesIndexesFromFieldsNames(Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME
-							,Activity.FIELD_EXPENDITURE_NATURE_IDENTIFIER,Activity.FIELD_CATEGORY_IDENTIFIER,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER)
+					.setTupleFieldsNamesIndexesFromFieldsNames(
+							Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME,Activity.FIELD_SECTION_IDENTIFIER
+							,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,Activity.FIELD_EXPENDITURE_NATURE_IDENTIFIER,Activity.FIELD_CATEGORY_IDENTIFIER
+							)
+					
+				,Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
+						, "SELECT t.identifier,t.code,t.name"
+								+ ",s.identifier,t.sectionCodeName"
+								+ ",b.identifier,t.budgetSpecializationUnitCodeName"
+								+ ",a.identifier,t.actionCodeName"
+								+ ",en.identifier,t.expenditureNatureCodeName"
+								+ ",ac.identifier,t.categoryCodeName"
+								+ " FROM Activity t "
+								+ "LEFT JOIN Action a ON a = t.action "
+								+ "LEFT JOIN BudgetSpecializationUnit b ON b = t.budgetSpecializationUnit "
+								+ "LEFT JOIN Section s ON s = t.section "
+								+ "LEFT JOIN ExpenditureNature en ON en = t.expenditureNature "
+								+ "LEFT JOIN ActivityCategory ac ON ac = t.category "
+								+ "WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+					.setTupleFieldsNamesIndexesFromFieldsNames(
+							Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME
+							,Activity.FIELD_SECTION_IDENTIFIER,Activity.FIELD_SECTION_CODE_NAME
+							,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
+							,Activity.FIELD_ACTION_IDENTIFIER,Activity.FIELD_ACTION_CODE_NAME
+							,Activity.FIELD_EXPENDITURE_NATURE_IDENTIFIER,Activity.FIELD_EXPENDITURE_NATURE_CODE_NAME
+							,Activity.FIELD_CATEGORY_IDENTIFIER,Activity.FIELD_CATEGORY_CODE_NAME
+							)	
 			);
 	}
 }

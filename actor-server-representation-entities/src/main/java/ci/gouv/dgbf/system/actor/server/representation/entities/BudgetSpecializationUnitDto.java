@@ -14,6 +14,8 @@ public class BudgetSpecializationUnitDto extends AbstractIdentifiableSystemScala
 	private static final long serialVersionUID = 1L;
 	
 	private String sectionIdentifier;
+	private String sectionCodeName;
+	private SectionDto section;
 	
 	@Override
 	public BudgetSpecializationUnitDto setIdentifier(String identifier) {

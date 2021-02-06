@@ -76,6 +76,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
+				return (T) BudgetSpecializationUnitQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(ActivityQuerier.getInstance().isOwner(arguments)))
 				return (T) ActivityQuerier.getInstance().readOne(arguments);
 			

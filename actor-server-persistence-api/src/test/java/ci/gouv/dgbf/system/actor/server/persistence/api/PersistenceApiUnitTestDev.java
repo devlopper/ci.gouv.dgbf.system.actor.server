@@ -18,10 +18,12 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -37,9 +39,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
@@ -56,6 +60,32 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void activity_readByIdentifierForUI(){
+		Activity activity = ActivityQuerier.getInstance().readByIdentifierForUI("ACTIVITE13002010016");
+		System.out.println(activity.getSectionCodeName());
+		System.out.println(activity.getBudgetSpecializationUnitCodeName());
+		System.out.println(activity.getActionCodeName());
+		System.out.println(activity.getExpenditureNatureCodeName());
+		System.out.println(activity.getCategoryCodeName());
+	}
+	
+	@Test
+	public void budgetSpecializationUnit_readByIdentifierWithCodesNamesForUI(){
+		BudgetSpecializationUnit budgetSpecializationUnit = BudgetSpecializationUnitQuerier.getInstance().readByIdentifierWithCodesNamesForUI("USB661a0014-612c-4ac0-8934-495be741c5ea");
+		System.out.println(budgetSpecializationUnit.getSection());
+	}
+	
+	@Test
+	public void activity_readByIdentifierWithCodesNamesForUI(){
+		Activity activity = ActivityQuerier.getInstance().readByIdentifierWithCodesNamesForUI("ACTIVITE13002010016");
+		System.out.println(activity.getSection());
+		System.out.println(activity.getBudgetSpecializationUnit());
+		System.out.println(activity.getAction());
+		System.out.println(activity.getExpenditureNature());
+		System.out.println(activity.getCategory());
 	}
 	
 	@Test

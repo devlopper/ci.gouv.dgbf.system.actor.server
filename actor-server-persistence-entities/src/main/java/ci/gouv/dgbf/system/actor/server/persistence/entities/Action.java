@@ -38,6 +38,11 @@ public class Action extends AbstractIdentifiableSystemScalarStringIdentifiableBu
 		return (Action) super.setCode(code);
 	}
 	
+	@Override
+	public Action setName(String name) {
+		return (Action) super.setName(name);
+	}
+	
 	public Action setSectionFromIdentifier(String identifier) {
 		if(StringHelper.isBlank(identifier))
 			setSection(null);

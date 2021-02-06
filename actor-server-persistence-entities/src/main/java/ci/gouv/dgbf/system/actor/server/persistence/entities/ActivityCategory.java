@@ -28,6 +28,11 @@ public class ActivityCategory extends AbstractIdentifiableSystemScalarStringIden
 	}
 	
 	@Override
+	public ActivityCategory setName(String name) {
+		return (ActivityCategory) super.setName(name);
+	}
+	
+	@Override
 	public String toString() {
 		return code+" "+name;
 	}

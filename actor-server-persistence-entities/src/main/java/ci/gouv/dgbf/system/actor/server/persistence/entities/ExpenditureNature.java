@@ -32,5 +32,10 @@ public class ExpenditureNature extends AbstractIdentifiableSystemScalarStringIde
 		return (ExpenditureNature) super.setName(name);
 	}
 	
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
+	
 	public static final String TABLE_NAME = "VM_APP_NATURE_DEPENSE";	
 }

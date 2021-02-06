@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -20,6 +21,7 @@ import org.cyk.utility.__kernel__.value.Value;
 import ci.gouv.dgbf.system.actor.server.persistence.api.BudgetSpecializationUnitPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 @Queries(value = {
 		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = BudgetSpecializationUnit.class,name = BudgetSpecializationUnitQuerier.QUERY_NAME_READ
@@ -36,6 +38,9 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 	
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ);
 	Long count();
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI = QueryIdentifierBuilder.getInstance().build(BudgetSpecializationUnit.class, "readByIdentifierWithCodesNamesForUI");
+	BudgetSpecializationUnit readByIdentifierWithCodesNamesForUI(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(BudgetSpecializationUnit.class, "readBySectionIdentifier");
 	Collection<BudgetSpecializationUnit> readBySectionIdentifier(String sectionIdentifier);
@@ -67,6 +72,13 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 		}
 		
 		@Override
+		public BudgetSpecializationUnit readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByIdentifierWithCodesNamesForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_IDENTIFIER));
+			return super.readOne(arguments);
+		}
+		
+		@Override
 		public Collection<BudgetSpecializationUnit> readMany(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER))
 				return readBySectionIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
@@ -89,6 +101,14 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 			if(QUERY_IDENTIFIER_COUNT.equals(arguments.getQuery().getIdentifier()))
 				return count();
 			return super.count(arguments);
+		}
+		
+		@Override
+		public BudgetSpecializationUnit readByIdentifierWithCodesNamesForUI(String identifier) {
+			BudgetSpecializationUnit budgetSpecializationUnit = QueryExecutor.getInstance().executeReadOne(BudgetSpecializationUnit.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
+					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+			budgetSpecializationUnit.setSection(new Section().setCode(StringUtils.substringBefore(budgetSpecializationUnit.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(budgetSpecializationUnit.getSectionCodeName(), " ")));
+			return budgetSpecializationUnit;
 		}
 		
 		@Override
@@ -162,6 +182,17 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 						, "SELECT t.identifier,t.code,t.name FROM BudgetSpecializationUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER
 						+" ORDER BY t.code ASC")
 					.setTupleFieldsNamesIndexesFromFieldsNames(BudgetSpecializationUnit.FIELD_IDENTIFIER,BudgetSpecializationUnit.FIELD_CODE,BudgetSpecializationUnit.FIELD_NAME)
+					
+				,Query.buildSelect(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
+						, "SELECT t.identifier,t.code,t.name"
+								+ ",s.identifier,t.sectionCodeName"
+								+ " FROM BudgetSpecializationUnit t "
+								+ "LEFT JOIN Section s ON s = t.section "
+								+ "WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+					.setTupleFieldsNamesIndexesFromFieldsNames(
+							BudgetSpecializationUnit.FIELD_IDENTIFIER,BudgetSpecializationUnit.FIELD_CODE,BudgetSpecializationUnit.FIELD_NAME
+							,BudgetSpecializationUnit.FIELD_SECTION_IDENTIFIER,BudgetSpecializationUnit.FIELD_SECTION_CODE_NAME
+							)		
 			);
 	}
 }
