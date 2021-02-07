@@ -27,6 +27,7 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
 	@Column(name= COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	@Transient private String sectionAsString;
+	@Transient private String sectionIdentifier;
 	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {

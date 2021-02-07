@@ -107,7 +107,7 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 		public BudgetSpecializationUnit readByIdentifierWithCodesNamesForUI(String identifier) {
 			BudgetSpecializationUnit budgetSpecializationUnit = QueryExecutor.getInstance().executeReadOne(BudgetSpecializationUnit.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
 					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
-			budgetSpecializationUnit.setSection(new Section().setCode(StringUtils.substringBefore(budgetSpecializationUnit.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(budgetSpecializationUnit.getSectionCodeName(), " ")));
+			budgetSpecializationUnit.setSection(new Section().setIdentifier(budgetSpecializationUnit.getSectionIdentifier()).setCode(StringUtils.substringBefore(budgetSpecializationUnit.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(budgetSpecializationUnit.getSectionCodeName(), " ")));
 			return budgetSpecializationUnit;
 		}
 		

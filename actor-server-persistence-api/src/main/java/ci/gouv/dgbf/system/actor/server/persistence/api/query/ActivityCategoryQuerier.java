@@ -21,6 +21,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
 })
 public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<ActivityCategory> {
 
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
+	
 	/* read order by code ascending */
 	String QUERY_NAME_READ = "read";
 	String QUERY_IDENTIFIER_READ = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, QUERY_NAME_READ);
@@ -31,6 +35,15 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 	
 	String QUERY_IDENTIFIER_READ_ALL_FOR_UI = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, "readAllForUI");
 	Collection<ActivityCategory> readAllForUI();
+	
+	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, "readBySectionIdentifierForUI");
+	Collection<ActivityCategory> readBySectionIdentifierForUI(String sectionIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_ADMINISTRATIVE_UNIT_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, "readByAdministrativeUnitIdentifierForUI");
+	Collection<ActivityCategory> readByAdministrativeUnitIdentifierForUI(String administrativeUnitIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(ActivityCategory.class, "readByBudgetSpecializationUnitIdentifierForUI");
+	Collection<ActivityCategory> readByBudgetSpecializationUnitIdentifierForUI(String budgetSpecializationUnitIdentifier);
 	
 	/**/
 	
@@ -51,6 +64,12 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 				return read();
 			if(QUERY_IDENTIFIER_READ_ALL_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readAllForUI();
+			if(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readBySectionIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_BY_ADMINISTRATIVE_UNIT_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByAdministrativeUnitIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByBudgetSpecializationUnitIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER));
 			return super.readMany(arguments);
 		}
 		
@@ -64,6 +83,24 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 		@Override
 		public Collection<ActivityCategory> readAllForUI() {
 			return QueryExecutor.getInstance().executeReadMany(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI);
+		}
+		
+		@Override
+		public Collection<ActivityCategory> readBySectionIdentifierForUI(String sectionIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
+					,PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier);
+		}
+		
+		@Override
+		public Collection<ActivityCategory> readByAdministrativeUnitIdentifierForUI(String administrativeUnitIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_ADMINISTRATIVE_UNIT_IDENTIFIER_FOR_UI
+					,PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER,administrativeUnitIdentifier);
+		}
+		
+		@Override
+		public Collection<ActivityCategory> readByBudgetSpecializationUnitIdentifierForUI(String budgetSpecializationUnitIdentifier) {
+			return QueryExecutor.getInstance().executeReadMany(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI
+					,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,budgetSpecializationUnitIdentifier);
 		}
 		
 		@Override
@@ -84,6 +121,36 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 		Querier.CodableAndNamable.initialize(ActivityCategory.class);
 		QueryHelper.addQueries(Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
 				, "SELECT t.identifier,t.code,t.name FROM ActivityCategory t ORDER BY t.code ASC")
-				.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME));
+				.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME)
+				
+				,Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
+					, "SELECT DISTINCT(t.identifier),t.code,t.name"
+					+" FROM ActivityCategory t"
+					+" LEFT JOIN Activity a ON a.category = t"
+					+" LEFT JOIN Section s ON s = a.section"
+					+" WHERE s.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER
+					+" ORDER BY t.code ASC")
+					.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME)
+				
+				,Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER_FOR_UI
+					, "SELECT DISTINCT(t.identifier),t.code,t.name"
+					+" FROM ActivityCategory t"
+					+" LEFT JOIN Activity a ON a.category = t"
+					+" LEFT JOIN BudgetSpecializationUnit b ON b = a.budgetSpecializationUnit"
+					+" WHERE b.identifier = :"+PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
+					+" ORDER BY t.code ASC")
+					.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME)
+					
+				,Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_BY_ADMINISTRATIVE_UNIT_IDENTIFIER_FOR_UI
+					, "SELECT DISTINCT(t.identifier),t.code,t.name"
+					+" FROM ActivityCategory t"
+					+" LEFT JOIN Activity a ON a.category = t"
+					+" LEFT JOIN AdministrativeUnit au ON au = a.administrativeUnit"
+					+" WHERE au.identifier = :"+PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
+					+" ORDER BY t.code ASC")
+					.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME)		
+				
+			);
+		
 	}
 }

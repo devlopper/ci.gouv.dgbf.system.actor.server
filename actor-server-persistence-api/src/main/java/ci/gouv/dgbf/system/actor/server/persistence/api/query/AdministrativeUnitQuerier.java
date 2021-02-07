@@ -2,8 +2,11 @@ package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
@@ -13,9 +16,12 @@ import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.AdministrativeUnitPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
 public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<AdministrativeUnit> {
 
@@ -40,6 +46,12 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 	String QUERY_IDENTIFIER_COUNT_BY_SECTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS);
 	Long countBySectionsIdentifiers(Collection<String> sectionsIdentifiers);
 	
+	String QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readVisiblesByActorCodeForUI");
+	Collection<AdministrativeUnit> readVisiblesByActorCodeForUI(String actorCode);
+	
+	String QUERY_IDENTIFIER_READ_VISIBLES_BY_SECTION_IDENTIFIER_BY_ACTOR_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readVisiblesBySectionIdentifierByActorCodeForUI");
+	Collection<AdministrativeUnit> readVisiblesBySectionIdentifierByActorCodeForUI(String sectionIdentifier,String actorCode);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<AdministrativeUnit> implements AdministrativeUnitQuerier,Serializable {
@@ -55,6 +67,11 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 				return readBySectionsIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS_FOR_UI))
 				return readBySectionsIdentifiersForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SECTIONS_IDENTIFIERS));
+			if(QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readVisiblesByActorCodeForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
+			if(QUERY_IDENTIFIER_READ_VISIBLES_BY_SECTION_IDENTIFIER_BY_ACTOR_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readVisiblesBySectionIdentifierByActorCodeForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_SECTION_IDENTIFIER)
+						,(String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
 			return super.readMany(arguments);
 			//throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
@@ -102,6 +119,31 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		public Collection<AdministrativeUnit> readBySectionsIdentifiersForUI(Collection<String> sectionsIdentifiers) {
 			return QueryExecutor.getInstance().executeReadMany(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS_FOR_UI, PARAMETER_NAME_SECTIONS_IDENTIFIERS
 					,sectionsIdentifiers);
+		}
+		
+		@Override
+		public Collection<AdministrativeUnit> readVisiblesBySectionIdentifierByActorCodeForUI(String sectionIdentifier,String actorCode) {
+			if(StringHelper.isBlank(actorCode))
+				return null;
+			Collection<Scope> scopes =  ScopeOfTypeAdministrativeUnitQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
+					.setQueryFromIdentifier(ScopeOfTypeAdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER)
+					.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode));
+			if(CollectionHelper.isEmpty(scopes))
+				return null;
+			Collection<AdministrativeUnit> administrativeUnits = __inject__(AdministrativeUnitPersistence.class).readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(scopes));
+			if(StringHelper.isNotBlank(sectionIdentifier))
+				administrativeUnits = administrativeUnits.stream().filter(x -> x.getSection() != null && x.getSection().getIdentifier().equals(sectionIdentifier))
+				.collect(Collectors.toList());
+			return administrativeUnits.stream().map(x -> new AdministrativeUnit().setIdentifier(x.getIdentifier()).setCode(x.getCode()).setName(x.getName())
+					.setSectionIdentifier(x.getSection() == null ? null : x.getSection().getIdentifier()))
+					.collect(Collectors.toList());
+		}
+		
+		@Override
+		public Collection<AdministrativeUnit> readVisiblesByActorCodeForUI(String actorCode) {
+			if(StringHelper.isBlank(actorCode))
+				return null;
+			return readVisiblesBySectionIdentifierByActorCodeForUI(null,actorCode);
 		}
 		
 		@Override

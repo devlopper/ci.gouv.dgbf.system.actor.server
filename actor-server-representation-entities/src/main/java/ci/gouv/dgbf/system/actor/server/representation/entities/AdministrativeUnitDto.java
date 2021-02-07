@@ -16,6 +16,7 @@ public class AdministrativeUnitDto extends AbstractIdentifiableSystemScalarStrin
 	private SectionDto section;
 	private String sectionCodeName;
 	private String sectionAsString;
+	private String sectionIdentifier;
 	
 	@Override
 	public AdministrativeUnitDto setIdentifier(String identifier) {

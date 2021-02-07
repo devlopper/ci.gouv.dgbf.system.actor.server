@@ -36,7 +36,7 @@ public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 	Long count();
 	
 	String QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(Section.class, "readVisiblesByActorCodeForUI");
-	Collection<Section> readVisiblesByActorCodeForUI(String actorCode);
+	Collection<Section> readVisiblesByActorCodeForUI(String actorCode/*,Boolean budgetSpecializationUnits,Boolean administrationUnits*/);
 	
 	/**/
 	
@@ -52,7 +52,7 @@ public interface SectionQuerier extends Querier.CodableAndNamable<Section> {
 		}
 		
 		@Override
-		public Collection<Section> readVisiblesByActorCodeForUI(String actorCode) {
+		public Collection<Section> readVisiblesByActorCodeForUI(String actorCode/*,Boolean budgetSpecializationUnits,Boolean administrationUnits*/) {
 			if(StringHelper.isBlank(actorCode))
 				return null;
 			Collection<Scope> scopes =  ScopeOfTypeSectionQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()

@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
@@ -18,6 +19,7 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
@@ -27,6 +29,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializati
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterPrivilegesQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormAttributeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
@@ -40,11 +43,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
@@ -53,6 +58,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
 	private static final long serialVersionUID = 1L;
@@ -60,6 +66,39 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void expenditureNature_readBySectionIdentifierForUI(){
+		Collection<Section> sections = SectionQuerier.getInstance().readAllForUI();
+		if(CollectionHelper.isEmpty(sections))
+			return;
+		for(Section section : sections) {
+			Collection<ExpenditureNature> expenditureNatures = ExpenditureNatureQuerier.getInstance().readBySectionIdentifierForUI(section.getIdentifier());
+			System.out.println(section.getCode()+" : "+expenditureNatures.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+		}
+	}
+	
+	@Test
+	public void expenditureNature_readByBudgetSpecializationUnitIdentifierForUI(){
+		Collection<BudgetSpecializationUnit> budgetSpecializationUnits = BudgetSpecializationUnitQuerier.getInstance().read();
+		if(CollectionHelper.isEmpty(budgetSpecializationUnits))
+			return;
+		for(BudgetSpecializationUnit budgetSpecializationUnit : budgetSpecializationUnits) {
+			Collection<ExpenditureNature> expenditureNatures = ExpenditureNatureQuerier.getInstance().readByBudgetSpecializationUnitIdentifierForUI(budgetSpecializationUnit.getIdentifier());
+			System.out.println(budgetSpecializationUnit.getCode()+" : "+(expenditureNatures == null ? null : expenditureNatures.stream().map(x -> x.getCode()).collect(Collectors.toList())));
+		}
+	}
+	
+	@Test
+	public void activityCategory_readBySectionIdentifierForUI(){
+		Collection<Section> sections = SectionQuerier.getInstance().readAllForUI();
+		if(CollectionHelper.isEmpty(sections))
+			return;
+		for(Section section : sections) {
+			Collection<ActivityCategory> activityCategories = ActivityCategoryQuerier.getInstance().readBySectionIdentifierForUI(section.getIdentifier());
+			System.out.println(section.getCode()+" : "+(activityCategories == null ? null : activityCategories.stream().map(x -> x.getCode()).collect(Collectors.toList())));
+		}
 	}
 	
 	@Test

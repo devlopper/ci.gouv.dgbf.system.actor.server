@@ -43,6 +43,7 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	@Transient private String sectionIdentifier;
 	@Transient private String budgetSpecializationUnitIdentifier;
+	@Transient private String actionIdentifier;
 	@Transient private String expenditureNatureIdentifier;
 	@Transient private String categoryIdentifier;
 	@Transient private String administrativeUnitIdentifier;

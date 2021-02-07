@@ -119,11 +119,11 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 		public Activity readByIdentifierWithCodesNamesForUI(String identifier) {
 			Activity activity = QueryExecutor.getInstance().executeReadOne(Activity.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
 					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
-			activity.setSection(new Section().setCode(StringUtils.substringBefore(activity.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getSectionCodeName(), " ")));
-			activity.setBudgetSpecializationUnit(new BudgetSpecializationUnit().setCode(StringUtils.substringBefore(activity.getBudgetSpecializationUnitCodeName(), " ")).setName(StringUtils.substringAfter(activity.getBudgetSpecializationUnitCodeName(), " ")));
-			activity.setAction(new Action().setCode(StringUtils.substringBefore(activity.getActionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getActionCodeName(), " ")));
-			activity.setExpenditureNature(new ExpenditureNature().setCode(StringUtils.substringBefore(activity.getExpenditureNatureCodeName(), " ")).setName(StringUtils.substringAfter(activity.getExpenditureNatureCodeName(), " ")));
-			activity.setCategory(new ActivityCategory().setCode(StringUtils.substringBefore(activity.getCategoryCodeName(), " ")).setName(StringUtils.substringAfter(activity.getCategoryCodeName(), " ")));
+			activity.setSection(new Section().setIdentifier(activity.getSectionIdentifier()).setCode(StringUtils.substringBefore(activity.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getSectionCodeName(), " ")));
+			activity.setBudgetSpecializationUnit(new BudgetSpecializationUnit().setIdentifier(activity.getBudgetSpecializationUnitIdentifier()).setCode(StringUtils.substringBefore(activity.getBudgetSpecializationUnitCodeName(), " ")).setName(StringUtils.substringAfter(activity.getBudgetSpecializationUnitCodeName(), " ")));
+			activity.setAction(new Action().setIdentifier(activity.getActionIdentifier()).setCode(StringUtils.substringBefore(activity.getActionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getActionCodeName(), " ")));
+			activity.setExpenditureNature(new ExpenditureNature().setIdentifier(activity.getExpenditureNatureIdentifier()).setCode(StringUtils.substringBefore(activity.getExpenditureNatureCodeName(), " ")).setName(StringUtils.substringAfter(activity.getExpenditureNatureCodeName(), " ")));
+			activity.setCategory(new ActivityCategory().setIdentifier(activity.getCategoryIdentifier()).setCode(StringUtils.substringBefore(activity.getCategoryCodeName(), " ")).setName(StringUtils.substringAfter(activity.getCategoryCodeName(), " ")));
 			return activity;
 		}
 		
