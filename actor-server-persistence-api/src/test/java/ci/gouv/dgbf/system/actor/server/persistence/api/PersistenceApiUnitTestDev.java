@@ -121,6 +121,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void activity_readByIdentifierWithCodesNamesForUI(){
 		Activity activity = ActivityQuerier.getInstance().readByIdentifierWithCodesNamesForUI("ACTIVITE13002010016");
 		System.out.println(activity.getSection());
+		System.out.println(activity.getAdministrativeUnit());
 		System.out.println(activity.getBudgetSpecializationUnit());
 		System.out.println(activity.getAction());
 		System.out.println(activity.getExpenditureNature());
@@ -132,6 +133,13 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		System.out.println(AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(new QueryExecutorArguments().setNumberOfTuples(1)
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(AdministrativeUnit.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE))));
+	}
+	
+	@Test
+	public void administrativeUnit_readVisibles_christian(){
+		for(Section section : SectionQuerier.getInstance().read())
+			System.out.println(section.getCode()+" : "
+					+CollectionHelper.getSize(AdministrativeUnitQuerier.getInstance().readVisiblesBySectionIdentifierByActorCodeForUI(section.getIdentifier(), "christian")));
 	}
 	
 	@Test

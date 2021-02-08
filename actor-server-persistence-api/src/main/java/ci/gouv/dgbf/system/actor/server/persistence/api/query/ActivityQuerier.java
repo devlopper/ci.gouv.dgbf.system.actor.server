@@ -16,6 +16,7 @@ import org.cyk.utility.__kernel__.value.Value;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
@@ -120,6 +121,7 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 			Activity activity = QueryExecutor.getInstance().executeReadOne(Activity.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
 					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
 			activity.setSection(new Section().setIdentifier(activity.getSectionIdentifier()).setCode(StringUtils.substringBefore(activity.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getSectionCodeName(), " ")));
+			activity.setAdministrativeUnit(new AdministrativeUnit().setIdentifier(activity.getAdministrativeUnitIdentifier()).setCode(StringUtils.substringBefore(activity.getAdministrativeUnitCodeName(), " ")).setName(StringUtils.substringAfter(activity.getAdministrativeUnitCodeName(), " ")));
 			activity.setBudgetSpecializationUnit(new BudgetSpecializationUnit().setIdentifier(activity.getBudgetSpecializationUnitIdentifier()).setCode(StringUtils.substringBefore(activity.getBudgetSpecializationUnitCodeName(), " ")).setName(StringUtils.substringAfter(activity.getBudgetSpecializationUnitCodeName(), " ")));
 			activity.setAction(new Action().setIdentifier(activity.getActionIdentifier()).setCode(StringUtils.substringBefore(activity.getActionCodeName(), " ")).setName(StringUtils.substringAfter(activity.getActionCodeName(), " ")));
 			activity.setExpenditureNature(new ExpenditureNature().setIdentifier(activity.getExpenditureNatureIdentifier()).setCode(StringUtils.substringBefore(activity.getExpenditureNatureCodeName(), " ")).setName(StringUtils.substringAfter(activity.getExpenditureNatureCodeName(), " ")));
@@ -260,6 +262,7 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 				,Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
 						, "SELECT t.identifier,t.code,t.name"
 								+ ",s.identifier,t.sectionCodeName"
+								+ ",au.identifier,t.administrativeUnitCodeName"
 								+ ",b.identifier,t.budgetSpecializationUnitCodeName"
 								+ ",a.identifier,t.actionCodeName"
 								+ ",en.identifier,t.expenditureNatureCodeName"
@@ -267,6 +270,7 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 								+ " FROM Activity t "
 								+ "LEFT JOIN Action a ON a = t.action "
 								+ "LEFT JOIN BudgetSpecializationUnit b ON b = t.budgetSpecializationUnit "
+								+ "LEFT JOIN AdministrativeUnit au ON au = t.administrativeUnit "
 								+ "LEFT JOIN Section s ON s = t.section "
 								+ "LEFT JOIN ExpenditureNature en ON en = t.expenditureNature "
 								+ "LEFT JOIN ActivityCategory ac ON ac = t.category "
@@ -274,6 +278,7 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 					.setTupleFieldsNamesIndexesFromFieldsNames(
 							Activity.FIELD_IDENTIFIER,Activity.FIELD_CODE,Activity.FIELD_NAME
 							,Activity.FIELD_SECTION_IDENTIFIER,Activity.FIELD_SECTION_CODE_NAME
+							,Activity.FIELD_ADMINISTRATIVE_UNIT_IDENTIFIER,Activity.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
 							,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,Activity.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME
 							,Activity.FIELD_ACTION_IDENTIFIER,Activity.FIELD_ACTION_CODE_NAME
 							,Activity.FIELD_EXPENDITURE_NATURE_IDENTIFIER,Activity.FIELD_EXPENDITURE_NATURE_CODE_NAME

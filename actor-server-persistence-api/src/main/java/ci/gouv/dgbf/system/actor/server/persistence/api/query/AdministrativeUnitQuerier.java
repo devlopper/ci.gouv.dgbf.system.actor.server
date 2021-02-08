@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.Querier;
 import org.cyk.utility.__kernel__.persistence.query.Query;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
@@ -19,14 +21,17 @@ import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
-import ci.gouv.dgbf.system.actor.server.persistence.api.AdministrativeUnitPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<AdministrativeUnit> {
 
 	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readByIdentifierWithCodesNamesForUI");
+	AdministrativeUnit readByIdentifierWithCodesNamesForUI(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readBySectionIdentifier");
 	Collection<AdministrativeUnit> readBySectionIdentifier(String sectionIdentifier);
@@ -56,6 +61,13 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<AdministrativeUnit> implements AdministrativeUnitQuerier,Serializable {
 
+		@Override
+		public AdministrativeUnit readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByIdentifierWithCodesNamesForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_IDENTIFIER));
+			return super.readOne(arguments);
+		}
+		
 		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<AdministrativeUnit> readMany(QueryExecutorArguments arguments) {
@@ -85,6 +97,14 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 				return countBySectionIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
 			return super.count(arguments);
 			//throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
+		}
+		
+		@Override
+		public AdministrativeUnit readByIdentifierWithCodesNamesForUI(String identifier) {
+			AdministrativeUnit administrativeUnit = QueryExecutor.getInstance().executeReadOne(AdministrativeUnit.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
+					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+			administrativeUnit.setSection(new Section().setIdentifier(administrativeUnit.getSectionIdentifier()).setCode(StringUtils.substringBefore(administrativeUnit.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(administrativeUnit.getSectionCodeName(), " ")));
+			return administrativeUnit;
 		}
 		
 		@Override
@@ -130,7 +150,7 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 					.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode));
 			if(CollectionHelper.isEmpty(scopes))
 				return null;
-			Collection<AdministrativeUnit> administrativeUnits = __inject__(AdministrativeUnitPersistence.class).readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(scopes));
+			Collection<AdministrativeUnit> administrativeUnits = EntityFinder.getInstance().findMany(AdministrativeUnit.class, FieldHelper.readSystemIdentifiersAsStrings(scopes));
 			if(StringHelper.isNotBlank(sectionIdentifier))
 				administrativeUnits = administrativeUnits.stream().filter(x -> x.getSection() != null && x.getSection().getIdentifier().equals(sectionIdentifier))
 				.collect(Collectors.toList());
@@ -186,7 +206,18 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 			
 			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS_FOR_UI
 					, "SELECT t.identifier,t.code,t.name FROM AdministrativeUnit t WHERE t.section.identifier IN :"+PARAMETER_NAME_SECTIONS_IDENTIFIERS+" ORDER BY t.code ASC")
-				.setTupleFieldsNamesIndexesFromFieldsNames(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)	
+				.setTupleFieldsNamesIndexesFromFieldsNames(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)
+			
+			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
+					, "SELECT t.identifier,t.code,t.name"
+							+ ",s.identifier,t.sectionCodeName"
+							+ " FROM AdministrativeUnit t "
+							+ "LEFT JOIN Section s ON s = t.section "
+							+ "WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
+				.setTupleFieldsNamesIndexesFromFieldsNames(
+						AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME
+						,AdministrativeUnit.FIELD_SECTION_IDENTIFIER,AdministrativeUnit.FIELD_SECTION_CODE_NAME
+						)	
 		);
 	}
 }

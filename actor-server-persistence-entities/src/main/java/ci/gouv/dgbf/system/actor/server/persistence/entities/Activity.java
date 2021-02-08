@@ -111,6 +111,7 @@ public class Activity extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";
 	public static final String FIELD_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
 	public static final String FIELD_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
+	public static final String FIELD_ADMINISTRATIVE_UNIT_CODE_NAME = "administrativeUnitCodeName";
 	
 	public static final String TABLE_NAME = "VM_APP_ACTIVITE";
 	

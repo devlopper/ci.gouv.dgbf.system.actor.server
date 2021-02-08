@@ -52,7 +52,13 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 		return this;
 	}
 	
+	@Override
+	public String toString() {
+		return code+" "+name;
+	}
+	
 	public static final String FIELD_SECTION = "section";
+	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	
