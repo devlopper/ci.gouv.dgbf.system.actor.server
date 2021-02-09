@@ -112,6 +112,24 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
+	public void activity_readWhereFilterForUI_UAf619e656_eeb6_4d18_a818_f1555dc6d186(){
+		Collection<Activity> activities = ActivityQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
+				.addFilterFieldsValues(
+						ActivityQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER,"UAf619e656-eeb6-4d18-a818-f1555dc6d186"
+						//,ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,null
+						//,ActivityQuerier.PARAMETER_NAME_ACTION_IDENTIFIER,null
+						//,ActivityQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,null
+						//,ActivityQuerier.PARAMETER_NAME_CATEGORY_IDENTIFIER,null
+					));
+		if(CollectionHelper.isEmpty(activities))
+			return;
+		activities.forEach(activity -> {
+			System.out.println(activity);
+		});		
+	}
+	
+	@Test
 	public void budgetSpecializationUnit_readByIdentifierWithCodesNamesForUI(){
 		BudgetSpecializationUnit budgetSpecializationUnit = BudgetSpecializationUnitQuerier.getInstance().readByIdentifierWithCodesNamesForUI("USB661a0014-612c-4ac0-8934-495be741c5ea");
 		System.out.println(budgetSpecializationUnit.getSection());

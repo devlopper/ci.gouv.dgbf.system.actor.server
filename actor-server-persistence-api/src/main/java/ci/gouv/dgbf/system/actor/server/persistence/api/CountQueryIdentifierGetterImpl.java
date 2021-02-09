@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -58,6 +59,9 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 		
 		if(BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI.equals(readQueryIdentifier))
 			return BudgetSpecializationUnitQuerier.QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER;
+		
+		if(ActivityQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
+			return ActivityQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
 		
 		if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL.equals(readQueryIdentifier))
 			return AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
