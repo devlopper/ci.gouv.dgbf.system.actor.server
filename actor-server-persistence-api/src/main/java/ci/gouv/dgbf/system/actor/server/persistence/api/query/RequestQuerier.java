@@ -77,6 +77,7 @@ public interface RequestQuerier extends Querier {
 	
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeunit";
 	
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeunitIdentifier";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER = PARAMETER_NAME_ADMINISTRATIVE_UNIT+"SectionIdentifier";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER+"Nullable";
 	
@@ -262,7 +263,6 @@ public interface RequestQuerier extends Querier {
 		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsCollectionable,Boolean budgetariesScopeFunctionsStringifiable) {
 			if(request == null)
 				return;
-			
 			if(request.getCreationDate() != null) {
 				request.setCreationDateAsString(TimeHelper.formatLocalDateTime(request.getCreationDate(),"dd/MM/yyyy à HH:mm"));
 				request.setCreationDate(null);
@@ -293,6 +293,7 @@ public interface RequestQuerier extends Querier {
 			if(request.getActor() != null)
 				request.setActorCode(request.getActor().getCode());
 			request.setActorNames(Identity.getNames((String)FieldHelper.readName(request.getCivility()), request.getFirstName(), request.getLastNames()));
+			
 			if(request.getType() != null) {
 				request.setTypeAsString(request.getType().getName());
 				IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
@@ -302,6 +303,7 @@ public interface RequestQuerier extends Querier {
 						request.setSectionAsString(request.getAdministrativeUnit().getSection().toString());
 				}
 			}
+			
 			if(request.getActOfAppointmentSignatureDate() != null) {
 				request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
 				request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
@@ -534,14 +536,14 @@ public interface RequestQuerier extends Querier {
 							,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
 							,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
 					,fields("a",Actor.FIELD_CODE),concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
-					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au")
+					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au"),concatCodeName("section")
 					)
 					,getReadWhereFilterFromWhere(),getOrderBy())
 			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES
 					,Request.FIELD_REGISTRATION_NUMBER,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
 					,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING
 					,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING,Request.FIELD_STATUS_AS_STRING
-					,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING)
+					,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING,Request.FIELD_SECTION_AS_STRING)
 				
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Long.class
@@ -579,6 +581,7 @@ public interface RequestQuerier extends Querier {
 				,"LEFT JOIN RequestType rt ON rt = t.type"
 				,"LEFT JOIN RequestStatus rs ON rs = t.status"
 				,"LEFT JOIN AdministrativeUnit au ON au = t.administrativeUnit"
+				,"LEFT JOIN Section section ON section = au.section"
 				,"LEFT JOIN RequestDispatchSlip rds ON rds = t.dispatchSlip"
 				,getReadWhereFilterWhere()
 			);
@@ -607,7 +610,7 @@ public interface RequestQuerier extends Querier {
 				
 				/* Administrative Unit Section */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER_NULLABLE)
-						,"au.section.identifier = :"+PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER))
+						,"section.identifier = :"+PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER))
 				
 				/* Processing date */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))

@@ -1,10 +1,15 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
+import java.util.Collection;
+
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class PersistenceApiUnitTestTesting extends AbstractPersistenceApiUnitTestValidate {
@@ -13,6 +18,17 @@ public class PersistenceApiUnitTestTesting extends AbstractPersistenceApiUnitTes
 	@Override
 	protected String getPersistenceUnitName() {
 		return "test";
+	}
+	
+	@Test
+	public void assignments_readWhereFilter_ACTIVITE22082030014(){
+		Collection<Assignments> collection = 
+				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, "ACTIVITE22082030014"));
+		System.out.println("Size : "+CollectionHelper.getSize(collection));
+		if(collection != null)
+			collection.forEach(x -> {
+				System.out.println(x.getExecutionImputation().getActivityCode()+" - "+x.getExecutionImputation().getEconomicNatureCode());
+			});
 	}
 	
 	@Test

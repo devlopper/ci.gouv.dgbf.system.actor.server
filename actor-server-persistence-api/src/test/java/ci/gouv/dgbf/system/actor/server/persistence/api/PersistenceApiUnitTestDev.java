@@ -345,6 +345,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getCreationDateAsString());
 		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
 		System.out.println(request.getAdministrativeUnitAsString());
+		System.out.println(request.getSectionAsString());
 		System.out.println(request.getMobilePhoneNumber());
 	}
 	
