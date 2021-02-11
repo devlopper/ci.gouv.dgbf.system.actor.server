@@ -44,14 +44,14 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	}
 	
 	@Override
-	public Response deriveAllValues(Boolean overridable,String actorCode) {
+	public Response deriveAllValues(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
 					@Override
 					public void run() {
-						__inject__(AssignmentsBusiness.class).deriveAllValues(overridable,actorCode);
+						__inject__(AssignmentsBusiness.class).deriveAllValues(holdersSettable,assistantsSettable,overridable,actorCode);
 					}
 				};
 			}

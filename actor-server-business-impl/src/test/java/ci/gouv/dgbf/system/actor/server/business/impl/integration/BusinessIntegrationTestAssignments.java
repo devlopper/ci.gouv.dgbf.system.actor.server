@@ -71,21 +71,21 @@ public class BusinessIntegrationTestAssignments extends AbstractPersistenceArqui
 		//__inject__(AssignmentsBusiness.class).applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
 	}
 	
-	@Test
+	//@Test
 	public void assignments_deriveAllValues(){
 		try {
-			__inject__(AssignmentsBusiness.class).deriveAllValues(null,null);
+			__inject__(AssignmentsBusiness.class).deriveAllValues(null,null,null,null);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
 	
-	//@Test
+	@Test
 	public void assignments_deriveValues(){
 		Assignments assignments = EntityFinder.getInstance().find(Assignments.class, "294a1375-0419-4235-9e80-ccaa829eae13");
 		Collection<Assignments> collection = List.of(assignments);
 		try {
-			__inject__(AssignmentsBusiness.class).deriveValues(collection,null,null);
+			__inject__(AssignmentsBusiness.class).deriveValues(collection,null,Boolean.TRUE,null,null);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}

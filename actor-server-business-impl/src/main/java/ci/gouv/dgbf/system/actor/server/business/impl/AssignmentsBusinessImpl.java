@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.cyk.utility.__kernel__.business.EntityCreator;
 import org.cyk.utility.__kernel__.business.EntityUpdater;
 import org.cyk.utility.__kernel__.business.TransactionResult;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
@@ -28,6 +30,7 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AssignmentsPersistence;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountingServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
@@ -96,7 +99,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			LogHelper.logInfo(String.format("%s imputation(s) à initialiser", numberOfExecutionImputations), getClass());
 			if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 				break;
-			initialize(Boolean.TRUE,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices,transactionResult);
+			initialize(Boolean.TRUE,Boolean.TRUE,Boolean.TRUE,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices,transactionResult);
 			System.gc();
 			//break;
 		}while(true);
@@ -115,7 +118,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 
 	@Override
 	@Transactional
-	public TransactionResult deriveValues(Collection<Assignments> collection, Boolean overridable,String actorCode) {
+	public TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable,String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("affectations", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
 		
@@ -146,7 +149,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		Collection<AccountingService> accountingServices = AccountingServiceQuerier.getInstance().readAllForAssignmentsInitialization();
 		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",accountingServices.size()), getClass());
 		
-		deriveValues(collection,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		__persistence__.updateMany(collection);
 		transactionResult.setNumberOfUpdateFromSavables(collection);
 		transactionResult.log(getClass());
@@ -154,8 +157,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	}
 	
 	@Override
-	public TransactionResult deriveAllValues(Boolean overridable,String actorCode) {
+	public TransactionResult deriveAllValues(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode) {
 		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
+		LogHelper.logInfo(String.format("Dériver les valeurs. titulaire=%s , assistant=%s , écraser=%s",holdersSettable,assistantsSettable,overridable), getClass());
 		
 		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
@@ -199,14 +203,14 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("Read batch size = %s",DERIVE_VALUES_READ_BATCH_SIZE), getClass());
 		
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			deriveAllValues(overridable,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices
+			deriveAllValues(holdersSettable,assistantsSettable,overridable,actorCode,scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices
 					, queryExecutorArguments.setFirstTupleIndex(index * DERIVE_VALUES_READ_BATCH_SIZE),transactionResult);
 		}		
 		transactionResult.log(getClass());
 		return transactionResult;
 	}
 	
-	private void deriveAllValues(Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions
+	private void deriveAllValues(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
@@ -215,7 +219,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(collection))
 			return;
-		deriveValues(collection,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		t = System.currentTimeMillis();
 		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
 		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
@@ -227,7 +231,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		collection = null;
 	}
 	
-	private void deriveValues(Collection<Assignments> collection,Boolean overridable,String actorCode,String functionality,Collection<ScopeFunction> scopeFunctions
+	private void deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,String functionality,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices) {
 		if(CollectionHelper.isEmpty(collection))
@@ -237,12 +241,12 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		collection.parallelStream().forEach(assignments -> {
 			assignments.set__auditWho__(actorCode);
 			assignments.set__auditFunctionality__(functionality);
-			setScopeFunctions(assignments,overridable, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
+			setScopeFunctions(assignments,holdersSettable,assistantsSettable,overridable, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
 		});
 		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) dérivée(s) en %s",collection.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 	}
 	
-	private void initialize(Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
+	private void initialize(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
 			,Collection<FinancialControllerService> financialControllerServices,Collection<AccountingService> accountingServices
 			,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
@@ -261,7 +265,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("\tLigne(s) instantiée(s) en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		executionImputations.clear();
 		
-		deriveValues(collection,overridable,actorCode,"initialisation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"initialisation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
 		
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
@@ -275,7 +279,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		
 	}
 	
-	private static void setScopeFunctions(Assignments assignments,Boolean overridable,Collection<ScopeFunction> scopeFunctions
+	private static void setScopeFunctions(Assignments assignments,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices) {
 		String managerCode = assignments.getExecutionImputation().getManagerCode();
@@ -285,32 +289,33 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			LogHelper.logWarning(String.format("Aucun gestionnaire trouvé sur la ligne %s",assignments.getExecutionImputation().getReferencedIdentifier()), AssignmentsBusinessImpl.class);
 			return;
 		}
-		if(assignments.getCreditManagerHolder() == null || Boolean.TRUE.equals(overridable))
-			assignments.setCreditManagerHolder(findCreditManagerHolderScopeFunction(managerCode, scopeFunctions));
-		if(assignments.getCreditManagerAssistant() == null || Boolean.TRUE.equals(overridable))
-			assignments.setCreditManagerAssistant(findAssistantScopeFunction(assignments.getCreditManagerHolder(),Function.CODE_CREDIT_MANAGER_ASSISTANT, scopeFunctions));
-		
-		if(assignments.getAuthorizingOfficerHolder() == null || Boolean.TRUE.equals(overridable))
-			assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceHolderScopeFunction(managerCode
-				,assignments.getExecutionImputation().getManagerLocalityCode()
-				,assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
-				,authorizingOfficerServices, scopeFunctions));		
-		if(assignments.getAuthorizingOfficerAssistant() == null || Boolean.TRUE.equals(overridable))
-			assignments.setAuthorizingOfficerAssistant(findAssistantScopeFunction(assignments.getAuthorizingOfficerHolder(),Function.CODE_AUTHORIZING_OFFICER_ASSISTANT, scopeFunctions));
-		
-		if(assignments.getFinancialControllerHolder() == null || Boolean.TRUE.equals(overridable))
-			assignments.setFinancialControllerHolder(findFinancialControllerServiceHolderScopeFunction(managerCode
-				,assignments.getExecutionImputation().getSectionCode()
-				,assignments.getExecutionImputation().getManagerLocalityCode(), financialControllerServices, scopeFunctions));
-		if(assignments.getFinancialControllerAssistant() == null || Boolean.TRUE.equals(overridable))
-			assignments.setFinancialControllerAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT, scopeFunctions));
-		
-		if(assignments.getAccountingHolder() == null || Boolean.TRUE.equals(overridable))
-			assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(managerCode
-				,assignments.getExecutionImputation().getSectionCode()
-				,assignments.getExecutionImputation().getManagerLocalityCode(), accountingServices, scopeFunctions));
-		if(assignments.getAccountingAssistant() == null || Boolean.TRUE.equals(overridable))
-			assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getAccountingHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
+		if(Boolean.TRUE.equals(holdersSettable)) {
+			if(assignments.getCreditManagerHolder() == null || Boolean.TRUE.equals(overridable))
+				assignments.setCreditManagerHolder(findCreditManagerHolderScopeFunction(managerCode, scopeFunctions));
+			if(assignments.getAuthorizingOfficerHolder() == null || Boolean.TRUE.equals(overridable))
+				assignments.setAuthorizingOfficerHolder(findAuthorizingOfficerServiceHolderScopeFunction(managerCode
+					,assignments.getExecutionImputation().getManagerLocalityCode()
+					,assignments.getExecutionImputation().getBudgetSpecializationUnitCode()
+					,authorizingOfficerServices, scopeFunctions));		
+			if(assignments.getFinancialControllerHolder() == null || Boolean.TRUE.equals(overridable))
+				assignments.setFinancialControllerHolder(findFinancialControllerServiceHolderScopeFunction(managerCode
+					,assignments.getExecutionImputation().getSectionCode()
+					,assignments.getExecutionImputation().getManagerLocalityCode(), financialControllerServices, scopeFunctions));
+			if(assignments.getAccountingHolder() == null || Boolean.TRUE.equals(overridable))
+				assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(managerCode
+					,assignments.getExecutionImputation().getSectionCode()
+					,assignments.getExecutionImputation().getManagerLocalityCode(), accountingServices, scopeFunctions));
+		}
+		if(Boolean.TRUE.equals(assistantsSettable)) {
+			if(assignments.getCreditManagerAssistant() == null || Boolean.TRUE.equals(overridable))
+				assignments.setCreditManagerAssistant(findAssistantScopeFunction(assignments.getCreditManagerHolder(),Function.CODE_CREDIT_MANAGER_ASSISTANT, scopeFunctions));
+			if(assignments.getAuthorizingOfficerAssistant() == null || Boolean.TRUE.equals(overridable))
+				assignments.setAuthorizingOfficerAssistant(findAssistantScopeFunction(assignments.getAuthorizingOfficerHolder(),Function.CODE_AUTHORIZING_OFFICER_ASSISTANT, scopeFunctions));
+			if(assignments.getFinancialControllerAssistant() == null || Boolean.TRUE.equals(overridable))
+				assignments.setFinancialControllerAssistant(findAssistantScopeFunction(assignments.getFinancialControllerHolder(), Function.CODE_FINANCIAL_CONTROLLER_ASSISTANT, scopeFunctions));
+			if(assignments.getAccountingAssistant() == null || Boolean.TRUE.equals(overridable))
+				assignments.setAccountingAssistant(findAssistantScopeFunction(assignments.getAccountingHolder(), Function.CODE_ACCOUNTING_ASSISTANT, scopeFunctions));
+		}
 	}
 	
 	private static ScopeFunction findCreditManagerHolderScopeFunction(String managerCode,Collection<ScopeFunction> scopeFunctions) {
@@ -322,12 +327,17 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return null;
 	}
 	
+	private static String computeAssistantCodeFromHolderCode(String holderCode,Integer index) {
+		return "A"+index+holderCode.substring(2)+"0";
+	}
+	
 	private static ScopeFunction findAssistantScopeFunction(ScopeFunction holder,String assistantFunctionCode,Collection<ScopeFunction> scopeFunctions) {
 		if(holder == null)
 			return null;
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getCode().substring(2).equals(holder.getCode().substring(2)+"0"))
+			if(scopeFunction.getFunctionAsString().equals(assistantFunctionCode) && scopeFunction.getCode().substring(2).equals(holder.getCode().substring(2)+"0")) {
 				return scopeFunction;
+			}
 		}
 		return null;
 	}
@@ -504,15 +514,74 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
+		Collection<Assignments> database = __persistence__.readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(collection));
 		collection.forEach(x -> {
 			x.set__auditFunctionality__("Modification");
+			Assignments origin = CollectionHelper.isEmpty(database) ? null 
+					: CollectionHelper.getFirst(database.stream().filter(y -> y.getIdentifier().equals(x.getIdentifier())).collect(Collectors.toList()));
+			
+			if(x.getCreditManagerHolder() == null) {
+				x.setCreditManagerAssistant(null);
+			}else {				
+				if(origin != null && !x.getCreditManagerHolder().equals(origin.getCreditManagerHolder())) {
+					String assistantCode = computeAssistantCodeFromHolderCode(x.getCreditManagerHolder().getCode(),1);
+					if(StringHelper.isNotBlank(assistantCode)) {
+						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+						if(assistant != null) {
+							x.setCreditManagerAssistant(assistant);
+						}
+					}
+				}
+			}
+			
+			if(x.getAuthorizingOfficerHolder() == null) {
+				x.setAuthorizingOfficerAssistant(null);
+			}else {
+				if(origin != null && !x.getAuthorizingOfficerHolder().equals(origin.getAuthorizingOfficerHolder())) {
+					String assistantCode = computeAssistantCodeFromHolderCode(x.getAuthorizingOfficerHolder().getCode(),2);
+					if(StringHelper.isNotBlank(assistantCode)) {
+						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+						if(assistant != null) {
+							x.setAuthorizingOfficerAssistant(assistant);
+						}
+					}
+				}
+			}
+			
+			if(x.getFinancialControllerHolder() == null) {
+				x.setFinancialControllerAssistant(null);
+			}else {
+				if(origin != null && !x.getFinancialControllerHolder().equals(origin.getFinancialControllerHolder())) {
+					String assistantCode = computeAssistantCodeFromHolderCode(x.getFinancialControllerHolder().getCode(),3);
+					if(StringHelper.isNotBlank(assistantCode)) {
+						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+						if(assistant != null) {
+							x.setFinancialControllerAssistant(assistant);
+						}
+					}
+				}
+			}
+			
+			if(x.getAccountingHolder() == null) {
+				x.setAccountingAssistant(null);
+			}else {
+				if(origin != null && !x.getAccountingHolder().equals(origin.getAccountingHolder())) {
+					String assistantCode = computeAssistantCodeFromHolderCode(x.getAccountingHolder().getCode(),4);
+					if(StringHelper.isNotBlank(assistantCode)) {
+						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+						if(assistant != null) {
+							x.setAccountingAssistant(assistant);
+						}
+					}
+				}
+			}
 		});
 		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
 		transactionResult.setNumberOfUpdateFromSavables(collection);
 		transactionResult.log(getClass());
 		return transactionResult;
 	}
-
+	
 	/**
 	 * La liste ,éligible sur la base du filtre, est modifiée avec les valeurs du modèle.
 	 * NB : Si une valeur est non nulle alors elle sera écrasée si cela à été explicitement spécifié.

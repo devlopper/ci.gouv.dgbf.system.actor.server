@@ -48,7 +48,7 @@ public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringAudite
 	
 	private Filter.Dto filter;
 	private List<String> overridablesFieldsNames;
-	private Boolean overridable;
+	private Boolean overridable,holdersSettable,assistantsSettable;
 	
 	@Override
 	public AssignmentsDto setIdentifier(String identifier) {

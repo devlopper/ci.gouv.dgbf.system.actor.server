@@ -21,11 +21,11 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	String INITIALIZE_MANY = "Assignments.initializeMany";
 	
 	String DERIVE_ALL_VALUES = "Assignments.deriveAllValues";
-	TransactionResult deriveAllValues(Boolean overridable,String actorCode);
+	TransactionResult deriveAllValues(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode);
 	
 	String DERIVE_VALUES = "Assignments.deriveValues";
 	@Transactional
-	TransactionResult deriveValues(Collection<Assignments> collection,Boolean overridable,String actorCode);
+	TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode);
 	
 	String SAVE_SCOPE_FUNCTIONS = "Assignments.saveScopeFunctions";
 	@Transactional

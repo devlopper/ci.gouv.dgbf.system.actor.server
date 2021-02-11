@@ -30,7 +30,9 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Initialiser les affectations")
-	Response deriveAllValues(@QueryParam(QUERY_PARAMETER_OVERRIDABLE) Boolean overridable,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
+	Response deriveAllValues(@QueryParam(QUERY_PARAMETER_NAME_HOLDERS_SETTABLE)Boolean holdersSettable
+			,@QueryParam(QUERY_PARAMETER_NAME_ASSISTANTS_SETTABLE)Boolean assistantsSettable,@QueryParam(QUERY_PARAMETER_OVERRIDABLE) Boolean overridable
+			,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
 	@Path(PATH_APPLY_MODEL)
@@ -86,6 +88,9 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	String TAG = "Affectations";
 	
 	String QUERY_PARAMETER_OVERRIDABLE = "ecraser";
+	String QUERY_PARAMETER_NAME_HOLDERS_SETTABLE = "titulaire";
+	String QUERY_PARAMETER_NAME_ASSISTANTS_SETTABLE = "assistant";
+	
 	
 	static AssignmentsRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(AssignmentsRepresentation.class);
