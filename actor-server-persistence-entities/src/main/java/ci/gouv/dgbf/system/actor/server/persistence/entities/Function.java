@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -119,9 +120,15 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String CODE_ACCOUNTING_HOLDER = "CPT";
 	public static final String CODE_ACCOUNTING_ASSISTANT = formatAssistantCode(CODE_ACCOUNTING_HOLDER);
 	
-	public static final Collection<String> EXECUTION_CODES = List.of(CODE_CREDIT_MANAGER_HOLDER,CODE_CREDIT_MANAGER_ASSISTANT,CODE_AUTHORIZING_OFFICER_HOLDER
-			,CODE_AUTHORIZING_OFFICER_ASSISTANT,CODE_FINANCIAL_CONTROLLER_HOLDER,CODE_FINANCIAL_CONTROLLER_ASSISTANT,CODE_ACCOUNTING_HOLDER,CODE_ACCOUNTING_ASSISTANT);
+	public static final Collection<String> EXECUTION_HOLDERS_CODES = List.of(CODE_CREDIT_MANAGER_HOLDER,CODE_AUTHORIZING_OFFICER_HOLDER
+			,CODE_FINANCIAL_CONTROLLER_HOLDER,CODE_ACCOUNTING_HOLDER);
 	
 	public static final Collection<String> EXECUTION_ASSISTANTS_CODES = List.of(CODE_CREDIT_MANAGER_ASSISTANT,CODE_AUTHORIZING_OFFICER_ASSISTANT
 			,CODE_FINANCIAL_CONTROLLER_ASSISTANT,CODE_ACCOUNTING_ASSISTANT);
+	
+	public static final Collection<String> EXECUTION_CODES = new ArrayList<>();
+	static {
+		EXECUTION_CODES.addAll(EXECUTION_HOLDERS_CODES);
+		EXECUTION_CODES.addAll(EXECUTION_ASSISTANTS_CODES);
+	}
 }

@@ -52,6 +52,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private ScopeTypeFunction scopeTypeFunction;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
+	@Transient private String functionCode;
 	@Transient private String functionAsString;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
@@ -77,6 +78,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
 	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
+	@Transient private String parentAsString;
+	@Transient private Collection<String> childrenCodesNames;
 	
 	@Override
 	public MeaEntity writeStatus() {
@@ -259,7 +262,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	@Override
 	public String toString() {
-		return function+"-"+scope;
+		return code+" "+name;
 	}
 	
 	public static final String FIELD_SCOPE = "scope";
@@ -268,6 +271,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_SCOPE_CODE = "scopeCode";
 	
 	public static final String FIELD_FUNCTION = "function";
+	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	
 	public static final String FIELD_LOCALITY = "locality";

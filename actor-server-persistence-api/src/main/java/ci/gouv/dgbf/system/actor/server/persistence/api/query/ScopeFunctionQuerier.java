@@ -6,6 +6,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concatCodeName;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
@@ -13,6 +14,7 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
@@ -39,6 +41,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFunction> {
 
+	String PARAMETER_NAME_PARENTS_IDENTIFIERS = "parentsIdentifiers";
 	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
@@ -60,6 +63,12 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_COUNT_BY_SCOPES_IDENTIFIERS = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SCOPES_IDENTIFIERS);
 	Long countByScopesIdentifiers(Collection<String> scopesIdentifiers);
 	*/
+	
+	String QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readCodesNamesParentsIdentifiersByIdentifiers");
+	Collection<ScopeFunction> readCodesNamesParentsIdentifiersByIdentifiers(Collection<String> identifiers);
+	
+	String QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readCodesNamesByParentsIdentifiers");
+	Collection<ScopeFunction> readCodesNamesByParentsIdentifiers(Collection<String> identifiers);
 	
 	String QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByFunctionsIdentifiers(Collection<String> functionsIdentifiers);
@@ -155,6 +164,18 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		@Override
 		public Collection<ScopeFunction> read() {
 			return super.read(ScopeFunction.class, QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ));
+		}
+		
+		@Override
+		public Collection<ScopeFunction> readCodesNamesParentsIdentifiersByIdentifiers(Collection<String> identifiers) {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS
+					,PARAMETER_NAME_IDENTIFIERS,identifiers);
+		}
+		
+		@Override
+		public Collection<ScopeFunction> readCodesNamesByParentsIdentifiers(Collection<String> identifiers) {
+			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS
+					,PARAMETER_NAME_PARENTS_IDENTIFIERS,identifiers);
 		}
 		
 		@Override
@@ -293,7 +314,34 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			if(arguments == null)
 				arguments = QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ_WHERE_FILTER_FOR_UI);
 			prepareWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+			if(CollectionHelper.isEmpty(scopeFunctions))
+				return null;
+			Collection<ScopeFunction> scopeFunctionsHolders = scopeFunctions.stream().filter(x -> Function.EXECUTION_HOLDERS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
+			if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
+				Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
+				if(CollectionHelper.isNotEmpty(assistants))
+					scopeFunctionsHolders.forEach(x -> x.setChildrenCodesNames(assistants.stream().filter(c -> x.getIdentifier().equals(c.getParentIdentifier()))
+							.map(c -> c.toString()).collect(Collectors.toList())));
+			}
+			Collection<ScopeFunction> scopeFunctionsAssistants = scopeFunctions.stream().filter(x -> Function.EXECUTION_ASSISTANTS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
+			if(CollectionHelper.isNotEmpty(scopeFunctionsAssistants)) {
+				Collection<String> holdersIdentifiers = scopeFunctionsAssistants.stream().map(x -> x.getParentIdentifier())
+						.filter(x -> StringHelper.isNotBlank(x)).collect(Collectors.toList());
+				if(CollectionHelper.isNotEmpty(holdersIdentifiers)) {
+					Collection<ScopeFunction> holders = readCodesNamesParentsIdentifiersByIdentifiers(holdersIdentifiers);
+					if(CollectionHelper.isNotEmpty(holders)) {
+						for(ScopeFunction assistant : scopeFunctionsAssistants) {						
+							for(ScopeFunction holder : holders)
+								if(holder.getIdentifier().equals(assistant.getParentIdentifier())) {
+									assistant.setParentAsString(holder.toString());
+									break;
+								}
+						}
+					}
+				}					
+			}
+			return scopeFunctions;
 		}
 		
 		@Override
@@ -355,6 +403,14 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, String.format("SELECT t FROM ScopeFunction t WHERE t.codificationDate IS NULL and t.scope.type.identifier IN :%s AND t.function.identifier IN :%s ORDER BY t.function.code ASC,t.scope.code ASC"
 								,PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, PARAMETER_NAME_FUNCTIONS_IDENTIFIERS))
 				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS
+						, "SELECT sf.identifier,sf.code,sf.name,sf.parentIdentifier FROM ScopeFunction sf WHERE sf.identifier IN :"+PARAMETER_NAME_IDENTIFIERS)
+				.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_PARENT_IDENTIFIER)
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS
+						, "SELECT sf.identifier,sf.code,sf.name,sf.parentIdentifier FROM ScopeFunction sf WHERE sf.parentIdentifier IN :"+PARAMETER_NAME_PARENTS_IDENTIFIERS)
+				.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_PARENT_IDENTIFIER)
+				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
 						, "SELECT sf FROM ScopeFunction sf WHERE sf.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES)
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
@@ -363,15 +419,23 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 						, getQueryValueReadWhereCodeOrNameLikeByFunctionCode())
 						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
+				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 						, getQueryValueCountWhereCodeOrNameLikeByFunctionCode())
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WITH_CODES_ONLY_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT sf.code,sf.scope.code,sf.function.code FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)
 						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 						, getQueryValueReadWhereFilter()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
-								,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_SCOPE_AS_STRING,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
+						, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
+						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_PARENT_IDENTIFIER,ScopeFunction.FIELD_SCOPE_AS_STRING
+						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
 				
 				/*
@@ -418,7 +482,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		return jpql(
 				select(				
 					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR)
-					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+					,concatCodeName(ScopeFunction.FIELD_SCOPE),concatCodeName(ScopeFunction.FIELD_FUNCTION)
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()
@@ -429,8 +493,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	static String getQueryValueReadWhereFilterForUI() {
 		return jpql(
 				select(				
-					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR)
-					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR,ScopeFunction.FIELD_PARENT_IDENTIFIER)
+					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()

@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
 
@@ -640,6 +641,21 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,"toumodi DUR");
 		//queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_NAME,"abidjan");
 		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {System.out.println(x.getScopeAsString()+" - "+x.getFunctionAsString());});
+	}
+	
+	@Test
+	public void scopeFunction_readWhereFilterForUI(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"AGC");
+		queryExecutorArguments.setNumberOfTuples(100);
+		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {
+			if(StringHelper.isBlank(x.getParentAsString()))
+				System.out.println("H - "+x+" : "+x.getChildrenCodesNames());
+			else
+				System.out.println("A - "+x+" : "+x.getParentAsString());
+		});
 	}
 	
 	@Test
