@@ -43,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormA
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends EntityReader.AbstractImpl implements Serializable {
@@ -51,6 +52,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 	@Override
 	public <T> T readOne(Class<T> tupleClass, QueryExecutorArguments arguments) {
 		if(arguments != null && arguments.getQuery() != null) {
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ScopeFunction.class)))
+				return (T) ScopeFunctionQuerier.getInstance().readOne(arguments);
+			
 			//TODO to be removed
 			if(ActorQuerier.QUERY_IDENTIFIER_READ_ONE_WITH_ALL_PRIVILEGES_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return (T) ActorQuerier.getInstance().readOneWithAllPrivilegesByIdentifier((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_IDENTIFIER));

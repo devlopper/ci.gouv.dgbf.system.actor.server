@@ -77,6 +77,8 @@ public class CountQueryIdentifierGetterImpl extends CountQueryIdentifierGetter.A
 		
 		if(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return ScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;
+		if(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_PARENTS_IDENTIFIERS_FOR_UI.equals(readQueryIdentifier))
+			return ScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_BY_PARENTS_IDENTIFIERS;
 		
 		if(ClusterQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(readQueryIdentifier))
 			return ClusterQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER;

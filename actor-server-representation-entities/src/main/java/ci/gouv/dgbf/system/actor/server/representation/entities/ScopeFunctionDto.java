@@ -31,6 +31,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	
 	private String parentIdentifier;
 	private String parentAsString;
+	private ArrayList<String> childrenIdentifiers;
 	private ArrayList<String> childrenCodesNames;
 	
 	/**/

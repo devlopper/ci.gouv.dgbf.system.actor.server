@@ -34,6 +34,10 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	String CODIFY_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "ScopeFunction.codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers";
 	void codifyHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
+	String SAVE_ASSISTANTS = "ScopeFunction.saveAssistants";
+	@Transactional
+	void saveAssistants(Collection<ScopeFunction> scopeFunctions);	
+	
 	String DELETE_BY_FUNCTIONS = "ScopeFunction.deleteByFunctions";
 	void deleteByFunctions(Collection<Function> functions);
 	String DELETE_BY_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deleteByFunctionsIdentifiers";

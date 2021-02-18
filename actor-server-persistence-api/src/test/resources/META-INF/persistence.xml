@@ -156,8 +156,14 @@
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
+			<property name="javax.persistence.jdbc.driver" value="fr.ms.log4jdbc.Driver" />
+			<!--
 			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver" />
+			-->			
+		    <property name="javax.persistence.jdbc.url" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
+		    <!--
 		    <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+		    -->
 		   	<property name="javax.persistence.jdbc.user" value="SIIBC_Actor" />
 		  	<property name="javax.persistence.jdbc.password" value="actor" />  
 		  	<property name="hibernate.hbm2ddl.auto" value="validate" />
@@ -238,8 +244,14 @@
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
+			<property name="javax.persistence.jdbc.driver" value="fr.ms.log4jdbc.Driver" />
+			<!--
 			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver" />
+			-->			
+			<property name="javax.persistence.jdbc.url" value="jdbc:log4jdbc:oracle:thin:@10.3.4.21:1522:SIB" />
+			<!--
 		    <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@10.3.4.21:1522:SIB" />
+		    -->
 		   	<property name="javax.persistence.jdbc.user" value="acteur" />
 		  	<property name="javax.persistence.jdbc.password" value="acteur" />  
 		  	<property name="hibernate.hbm2ddl.auto" value="validate" />

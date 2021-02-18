@@ -21,6 +21,11 @@ public class PersistenceApiUnitTestTesting extends AbstractPersistenceApiUnitTes
 	}
 	
 	@Test
+	public void assignments_readWhereFilter(){
+		AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().setNumberOfTuples(1));
+	}
+	
+	@Test
 	public void assignments_readWhereFilter_ACTIVITE22082030014(){
 		Collection<Assignments> collection = 
 				AssignmentsQuerier.getInstance().readWhereFilter(new QueryExecutorArguments().addFilterField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY, "ACTIVITE22082030014"));

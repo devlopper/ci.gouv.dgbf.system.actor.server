@@ -69,7 +69,15 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;	
 	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
 	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
+	
 	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
+	@Transient private ScopeFunction parent;
+	@Transient private String parentCode;
+	@Transient private String parentAsString;
+	@Transient private Byte childrenCount;
+	@Transient private Collection<String> childrenIdentifiers;
+	@Transient private Collection<String> childrenCodesNames;
+	
 	@Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
 	
 	@Column(name = "ETAT") private String __mea_statut__;
@@ -78,8 +86,14 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
 	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
-	@Transient private String parentAsString;
-	@Transient private Collection<String> childrenCodesNames;
+	
+	public Byte incrementChildrenCount() {		
+		if(childrenCount == null)
+			childrenCount = 1;
+		else
+			childrenCount++;
+		return childrenCount;
+	}
 	
 	@Override
 	public MeaEntity writeStatus() {
@@ -226,10 +240,10 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return null;
 	}
 	
-	public static void computeCodeAndName(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,Integer orderNumber,String codeScript,String nameScript) {
+	public static void computeCodeAndName(String scopeTypeCode,Collection<ScopeFunction> scopeFunctions,Integer orderNumber1,Integer orderNumber2,String codeScript,String nameScript) {
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
-		String script = formatScript(scopeTypeCode,orderNumber,codeScript, nameScript);
+		String script = formatScript(scopeTypeCode,orderNumber1,orderNumber2,codeScript, nameScript);
 		Collection<ScriptDto> dtos = ScriptDto.collect(scopeFunctions);
 		LogHelper.logInfo(String.format("Codification du code et du libelle de %s poste(s) en cours...", scopeFunctions.size()), ScopeFunction.class);
 		Long t = System.currentTimeMillis();
@@ -238,15 +252,15 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 				,TimeHelper.formatDuration(System.currentTimeMillis()-t)), ScopeFunction.class);
 	}
 	
-	public static String formatScript(String scopeTypeCode,Integer orderNumber,String codeScript,String nameScript) { 
+	public static String formatScript(String scopeTypeCode,Integer orderNumber1,Integer orderNumber2,String codeScript,String nameScript) { 
 		return StringUtils.join(
 				ScriptHelper.formatFunction("generateCode", ScriptHelper.formatReturnIfNotExist(codeScript), "poste")
 				,ScriptHelper.formatFunction("generateName", ScriptHelper.formatReturnIfNotExist(nameScript), "poste")
 				)
-				+String.format("var numero_ordre = %s;",orderNumber)
+				+String.format("var numero_ordre = %s;",orderNumber1)
+				+String.format("var numero_ordre_2 = %s;",orderNumber2)
 				+ScriptHelper.join(						
 						"var numero_ordre_1 = 0;"
-						,"var numero_ordre_2 = 0;"
 						,"var numero_ordre_3 = 0;"
 			,ScriptHelper.formatLoopForCollection("l", "i", ScriptHelper.join(
 					"l.get(i).scopeFunction.code = generateCode(l.get(i))" //"l.get(i).code = generateCode("+formatGeneratorFunctionArguments("code")+")"
@@ -311,6 +325,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static class ScriptDto {
 		public ScopeFunction scopeFunction;
+		public Holder titulaire;
+		
 		/* Scopes */
 		public CodeName section = new CodeName();
 		public CodeName usb = new CodeName();
@@ -340,6 +356,13 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 				return null;
 			ScriptDto scriptDto = new ScriptDto();
 			scriptDto.scopeFunction = scopeFunction;
+			if(scopeFunction.parent != null) {
+				scriptDto.titulaire = new Holder();
+				scriptDto.titulaire.scopeFunction = scopeFunction.parent;
+				scriptDto.titulaire.code = scopeFunction.parent.code;
+				scriptDto.titulaire.libelle = scopeFunction.parent.name;
+				scriptDto.titulaire.nombreAssistant = scopeFunction.parent.childrenCount;
+			}
 			/* Scopes */
 			CodeName scope = null;
 			if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SECTION))
@@ -410,9 +433,26 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			public String code;
 			public String libelle;
 			
-			@Override
+			/*@Override
 			public String toString() {
 				return code+" "+libelle;
+			}*/
+		}
+		
+		public static class Holder extends CodeName {
+			public ScopeFunction scopeFunction;
+			public Byte nombreAssistant;
+			
+			public Byte incrementerNombreAssistant() {
+				if(scopeFunction == null) {
+					if(nombreAssistant == null)
+						nombreAssistant = 1;
+					else
+						nombreAssistant++;
+				}else {
+					nombreAssistant = scopeFunction.incrementChildrenCount();
+				}			
+				return nombreAssistant;
 			}
 		}
 	}

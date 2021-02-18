@@ -19,10 +19,12 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
 import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -65,8 +67,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	private void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
 		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
-		if(scopeFunction.getIdentifier() == null)
+		if(StringHelper.isBlank(scopeFunction.getIdentifier()) /*&& StringHelper.isBlank(scopeFunction.getCode()) && StringHelper.isBlank(scopeFunction.getName())*/) {
 			__codify__(List.of(scopeFunction));
+		}
 	}
 	
 	@Override @Transactional
@@ -76,17 +79,25 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
 		for(ScopeFunction scopeFunction : scopeFunctions) {
 			if(scopeFunction.getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER)) {
-				Function function = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
-				if(function == null)
+				Function assistant = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
+				if(assistant == null)
 					continue;
 				if(allScopeFunctions == null)
 					allScopeFunctions = new ArrayList<>();
-				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(function).setShared(Boolean.TRUE));
+				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE));
+			}else if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())) {
+				if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+					scopeFunction.setParent(__persistence__.readBySystemIdentifier(scopeFunction.getParentIdentifier()));
+					if(scopeFunction.getParent() != null) {
+						scopeFunction.getParent().setChildrenCount(NumberHelper.get(Byte.class,
+								ScopeFunctionQuerier.getInstance().countByParentsIdentifiers(List.of(scopeFunction.getParent().getIdentifier()))));
+					}
+				}				
 			}
 		}
 		allScopeFunctions.forEach(scopeFunction -> {
 			__listenExecuteCreateOrUpdateBefore__(scopeFunction);
-			//System.out.println("POSTE : "+scopeFunction.getCode()+" - "+scopeFunction.getOrderNumber()+" - "+scopeFunction.getDocumentNumber());
+			scopeFunction.setIdentifier(scopeFunction.getCode());
 		});
 		__persistence__.createMany(allScopeFunctions);
 		return this;
@@ -301,7 +312,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			scopeFunction.setDocumentNumber(documentNumber++);
 			scopeFunction.setCodificationDate(codificationDate);
 		}
-		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions,orderNumber-scopeFunctions.size(), codeScript, nameScript);
+		ScopeFunction.computeCodeAndName(scopeTypeCode,scopeFunctions,orderNumber-scopeFunctions.size(),0, codeScript, nameScript);
 		//find duplicates by code
 		Map<String,Collection<ScopeFunction>> map = new HashMap<>();		
 		for(String code : scopeFunctions.stream().map(x -> x.getCode()).collect(Collectors.toSet())) {
@@ -425,6 +436,23 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		if(CollectionHelper.isEmpty(functions))
 			return;
 		codifyByFunctions(functions);
+	}
+	
+	@Override
+	@Transactional
+	public void saveAssistants(Collection<ScopeFunction> scopeFunctions) {
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return;
+		/*Collection<ScopeFunction> assistantsDb = ScopeFunctionQuerier.getInstance().readByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+		Collection<ScopeFunction> assistantsUser = new ArrayList<>();
+		scopeFunctions.forEach(scopeFunction -> {
+			
+		});
+		
+		EntityManager entityManager = EntityManagerGetter.getInstance().get();
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			
+		}*/
 	}
 	
 	@Override

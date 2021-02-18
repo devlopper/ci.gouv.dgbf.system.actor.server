@@ -58,6 +58,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequ
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
@@ -67,6 +68,24 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void scopeFunction_countByParentsIdentifiers(){
+		Long c = ScopeFunctionQuerier.getInstance().countByParentsIdentifiers(List.of("G100000"));
+		System.out.println(c);
+	}
+	
+	@Test
+	public void scopeFunction_readByParentsIdentifiersForUI(){
+		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readByParentsIdentifiersForUI(List.of("G100000"));
+		System.out.println(scopeFunctions);
+	}
+	
+	@Test
+	public void scopeFunction_readByIdentifierForUI(){
+		ScopeFunction scopeFunction = ScopeFunctionQuerier.getInstance().readByIdentifierForUI("G100000");
+		System.out.println(scopeFunction);
 	}
 	
 	@Test
@@ -104,12 +123,12 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void activity_readByIdentifierForUI(){
-		Activity activity = ActivityQuerier.getInstance().readByIdentifierForUI("ACTIVITE13002010016");
-		System.out.println(activity.getSectionCodeName());
-		System.out.println(activity.getBudgetSpecializationUnitCodeName());
-		System.out.println(activity.getActionCodeName());
-		System.out.println(activity.getExpenditureNatureCodeName());
-		System.out.println(activity.getCategoryCodeName());
+		Activity activity = ActivityQuerier.getInstance().readByIdentifierWithCodesNamesForUI("ACTIVITE13002010016");
+		System.out.println(activity.getSection());
+		System.out.println(activity.getBudgetSpecializationUnit());
+		System.out.println(activity.getAction());
+		System.out.println(activity.getExpenditureNature());
+		System.out.println(activity.getCategory());
 	}
 	
 	@Test
