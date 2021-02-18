@@ -66,7 +66,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	//@Transient private String activityIdentifier;
 	//@Transient private String activityCode;
 	
-	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;	
+	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	@Transient private Collection<String> actorsAsStrings;
 	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
 	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
 	
@@ -86,6 +87,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
 	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
+	
+	@Transient private Boolean requested;
+	@Transient private Boolean granted;
 	
 	public Byte incrementChildrenCount() {		
 		if(childrenCount == null)
@@ -296,12 +300,16 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_ACTIVITY_IDENTIFIER = "activityIdentifier";
 	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
+	public static final String FIELD_ACTORS_AS_STRINGS = "actorsAsStrings";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
 	public static final String FIELD_PARENT_IDENTIFIER = "parentIdentifier";
 	public static final String FIELD_DOCUMENT_NUMBER = "documentNumber";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_CODIFICATION_DATE = "codificationDate";
+	
+	public static final String FIELD_REQUESTED = "requested";
+	public static final String FIELD_GRANTED = "granted";
 	
 	public static final String TABLE_NAME = "POSTE";
 	

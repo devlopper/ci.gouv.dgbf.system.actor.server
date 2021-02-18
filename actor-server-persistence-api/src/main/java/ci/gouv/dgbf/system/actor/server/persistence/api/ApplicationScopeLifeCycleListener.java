@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.persistence.query.NativeQueryStringBuilder;
 import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
+import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountingServiceQuerier;
@@ -80,7 +81,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	public static void initialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.entities.ApplicationScopeLifeCycleListener.initialize();
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
-				,EntitySaver.class,CountQueryIdentifierGetter.class);
+				,EntitySaver.class,CountQueryIdentifierGetter.class,TransientFieldsProcessor.class);
 		DependencyInjection.setQualifierClassTo(Oracle.class,NativeQueryStringBuilder.class);
 	
 		

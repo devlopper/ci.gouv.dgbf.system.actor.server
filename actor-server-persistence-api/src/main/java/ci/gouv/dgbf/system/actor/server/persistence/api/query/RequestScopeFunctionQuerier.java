@@ -19,9 +19,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunctio
 public interface RequestScopeFunctionQuerier extends Querier {
 
 	String PARAMETER_NAME_REQUESTS_IDENTIFIERS = "requestsIdentifiers";
+	String PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS = "scopeFunctionsIdentifiers";
 	
 	String QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "readByRequestsIdentifiers");
 	Collection<RequestScopeFunction> readByRequestsIdentifiers(Collection<String> requestsIdentifiers);
+	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "readByScopeFunctionsIdentifiers");
+	Collection<RequestScopeFunction> readByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestScopeFunctionQuerier,Serializable {
 		
@@ -32,6 +36,14 @@ public interface RequestScopeFunctionQuerier extends Querier {
 			Collection<RequestScopeFunction> requestFunctions = QueryExecutor.getInstance().executeReadMany(RequestScopeFunction.class, QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIERS
 					,PARAMETER_NAME_REQUESTS_IDENTIFIERS,requestsIdentifiers);
 			return requestFunctions;
+		}
+		
+		@Override
+		public Collection<RequestScopeFunction> readByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers) {
+			if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))
+				return null;
+			return QueryExecutor.getInstance().executeReadMany(RequestScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_FUNCTIONS_IDENTIFIERS
+					,PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS,scopeFunctionsIdentifiers);
 		}
 	}
 	
@@ -48,8 +60,12 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	static void initialize() {
 		QueryHelper.addQueries(
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIERS
-			,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
-			,Query.FIELD_VALUE,jpql("SELECT t","FROM RequestScopeFunction t","WHERE t.request.identifier IN :"+PARAMETER_NAME_REQUESTS_IDENTIFIERS,"ORDER BY t.scopeFunction.code ASC"))
+					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
+					,Query.FIELD_VALUE,jpql("SELECT t","FROM RequestScopeFunction t","WHERE t.request.identifier IN :"+PARAMETER_NAME_REQUESTS_IDENTIFIERS,"ORDER BY t.scopeFunction.code ASC"))
+			
+			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_SCOPE_FUNCTIONS_IDENTIFIERS
+					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
+					,Query.FIELD_VALUE,jpql("SELECT t","FROM RequestScopeFunction t","WHERE t.scopeFunction.identifier IN :"+PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS,"ORDER BY t.identifier ASC"))
 		);
 	}
 }

@@ -5,8 +5,8 @@ import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
 import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concatCodeName;
+import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
 import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
@@ -36,6 +36,7 @@ import org.cyk.utility.__kernel__.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -208,7 +209,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Collection<ScopeFunction> readByParentsIdentifiersForUI(Collection<String> parentsIdentifiers) {
 			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_PARENTS_IDENTIFIERS_FOR_UI
 					,PARAMETER_NAME_PARENTS_IDENTIFIERS,parentsIdentifiers);
-			listenReadForUI(scopeFunctions);
+			listenReadForUI(scopeFunctions,null);
 			return scopeFunctions;
 		}
 		
@@ -363,13 +364,14 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 			if(CollectionHelper.isEmpty(scopeFunctions))
 				return null;
-			listenReadForUI(scopeFunctions);
+			listenReadForUI(scopeFunctions,arguments);
 			return scopeFunctions;
 		}
 		
-		private void listenReadForUI(Collection<ScopeFunction> scopeFunctions) {
+		private void listenReadForUI(Collection<ScopeFunction> scopeFunctions,QueryExecutorArguments arguments) {
 			if(CollectionHelper.isEmpty(scopeFunctions))
 				return;
+			TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
 			Collection<ScopeFunction> scopeFunctionsHolders = scopeFunctions.stream().filter(x -> Function.EXECUTION_HOLDERS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 			if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
 				Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
@@ -396,10 +398,10 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			}
 		}
 		
-		private void listenReadForUI(ScopeFunction scopeFunction) {
+		private void listenReadForUI(ScopeFunction scopeFunction,QueryExecutorArguments arguments) {
 			if(scopeFunction == null)
 				return;
-			listenReadForUI(List.of(scopeFunction));
+			listenReadForUI(List.of(scopeFunction),arguments);
 		}
 		
 		@Override
@@ -417,7 +419,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				return null;
 			ScopeFunction scopeFunction = QueryExecutor.getInstance().executeReadOne(ScopeFunction.class, new QueryExecutorArguments()
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI).addFilterField(PARAMETER_NAME_IDENTIFIER,identifier));
-			listenReadForUI(scopeFunction);
+			listenReadForUI(scopeFunction,null);
 			return scopeFunction;
 		}
 		

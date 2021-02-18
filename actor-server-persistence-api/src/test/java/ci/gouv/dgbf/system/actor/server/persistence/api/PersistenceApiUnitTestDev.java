@@ -673,7 +673,20 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 			if(StringHelper.isBlank(x.getParentAsString()))
 				System.out.println("H - "+x+" : "+x.getChildrenCodesNames());
 			else
-				System.out.println("A - "+x+" : "+x.getParentAsString());
+				System.out.println("A - "+x.getCode()+" : "+x.getParentAsString());
+		});
+	}
+	
+	@Test
+	public void scopeFunction_readWhereFilterForUI_requested_accepted_actorsAsStrings(){
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"GC");
+		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_ACTORS_AS_STRINGS));
+		queryExecutorArguments.setNumberOfTuples(100);
+		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {
+			System.out.println(x.getCode()+" : "+x.getRequested()+"|"+x.getGranted()+" : "+x.getActorsAsStrings());
 		});
 	}
 	
