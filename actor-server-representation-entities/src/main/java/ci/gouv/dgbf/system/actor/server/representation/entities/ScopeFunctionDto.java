@@ -20,6 +20,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private FunctionDto function;
 	private String functionAsString;
 	private ArrayList<String> functionsIdentifiers;
+	private Boolean isHolder;
 	
 	private LocalityDto locality;
 	private String localityAsString;
@@ -36,7 +37,9 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private ArrayList<String> childrenCodesNames;
 	
 	private Boolean requested;
+	private String requestedAsString;
 	private Boolean granted;
+	private String grantedAsString;
 	
 	/**/
 	

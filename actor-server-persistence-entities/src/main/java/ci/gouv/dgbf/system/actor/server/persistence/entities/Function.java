@@ -69,6 +69,10 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 		return EXECUTION_ASSISTANTS_CODES.contains(code);
 	}
 	
+	public Boolean isCodeBelongsToExecutionHoldersCodes() {
+		return EXECUTION_HOLDERS_CODES.contains(code);
+	}
+	
 	public Boolean isCodeEqualCreditManager() {
 		return CODE_CREDIT_MANAGER_HOLDER.equals(code);
 	}

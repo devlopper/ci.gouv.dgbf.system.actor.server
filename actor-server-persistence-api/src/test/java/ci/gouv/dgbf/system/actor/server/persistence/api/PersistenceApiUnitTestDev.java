@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -367,6 +368,9 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getAdministrativeUnitAsString());
 		System.out.println(request.getSectionAsString());
 		System.out.println(request.getMobilePhoneNumber());
+		System.out.println("Processed : "+request.getProcessed());
+		System.out.println("Accepted  : "+request.getAccepted());
+		System.out.println("Rejected  : "+request.getRejected());
 	}
 	
 	@Test
@@ -393,6 +397,37 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		System.out.println(request.getBudgetariesScopeFunctionsAsStrings());
 		System.out.println(request.getAdministrativeUnitAsString());
 		System.out.println(request.getMobilePhoneNumber());
+	}
+	
+	@Test
+	public void request_readWhereFilterForUI_hasGrantedHolderScopeFunction(){
+		ArrayList<String> list = new ArrayList<>();
+		list.addAll(List.of(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION));
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
+				.setProcessableTransientFieldsNames(list)
+				.setNumberOfTuples(999))
+				;
+		requests.forEach(x -> {
+			System.out.println(x.getCode()+" : "+x.getHasGrantedHolderScopeFunction());
+		});
+	}
+	
+	@Test
+	public void request_readWhereFilterForUI_transients(){
+		ArrayList<String> list = new ArrayList<>();
+		list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
+				,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_PROCESSED,Request.FIELD_ACCEPTED,Request.FIELD_REJECTED));
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
+				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
+				.setProcessableTransientFieldsNames(list)
+				.setNumberOfTuples(999)
+				)
+				;
+		requests.forEach(x -> {
+			System.out.println(x.getCode()+" : "+x.getBudgetariesScopeFunctionsAsStrings()+" : "+x.getBudgetariesScopeFunctionsGrantedAsStrings()
+			+" : "+x.getHasGrantedHolderScopeFunction()+" : "+x.getProcessed()+" : "+x.getAccepted()+" : "+x.getRejected());
+		});
 	}
 	
 	@Test

@@ -45,6 +45,7 @@ import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
@@ -256,11 +257,13 @@ public interface RequestQuerier extends Querier {
 			Request request = readByIdentifier(identifier);
 			if(request == null)
 				return null;
-			prepareForUI(request,Boolean.TRUE,Boolean.TRUE,Boolean.TRUE);
+			TransientFieldsProcessor.getInstance().process(List.of(request), List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+					,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
+			prepareForUI(request);			
 			return request;
 		}
 		
-		private void prepareForUI(Request request,Boolean budgetariesScopeFunctionsReadable,Boolean budgetariesScopeFunctionsCollectionable,Boolean budgetariesScopeFunctionsStringifiable) {
+		private void prepareForUI(Request request) {
 			if(request == null)
 				return;
 			if(request.getCreationDate() != null) {
@@ -312,30 +315,6 @@ public interface RequestQuerier extends Querier {
 			}
 			
 			request.setFirstNameAndLastNames(request.getFirstName()+" "+request.getLastNames());
-			
-			if(Boolean.TRUE.equals(budgetariesScopeFunctionsReadable)) {
-				Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
-				request.computeHasBudgetaryScopeFunctionWhereFunctionCode(requestScopeFunctions);
-				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
-					if(Boolean.TRUE.equals(budgetariesScopeFunctionsCollectionable)) {
-						request.setBudgetariesScopeFunctions(requestScopeFunctions.stream()
-								.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getGranted()))
-								.map(x -> x.getScopeFunction())
-								.collect(Collectors.toList()));
-					}
-					if(Boolean.TRUE.equals(budgetariesScopeFunctionsStringifiable)) {
-						request.setBudgetariesScopeFunctionsAsStrings(requestScopeFunctions.stream()
-							.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getRequested()))
-							.map(x -> x.getScopeFunction().getCode()+" "+x.getScopeFunction().getName())
-							.collect(Collectors.toList()));
-						
-						request.setBudgetariesScopeFunctionsGrantedAsStrings(requestScopeFunctions.stream()
-								.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getGranted()))
-								.map(x -> x.getScopeFunction().getCode()+" "+x.getScopeFunction().getName())
-								.collect(Collectors.toList()));
-					}
-				}
-			}
 		}
 		
 		@Override
@@ -374,7 +353,7 @@ public interface RequestQuerier extends Querier {
 			Request request = readByAccessToken(accessToken);
 			if(request == null)
 				return null;
-			prepareForUI(request,null,null,null);
+			prepareForUI(request);
 			return request;
 		}
 		
@@ -396,10 +375,10 @@ public interface RequestQuerier extends Querier {
 			Collection<Request> requests = readWhereFilter(arguments);
 			if(CollectionHelper.isEmpty(requests))
 				return null;
+			TransientFieldsProcessor.getInstance().process(requests, arguments.getProcessableTransientFieldsNames());
 			requests.forEach(request -> {
-				prepareForUI(request, Boolean.TRUE, null,Boolean.TRUE);
-			});			
-			//setFunctions(requests,Boolean.TRUE);
+				prepareForUI(request);
+			});
 			return requests;
 		}
 		
@@ -466,8 +445,10 @@ public interface RequestQuerier extends Querier {
 					,dispatchSlipIdentifier);
 			if(CollectionHelper.isEmpty(requests))
 				return null;
+			TransientFieldsProcessor.getInstance().process(requests, List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+					,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
 			for(Request request : requests)
-				prepareForUI(request, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
+				prepareForUI(request);			
 			return requests;
 		}
 		

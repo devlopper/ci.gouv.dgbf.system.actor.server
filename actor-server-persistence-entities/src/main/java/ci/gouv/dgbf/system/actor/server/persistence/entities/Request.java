@@ -58,7 +58,6 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String typeAsString,creationDateAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
 	@Transient private String statusAsString;
-	//@Transient private Boolean isAcceptedStatus;
 	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
@@ -113,6 +112,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions;
 	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
 	@Transient private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
+	@Transient private Boolean hasGrantedHolderScopeFunction;
 	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
 	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
 	@Transient private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;
@@ -209,6 +209,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
+	public static final String FIELD_ACCEPTED = "accepted";
+	public static final String FIELD_REJECTED = "rejected";
+	public static final String FIELD_PROCESSED = "processed";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_CREATION_DATE_AS_STRING = "creationDateAsString";
 	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";
@@ -249,6 +252,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
 	public static final String FIELD_SIGNED_REQUEST_SHEET = "signedRequestSheet";
 	
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";
+	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS = "budgetariesScopeFunctionsGrantedAsStrings";
+	
 	public static final String FIELD_COMMENT = "comment";
 	
 	public static final String FIELD_PROCESSING_DATE = "processingDate";
@@ -256,6 +262,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
+	
+	public static final String FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION = "hasGrantedHolderScopeFunction";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";

@@ -68,6 +68,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private ArrayList<ScopeFunctionDto> budgetariesScopeFunctions;
 	private ArrayList<String> budgetariesScopeFunctionsAsStrings;
 	private ArrayList<String> budgetariesScopeFunctionsGrantedAsStrings;
+	private Boolean hasGrantedHolderScopeFunction;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeBelongsToExecutionAssistantsCodes;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsCreditManagerHolder;
 	private Boolean hasBudgetaryScopeFunctionWhereFunctionCodeIsAuthorizingOfficerHolder;

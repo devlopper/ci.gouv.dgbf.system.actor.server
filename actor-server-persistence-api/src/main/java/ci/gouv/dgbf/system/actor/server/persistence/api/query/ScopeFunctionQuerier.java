@@ -82,7 +82,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
 	
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionCodeForUI");
-	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(String scopeIdentifier,String functionCode);
+	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
@@ -169,8 +169,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 				return readWhereCodeOrNameLikeByFunctionCode(arguments);
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return readByScopeIdentifierByFunctionCodeForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_SCOPE_IDENTIFIER)
-						, (String)arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTION_CODE));
+				return readByScopeIdentifierByFunctionCodeForUI(arguments);
 			return super.readMany(arguments);
 		}
 		
@@ -226,11 +225,17 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		}
 		
 		@Override
-		public Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(String scopeIdentifier,String functionCode) {
-			if(StringHelper.isBlank(scopeIdentifier) || StringHelper.isBlank(functionCode))
+		public Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(QueryExecutorArguments arguments) {
+			String scopeIdentifier = (String)arguments.getFilterFieldValue(PARAMETER_NAME_SCOPE_IDENTIFIER);
+			if(StringHelper.isBlank(scopeIdentifier))
 				return null;
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
+			String functionCode = (String)arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTION_CODE);
+			if(StringHelper.isBlank(functionCode))
+				return null;
+			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
 					,PARAMETER_NAME_SCOPE_IDENTIFIER,scopeIdentifier,PARAMETER_NAME_FUNCTION_CODE,functionCode);
+			TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
+			return scopeFunctions;
 		}
 		
 		@Override

@@ -22,6 +22,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
@@ -72,7 +73,14 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		if(Boolean.TRUE.equals(budgetariesScopeFunctionsIncludable) && RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
 			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
 				throw new RuntimeException("La fonction budgétaire est obligatoire");
-		}		
+			for(ScopeFunction budgetaryScopeFunction : request.getBudgetariesScopeFunctions()) {
+				if(Boolean.TRUE.equals(budgetaryScopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
+					if(NumberHelper.isGreaterThanZero(RequestScopeFunctionQuerier.getInstance()
+							.countWhereGrantedIsTrueByScopeFunctionsIdentifiers(List.of(budgetaryScopeFunction.getIdentifier()))))
+						throw new RuntimeException(String.format("La fonction budgétaire %s n'est pas disponible", budgetaryScopeFunction.toString()));
+				}				
+			}
+		}
 	}
 	
 	private void validateRecord(Request request,Boolean budgetariesScopeFunctionsIncludable) {

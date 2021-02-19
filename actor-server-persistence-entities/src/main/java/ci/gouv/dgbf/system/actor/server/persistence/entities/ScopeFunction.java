@@ -54,6 +54,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Transient private String functionCode;
 	@Transient private String functionAsString;
+	@Transient private Boolean isHolder;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
 	@Transient private String localityAsString;
@@ -89,7 +90,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private BudgetSpecializationUnit budgetSpecializationUnit;
 	
 	@Transient private Boolean requested;
+	@Transient private String requestedAsString;
 	@Transient private Boolean granted;
+	@Transient private String grantedAsString;
 	
 	public Byte incrementChildrenCount() {		
 		if(childrenCount == null)
@@ -291,6 +294,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_FUNCTION = "function";
 	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
+	public static final String FIELD_IS_HOLDER = "isHolder";
 	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
@@ -309,7 +313,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_CODIFICATION_DATE = "codificationDate";
 	
 	public static final String FIELD_REQUESTED = "requested";
+	public static final String FIELD_REQUESTED_AS_STRING = "requestedAsString";
 	public static final String FIELD_GRANTED = "granted";
+	public static final String FIELD_GRANTED_AS_STRING = "grantedAsString";
 	
 	public static final String TABLE_NAME = "POSTE";
 	
