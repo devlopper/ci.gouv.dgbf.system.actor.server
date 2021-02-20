@@ -208,7 +208,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Collection<ScopeFunction> readByParentsIdentifiersForUI(Collection<String> parentsIdentifiers) {
 			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_PARENTS_IDENTIFIERS_FOR_UI
 					,PARAMETER_NAME_PARENTS_IDENTIFIERS,parentsIdentifiers);
-			listenReadForUI(scopeFunctions,null);
+			listenReadForUI(scopeFunctions);
 			return scopeFunctions;
 		}
 		
@@ -369,14 +369,14 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 			if(CollectionHelper.isEmpty(scopeFunctions))
 				return null;
-			listenReadForUI(scopeFunctions,arguments);
+			TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
+			listenReadForUI(scopeFunctions);
 			return scopeFunctions;
 		}
 		
-		private void listenReadForUI(Collection<ScopeFunction> scopeFunctions,QueryExecutorArguments arguments) {
+		private void listenReadForUI(Collection<ScopeFunction> scopeFunctions) {
 			if(CollectionHelper.isEmpty(scopeFunctions))
 				return;
-			TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
 			Collection<ScopeFunction> scopeFunctionsHolders = scopeFunctions.stream().filter(x -> Function.EXECUTION_HOLDERS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 			if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
 				Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
@@ -403,10 +403,10 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 			}
 		}
 		
-		private void listenReadForUI(ScopeFunction scopeFunction,QueryExecutorArguments arguments) {
+		private void listenReadForUI(ScopeFunction scopeFunction) {
 			if(scopeFunction == null)
 				return;
-			listenReadForUI(List.of(scopeFunction),arguments);
+			listenReadForUI(List.of(scopeFunction));
 		}
 		
 		@Override
@@ -424,7 +424,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				return null;
 			ScopeFunction scopeFunction = QueryExecutor.getInstance().executeReadOne(ScopeFunction.class, new QueryExecutorArguments()
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI).addFilterField(PARAMETER_NAME_IDENTIFIER,identifier));
-			listenReadForUI(scopeFunction,null);
+			listenReadForUI(scopeFunction);
 			return scopeFunction;
 		}
 		

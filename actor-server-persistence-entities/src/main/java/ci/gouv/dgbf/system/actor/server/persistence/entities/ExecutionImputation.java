@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
@@ -20,6 +21,10 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=ExecutionImputation.TABLE_NAME)
+/* Performance Tuning */
+@Cacheable
+@org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_ONLY)
+@org.hibernate.annotations.Immutable
 @NamedStoredProcedureQueries(value = {
 	@NamedStoredProcedureQuery(
 		name = ExecutionImputation.PROCEDURE_REFRESH_MATERIALIZED_VIEW, 

@@ -171,6 +171,10 @@
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false"/>
 			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
+			
+			<property name="hibernate.cache.use_second_level_cache" value="true" />
+			<property name="hibernate.cache.use_query_cache" value="true" />
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.internal.EhcacheRegionFactory"/>
 		</properties>
 	</persistence-unit>
 	

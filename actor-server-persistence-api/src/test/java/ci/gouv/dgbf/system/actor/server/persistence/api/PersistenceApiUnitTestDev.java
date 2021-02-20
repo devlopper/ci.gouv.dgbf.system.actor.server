@@ -600,7 +600,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void assignments_readWhereFilterForUI(){
 		Collection<Assignments> collection = 
-				AssignmentsQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments().setNumberOfTuples(1));
+				AssignmentsQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments().setNumberOfTuples(5));
 		Assignments assignments = collection.iterator().next();
 		System.out.println(assignments.getIdentifier());
 		System.out.println(assignments.getSectionAsString());
