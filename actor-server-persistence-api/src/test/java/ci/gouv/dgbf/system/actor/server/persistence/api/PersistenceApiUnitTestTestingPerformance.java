@@ -18,12 +18,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 import net.sf.ehcache.CacheManager;
 
-public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApiUnitTestValidate {
+public class PersistenceApiUnitTestTestingPerformance extends AbstractPersistenceApiUnitTestValidate {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	protected String getPersistenceUnitName() {
-		return "dev";
+		return "test";
 	}
 	
 	@Test
@@ -63,17 +63,6 @@ public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApi
 		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
 			Long t = System.currentTimeMillis();
 			AssignmentsQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments().setNumberOfTuples(count));
-			Long d1 = System.currentTimeMillis() - t;
-			
-			System.out.println(count+" : "+TimeHelper.formatDuration(d1));
-		}
-	}
-	
-	@Test
-	public void assignments_countWhereFilterUI(){
-		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
-			Long t = System.currentTimeMillis();
-			AssignmentsQuerier.getInstance().countWhereFilter(new QueryExecutorArguments());
 			Long d1 = System.currentTimeMillis() - t;
 			
 			System.out.println(count+" : "+TimeHelper.formatDuration(d1));
