@@ -401,7 +401,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			for(ScopeFunction grantedScopeFunction : grantedBudgetariesScopeFunctions) {
 				if(scopeFunctionss.contains(grantedScopeFunction))
 					continue;
-				entityManager.persist(new RequestScopeFunction().setRequest(request).setScopeFunction(grantedScopeFunction).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
+				entityManager.persist(new RequestScopeFunction().setIdentifier(IdentifiableSystem.generateRandomly())
+						.setRequest(request).setScopeFunction(grantedScopeFunction).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
 			}
 		}
 

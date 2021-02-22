@@ -31,38 +31,38 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	/**/
 	
 	public void processScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
-		Collection<RequestScopeFunction> requestScopeFunctions = null;
-		if(fieldsNames.contains(ScopeFunction.FIELD_REQUESTED) || fieldsNames.contains(ScopeFunction.FIELD_GRANTED))
-			requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+		//Collection<RequestScopeFunction> requestScopeFunctions = null;
+		//if(fieldsNames.contains(ScopeFunction.FIELD_REQUESTED) || fieldsNames.contains(ScopeFunction.FIELD_GRANTED))
+		//	requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
 		for(String fieldName : fieldsNames) {
 			if(ScopeFunction.FIELD_REQUESTED.equals(fieldName)) {
-				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
-					for(ScopeFunction scopeFunction : scopeFunctions) {
-						for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
-							if(scopeFunction.equals(requestScopeFunction.getScopeFunction())) {
-								scopeFunction.setRequested(requestScopeFunction.getRequested());
-								break;
-							}
+				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance()
+						.countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));								
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					for(Object[] array : arrays) {
+						if(array[0].equals(scopeFunction.getIdentifier())) {
+							scopeFunction.setRequested(NumberHelper.isGreaterThanZero((Long)array[1]));
+							scopeFunction.setRequestedAsString(ifTrueYesElseNo(ScopeFunction.class, fieldName, scopeFunction.getRequested()));
+							break;
 						}
-						scopeFunction.setRequestedAsString(ifTrueYesElseNo(ScopeFunction.class, fieldName, scopeFunction.getRequested()));
 					}
-				}
-			}else if(ScopeFunction.FIELD_GRANTED.equals(fieldName)) {
-				if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
-					for(ScopeFunction scopeFunction : scopeFunctions) {
-						for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
-							if(scopeFunction.equals(requestScopeFunction.getScopeFunction())) {
-								scopeFunction.setGranted(requestScopeFunction.getGranted());
-								break;
-							}
+				}			
+			}else if(ScopeFunction.FIELD_GRANTED.equals(fieldName)) {				
+				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance()
+						.countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					for(Object[] array : arrays) {
+						if(array[0].equals(scopeFunction.getIdentifier())) {
+							scopeFunction.setGranted(NumberHelper.isGreaterThanZero((Long)array[1]));
+							scopeFunction.setGrantedAsString(ifTrueYesElseNo(ScopeFunction.class, fieldName, scopeFunction.getGranted()));
+							break;
 						}
-						scopeFunction.setGrantedAsString(ifTrueYesElseNo(ScopeFunction.class, fieldName, scopeFunction.getGranted()));
 					}
 				}
 			}else if(ScopeFunction.FIELD_IS_HOLDER.equals(fieldName)) {				
-				for(ScopeFunction scopeFunction : scopeFunctions) {					
-					if(StringHelper.isNotBlank(scopeFunction.getFunctionCode()))
-						scopeFunction.setIsHolder(Function.EXECUTION_HOLDERS_CODES.contains(scopeFunction.getFunctionCode()));
+				for(ScopeFunction scopeFunction : scopeFunctions) {
+					scopeFunction.setIsHolder(StringHelper.isNotBlank(scopeFunction.getFunctionCode()) && 
+						Function.EXECUTION_HOLDERS_CODES.contains(scopeFunction.getFunctionCode()));
 				}
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
@@ -89,10 +89,10 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				}
 			}else if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName) || Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS.equals(fieldName)) {					
 				for(Request request : requests) {
-					Collection<String> strings = requestScopeFunctions.stream().filter(x -> x.getRequestIdentifier().equals(request.getIdentifier()))
+					Collection<String> strings = requestScopeFunctions.stream()
 							.filter(x -> x.getRequestIdentifier().equals(request.getIdentifier()) 
-									&& ( Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS.equals(fieldName) ? Boolean.TRUE.equals(x.getRequested()) : Boolean.TRUE)
-									)
+									&& ( Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS.equals(fieldName) 
+											? Boolean.TRUE.equals(x.getGranted()) : Boolean.TRUE.equals(x.getRequested())))
 							.map(x -> x.getScopeFunctionCode()+" "+x.getScopeFunctionName())
 							.collect(Collectors.toList());
 					if(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS.equals(fieldName))

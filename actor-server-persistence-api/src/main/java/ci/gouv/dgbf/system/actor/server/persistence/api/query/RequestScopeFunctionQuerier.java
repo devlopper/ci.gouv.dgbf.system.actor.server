@@ -42,6 +42,12 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_GROUP_BY_REQUEST_IDENTIFIER_BY_REQUESTS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers");
 	Collection<Object[]> countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers(Collection<String> requestsIdentifiers);
 	
+	String QUERY_IDENTIFIER_COUNT_WHERE_REQUESTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers");
+	Collection<Object[]> countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers");
+	Collection<Object[]> countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers);
+	
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "readByScopeFunctionsIdentifiers");
 	Collection<RequestScopeFunction> readByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers);
 	
@@ -86,6 +92,26 @@ public interface RequestScopeFunctionQuerier extends Querier {
 			javax.persistence.TypedQuery<Object[]> query = EntityManagerGetter.getInstance().get()
 					.createNamedQuery(QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_GROUP_BY_REQUEST_IDENTIFIER_BY_REQUESTS_IDENTIFIERS,Object[].class);
 			query.setParameter(PARAMETER_NAME_REQUESTS_IDENTIFIERS, requestsIdentifiers);
+			return query.getResultList();
+		}
+		
+		@Override
+		public Collection<Object[]> countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers) {
+			if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))
+				return null;
+			javax.persistence.TypedQuery<Object[]> query = EntityManagerGetter.getInstance().get()
+					.createNamedQuery(QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS,Object[].class);
+			query.setParameter(PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS, scopeFunctionsIdentifiers);
+			return query.getResultList();
+		}
+		
+		@Override
+		public Collection<Object[]> countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers) {
+			if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))
+				return null;
+			javax.persistence.TypedQuery<Object[]> query = EntityManagerGetter.getInstance().get()
+					.createNamedQuery(QUERY_IDENTIFIER_COUNT_WHERE_REQUESTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS,Object[].class);
+			query.setParameter(PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS, scopeFunctionsIdentifiers);
 			return query.getResultList();
 		}
 		
@@ -160,6 +186,18 @@ public interface RequestScopeFunctionQuerier extends Querier {
 					,Query.FIELD_VALUE,jpql("SELECT t.request.identifier,COUNT(t.identifier)"
 							,"FROM RequestScopeFunction t","WHERE t.granted = true AND t.request.identifier IN :"+PARAMETER_NAME_REQUESTS_IDENTIFIERS
 							,"GROUP BY t.request.identifier"))		
+			
+			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_REQUESTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS
+					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,Object[].class
+					,Query.FIELD_VALUE,jpql("SELECT t.scopeFunction.identifier,COUNT(t.identifier)"
+							,"FROM RequestScopeFunction t","WHERE t.requested = true AND t.scopeFunction.identifier IN :"+PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS
+							,"GROUP BY t.scopeFunction.identifier"))
+			
+			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_GROUP_BY_SCOPE_FUNCTION_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIERS
+					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,Object[].class
+					,Query.FIELD_VALUE,jpql("SELECT t.scopeFunction.identifier,COUNT(t.identifier)"
+							,"FROM RequestScopeFunction t","WHERE t.granted = true AND t.scopeFunction.identifier IN :"+PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS
+							,"GROUP BY t.scopeFunction.identifier"))
 			
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_SCOPE_FUNCTIONS_IDENTIFIERS
 					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class

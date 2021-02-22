@@ -37,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationForm
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
@@ -69,6 +70,13 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	
+	@Test
+	public void requestScopeFunction_countWhereGrantedIsTrueByScopeFunctionsIdentifiers(){
+		Long c = RequestScopeFunctionQuerier.getInstance().countWhereGrantedIsTrueByScopeFunctionsIdentifiers(List.of("G100407"));
+		System.out.println(c);
 	}
 	
 	@Test
@@ -717,7 +725,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
-		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"GC");
+		queryExecutorArguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"GC"
+				,ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_CODE_NAME,"12010030");
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_REQUESTED,ScopeFunction.FIELD_GRANTED,ScopeFunction.FIELD_ACTORS_AS_STRINGS));
 		queryExecutorArguments.setNumberOfTuples(100);
 		ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments).forEach(x -> {
