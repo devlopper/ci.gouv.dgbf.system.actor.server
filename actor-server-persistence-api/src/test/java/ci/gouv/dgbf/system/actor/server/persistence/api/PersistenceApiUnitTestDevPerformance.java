@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
@@ -24,6 +25,12 @@ public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApi
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void config_getMaxEntriesLocalHeap(){
+		assertThat(CacheManager.ALL_CACHE_MANAGERS.get(0).getCache(Section.class.getName()).getCacheConfiguration().getMaxEntriesLocalHeap()).isEqualTo(64);//specific
+		assertThat(CacheManager.ALL_CACHE_MANAGERS.get(0).getCache(AdministrativeUnit.class.getName()).getCacheConfiguration().getMaxEntriesLocalHeap()).isEqualTo(103);//default
 	}
 	
 	@Test
@@ -40,12 +47,25 @@ public class PersistenceApiUnitTestDevPerformance extends AbstractPersistenceApi
 	
 	@Test
 	public void section_cache_findByIdentifier(){
-		for(Integer index = 0 ; index < 1000 ; index = index + 1) {
+		for(Integer index = 0 ; index < 100 ; index = index + 1) {			
 			Integer initialSize = CacheManager.ALL_CACHE_MANAGERS.get(0).getCache(Section.class.getName()).getSize();
 			EntityManagerGetter.getInstance().get().find(Section.class, "SECTION01172e2c-7eb0-41a3-8d18-4c786e933ff7");
 			Integer count = CacheManager.ALL_CACHE_MANAGERS.get(0).getCache(Section.class.getName()).getSize() - initialSize;
 			assertThat(count).isEqualTo(index == 0 ? 1 : 0);
 		}
+	}
+	
+	@Test
+	public void section_cache_expire_findByIdentifier(){
+		assertThat(CacheManager.ALL_CACHE_MANAGERS.get(0).getCache(Section.class.getName()).getCacheConfiguration().getTimeToIdleSeconds()).isEqualTo(5);
+		for(Integer t = 1; t <=10; t = t + 1) {
+			System.out.println("Getting section");
+			for(Integer index = 0 ; index < 10 ; index = index + 1)
+				EntityManagerGetter.getInstance().get().find(Section.class, "SECTION01172e2c-7eb0-41a3-8d18-4c786e933ff7");
+			System.out.println("Waiting "+t+" second(s)...");
+			TimeHelper.pause(1000l * t);
+		}
+		
 	}
 	
 	@Test

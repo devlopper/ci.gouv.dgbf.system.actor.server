@@ -1,41 +1,11 @@
 <ehcache>
 	<defaultCache 
 		name="defaut" 
-		maxElementsInMemory="100"
 		eternal="false" 
-		timeToIdleSeconds="20" 
-		timeToLiveSeconds="20"
+		maxElementsInMemory="250"
+		timeToIdleSeconds="3600" 		
 		overflowToDisk="false" 
 		diskPersistent="false"
 		memoryStoreEvictionPolicy="LRU" />
 
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Section" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Action" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Activity" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.EconomicNature" maxElementsInMemory="70" />
-	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType" maxElementsInMemory="70" />
-	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Profile" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType" maxElementsInMemory="70" />	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction" maxElementsInMemory="70" />
-	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType" maxElementsInMemory="70" />		
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Service" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Locality" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Civility" maxElementsInMemory="70" />
-	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Scope" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction" maxElementsInMemory="70" />
-	
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Module" maxElementsInMemory="70" />
-	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Menu" maxElementsInMemory="70" />
-	
 </ehcache>

@@ -1,0 +1,13 @@
+<ehcache>
+	<defaultCache 
+		name="defaut" 
+		eternal="false" 
+		maxElementsInMemory="100"		
+		timeToIdleSeconds="5" 		
+		overflowToDisk="false" 
+		diskPersistent="false"
+		memoryStoreEvictionPolicy="LFU" />
+	
+	<cache name="ci.gouv.dgbf.system.actor.server.persistence.entities.Section" maxElementsInMemory="64" timeToIdleSeconds="5" />
+	
+</ehcache>

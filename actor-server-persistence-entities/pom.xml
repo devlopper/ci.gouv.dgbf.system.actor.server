@@ -43,13 +43,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-ehcache</artifactId>
-			<version>${org.hibernate.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.cyk.jee.utility.security.keycloak.server</groupId>
 			<artifactId>jee-utility-security-keycloak-server</artifactId>
 			<version>0.1.0</version>
