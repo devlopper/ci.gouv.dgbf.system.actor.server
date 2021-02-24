@@ -1,6 +1,9 @@
+# Port off set
+/socket-binding-group=standard-sockets:write-attribute(name=port-offset,value=100)
+
 # Data source connection pool
-/subsystem=datasources/data-source=OracleDS:write-attribute(name=min-pool-size,value=5)
-/subsystem=datasources/data-source=OracleDS:write-attribute(name=max-pool-size,value=50)
+#/subsystem=datasources/data-source=OracleDS:write-attribute(name=min-pool-size,value=5)
+#/subsystem=datasources/data-source=OracleDS:write-attribute(name=max-pool-size,value=50)
 
 # Statistics
-#/subsystem=datasources/data-source=OracleDS:write-attribute(name=statistics-enabled,value=true)
+/subsystem=datasources/data-source=OracleDS:write-attribute(name=statistics-enabled,value=true)
