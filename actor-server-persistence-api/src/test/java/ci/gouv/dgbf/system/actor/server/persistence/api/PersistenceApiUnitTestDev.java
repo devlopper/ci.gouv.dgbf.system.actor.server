@@ -425,7 +425,9 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	public void request_readWhereFilterForUI_transients(){
 		ArrayList<String> list = new ArrayList<>();
 		list.addAll(List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS
-				,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_PROCESSED,Request.FIELD_ACCEPTED,Request.FIELD_REJECTED));
+				,Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION,Request.FIELD_PROCESSED,Request.FIELD_ACCEPTED,Request.FIELD_REJECTED
+				,Request.FIELD_IS_CREDIT_MANAGER_HOLDER,Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER,Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER
+				,Request.FIELD_IS_ACCOUNTING_HOLDER));
 		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(new QueryExecutorArguments()
 				.setQueryFromIdentifier(RequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI)
 				.setProcessableTransientFieldsNames(list)
@@ -434,7 +436,8 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 				;
 		requests.forEach(x -> {
 			System.out.println(x.getCode()+" : "+x.getBudgetariesScopeFunctionsAsStrings()+" : "+x.getBudgetariesScopeFunctionsGrantedAsStrings()
-			+" : "+x.getHasGrantedHolderScopeFunction()+" : "+x.getProcessed()+" : "+x.getAccepted()+" : "+x.getRejected());
+			+" : "+x.getHasGrantedHolderScopeFunction()+" : "+x.getProcessed()+" : "+x.getAccepted()+" : "+x.getRejected()
+			+" : "+x.getIsCreditManagerHolder()+" : "+x.getIsAuthorizingOfficerHolder()+" : "+x.getIsFinancialControllerHolder()+" : "+x.getIsAccountingHolder());
 		});
 	}
 	

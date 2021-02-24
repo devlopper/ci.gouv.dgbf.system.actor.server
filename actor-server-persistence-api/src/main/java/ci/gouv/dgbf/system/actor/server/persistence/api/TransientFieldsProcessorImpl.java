@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
@@ -69,11 +70,10 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		}
 	}
 	
-	public void processRequests(Collection<Request> requests,Collection<String> fieldsNames) {
-		Collection<RequestScopeFunction> requestScopeFunctions = null;
+	public void processRequests(Collection<Request> requests,Collection<String> fieldsNames) {		
 		Collection<String> requestsIdentifiers = FieldHelper.readSystemIdentifiersAsStrings(requests);
-		if(fieldsNames.contains(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS) || fieldsNames.contains(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
-			requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(requestsIdentifiers);
+		Collection<RequestScopeFunction> requestScopeFunctions = readRequestScopeFunctions(requestsIdentifiers, fieldsNames);		
+		
 		for(String fieldName : fieldsNames) {
 			if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
 				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance().countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers(requestsIdentifiers);
@@ -109,7 +109,32 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			}else if(Request.FIELD_REJECTED.equals(fieldName)) {					
 				for(Request request : requests)
 					request.setRejected(request.getStatus().getCode().equals(RequestStatus.CODE_REJECTED));
+			}else if(Request.FIELD_IS_CREDIT_MANAGER_HOLDER.equals(fieldName)) {					
+				for(Request request : requests)
+					request.setIsCreditManagerHolder(hasFunctionCode(request,Function.CODE_CREDIT_MANAGER_HOLDER,requestScopeFunctions));
+			}else if(Request.FIELD_IS_AUTHORIZING_OFFICER_HOLDER.equals(fieldName)) {					
+				for(Request request : requests)
+					request.setIsAuthorizingOfficerHolder(hasFunctionCode(request,Function.CODE_AUTHORIZING_OFFICER_HOLDER,requestScopeFunctions));
+			}else if(Request.FIELD_IS_FINANCIAL_CONTROLLER_HOLDER.equals(fieldName)) {					
+				for(Request request : requests)
+					request.setIsFinancialControllerHolder(hasFunctionCode(request,Function.CODE_FINANCIAL_CONTROLLER_HOLDER,requestScopeFunctions));
+			}else if(Request.FIELD_IS_ACCOUNTING_HOLDER.equals(fieldName)) {					
+				for(Request request : requests)
+					request.setIsAccountingHolder(hasFunctionCode(request,Function.CODE_ACCOUNTING_HOLDER,requestScopeFunctions));
 			}
 		}
+	}
+	
+	private Boolean hasFunctionCode(Request request,String functionCode,Collection<RequestScopeFunction> requestScopeFunctions) {
+		for(RequestScopeFunction requestScopeFunction : requestScopeFunctions)
+			if(requestScopeFunction.getRequestIdentifier().equals(request.getIdentifier()) && functionCode.equals(requestScopeFunction.getFunctionCode()))
+				return Boolean.TRUE;
+		return null;
+	}
+	
+	private Collection<RequestScopeFunction> readRequestScopeFunctions(Collection<String> requestsIdentifiers,Collection<String> fieldsNames) {
+		if(CollectionUtils.containsAny(fieldsNames, Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
+			return RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(requestsIdentifiers);
+		return null;
 	}
 }

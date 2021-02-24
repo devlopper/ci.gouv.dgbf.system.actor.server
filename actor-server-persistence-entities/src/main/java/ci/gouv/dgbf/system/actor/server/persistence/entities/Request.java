@@ -142,6 +142,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String signatureSpecimenReadPageURL;
 	
 	@Transient private Boolean isAdministrator;
+	@Transient private Boolean isCreditManagerHolder;
+	@Transient private Boolean isAuthorizingOfficerHolder;
+	@Transient private Boolean isFinancialControllerHolder;
+	@Transient private Boolean isAccountingHolder;
+	@Transient private Boolean isAssistant;
 	
 	@Override
 	public Request setIdentifier(String identifier) {
@@ -264,6 +269,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
 	
 	public static final String FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION = "hasGrantedHolderScopeFunction";
+	
+	public static final String FIELD_IS_CREDIT_MANAGER_HOLDER = "isCreditManagerHolder";
+	public static final String FIELD_IS_AUTHORIZING_OFFICER_HOLDER = "isAuthorizingOfficerHolder";
+	public static final String FIELD_IS_FINANCIAL_CONTROLLER_HOLDER = "isFinancialControllerHolder";
+	public static final String FIELD_IS_ACCOUNTING_HOLDER = "isAccountingHolder";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";

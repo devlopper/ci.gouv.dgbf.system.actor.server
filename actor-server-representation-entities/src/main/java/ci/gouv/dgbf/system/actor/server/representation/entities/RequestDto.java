@@ -105,6 +105,14 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	
 	/**/
 	
+	private Boolean isCreditManagerHolder;
+	private Boolean isAuthorizingOfficerHolder;
+	private Boolean isFinancialControllerHolder;
+	private Boolean isAccountingHolder;
+	private Boolean isAssistant;
+	
+	/**/
+	
 	@Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 	public static class Acceptation {
 		private String identifier;

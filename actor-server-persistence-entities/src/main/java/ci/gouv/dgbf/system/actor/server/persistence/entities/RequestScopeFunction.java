@@ -28,6 +28,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	@Transient private String scopeFunctionIdentifier;
 	@Transient private String scopeFunctionCode;
 	@Transient private String scopeFunctionName;
+	@Transient private String functionCode;
 	@Column(name = COLUMN_REQUESTED) private Boolean requested;
 	@Column(name = COLUMN_GRANTED) private Boolean granted;
 	
@@ -42,6 +43,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String FIELD_SCOPE_FUNCTION_IDENTIFIER = "scopeFunctionIdentifier";
 	public static final String FIELD_SCOPE_FUNCTION_CODE = "scopeFunctionCode";
 	public static final String FIELD_SCOPE_FUNCTION_NAME = "scopeFunctionName";
+	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_REQUESTED = "requested";
 	public static final String FIELD_GRANTED = "granted";
 	

@@ -167,11 +167,12 @@ public interface RequestScopeFunctionQuerier extends Querier {
 			
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_USING_SCALAR_MODE_BY_REQUESTS_IDENTIFIERS
 					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
-					,Query.FIELD_VALUE,jpql("SELECT t.identifier,t.request.identifier,t.scopeFunction.identifier,t.scopeFunction.code,t.scopeFunction.name,t.requested,t.granted","FROM RequestScopeFunction t"
+					,Query.FIELD_VALUE,jpql("SELECT t.identifier,t.request.identifier,t.scopeFunction.identifier,t.scopeFunction.code,t.scopeFunction.name"
+							+ ",t.scopeFunction.function.code,t.requested,t.granted","FROM RequestScopeFunction t"
 							,"WHERE t.request.identifier IN :"+PARAMETER_NAME_REQUESTS_IDENTIFIERS,"ORDER BY t.identifier ASC"))
 					.setTupleFieldsNamesIndexesFromFieldsNames(RequestScopeFunction.FIELD_IDENTIFIER,RequestScopeFunction.FIELD_REQUEST_IDENTIFIER
-							,RequestScopeFunction.FIELD_SCOPE_FUNCTION_IDENTIFIER,RequestScopeFunction.FIELD_SCOPE_FUNCTION_CODE
-							,RequestScopeFunction.FIELD_SCOPE_FUNCTION_NAME,RequestScopeFunction.FIELD_REQUESTED,RequestScopeFunction.FIELD_GRANTED)
+							,RequestScopeFunction.FIELD_SCOPE_FUNCTION_IDENTIFIER,RequestScopeFunction.FIELD_SCOPE_FUNCTION_CODE,RequestScopeFunction.FIELD_SCOPE_FUNCTION_NAME
+							,RequestScopeFunction.FIELD_FUNCTION_CODE,RequestScopeFunction.FIELD_REQUESTED,RequestScopeFunction.FIELD_GRANTED)
 			
 			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_GRANTED_IS_TRUE_BY_REQUESTS_IDENTIFIERS
 					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
