@@ -257,8 +257,8 @@ public interface RequestQuerier extends Querier {
 			Request request = readByIdentifier(identifier);
 			if(request == null)
 				return null;
-			TransientFieldsProcessor.getInstance().process(List.of(request), List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
-					,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
+			TransientFieldsProcessor.getInstance().process(List.of(request), List.of(Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS
+					,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
 			prepareForUI(request);			
 			return request;
 		}

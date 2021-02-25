@@ -34,8 +34,8 @@ public class DataTransferObjectProcessorImpl extends DataTransferObjectProcessor
 				}
 			}
 			
-			if(CollectionHelper.isNotEmpty(request.getBudgetariesScopeFunctions())) {
-				for(ScopeFunctionDto scopeFunction : request.getBudgetariesScopeFunctions()) {
+			if(CollectionHelper.isNotEmpty(request.getGrantedBudgetariesScopeFunctions())) {
+				for(ScopeFunctionDto scopeFunction : request.getGrantedBudgetariesScopeFunctions()) {
 					if(Function.CODE_CREDIT_MANAGER_HOLDER.equals(scopeFunction.getFunction().getCode())) {
 						if(StringHelper.isNotBlank(request.getIdentifier()) &&  request.getType() != null && StringHelper.isNotBlank(request.getType().getCreditManagerSignatureSpecimenReportIdentifier())) {
 							if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode())) {

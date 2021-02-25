@@ -121,6 +121,19 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			}else if(Request.FIELD_IS_ACCOUNTING_HOLDER.equals(fieldName)) {					
 				for(Request request : requests)
 					request.setIsAccountingHolder(hasFunctionCode(request,Function.CODE_ACCOUNTING_HOLDER,requestScopeFunctions));
+			}else if(Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS.equals(fieldName)) {					
+				for(Request request : requests)
+					request.setGrantedBudgetariesScopeFunctions(
+							requestScopeFunctions.stream()
+							.filter(x -> x.getRequestIdentifier().equals(request.getIdentifier()))
+							.map(x -> new ScopeFunction()
+									.setIdentifier(x.getScopeFunctionIdentifier())
+									.setCode(x.getScopeFunctionCode())
+									.setName(x.getScopeFunctionName())
+									.setFunction(StringHelper.isBlank(x.getFunctionCode()) ? null : new Function().setCode(x.getFunctionCode()))
+							)
+							.collect(Collectors.toList())
+							);
 			}
 		}
 	}
@@ -133,7 +146,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	}
 	
 	private Collection<RequestScopeFunction> readRequestScopeFunctions(Collection<String> requestsIdentifiers,Collection<String> fieldsNames) {
-		if(CollectionUtils.containsAny(fieldsNames, Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
+		if(CollectionUtils.containsAny(fieldsNames, Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS, Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
 			return RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(requestsIdentifiers);
 		return null;
 	}

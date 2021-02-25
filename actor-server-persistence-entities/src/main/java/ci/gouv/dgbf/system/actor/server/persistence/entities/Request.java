@@ -109,7 +109,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Collection<String> functionsAsStrings;
 	@Transient private Collection<Function> budgetariesFunctions;
 	@Transient private Collection<String> budgetariesFunctionsAsStrings;
-	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions;
+	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions,grantedBudgetariesScopeFunctions;
 	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
 	@Transient private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
 	@Transient private Boolean hasGrantedHolderScopeFunction;
@@ -257,6 +257,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_FUNCTIONS_AS_STRINGS = "functionsAsStrings";
 	public static final String FIELD_SIGNED_REQUEST_SHEET = "signedRequestSheet";
 	
+	public static final String FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS = "grantedBudgetariesScopeFunctions";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS = "budgetariesScopeFunctionsAsStrings";
 	public static final String FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS = "budgetariesScopeFunctionsGrantedAsStrings";
 	
