@@ -78,7 +78,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		//add assistants where possible
 		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
 		for(ScopeFunction scopeFunction : scopeFunctions) {
-			if(scopeFunction.getFunction().getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER)) {
+			if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
 				Function assistant = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
 				if(assistant == null)
 					continue;

@@ -2,8 +2,10 @@
 /socket-binding-group=standard-sockets:write-attribute(name=port-offset,value=100)
 
 # Data source connection pool
-#/subsystem=datasources/data-source=OracleDS:write-attribute(name=min-pool-size,value=5)
-#/subsystem=datasources/data-source=OracleDS:write-attribute(name=max-pool-size,value=50)
+/subsystem=datasources/data-source=OracleDS:write-attribute(name=min-pool-size,value=0)
+/subsystem=datasources/data-source=OracleDS:write-attribute(name=max-pool-size,value=5)
 
 # Statistics
 /subsystem=datasources/data-source=OracleDS:write-attribute(name=statistics-enabled,value=true)
+#/subsystem=jca/cached-connection-manager=cached-connection-manager:write-attribute(name=debug,value=true)
+#/subsystem=logging/logger=org.jboss.jca/:add(level=TRACE)

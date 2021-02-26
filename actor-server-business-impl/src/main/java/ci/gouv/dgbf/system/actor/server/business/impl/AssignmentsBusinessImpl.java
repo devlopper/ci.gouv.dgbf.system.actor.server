@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -323,7 +324,6 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			if(scopeFunction.getScopeCode().equals(managerCode) && scopeFunction.getFunctionAsString().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
 				return scopeFunction;
 		}
-		System.out.println("GC NON TROUVE : "+managerCode);
 		return null;
 	}
 	
@@ -514,9 +514,23 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
+		collection.forEach(x -> {
+			x.set__auditFunctionality__("Modification");	
+		});
+		setAssistants(collection);
+		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
+		transactionResult.setNumberOfUpdateFromSavables(collection);
+		transactionResult.log(getClass());
+		String actorCode = collection.iterator().next().get__auditWho__();
+		exportAsynchronously(actorCode);
+		return transactionResult;
+	}
+	
+	private void setAssistants(Collection<Assignments> collection) {
+		if(CollectionHelper.isEmpty(collection))
+			return;
 		Collection<Assignments> database = __persistence__.readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(collection));
 		collection.forEach(x -> {
-			x.set__auditFunctionality__("Modification");
 			Assignments origin = CollectionHelper.isEmpty(database) ? null 
 					: CollectionHelper.getFirst(database.stream().filter(y -> y.getIdentifier().equals(x.getIdentifier())).collect(Collectors.toList()));
 			
@@ -524,13 +538,17 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				x.setCreditManagerAssistant(null);
 			}else {				
 				if(origin != null && !x.getCreditManagerHolder().equals(origin.getCreditManagerHolder())) {
-					String assistantCode = computeAssistantCodeFromHolderCode(x.getCreditManagerHolder().getCode(),1);
-					if(StringHelper.isNotBlank(assistantCode)) {
-						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
-						if(assistant != null) {
-							x.setCreditManagerAssistant(assistant);
+					x.setCreditManagerAssistant(CollectionHelper.getFirst(ScopeFunctionQuerier.getInstance()
+							.readByParentsIdentifiers(List.of(x.getCreditManagerHolder().getIdentifier()))));
+					if(x.getCreditManagerAssistant() == null) {
+						String assistantCode = computeAssistantCodeFromHolderCode(x.getCreditManagerHolder().getCode(),1);
+						if(StringHelper.isNotBlank(assistantCode)) {
+							ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+							if(assistant != null) {
+								x.setCreditManagerAssistant(assistant);
+							}
 						}
-					}
+					}					
 				}
 			}
 			
@@ -538,13 +556,17 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				x.setAuthorizingOfficerAssistant(null);
 			}else {
 				if(origin != null && !x.getAuthorizingOfficerHolder().equals(origin.getAuthorizingOfficerHolder())) {
-					String assistantCode = computeAssistantCodeFromHolderCode(x.getAuthorizingOfficerHolder().getCode(),2);
-					if(StringHelper.isNotBlank(assistantCode)) {
-						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
-						if(assistant != null) {
-							x.setAuthorizingOfficerAssistant(assistant);
+					x.setAuthorizingOfficerAssistant(CollectionHelper.getFirst(ScopeFunctionQuerier.getInstance()
+							.readByParentsIdentifiers(List.of(x.getAuthorizingOfficerHolder().getIdentifier()))));
+					if(x.getAuthorizingOfficerAssistant() == null) {
+						String assistantCode = computeAssistantCodeFromHolderCode(x.getAuthorizingOfficerHolder().getCode(),2);
+						if(StringHelper.isNotBlank(assistantCode)) {
+							ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+							if(assistant != null) {
+								x.setAuthorizingOfficerAssistant(assistant);
+							}
 						}
-					}
+					}						
 				}
 			}
 			
@@ -552,11 +574,15 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				x.setFinancialControllerAssistant(null);
 			}else {
 				if(origin != null && !x.getFinancialControllerHolder().equals(origin.getFinancialControllerHolder())) {
-					String assistantCode = computeAssistantCodeFromHolderCode(x.getFinancialControllerHolder().getCode(),3);
-					if(StringHelper.isNotBlank(assistantCode)) {
-						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
-						if(assistant != null) {
-							x.setFinancialControllerAssistant(assistant);
+					x.setFinancialControllerAssistant(CollectionHelper.getFirst(ScopeFunctionQuerier.getInstance()
+							.readByParentsIdentifiers(List.of(x.getFinancialControllerHolder().getIdentifier()))));
+					if(x.getFinancialControllerAssistant() == null) {
+						String assistantCode = computeAssistantCodeFromHolderCode(x.getFinancialControllerHolder().getCode(),3);
+						if(StringHelper.isNotBlank(assistantCode)) {
+							ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+							if(assistant != null) {
+								x.setFinancialControllerAssistant(assistant);
+							}
 						}
 					}
 				}
@@ -566,20 +592,20 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				x.setAccountingAssistant(null);
 			}else {
 				if(origin != null && !x.getAccountingHolder().equals(origin.getAccountingHolder())) {
-					String assistantCode = computeAssistantCodeFromHolderCode(x.getAccountingHolder().getCode(),4);
-					if(StringHelper.isNotBlank(assistantCode)) {
-						ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
-						if(assistant != null) {
-							x.setAccountingAssistant(assistant);
+					x.setAccountingAssistant(CollectionHelper.getFirst(ScopeFunctionQuerier.getInstance()
+							.readByParentsIdentifiers(List.of(x.getAccountingHolder().getIdentifier()))));
+					if(x.getAccountingAssistant() == null) {
+						String assistantCode = computeAssistantCodeFromHolderCode(x.getAccountingHolder().getCode(),4);
+						if(StringHelper.isNotBlank(assistantCode)) {
+							ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+							if(assistant != null) {
+								x.setAccountingAssistant(assistant);
+							}
 						}
-					}
+					}						
 				}
 			}
 		});
-		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
-		transactionResult.setNumberOfUpdateFromSavables(collection);
-		transactionResult.log(getClass());
-		return transactionResult;
 	}
 	
 	/**
@@ -610,6 +636,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			//		,DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE);			
 		}
 		transactionResult.log(getClass());
+		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
 	
@@ -626,24 +653,27 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			
 			if(index.getCreditManagerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_HOLDER))
 				index.setCreditManagerHolder(model.getCreditManagerHolder());
-			if(index.getCreditManagerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT))
-				index.setCreditManagerAssistant(model.getCreditManagerAssistant());
+			//if(index.getCreditManagerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT))
+			//	index.setCreditManagerAssistant(model.getCreditManagerAssistant());
 			
 			if(index.getAuthorizingOfficerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER))
 				index.setAuthorizingOfficerHolder(model.getAuthorizingOfficerHolder());
-			if(index.getAuthorizingOfficerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT))
-				index.setAuthorizingOfficerAssistant(model.getAuthorizingOfficerAssistant());
+			//if(index.getAuthorizingOfficerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT))
+			//	index.setAuthorizingOfficerAssistant(model.getAuthorizingOfficerAssistant());
 			
 			if(index.getFinancialControllerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER))
 				index.setFinancialControllerHolder(model.getFinancialControllerHolder());
-			if(index.getFinancialControllerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT))
-				index.setFinancialControllerAssistant(model.getFinancialControllerAssistant());
+			//if(index.getFinancialControllerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT))
+			//	index.setFinancialControllerAssistant(model.getFinancialControllerAssistant());
 			
 			if(index.getAccountingHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_HOLDER))
 				index.setAccountingHolder(model.getAccountingHolder());
-			if(index.getAccountingAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_ASSISTANT))
-				index.setAccountingAssistant(model.getAccountingAssistant());
+			//if(index.getAccountingAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_ASSISTANT))
+			//	index.setAccountingAssistant(model.getAccountingAssistant());
 		});
+		
+		setAssistants(collection);
+		
 		t = System.currentTimeMillis();
 		
 		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
@@ -675,9 +705,23 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
+	@Transactional
 	@Override
 	public void export(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+	}
+	
+	private void exportAsynchronously(String actorCode) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					export(actorCode);
+				} catch (Exception exception) {
+					LogHelper.log(exception, AssignmentsBusinessImpl.class);
+				}
+			}		
+		}).start();
 	}
 }

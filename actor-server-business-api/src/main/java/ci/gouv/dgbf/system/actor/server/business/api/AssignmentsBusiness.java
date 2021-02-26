@@ -43,5 +43,8 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	void import_(String actorCode);
 	
 	String EXPORT = "Assignments.export";
+	@Transactional
+	//FIXME @Transactional is not required - @Transactional is used as a workaround to release connection and avoid connection leak.
+	//user utility-persistence-server-hibernate to solve this
 	void export(String actorCode);
 }
