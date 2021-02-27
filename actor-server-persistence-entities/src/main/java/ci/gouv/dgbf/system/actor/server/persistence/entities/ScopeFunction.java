@@ -23,7 +23,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.script.ScriptExecutor;
 import org.cyk.utility.__kernel__.script.ScriptHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;

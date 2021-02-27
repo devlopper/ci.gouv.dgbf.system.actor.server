@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;

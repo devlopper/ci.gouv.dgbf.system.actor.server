@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.business.EntityCreator;
+import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.variable.VariableHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;

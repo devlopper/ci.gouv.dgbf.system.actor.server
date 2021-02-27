@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierGetter;
-import org.cyk.utility.__kernel__.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.EntityCounter;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.junit.jupiter.api.Test;
@@ -772,7 +772,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void executionImputation_readWhereFilter(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
-		org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		org.cyk.utility.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		Long t = System.currentTimeMillis();
 		System.out.println("STARTS");
 		Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments()
@@ -787,7 +787,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	/*
 	@Test
 	public void executionImputation_readWhereFilterAll(){
-		org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		Long t = System.currentTimeMillis();
 		System.out.println("STARTS");
 		Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_WITH_ALL))

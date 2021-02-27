@@ -8,9 +8,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.representation.Arguments;
-import org.cyk.utility.__kernel__.representation.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.representation.Arguments;
+import org.cyk.utility.representation.EntityReader;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 

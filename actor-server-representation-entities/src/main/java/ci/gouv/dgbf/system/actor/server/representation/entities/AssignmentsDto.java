@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringAuditedImpl;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

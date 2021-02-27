@@ -20,6 +20,20 @@
 			<artifactId>actor-server-business-entities</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.persistence.server</groupId>
+			<artifactId>jee-utility-persistence-server</artifactId>
+			<version>0.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.business.server</groupId>
+			<artifactId>jee-utility-business-server</artifactId>
+			<version>0.1.0</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>	
 
 </project>

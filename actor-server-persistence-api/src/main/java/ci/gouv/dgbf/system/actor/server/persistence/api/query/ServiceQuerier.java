@@ -7,13 +7,13 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.server.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.security.keycloak.server.Client;
 import org.cyk.utility.security.keycloak.server.ClientManager;
@@ -21,7 +21,7 @@ import org.cyk.utility.security.keycloak.server.ClientManager;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Service.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Service t ORDER BY t.code ASC")
+		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Service.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Service t ORDER BY t.code ASC")
 	})
 public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 

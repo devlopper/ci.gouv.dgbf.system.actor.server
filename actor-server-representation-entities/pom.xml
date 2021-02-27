@@ -22,6 +22,19 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>org.cyk.jee.utility.representation</groupId>
+			<artifactId>jee-utility-representation</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.representation.server</groupId>
+			<artifactId>jee-utility-representation-server</artifactId>
+			<version>0.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.cyk.jee.utility.server.representation</groupId>
 			<artifactId>jee-utility-server-representation</artifactId>
 			<version>0.1.0</version>

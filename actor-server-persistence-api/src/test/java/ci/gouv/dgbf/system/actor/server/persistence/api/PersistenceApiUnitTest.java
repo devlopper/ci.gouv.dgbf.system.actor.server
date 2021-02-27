@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Collectors;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityCounter;
+import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 

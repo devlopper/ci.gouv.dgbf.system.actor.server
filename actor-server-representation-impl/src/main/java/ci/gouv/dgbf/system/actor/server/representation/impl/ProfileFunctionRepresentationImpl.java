@@ -7,8 +7,8 @@ import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
-import org.cyk.utility.__kernel__.business.EntitySaver;
-import org.cyk.utility.__kernel__.business.EntitySaver.Arguments;
+import org.cyk.utility.business.server.EntitySaver;
+import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;

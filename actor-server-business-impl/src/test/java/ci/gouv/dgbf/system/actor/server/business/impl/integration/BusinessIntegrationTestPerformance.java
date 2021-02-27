@@ -2,8 +2,8 @@ package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 
 import java.util.Collection;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 
@@ -57,7 +57,7 @@ public class BusinessIntegrationTestPerformance extends AbstractPersistenceArqui
 		
 	//@Test
 	public void executionImputation_readWhereFilter(){
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		for(Integer count : new Integer[] {1,2,3,4,5,10,20,25,50,100,250,500,1000,2500,5000,10000,20000,30000,50000,70000,80000,100000,120000}) {
 			Long t = System.currentTimeMillis();
 			Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments()

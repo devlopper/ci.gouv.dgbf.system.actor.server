@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.utility.__kernel__.representation.DataTransferObjectProcessor;
+import org.cyk.utility.representation.DataTransferObjectProcessor;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener implements Serializable {

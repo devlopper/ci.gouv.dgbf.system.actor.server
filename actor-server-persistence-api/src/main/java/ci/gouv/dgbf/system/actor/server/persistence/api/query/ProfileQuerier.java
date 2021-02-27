@@ -1,10 +1,10 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.From.from;
+import static org.cyk.utility.persistence.query.Language.Order.order;
+import static org.cyk.utility.persistence.query.Language.Select.select;
+import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,15 +17,15 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.persistence.query.Language;
-import org.cyk.utility.__kernel__.persistence.query.Language.Where;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
+import org.cyk.utility.persistence.query.Language;
+import org.cyk.utility.persistence.query.Language.Where;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.server.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -36,7 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
+		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
 				,value = "SELECT t FROM Profile t ORDER BY t.code ASC")
 })
 public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {

@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
-import org.cyk.utility.__kernel__.representation.EntitySaver;
+import org.cyk.utility.representation.EntitySaver;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfilePrivilegeDto;

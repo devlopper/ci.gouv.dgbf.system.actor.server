@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
+import org.cyk.utility.persistence.query.QueryResultMapper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;

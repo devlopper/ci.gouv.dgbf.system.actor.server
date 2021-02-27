@@ -8,8 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
@@ -26,7 +26,7 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
 		//ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
 	@SuppressWarnings("unchecked")

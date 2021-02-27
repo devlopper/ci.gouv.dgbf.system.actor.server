@@ -1,6 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
-import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.junit.jupiter.api.Test;
 

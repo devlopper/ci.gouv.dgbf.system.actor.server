@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 
-import org.cyk.utility.__kernel__.business.EntityCreator;
-import org.cyk.utility.__kernel__.business.EntityUpdater;
-import org.cyk.utility.__kernel__.business.NativeQueryStringExecutor;
+import org.cyk.utility.business.server.EntityCreator;
+import org.cyk.utility.business.server.EntityUpdater;
+import org.cyk.utility.business.server.NativeQueryStringExecutor;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
@@ -459,7 +459,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	public void deleteByFunctions(Collection<Function> functions) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("functions", functions);
 		String queryString = String.format("DELETE FROM POSTE WHERE FONCTION IN (%s)",functions.stream().map(x -> PersistenceHelper.stringifyColumnValue(x.getIdentifier())).collect(Collectors.joining(",")));
-		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.persistence.query.NativeQueryStringExecutor.Arguments()
 				.addQueriesStrings(queryString));
 	}
 	
@@ -477,7 +477,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 
 	@Override
 	public BusinessEntity<ScopeFunction> deleteAll() {
-		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.__kernel__.persistence.query.NativeQueryStringExecutor.Arguments()
+		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.persistence.query.NativeQueryStringExecutor.Arguments()
 				.addQueriesStrings("DELETE FROM POSTE"));
 		return this;
 	}

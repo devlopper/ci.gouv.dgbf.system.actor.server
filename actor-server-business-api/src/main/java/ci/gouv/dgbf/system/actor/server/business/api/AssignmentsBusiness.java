@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
-import org.cyk.utility.__kernel__.business.TransactionResult;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.business.server.TransactionResult;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;

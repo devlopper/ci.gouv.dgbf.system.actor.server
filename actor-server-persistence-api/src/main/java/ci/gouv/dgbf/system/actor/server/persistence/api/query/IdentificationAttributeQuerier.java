@@ -5,13 +5,13 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.persistence.query.TypedQuerier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.query.TypedQuerier;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;

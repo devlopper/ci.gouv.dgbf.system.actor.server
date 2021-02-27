@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;

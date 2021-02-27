@@ -11,11 +11,11 @@ import javax.transaction.Transactional;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.mail.MailSender;
+import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
 

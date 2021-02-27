@@ -22,6 +22,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>org.cyk.jee.utility.persistence</groupId>
+			<artifactId>jee-utility-persistence</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.cyk.jee.utility.persistence.server</groupId>
 			<artifactId>jee-utility-persistence-server</artifactId>
 			<version>0.1.0</version>

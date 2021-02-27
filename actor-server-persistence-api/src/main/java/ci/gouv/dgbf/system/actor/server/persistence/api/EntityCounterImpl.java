@@ -2,9 +2,9 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.EntityCounter;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;

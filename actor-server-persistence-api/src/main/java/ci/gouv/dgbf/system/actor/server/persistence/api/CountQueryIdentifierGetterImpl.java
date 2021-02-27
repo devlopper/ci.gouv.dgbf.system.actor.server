@@ -2,7 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
 
-import org.cyk.utility.__kernel__.persistence.query.CountQueryIdentifierGetter;
+import org.cyk.utility.persistence.query.CountQueryIdentifierGetter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;

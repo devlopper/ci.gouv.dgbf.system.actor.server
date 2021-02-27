@@ -15,7 +15,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.runnable.Runner.Arguments;

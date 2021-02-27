@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.representation.Arguments;
-import org.cyk.utility.__kernel__.representation.DataTransferObjectProcessor;
+import org.cyk.utility.representation.Arguments;
+import org.cyk.utility.representation.DataTransferObjectProcessor;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.report.ReportRepresentation;
 

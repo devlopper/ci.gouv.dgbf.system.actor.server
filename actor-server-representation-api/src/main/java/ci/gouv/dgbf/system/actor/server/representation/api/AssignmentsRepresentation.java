@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;

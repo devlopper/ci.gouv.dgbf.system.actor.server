@@ -1,29 +1,29 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.desc;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.concatCodeName;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.and;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.parenthesis;
+import static org.cyk.utility.persistence.query.Language.Order.desc;
+import static org.cyk.utility.persistence.query.Language.Order.order;
+import static org.cyk.utility.persistence.query.Language.Select.fields;
+import static org.cyk.utility.persistence.query.Language.Select.select;
+import static org.cyk.utility.persistence.query.Language.Select.concatCodeName;
+import static org.cyk.utility.persistence.query.Language.Where.and;
+import static org.cyk.utility.persistence.query.Language.Where.or;
+import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;

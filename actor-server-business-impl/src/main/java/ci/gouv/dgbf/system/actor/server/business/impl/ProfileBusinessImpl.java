@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.security.keycloak.server.Role;
 import org.cyk.utility.security.keycloak.server.RoleManager;

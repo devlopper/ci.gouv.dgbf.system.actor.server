@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;

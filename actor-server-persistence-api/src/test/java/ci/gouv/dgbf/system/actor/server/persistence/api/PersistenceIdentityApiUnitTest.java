@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +24,7 @@ public class PersistenceIdentityApiUnitTest extends AbstractPersistenceUnitTest 
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
 		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
 	@Override

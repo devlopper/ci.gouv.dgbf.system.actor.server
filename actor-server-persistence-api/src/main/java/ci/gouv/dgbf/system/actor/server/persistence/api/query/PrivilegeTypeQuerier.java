@@ -4,17 +4,17 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.server.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 
 @Queries(value = {
-	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = PrivilegeType.class,name = PrivilegeTypeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM PrivilegeType t ORDER BY t.code ASC")
-	,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = PrivilegeType.class,name = PrivilegeTypeQuerier.QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER_ASCENDING,value = "SELECT t FROM PrivilegeType t ORDER BY t.orderNumber ASC")
+	@org.cyk.utility.persistence.server.annotation.Query(tupleClass = PrivilegeType.class,name = PrivilegeTypeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM PrivilegeType t ORDER BY t.code ASC")
+	,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = PrivilegeType.class,name = PrivilegeTypeQuerier.QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER_ASCENDING,value = "SELECT t FROM PrivilegeType t ORDER BY t.orderNumber ASC")
 })
 public interface PrivilegeTypeQuerier extends Querier {
 

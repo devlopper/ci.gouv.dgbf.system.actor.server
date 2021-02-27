@@ -3,7 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;

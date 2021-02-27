@@ -12,10 +12,10 @@ import javax.transaction.Transactional;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 

@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner.Arguments;
 import org.cyk.utility.__kernel__.string.StringHelper;

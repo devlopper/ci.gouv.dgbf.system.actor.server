@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;

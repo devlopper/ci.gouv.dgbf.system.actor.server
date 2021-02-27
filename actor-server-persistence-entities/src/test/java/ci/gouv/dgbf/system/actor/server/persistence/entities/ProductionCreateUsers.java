@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.security.keycloak.server.KeycloakClientGetter;
 import org.cyk.utility.security.keycloak.server.User;
 import org.cyk.utility.security.keycloak.server.UserManager;

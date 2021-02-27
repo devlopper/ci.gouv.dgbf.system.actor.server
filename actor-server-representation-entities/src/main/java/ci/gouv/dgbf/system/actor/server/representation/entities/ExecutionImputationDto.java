@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import lombok.Getter;

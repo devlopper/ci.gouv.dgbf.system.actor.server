@@ -1,17 +1,17 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.parenthesis;
+import static org.cyk.utility.persistence.query.Language.From.from;
+import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.persistence.query.Language;
-import org.cyk.utility.__kernel__.persistence.query.Language.Where;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.Language;
+import org.cyk.utility.persistence.query.Language.Where;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;

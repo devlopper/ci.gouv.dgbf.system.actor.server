@@ -3,8 +3,8 @@ package ci.gouv.dgbf.system.actor.server.business.impl.integration;
 import java.util.Collection;
 import java.util.List;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
 

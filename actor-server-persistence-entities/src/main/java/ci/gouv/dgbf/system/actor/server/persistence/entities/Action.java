@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
-import org.cyk.utility.__kernel__.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;

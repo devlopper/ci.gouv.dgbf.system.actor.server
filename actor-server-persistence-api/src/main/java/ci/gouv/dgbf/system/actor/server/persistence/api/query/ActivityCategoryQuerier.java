@@ -4,20 +4,20 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.persistence.query.annotation.Queries;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.server.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory;
 
 @Queries(value = {
-	@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = ActivityCategory.class,name = ActivityCategoryQuerier.QUERY_NAME_READ,value = "SELECT t FROM ActivityCategory t ORDER BY t.code ASC")
-	//,@org.cyk.utility.__kernel__.persistence.query.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
+	@org.cyk.utility.persistence.server.annotation.Query(tupleClass = ActivityCategory.class,name = ActivityCategoryQuerier.QUERY_NAME_READ,value = "SELECT t FROM ActivityCategory t ORDER BY t.code ASC")
+	//,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
 })
 public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<ActivityCategory> {
 

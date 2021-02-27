@@ -2,8 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
-import org.cyk.utility.__kernel__.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityCounter;
+import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ public class PersistenceRejectedAccountRequestApiUnitTest extends AbstractPersis
 		super.initializeEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
 		ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
-		//org.cyk.utility.__kernel__.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 	}
 	
 	@Override

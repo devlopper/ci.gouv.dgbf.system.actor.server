@@ -1,17 +1,17 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.jpql;
 
 import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.Querier;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction;
