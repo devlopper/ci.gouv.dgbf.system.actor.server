@@ -3,11 +3,14 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.persistence.Persistence;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
+import org.cyk.utility.persistence.EntityManagerFactoryGetterImpl;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.uti
 	@Override
 	protected void initializeEntityManagerFactory(String persistenceUnitName) {
 		super.initializeEntityManagerFactory(persistenceUnitName);
+		EntityManagerFactoryGetterImpl.ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory(persistenceUnitName);
 		ApplicationScopeLifeCycleListener.initialize();
 		//ApplicationScopeLifeCycleListener.initialize();//TODO it is not working when removed
 		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
