@@ -2,18 +2,36 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.cyk.utility.__kernel__.test.weld.AbstractWeldUnitTest;
+import javax.persistence.Persistence;
+
+import org.cyk.utility.__kernel__.security.SecurityHelper;
+import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.persistence.EntityManagerFactoryGetterImpl;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
-public class MailTemplateUnitTest extends AbstractWeldUnitTest {
+public class MailTemplateUnitTest extends AbstractPersistenceUnitTest {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	protected void initializeEntityManagerFactory(String persistenceUnitName) {
+		super.initializeEntityManagerFactory(persistenceUnitName);
+		EntityManagerFactoryGetterImpl.ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory(persistenceUnitName);
+		ApplicationScopeLifeCycleListener.initialize();
+		SecurityHelper.PRINCIPALABLE.set(Boolean.FALSE);
+	}
+	
+	@Override
+	protected String getPersistenceUnitName() {
+		return "default";
+	}
+	
 	@Test
 	public void getRecordedMailMessage(){
 		String text = FreeMarker.getRecordedMailMessage(new AccountRequest().setFirstName("Komenan").setLastNames("Yao Christian")

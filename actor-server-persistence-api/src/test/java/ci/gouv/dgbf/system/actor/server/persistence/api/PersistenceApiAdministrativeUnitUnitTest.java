@@ -10,7 +10,7 @@ import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;

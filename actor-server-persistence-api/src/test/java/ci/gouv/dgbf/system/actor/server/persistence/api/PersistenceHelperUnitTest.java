@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.NativeQueryStringBuilder;
 import org.junit.jupiter.api.Test;

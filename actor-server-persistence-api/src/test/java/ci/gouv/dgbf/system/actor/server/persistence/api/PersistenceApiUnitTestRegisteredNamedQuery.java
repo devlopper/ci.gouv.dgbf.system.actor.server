@@ -1,6 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
-import org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 public class PersistenceApiUnitTestRegisteredNamedQuery extends AbstractPersistenceUnitTest {

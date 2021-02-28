@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
-public abstract class AbstractPersistenceApiUnitTestValidateKeycloak extends org.cyk.utility.__kernel__.test.weld.AbstractPersistenceUnitTest {
+public abstract class AbstractPersistenceApiUnitTestValidateKeycloak extends org.cyk.utility.test.weld.AbstractPersistenceUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

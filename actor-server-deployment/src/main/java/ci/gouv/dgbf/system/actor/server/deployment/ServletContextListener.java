@@ -21,6 +21,8 @@ public class ServletContextListener extends AbstractServletContextListener imple
 
 	@Override
 	public void __initialize__(ServletContext context) {
+		ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
+		
 		VariableHelper.write(VariableName.KEYCLOAK_REALM_NAME, ConfigurationHelper.getValueAsString("KEYCLOAK_REALM"));
 		/*
 		//VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_ENABLE, Boolean.TRUE);

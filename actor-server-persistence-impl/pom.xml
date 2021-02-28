@@ -13,26 +13,6 @@
 	<groupId>ci.gouv.dgbf.system.actor.server.persistence</groupId>
 	<artifactId>actor-server-persistence-impl</artifactId>
 	<packaging>jar</packaging>
-
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/META-INF/persistence.xml</include>
-				</includes>
-			</resource>
-
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.*</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
 	
 	<dependencies>
 		<dependency>
@@ -48,12 +28,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.cyk.jee.utility.persistence.server</groupId>
-			<artifactId>jee-utility-persistence-server</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.cyk.jee.utility.persistence.server.hibernate</groupId>
 			<artifactId>jee-utility-persistence-server-hibernate</artifactId>
 			<version>0.1.0</version>
@@ -64,13 +38,7 @@
 			<artifactId>hibernate-envers</artifactId>
 			<version>${org.hibernate.version}</version>
 		</dependency>
-		<!--
-		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-ehcache</artifactId>
-		    <version>${org.hibernate.version}</version>
-		</dependency>
-		-->
+		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-jcache</artifactId>
@@ -93,6 +61,43 @@
 			<groupId>org.cyk.jee.utility.template.freemarker</groupId>
 			<artifactId>jee-utility-template-freemarker</artifactId>
 			<version>0.1.0</version>
+		</dependency>
+		
+		<!-- Test -->
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.4.12.Final</version>
+			<scope>test</scope>
+		</dependency>
+				
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.marcosemiao.log4jdbc</groupId>
+			<artifactId>log4jdbc-file</artifactId>
+			<version>0.2.0</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.test</groupId>
+			<artifactId>jee-utility-test</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>		
 	
