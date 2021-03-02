@@ -45,58 +45,47 @@
 			<version>0.1.0</version>
 		</dependency>
 		
+		<!-- Test -->
+		
 		<dependency>
-			<groupId>org.cyk.jee.utility.test</groupId>
-			<artifactId>jee-utility-test</artifactId>
+			<groupId>org.cyk.jee.utility.test.business.server</groupId>
+			<artifactId>jee-utility-test-business-server</artifactId>
 			<version>0.1.0</version>
 			<scope>test</scope>
 		</dependency>
+						
+		<!-- Integration Test -->
+		
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-container-bootable</artifactId>
+            <version>3.0.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <version>1.6.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency> 
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+		    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+		    <version>3.1.4</version>
+		    <scope>test</scope>
+		</dependency>
+		
 	</dependencies>	
-	
-	<profiles>
-		<profile>
-			<id>org.cyk.test</id>
-			<properties>
-				<org.cyk.test.classes>ci.gouv.dgbf.system.actor.server.business.impl.integration.DataSourceDefinition</org.cyk.test.classes>
-			</properties>
-			<build>
-				<resources>
-					<resource>
-						<directory>src/test/resources</directory>
-						<filtering>true</filtering>
-						<includes>
-							<include>**/META-INF/persistence.xml</include>
-						</includes>
-					</resource>
-			
-					<resource>
-						<directory>src/test/resources</directory>
-						<filtering>false</filtering>
-						<includes>
-							<include>**/*.*</include>
-						</includes>
-					</resource>
-				</resources>
-			</build>
-			<dependencies>
-				<dependency>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
-					<version>1.4.197</version>
-				</dependency>
-				
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-					<version>5.4.12.Final</version>
-				</dependency>
-				
-				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
-					<version>11.2.0.4</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>	
 </project>
