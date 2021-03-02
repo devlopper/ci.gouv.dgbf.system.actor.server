@@ -27,7 +27,7 @@ import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
@@ -36,8 +36,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 @Queries(value = {
-	@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
-	//,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
+	@org.cyk.utility.persistence.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Function t ORDER BY t.code ASC")
+	//,@org.cyk.utility.persistence.annotation.Query(tupleClass = Function.class,name = FunctionQuerier.QUERY_NAME_COUNT,value = "SELECT COUNT(t.identifier) FROM Function t")
 })
 public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 

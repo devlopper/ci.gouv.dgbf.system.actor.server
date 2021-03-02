@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.NativeQueryStringBuilder;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 
-public class PersistenceHelperUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceHelperUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

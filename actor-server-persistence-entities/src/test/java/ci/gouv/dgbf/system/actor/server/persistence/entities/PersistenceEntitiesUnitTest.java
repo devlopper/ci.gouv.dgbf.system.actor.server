@@ -6,10 +6,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
-public class PersistenceEntitiesUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceEntitiesUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

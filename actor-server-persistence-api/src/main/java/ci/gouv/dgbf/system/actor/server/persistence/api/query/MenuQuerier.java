@@ -12,7 +12,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.security.keycloak.server.Client;
 import org.cyk.utility.security.keycloak.server.ClientManager;
 import org.cyk.utility.security.keycloak.server.Resource;
@@ -24,11 +24,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ
 				,value = "SELECT t FROM Menu t ORDER BY t.code ASC")
-		,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ_BY_SERVICE_IDENTIFIER
+		,@org.cyk.utility.persistence.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ_BY_SERVICE_IDENTIFIER
 			,value = "SELECT t FROM Menu t WHERE t.service.identifier = :"+MenuQuerier.PARAMETER_NAME_SERVICE_IDENTIFIER+" ORDER BY t.code ASC")
-		,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ_BY_SERVICE_CODE
+		,@org.cyk.utility.persistence.annotation.Query(tupleClass = Menu.class,name = MenuQuerier.QUERY_NAME_READ_BY_SERVICE_CODE
 			,value = "SELECT t FROM Menu t WHERE t.service.code = :"+MenuQuerier.PARAMETER_NAME_SERVICE_CODE+" ORDER BY t.code ASC")
 	})
 public interface MenuQuerier extends Querier.CodableAndNamable<Menu> {

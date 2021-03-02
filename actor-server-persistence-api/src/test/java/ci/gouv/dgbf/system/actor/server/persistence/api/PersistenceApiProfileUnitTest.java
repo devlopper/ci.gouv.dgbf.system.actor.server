@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.persistence.query.EntityCreator;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
@@ -23,7 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 
-public class PersistenceApiProfileUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceApiProfileUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

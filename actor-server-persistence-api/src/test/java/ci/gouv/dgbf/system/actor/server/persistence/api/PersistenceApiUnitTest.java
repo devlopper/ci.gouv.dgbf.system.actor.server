@@ -10,13 +10,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.security.SecurityHelper;
 import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.random.RandomHelper;
-import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
@@ -45,7 +44,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public class PersistenceApiUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceApiUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

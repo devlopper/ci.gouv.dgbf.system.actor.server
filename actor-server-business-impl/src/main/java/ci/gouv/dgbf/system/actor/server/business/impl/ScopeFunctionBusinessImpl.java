@@ -20,7 +20,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.PersistenceHelper;
+import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;

@@ -8,7 +8,6 @@ import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -18,7 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
-public class PersistenceApiScopeFunctionUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceApiScopeFunctionUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

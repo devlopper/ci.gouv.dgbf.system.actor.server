@@ -46,7 +46,7 @@ public class ActorProfileRepresentationImpl extends AbstractRepresentationEntity
 								updatables.add(actorProfile);
 						}
 						Arguments<ActorProfile> arguments = new Arguments<ActorProfile>();
-						arguments.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<ActorProfile>().setCreatables(creatables)
+						arguments.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<ActorProfile>().setCreatables(creatables)
 								.setUpdatables(updatables).setDeletables(deletables));
 						EntitySaver.getInstance().save(ActorProfile.class, arguments);
 					}

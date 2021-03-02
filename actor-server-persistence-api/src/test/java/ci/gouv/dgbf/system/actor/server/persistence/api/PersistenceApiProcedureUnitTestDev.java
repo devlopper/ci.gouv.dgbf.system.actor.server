@@ -1,12 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
-import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 
-public class PersistenceApiProcedureUnitTestDev extends AbstractPersistenceApiUnitTestValidate {
+public class PersistenceApiProcedureUnitTestDev extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 	
 	@Override

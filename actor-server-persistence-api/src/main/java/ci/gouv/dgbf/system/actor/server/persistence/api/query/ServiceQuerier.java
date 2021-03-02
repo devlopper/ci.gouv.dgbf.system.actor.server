@@ -13,7 +13,7 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.security.keycloak.server.Client;
 import org.cyk.utility.security.keycloak.server.ClientManager;
@@ -21,7 +21,7 @@ import org.cyk.utility.security.keycloak.server.ClientManager;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Service.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Service t ORDER BY t.code ASC")
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = Service.class,name = FunctionQuerier.QUERY_NAME_READ,value = "SELECT t FROM Service t ORDER BY t.code ASC")
 	})
 public interface ServiceQuerier extends Querier.CodableAndNamable<Service> {
 

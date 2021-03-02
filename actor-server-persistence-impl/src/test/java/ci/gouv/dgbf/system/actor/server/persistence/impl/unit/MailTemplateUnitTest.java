@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.persistence.Persistence;
 
 import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.cyk.utility.persistence.EntityManagerFactoryGetterImpl;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
-public class MailTemplateUnitTest extends AbstractPersistenceUnitTest {
+public class MailTemplateUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

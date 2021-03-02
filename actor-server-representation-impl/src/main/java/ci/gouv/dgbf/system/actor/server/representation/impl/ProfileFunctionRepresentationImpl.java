@@ -44,7 +44,7 @@ public class ProfileFunctionRepresentationImpl extends AbstractRepresentationEnt
 			@Override
 			public void run() {
 				Arguments<ProfileFunction> arguments = new Arguments<ProfileFunction>();
-				arguments.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<ProfileFunction>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
+				arguments.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<ProfileFunction>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
 				EntitySaver.getInstance().save(ProfileFunction.class, arguments);
 			}
 		});

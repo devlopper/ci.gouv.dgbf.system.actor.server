@@ -7,13 +7,13 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = FunctionType.class,name = FunctionTypeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM FunctionType t ORDER BY t.code ASC")
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = FunctionType.class,name = FunctionTypeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM FunctionType t ORDER BY t.code ASC")
 })
 public interface FunctionTypeQuerier extends Querier {
 

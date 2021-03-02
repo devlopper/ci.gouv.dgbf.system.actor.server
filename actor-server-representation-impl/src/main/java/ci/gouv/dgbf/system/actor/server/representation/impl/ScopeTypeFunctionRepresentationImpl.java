@@ -46,7 +46,7 @@ public class ScopeTypeFunctionRepresentationImpl extends AbstractRepresentationE
 						}
 						
 						Arguments<ScopeTypeFunction> arguments = new Arguments<ScopeTypeFunction>();
-						arguments.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<ScopeTypeFunction>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
+						arguments.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<ScopeTypeFunction>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
 						EntitySaver.getInstance().save(ScopeTypeFunction.class, arguments);
 					}
 				};

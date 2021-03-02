@@ -51,7 +51,7 @@ public class ProfilePrivilegeRepresentationImpl extends AbstractRepresentationEn
 			@Override
 			public void run() {
 				Arguments<ProfilePrivilege> arguments = new Arguments<ProfilePrivilege>();
-				arguments.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<ProfilePrivilege>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
+				arguments.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<ProfilePrivilege>().setCreatables(creatables).setUpdatables(updatables).setDeletables(deletables));
 				EntitySaver.getInstance().save(ProfilePrivilege.class, arguments);
 			}
 		});

@@ -8,9 +8,10 @@ import javax.persistence.EntityManager;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
+import org.cyk.utility.persistence.query.EntitySaver;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class EntitySaverImpl extends org.cyk.utility.__kernel__.persistence.EntitySaver.AbstractImpl implements Serializable {
+public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Serializable {
 
 	@Override
 	protected <T> void create(Class<T> tupleClass,Collection<T> collection, Listener<T> listener, EntityManager entityManager) {
@@ -26,6 +27,5 @@ public class EntitySaverImpl extends org.cyk.utility.__kernel__.persistence.Enti
 			__inject__(ProfileFunctionPersistence.class).deleteMany(CollectionHelper.cast(ProfileFunction.class, collection));
 		else
 			super.delete(tupleClass, collection, listener, entityManager);
-	}
-	
+	}	
 }

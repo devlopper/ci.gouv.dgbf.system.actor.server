@@ -7,16 +7,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.__kernel__.security.SecurityHelper;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
+import org.cyk.utility.persistence.query.EntityCreator;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType;
 
-public class PersistenceApiPrivilegeUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceApiPrivilegeUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

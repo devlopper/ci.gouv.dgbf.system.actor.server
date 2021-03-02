@@ -10,13 +10,12 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 
-public class PersistenceIdentityApiUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceIdentityApiUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

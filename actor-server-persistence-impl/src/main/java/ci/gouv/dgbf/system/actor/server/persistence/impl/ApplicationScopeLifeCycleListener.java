@@ -7,7 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
-import org.cyk.utility.__kernel__.persistence.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.hibernate.Initializer;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -16,8 +16,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	@Override
 	public void __initialize__(Object object) {
 		//ClientManager.IDENTIFIERS_EXCLUDABLE.addAll(CollectionHelper.listOf(Service.CODE_MIC_ACTEUR));
-		
-		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class,ProcedureExecutor.class);
+		Initializer.initialize();
+		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class);
 		
 		__inject__(org.cyk.utility.server.persistence.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
 		__inject__(ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.class).initialize(null);

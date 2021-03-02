@@ -22,15 +22,15 @@ import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM Privilege t ORDER BY t.code ASC")
-		,@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_BY_SYSTEM_IDENTIFIERS
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING,value = "SELECT t FROM Privilege t ORDER BY t.code ASC")
+		,@org.cyk.utility.persistence.annotation.Query(tupleClass = Privilege.class,name = PrivilegeQuerier.QUERY_NAME_READ_BY_SYSTEM_IDENTIFIERS
 			,value = "SELECT t FROM Privilege t WHERE t.identifier IN :identifiers ORDER BY t.code ASC")
 })
 public interface PrivilegeQuerier extends Querier {

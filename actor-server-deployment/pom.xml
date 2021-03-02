@@ -77,6 +77,39 @@
 			<artifactId>jee-utility-server-deployment</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<!-- Test -->
+		
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-container-bootable</artifactId>
+            <version>3.0.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <version>1.6.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency> 
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+		    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+		    <version>3.1.4</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>		
 	
 	<profiles>
@@ -150,5 +183,45 @@
 				<cyk.variable.system.uri.host>mic-acteur-api</cyk.variable.system.uri.host>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>test.dev</id>
+			<properties>
+				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
+				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
+			</properties>
+			<build>
+		        <plugins>
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-failsafe-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <id>jaxrs.surefire</id>
+		                        <goals>
+		                            <goal>integration-test</goal>
+		                            <goal>verify</goal>
+		                        </goals>
+		                        <configuration>
+		                            <failIfNoTests>true</failIfNoTests>
+		                            <environmentVariables>
+		                            	<ORACLE_DATASOURCE>actor/server</ORACLE_DATASOURCE>
+		                            	<ORACLE_USER>SIIBC_Actor</ORACLE_USER>
+		                            	<ORACLE_PASSWORD>actor</ORACLE_PASSWORD>
+		                            	<ORACLE_URL>jdbc:oracle:thin:@localhost:1521:XE</ORACLE_URL>
+		                            </environmentVariables>
+		                            <systemPropertyVariables>
+		                                <bootable.jar>${project.build.directory}/ROOT-bootable.jar</bootable.jar>
+		                                <arquillian.xml>arquillian.xml</arquillian.xml>
+		                            </systemPropertyVariables>
+		                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+		                        </configuration>
+		                    </execution>
+		                </executions>
+		            </plugin>
+		        </plugins>
+		    </build>
+		</profile>
+		
 	</profiles>
 </project>

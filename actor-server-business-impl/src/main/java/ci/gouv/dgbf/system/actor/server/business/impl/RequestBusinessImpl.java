@@ -25,7 +25,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
-import org.cyk.utility.__kernel__.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
@@ -116,8 +116,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	}
 	
 	private void saveBudgetariesScopeFunctions(Request request,EntityManager entityManager) {
-		org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<RequestScopeFunction> requestScopeFunctionsSaverArguments =
-				new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<RequestScopeFunction>().setEntityManager(entityManager);
+		org.cyk.utility.persistence.query.EntitySaver.Arguments<RequestScopeFunction> requestScopeFunctionsSaverArguments =
+				new org.cyk.utility.persistence.query.EntitySaver.Arguments<RequestScopeFunction>().setEntityManager(entityManager);
 		requestScopeFunctionsSaverArguments.setExistingCollection(RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier())));
 		requestScopeFunctionsSaverArguments.setIsNotBelogingToProvidedCollectionDeletable(Boolean.TRUE);
 		//build provided budgetaries scope functions
@@ -144,7 +144,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				}
 			}
 		}
-		org.cyk.utility.__kernel__.persistence.EntitySaver.getInstance().save(RequestScopeFunction.class, requestScopeFunctionsSaverArguments);
+		org.cyk.utility.persistence.query.EntitySaver.getInstance().save(RequestScopeFunction.class, requestScopeFunctionsSaverArguments);
 	}
 	
 	@Override @Transactional
@@ -161,7 +161,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 		EntityManager entityManager = __inject__(EntityManager.class);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setCreatables(List.of(request))));
 		saveBudgetariesScopeFunctions(request,entityManager);
 
@@ -176,7 +176,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		EntityManager entityManager = __inject__(EntityManager.class);
 		saveBudgetariesScopeFunctions(request,entityManager);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setUpdatables(List.of(request))));
 	}
 	
@@ -185,7 +185,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		validateRecord(request,Boolean.FALSE);
 		request.set__auditFunctionality__("Modification Photo");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
 	}
 	
@@ -203,7 +203,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		validateRecord(request,Boolean.FALSE);
 		request.set__auditFunctionality__("Modification Acte de nomination");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
 	}
 	
@@ -220,7 +220,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	public void recordSignature(Request request) {
 		validateRecord(request,Boolean.FALSE);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
 	}
 	
@@ -237,7 +237,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	public void recordSignedRequestSheet(Request request) {
 		validateRecord(request,Boolean.FALSE);
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>()
 						.setUpdatables(List.of(request))));
 	}
 	
@@ -258,7 +258,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_SUBMITTED));
 		request.set__auditFunctionality__("Soumission");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
 		
 		//Non blocking operations
 		try {
@@ -285,7 +285,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		request.set__auditFunctionality__("Retour");
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-				.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
 		
 		//Non blocking operations
 		try {
@@ -429,7 +429,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-			.setPersistenceArguments(new org.cyk.utility.__kernel__.persistence.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+			.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
 	}
 	
 	@Override @Transactional

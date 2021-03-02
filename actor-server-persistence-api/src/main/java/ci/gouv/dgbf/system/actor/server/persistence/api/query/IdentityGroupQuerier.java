@@ -5,13 +5,13 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = IdentityGroup.class,name = IdentityGroupQuerier.QUERY_NAME_READ,value = "SELECT t FROM IdentityGroup t ORDER BY t.name ASC")
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = IdentityGroup.class,name = IdentityGroupQuerier.QUERY_NAME_READ,value = "SELECT t FROM IdentityGroup t ORDER BY t.name ASC")
 })
 public interface IdentityGroupQuerier extends Querier {
 

@@ -4,12 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityCreator;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest;
 
-public class PersistenceRejectedAccountRequestApiUnitTest extends AbstractPersistenceUnitTest {
+public class PersistenceRejectedAccountRequestApiUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

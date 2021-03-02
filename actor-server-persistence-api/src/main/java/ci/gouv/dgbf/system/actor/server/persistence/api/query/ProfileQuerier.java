@@ -25,7 +25,7 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.server.annotation.Queries;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -36,7 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Service;
 
 @Queries(value = {
-		@org.cyk.utility.persistence.server.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
+		@org.cyk.utility.persistence.annotation.Query(tupleClass = Profile.class,name = ProfileQuerier.QUERY_NAME_READ
 				,value = "SELECT t FROM Profile t ORDER BY t.code ASC")
 })
 public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {

@@ -21,7 +21,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSection
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
-public abstract class AbstractPersistenceApiUnitTestValidate extends org.cyk.utility.test.weld.AbstractPersistenceUnitTest {
+public abstract class AbstractPersistenceApiUnitTestValidate extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override

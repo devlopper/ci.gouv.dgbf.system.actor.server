@@ -10,10 +10,9 @@ import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.security.keycloak.server.KeycloakClientGetter;
 import org.cyk.utility.security.keycloak.server.User;
 import org.cyk.utility.security.keycloak.server.UserManager;
-import org.cyk.utility.test.weld.AbstractPersistenceUnitTest;
 import org.junit.jupiter.api.Test;
 
-public class ProductionCreateUsers extends AbstractPersistenceUnitTest {
+public class ProductionCreateUsers extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
 	@Override
