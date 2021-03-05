@@ -47,6 +47,7 @@ import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
@@ -492,8 +493,28 @@ public interface RequestQuerier extends Querier {
 		public Collection<Object[]> readFromViewByElectronicMailAddresses(Collection<String> emails) {
 			if(CollectionHelper.isEmpty(emails))
 				return null;
-			return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT email,message FROM V_APP_EX_COMPTE_ERREUR WHERE email IN :emails")
-					.setParameter("emails", emails).getResultList();
+			return new ReaderByCollection.AbstractImpl<String, Object[]>(){
+
+				@Override
+				protected Collection<Object[]> __read__(Collection<String> values) {
+					return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT email,message FROM V_APP_EX_COMPTE_ERREUR WHERE email IN :emails")
+							.setParameter("emails", values).getResultList();
+				}				
+			}.read(emails);
+			
+			/*
+			Collection<Object[]> collection = null;
+			for(List<String> list : CollectionHelper.getBatches((List<String>) emails, 1000)) {
+				Collection<Object[]> result = EntityManagerGetter.getInstance().get().createNativeQuery("SELECT email,message FROM V_APP_EX_COMPTE_ERREUR WHERE email IN :emails")
+						.setParameter("emails", list).getResultList();
+				if(CollectionHelper.isNotEmpty(result)) {
+					if(collection == null)
+						collection = new ArrayList<>();
+					collection.addAll(result);
+				}
+			}
+			return collection;
+			*/
 		}
 		
 		@Override
@@ -549,17 +570,10 @@ public interface RequestQuerier extends Querier {
 		QueryHelper.addQueries(
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 			,Query.FIELD_TUPLE_CLASS,Request.class,Query.FIELD_RESULT_CLASS,Request.class
-			,Query.FIELD_VALUE,jpql(select(
-					fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
-							,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
-							,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE)
-					,fields("a",Actor.FIELD_CODE),concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
-					,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au"),concatCodeName("section")
-					)
-					,getReadWhereFilterFromWhere(),getOrderBy())
+			,Query.FIELD_VALUE,getReadWhereFilter()
 			).setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES
 					,Request.FIELD_REGISTRATION_NUMBER,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
-					,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING
+					,Request.FIELD_CREATION_DATE_AS_STRING,Request.FIELD_PROCESSING_DATE_AS_STRING,Request.FIELD_ACCOUNT_CREATION_DATE,Request.FIELD_ACCOUNT_CREATION_MESSAGE
 					,Request.FIELD_ACTOR_CODE,Request.FIELD_ACTOR_NAMES,Request.FIELD_TYPE_AS_STRING,Request.FIELD_STATUS_AS_STRING
 					,Request.FIELD_ADMINISTRATIVE_UNIT_AS_STRING,Request.FIELD_SECTION_AS_STRING)
 				
@@ -590,6 +604,17 @@ public interface RequestQuerier extends Querier {
 				,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER, "SELECT t.signedRequestSheet FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
 		);
+	}
+	
+	static String getReadWhereFilter() {
+		return jpql(select(
+				fields("t",Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+						,Request.FIELD_ELECTRONIC_MAIL_ADDRESS,Request.FIELD_MOBILE_PHONE_NUMBER,Request.FIELD_STATUS
+						,Request.FIELD_CREATION_DATE,Request.FIELD_PROCESSING_DATE,Request.FIELD_ACCOUNT_CREATION_DATE,Request.FIELD_ACCOUNT_CREATION_MESSAGE)
+				,fields("a",Actor.FIELD_CODE),concat("t", Actor.FIELD_FIRST_NAME,Actor.FIELD_LAST_NAMES) 
+				,fields("rt",RequestType.FIELD_NAME),fields("rs",RequestStatus.FIELD_NAME),concatCodeName("au"),concatCodeName("section")
+				)
+				,getReadWhereFilterFromWhere(),getOrderBy());
 	}
 	
 	static String getReadWhereFilterFromWhere() {

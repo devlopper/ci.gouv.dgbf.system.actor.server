@@ -26,6 +26,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private String localityAsString;
 	
 	private Integer numberOfActor;
+	private ArrayList<String> actorsNames;
 	private ArrayList<String> actorsAsStrings;
 	
 	private Boolean shared;

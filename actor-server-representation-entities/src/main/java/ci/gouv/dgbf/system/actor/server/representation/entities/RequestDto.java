@@ -21,6 +21,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private RequestStatusDto status;
 	private Boolean authenticationRequired;
 	private String statusAsString;
+	private String accountCreationDateAsString;
 	private String accountCreationMessage;
 	private String authenticationRequiredAsString;
 	private String creationDateAsString;

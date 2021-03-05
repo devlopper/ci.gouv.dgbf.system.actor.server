@@ -37,6 +37,7 @@ import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
+import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -219,14 +220,28 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		
 		@Override
 		public Collection<ScopeFunction> readCodesNamesParentsIdentifiersByIdentifiers(Collection<String> identifiers) {
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS
-					,PARAMETER_NAME_IDENTIFIERS,identifiers);
+			return new ReaderByCollection.AbstractImpl<String, ScopeFunction>(){
+				@Override
+				protected Collection<ScopeFunction> __read__(Collection<String> values) {
+					return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS
+							,PARAMETER_NAME_IDENTIFIERS,values);
+				}				
+			}.read(identifiers);	
+			//return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_PARENTS_IDENTIFIERS_BY_IDENTIFIERS
+			//		,PARAMETER_NAME_IDENTIFIERS,identifiers);
 		}
 		
 		@Override
 		public Collection<ScopeFunction> readCodesNamesByParentsIdentifiers(Collection<String> identifiers) {
-			return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS
-					,PARAMETER_NAME_PARENTS_IDENTIFIERS,identifiers);
+			return new ReaderByCollection.AbstractImpl<String, ScopeFunction>(){
+				@Override
+				protected Collection<ScopeFunction> __read__(Collection<String> values) {
+					return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS
+							,PARAMETER_NAME_PARENTS_IDENTIFIERS,values);
+				}				
+			}.read(identifiers);			
+			//return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_CODES_NAMES_BY_PARENTS_IDENTIFIERS
+			//		,PARAMETER_NAME_PARENTS_IDENTIFIERS,identifiers);
 		}
 		
 		@Override
@@ -370,6 +385,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Collection<ScopeFunction> readWhereFilterForUI(QueryExecutorArguments arguments) {
 			if(arguments == null)
 				arguments = QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ_WHERE_FILTER_FOR_UI);
+			if(arguments.getQuery() == null)
+				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
 			prepareWhereFilter(arguments);
 			Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 			if(CollectionHelper.isEmpty(scopeFunctions))
@@ -438,15 +455,23 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		public Collection<Object[]> readFromViewByCodes(Collection<String> codes) {
 			if(CollectionHelper.isEmpty(codes))
 				return null;
-			return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT poste,email,message FROM V_APP_EX_FB WHERE poste IN :codes")
-					.setParameter("codes", codes).getResultList();
+			return new ReaderByCollection.AbstractImpl<String, Object[]>() {
+				@Override
+				protected Collection<Object[]> __read__(Collection<String> values) {
+					return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT poste,email,civilite_nom_prenoms FROM V_APP_EX_FB WHERE poste IN :codes")
+							.setParameter("codes", values).getResultList();
+				}
+				
+			}.read(codes);
+			//return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT poste,email,civilite_nom_prenoms FROM V_APP_EX_FB WHERE poste IN :codes")
+			//		.setParameter("codes", codes).getResultList();
 		}
 		
 		@Override
-		public Collection<Object[]> readFromViewByCodes(String... emails) {
-			if(ArrayHelper.isEmpty(emails))
+		public Collection<Object[]> readFromViewByCodes(String... codes) {
+			if(ArrayHelper.isEmpty(codes))
 				return null;
-			return readFromViewByCodes(CollectionHelper.listOf(emails));
+			return readFromViewByCodes(CollectionHelper.listOf(codes));
 		}
 		
 		@Override
@@ -561,7 +586,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 						, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
 						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_PARENT_IDENTIFIER,ScopeFunction.FIELD_SCOPE_AS_STRING
-						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_ACTORS_CODES)
 				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
 				
@@ -622,6 +647,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				select(				
 					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR,ScopeFunction.FIELD_PARENT_IDENTIFIER)
 					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+					,Select.fields("t",ScopeFunction.FIELD_ACTORS_CODES)
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()

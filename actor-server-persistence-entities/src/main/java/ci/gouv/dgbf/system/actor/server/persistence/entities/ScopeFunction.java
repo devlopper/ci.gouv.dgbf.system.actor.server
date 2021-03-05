@@ -71,7 +71,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	//@Transient private String activityCode;
 	
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	@Column(name = COLUMN_ACTORS_CODES) private String actorsCodes;
+	@Transient private Collection<String> actorsNames;
+	
 	@Transient private Collection<String> actorsAsStrings;
+	@Transient private String actorAsString;
 	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
 	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
 	
@@ -96,8 +100,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private String requestedAsString;
 	@Transient private Boolean granted;
 	@Transient private String grantedAsString;
-	
-	@Transient private String actorAsString;
+		
 	@Transient private String assignmentToActorMessage;
 	
 	public Byte incrementChildrenCount() {		
@@ -310,6 +313,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_ACTIVITY_IDENTIFIER = "activityIdentifier";
 	
 	public static final String FIELD_NUMBER_OF_ACTOR = "numberOfActor";
+	public static final String FIELD_ACTORS_CODES = "actorsCodes";
+	public static final String FIELD_ACTORS_NAMES = "actorsNames";
 	public static final String FIELD_ACTORS_AS_STRINGS = "actorsAsStrings";
 	public static final String FIELD_SHARED = "shared";
 	public static final String FIELD_SHARED_AS_STRING = "sharedAsString";
@@ -332,6 +337,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_FUNCTION = "FONCTION";
 	public static final String COLUMN_LOCALITY = "LOCALITE";
 	public static final String COLUMN_NUMBER_OF_ACTOR = "NOMBRE_ACTEUR";
+	public static final String COLUMN_ACTORS_CODES = "NOMS_UTILISATEURS";
 	public static final String COLUMN_PARENT_IDENTIFIER = "PARENT";
 	public static final String COLUMN_ACTIVITY_IDENTIFIER = "ACTIVITE";
 	public static final String COLUMN_DOCUMENT_NUMBER = "NUMERO_DOCUMENT";

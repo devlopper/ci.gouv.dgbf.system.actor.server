@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.persistence.query.EntityCreator;
-import org.cyk.utility.test.persistence.server.AbstractUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;

@@ -55,12 +55,15 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	/* Initialization */
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
-	@Transient private String typeAsString,creationDateAsString;
+	@Transient private String typeAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
 	@Transient private String statusAsString;
-	@Transient private String accountCreationMessage;
+	@Column(name = COLUMN_ACCOUNT_CREATION_DATE) @NotNull private LocalDateTime accountCreationDate;
+	@Transient private String accountCreationDateAsString;
+	@Column(name = COLUMN_ACCOUNT_CREATION_MESSAGE) private String accountCreationMessage;
 	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
+	@Transient private String creationDateAsString;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	@Transient private String authenticationRequiredAsString;
 	@Column(name = COLUMN_ACCESS_TOKEN) private String accessToken;
@@ -215,6 +218,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
+	public static final String FIELD_ACCOUNT_CREATION_DATE = "accountCreationDate";
+	public static final String FIELD_ACCOUNT_CREATION_DATE_AS_STRING = "accountCreationDateAsString";
 	public static final String FIELD_ACCOUNT_CREATION_MESSAGE = "accountCreationMessage";
 	public static final String FIELD_ACCEPTED = "accepted";
 	public static final String FIELD_REJECTED = "rejected";
@@ -284,6 +289,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_TYPE = "TYPE";
 	public static final String COLUMN_STATUS = "STATUT";
+	public static final String COLUMN_ACCOUNT_CREATION_DATE = "DATE_CREATION_COMPTE";
+	public static final String COLUMN_ACCOUNT_CREATION_MESSAGE = "MESSAGE_CREATION_COMPTE";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";
 	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
 	public static final String COLUMN_ACCESS_TOKEN = "jeton_acces";

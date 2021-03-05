@@ -22,19 +22,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.cyk.jee.utility.persistence</groupId>
-			<artifactId>jee-utility-persistence</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.cyk.jee.utility.persistence.server</groupId>
-			<artifactId>jee-utility-persistence-server</artifactId>
-			<version>0.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.cyk.jee.utility.persistence.server.hibernate</groupId>
 			<artifactId>jee-utility-persistence-server-hibernate</artifactId>
 			<version>0.1.0</version>
@@ -46,6 +33,14 @@
 			<artifactId>hibernate-envers</artifactId>
 			<version>${org.hibernate.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Test -->
+		<dependency>
+			<groupId>org.cyk.jee.utility.test.persistence.server</groupId>
+			<artifactId>jee-utility-test-persistence-server</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
@@ -73,20 +68,6 @@
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.4</version>
-			<scope>test</scope>
-		</dependency>
-				
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
-			<version>4.8.3.Final</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.cyk.jee.utility.test</groupId>
-			<artifactId>jee-utility-test</artifactId>
-			<version>0.1.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

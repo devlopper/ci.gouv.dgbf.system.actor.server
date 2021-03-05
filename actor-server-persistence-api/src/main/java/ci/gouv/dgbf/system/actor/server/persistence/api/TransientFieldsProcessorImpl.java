@@ -8,8 +8,8 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -35,13 +35,11 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	
 	public void processScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
 		Collection<Object[]> fromViewArrays = readFromViewByScopeFunctions(scopeFunctions, fieldsNames);
-		//Collection<RequestScopeFunction> requestScopeFunctions = null;
-		//if(fieldsNames.contains(ScopeFunction.FIELD_REQUESTED) || fieldsNames.contains(ScopeFunction.FIELD_GRANTED))
-		//	requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+		Collection<String> scopeFunctionsIdentifiers = getScopeFunctionsIdentifiers(scopeFunctions, fieldsNames);
 		for(String fieldName : fieldsNames) {
 			if(ScopeFunction.FIELD_REQUESTED.equals(fieldName)) {
 				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance()
-						.countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));								
+						.countWhereRequestedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers);								
 				for(ScopeFunction scopeFunction : scopeFunctions) {
 					for(Object[] array : arrays) {
 						if(array[0].equals(scopeFunction.getIdentifier())) {
@@ -53,7 +51,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				}			
 			}else if(ScopeFunction.FIELD_GRANTED.equals(fieldName)) {				
 				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance()
-						.countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+						.countWhereGrantedIsTrueGroupByScopeFunctionIdentifierByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers);
 				for(ScopeFunction scopeFunction : scopeFunctions) {
 					for(Object[] array : arrays) {
 						if(array[0].equals(scopeFunction.getIdentifier())) {
@@ -74,15 +72,38 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 						for(Object[] array : fromViewArrays) {
 							if(scopeFunction.getCode().equals(array[0])) {
 								scopeFunction.setActorAsString((String)array[1]);
-								scopeFunction.setAssignmentToActorMessage((String)array[2]);
 								break;
 							}
 						}
 					}
 				}				
+			}else if(ScopeFunction.FIELD_ACTORS_AS_STRINGS.equals(fieldName)) {
+				if(CollectionHelper.isNotEmpty(fromViewArrays)) {
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						scopeFunction.setActorsAsStrings(fromViewArrays.stream()
+								.filter(x -> x[0].equals(scopeFunction.getCode()))
+								.map(x -> x[2].toString())
+								.collect(Collectors.toList()));
+					}
+				}				
+			}else if(ScopeFunction.FIELD_ACTORS_NAMES.equals(fieldName)) {
+				if(CollectionHelper.isNotEmpty(fromViewArrays)) {
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						scopeFunction.setActorsNames(fromViewArrays.stream()
+								.filter(x -> x[0].equals(scopeFunction.getCode()))
+								.map(x -> x[2].toString())
+								.collect(Collectors.toList()));
+					}
+				}				
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
 		}
+	}
+	
+	public static Collection<String> getScopeFunctionsIdentifiers(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
+		if(CollectionUtils.containsAny(fieldsNames, ScopeFunction.FIELD_REQUESTED, ScopeFunction.FIELD_GRANTED))
+			return FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions);
+		return null;
 	}
 	
 	public void processRequests(Collection<Request> requests,Collection<String> fieldsNames) {		
@@ -149,22 +170,16 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 							)
 							.collect(Collectors.toList())
 							);
-			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
-				Collection<Object[]> arrays = RequestQuerier.getInstance().readFromViewByRequests(requests);
+			}else if(Request.FIELD_ACCOUNT_CREATION_DATE_AS_STRING.equals(fieldName)) {					
 				for(Request request : requests)
-					for(Object[] array : arrays) {
-						if(request.getElectronicMailAddress().equals(array[0])) {
-							request.setAccountCreationMessage((String)array[1]);
-							break;
-						}
-					}
+					request.setAccountCreationDateAsString(TimeHelper.formatLocalDateTime(request.getAccountCreationDate()));
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
 		}
 	}
 	
 	private static Collection<Object[]> readFromViewByScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
-		if(CollectionUtils.containsAny(fieldsNames, ScopeFunction.FIELD_ACTOR_AS_STRING))
+		if(CollectionUtils.containsAny(fieldsNames, ScopeFunction.FIELD_ACTORS_NAMES, ScopeFunction.FIELD_ACTORS_AS_STRINGS))
 			return ScopeFunctionQuerier.getInstance().readFromViewByScopeFunctions(scopeFunctions);
 		return null;
 	}
