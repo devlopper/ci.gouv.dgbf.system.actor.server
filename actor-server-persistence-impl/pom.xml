@@ -63,7 +63,13 @@
 			<version>0.1.0</version>
 		</dependency>
 		
-		<!-- Test -->
+		<!-- Test -->		
+		<dependency>
+			<groupId>org.cyk.jee.utility.test.persistence.server</groupId>
+			<artifactId>jee-utility-test-persistence-server</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -91,29 +97,6 @@
 			<artifactId>log4jdbc-file</artifactId>
 			<version>0.2.0</version>
 			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.cyk.jee.utility.test</groupId>
-			<artifactId>jee-utility-test</artifactId>
-			<version>0.1.0</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>		
-	
-	<profiles>
-		<profile>
-			<id>org.cyk.test</id>
-			<properties>
-				<org.cyk.test.classes>ci.gouv.dgbf.system.actor.server.persistence.impl.integration.DataSourceDefinition</org.cyk.test.classes>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
-					<version>1.4.197</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>	
+		</dependency>	
+	</dependencies>	
 </project>

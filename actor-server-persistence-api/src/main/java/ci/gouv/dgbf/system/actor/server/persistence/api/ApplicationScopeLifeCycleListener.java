@@ -11,7 +11,7 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.annotation.Oracle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.CountQueryIdentifierGetter;
 import org.cyk.utility.persistence.query.EntityCounter;
@@ -80,8 +80,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	public void __destroy__(Object object) {}	
 
 	public static void initialize() {
-		if(Boolean.TRUE.equals(INITIALIZED.get()))
-			return;
+		//if(Boolean.TRUE.equals(INITIALIZED.get()))
+		//	return;
 		ci.gouv.dgbf.system.actor.server.persistence.entities.ApplicationScopeLifeCycleListener.initialize();
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class
 				,EntitySaver.class,CountQueryIdentifierGetter.class,TransientFieldsProcessor.class);
@@ -170,8 +170,10 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		IdentificationAttributeQuerier.initialize();
 		IdentificationFormQuerier.initialize();
 		IdentificationFormAttributeQuerier.initialize();
-		INITIALIZED.set(Boolean.TRUE);
+		//INITIALIZED.set(Boolean.TRUE);
+		
+		LogHelper.logInfo("Named queries created", ApplicationScopeLifeCycleListener.class);
 	}
 	
-	public static final Value INITIALIZED = new Value();
+	//public static final Value INITIALIZED = new Value();
 }

@@ -48,7 +48,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.RejectedAccountRequestPe
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;

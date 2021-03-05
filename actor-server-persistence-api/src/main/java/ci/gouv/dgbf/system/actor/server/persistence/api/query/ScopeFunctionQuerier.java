@@ -21,7 +21,10 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language.From;
 import org.cyk.utility.persistence.query.Language.Order;
 import org.cyk.utility.persistence.query.Language.Select;
@@ -33,9 +36,6 @@ import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -143,6 +143,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.documentNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
 				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
 	}
+	
+	Collection<Object[]> readFromViewByCodes(Collection<String> codes);
+	Collection<Object[]> readFromViewByCodes(String...codes);
+	Collection<Object[]> readFromViewByScopeFunctions(Collection<ScopeFunction> scopeFunctions);
+	Collection<Object[]> readFromViewByScopeFunctions(ScopeFunction...scopeFunctions);
 	
 	/**/
 	
@@ -426,6 +431,36 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI).addFilterField(PARAMETER_NAME_IDENTIFIER,identifier));
 			listenReadForUI(scopeFunction);
 			return scopeFunction;
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public Collection<Object[]> readFromViewByCodes(Collection<String> codes) {
+			if(CollectionHelper.isEmpty(codes))
+				return null;
+			return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT poste,email,message FROM V_APP_EX_FB WHERE poste IN :codes")
+					.setParameter("codes", codes).getResultList();
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByCodes(String... emails) {
+			if(ArrayHelper.isEmpty(emails))
+				return null;
+			return readFromViewByCodes(CollectionHelper.listOf(emails));
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByScopeFunctions(Collection<ScopeFunction> scopeFunctions) {
+			if(CollectionHelper.isEmpty(scopeFunctions))
+				return null;
+			return readFromViewByCodes(scopeFunctions.stream().filter(x -> StringHelper.isNotBlank(x.getCode())).map(x -> x.getCode()).collect(Collectors.toList()));
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByScopeFunctions(ScopeFunction... scopeFunctions) {
+			if(ArrayHelper.isEmpty(scopeFunctions))
+				return null;
+			return readFromViewByScopeFunctions(CollectionHelper.listOf(scopeFunctions));
 		}
 		
 		@Override

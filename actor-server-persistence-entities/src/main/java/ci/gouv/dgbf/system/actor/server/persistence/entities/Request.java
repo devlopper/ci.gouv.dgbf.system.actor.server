@@ -58,6 +58,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String typeAsString,creationDateAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
 	@Transient private String statusAsString;
+	@Transient private String accountCreationMessage;
 	//@Transient private Boolean isInitializedStatus;
 	@Column(name = COLUMN_CREATION_DATE) @NotNull private LocalDateTime creationDate;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
@@ -214,6 +215,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
 	public static final String FIELD_STATUS_AS_STRING = "statusAsString";
+	public static final String FIELD_ACCOUNT_CREATION_MESSAGE = "accountCreationMessage";
 	public static final String FIELD_ACCEPTED = "accepted";
 	public static final String FIELD_REJECTED = "rejected";
 	public static final String FIELD_PROCESSED = "processed";

@@ -97,6 +97,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Boolean granted;
 	@Transient private String grantedAsString;
 	
+	@Transient private String actorAsString;
+	@Transient private String assignmentToActorMessage;
+	
 	public Byte incrementChildrenCount() {		
 		if(childrenCount == null)
 			childrenCount = 1;
@@ -319,6 +322,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_REQUESTED_AS_STRING = "requestedAsString";
 	public static final String FIELD_GRANTED = "granted";
 	public static final String FIELD_GRANTED_AS_STRING = "grantedAsString";
+	
+	public static final String FIELD_ACTOR_AS_STRING = "actorAsString";
+	public static final String FIELD_ASSIGNMENT_TO_ACTOR_MESSAGE = "assignmentToActorMessage";
 	
 	public static final String TABLE_NAME = "POSTE";
 	

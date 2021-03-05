@@ -10,6 +10,7 @@ import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.variable.VariableHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.mail.MailSender;
+import org.cyk.utility.persistence.server.hibernate.Initializer;
 import org.cyk.utility.security.keycloak.server.KeycloakClientGetter;
 import org.cyk.utility.server.deployment.AbstractServletContextListener;
 
@@ -21,6 +22,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 
 	@Override
 	public void __initialize__(ServletContext context) {
+		Initializer.initialize();
 		ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
 		
 		VariableHelper.write(VariableName.KEYCLOAK_REALM_NAME, ConfigurationHelper.getValueAsString("KEYCLOAK_REALM"));

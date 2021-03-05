@@ -9,7 +9,9 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
@@ -32,6 +34,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	/**/
 	
 	public void processScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
+		Collection<Object[]> fromViewArrays = readFromViewByScopeFunctions(scopeFunctions, fieldsNames);
 		//Collection<RequestScopeFunction> requestScopeFunctions = null;
 		//if(fieldsNames.contains(ScopeFunction.FIELD_REQUESTED) || fieldsNames.contains(ScopeFunction.FIELD_GRANTED))
 		//	requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByScopeFunctionsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
@@ -65,6 +68,18 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 					scopeFunction.setIsHolder(StringHelper.isNotBlank(scopeFunction.getFunctionCode()) && 
 						Function.EXECUTION_HOLDERS_CODES.contains(scopeFunction.getFunctionCode()));
 				}
+			}else if(ScopeFunction.FIELD_ACTOR_AS_STRING.equals(fieldName)) {
+				if(CollectionHelper.isNotEmpty(fromViewArrays)) {
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						for(Object[] array : fromViewArrays) {
+							if(scopeFunction.getCode().equals(array[0])) {
+								scopeFunction.setActorAsString((String)array[1]);
+								scopeFunction.setAssignmentToActorMessage((String)array[2]);
+								break;
+							}
+						}
+					}
+				}				
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
 		}
@@ -134,18 +149,34 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 							)
 							.collect(Collectors.toList())
 							);
-			}
+			}else if(Request.FIELD_ACCOUNT_CREATION_MESSAGE.equals(fieldName)) {
+				Collection<Object[]> arrays = RequestQuerier.getInstance().readFromViewByRequests(requests);
+				for(Request request : requests)
+					for(Object[] array : arrays) {
+						if(request.getElectronicMailAddress().equals(array[0])) {
+							request.setAccountCreationMessage((String)array[1]);
+							break;
+						}
+					}
+			}else
+				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
 		}
 	}
 	
-	private Boolean hasFunctionCode(Request request,String functionCode,Collection<RequestScopeFunction> requestScopeFunctions) {
+	private static Collection<Object[]> readFromViewByScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
+		if(CollectionUtils.containsAny(fieldsNames, ScopeFunction.FIELD_ACTOR_AS_STRING))
+			return ScopeFunctionQuerier.getInstance().readFromViewByScopeFunctions(scopeFunctions);
+		return null;
+	}
+	
+	private static Boolean hasFunctionCode(Request request,String functionCode,Collection<RequestScopeFunction> requestScopeFunctions) {
 		for(RequestScopeFunction requestScopeFunction : requestScopeFunctions)
 			if(requestScopeFunction.getRequestIdentifier().equals(request.getIdentifier()) && functionCode.equals(requestScopeFunction.getFunctionCode()))
 				return Boolean.TRUE;
 		return null;
 	}
 	
-	private Collection<RequestScopeFunction> readRequestScopeFunctions(Collection<String> requestsIdentifiers,Collection<String> fieldsNames) {
+	private static Collection<RequestScopeFunction> readRequestScopeFunctions(Collection<String> requestsIdentifiers,Collection<String> fieldsNames) {
 		if(CollectionUtils.containsAny(fieldsNames, Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS, Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
 				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
 			return RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(requestsIdentifiers);

@@ -38,7 +38,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Serializable {
 
 	@Override
-	public <T> Long count(Class<T> tupleClass, QueryExecutorArguments arguments) {
+	public Long count(Class<?> tupleClass, QueryExecutorArguments arguments) {
 		if(ScopeOfTypeSectionQuerier.isProcessable(arguments))
 			return ScopeOfTypeSectionQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeAdministrativeUnitQuerier.isProcessable(arguments))

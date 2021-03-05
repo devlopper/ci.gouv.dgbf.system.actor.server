@@ -41,6 +41,9 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private Boolean granted;
 	private String grantedAsString;
 	
+	private String actorAsString;
+	private String assignmentToActorMessage;
+	
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;

@@ -25,15 +25,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.ArithmeticOperator;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.EntityManagerGetter;
-import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
@@ -41,11 +45,8 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.time.TimeHelper;
-import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
@@ -155,6 +156,11 @@ public interface RequestQuerier extends Querier {
 	byte[] readSignedRequestSheetByIdentifier(String identifier);
 	
 	void exportForAccountCreation(String actor,String functionality,String action,Date date);
+	
+	Collection<Object[]> readFromViewByElectronicMailAddresses(Collection<String> emails);
+	Collection<Object[]> readFromViewByElectronicMailAddresses(String...emails);
+	Collection<Object[]> readFromViewByRequests(Collection<Request> requests);
+	Collection<Object[]> readFromViewByRequests(Request...requests);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
@@ -479,6 +485,37 @@ public interface RequestQuerier extends Querier {
 		@Override
 		public void exportForAccountCreation(String actor, String functionality, String action, Date date) {
 			ProcedureExecutor.getInstance().execute(Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS);
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public Collection<Object[]> readFromViewByElectronicMailAddresses(Collection<String> emails) {
+			if(CollectionHelper.isEmpty(emails))
+				return null;
+			return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT email,message FROM V_APP_EX_COMPTE_ERREUR WHERE email IN :emails")
+					.setParameter("emails", emails).getResultList();
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByElectronicMailAddresses(String... emails) {
+			if(ArrayHelper.isEmpty(emails))
+				return null;
+			return readFromViewByElectronicMailAddresses(CollectionHelper.listOf(emails));
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByRequests(Collection<Request> requests) {
+			if(CollectionHelper.isEmpty(requests))
+				return null;
+			return readFromViewByElectronicMailAddresses(requests.stream().filter(x -> StringHelper.isNotBlank(x.getElectronicMailAddress()))
+					.map(x -> x.getElectronicMailAddress()).collect(Collectors.toList()));
+		}
+		
+		@Override
+		public Collection<Object[]> readFromViewByRequests(Request... requests) {
+			if(ArrayHelper.isEmpty(requests))
+				return null;
+			return readFromViewByRequests(CollectionHelper.listOf(requests));
 		}
 		
 		/*protected static void setFunctions(Collection<Request> requests,Boolean asString) {
