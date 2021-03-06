@@ -33,7 +33,7 @@ public class PersistenceIdentityApiUnitTest extends AbstractUnitTest {
 	
 	@Test
 	public void filter(){
-		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		assertFilter("k","komenanyc@yahoo.fr");
 	}
 	

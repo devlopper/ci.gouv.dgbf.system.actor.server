@@ -177,7 +177,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	
 	@Test
 	public void administrativeUnit_readWhereCodeOrNameLike(){
-		QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		System.out.println(AdministrativeUnitQuerier.getInstance().readWhereCodeOrNameLike(new QueryExecutorArguments().setNumberOfTuples(1)
 				.setQueryFromIdentifier(QueryIdentifierGetter.getInstance().get(AdministrativeUnit.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE))));
 	}
@@ -772,7 +772,7 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	@Test
 	public void executionImputation_readWhereFilter(){
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
-		org.cyk.utility.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//org.cyk.utility.persistence.query.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		Long t = System.currentTimeMillis();
 		System.out.println("STARTS");
 		Collection<ExecutionImputation> executionImputations = EntityReader.getInstance().readMany(ExecutionImputation.class,new QueryExecutorArguments()

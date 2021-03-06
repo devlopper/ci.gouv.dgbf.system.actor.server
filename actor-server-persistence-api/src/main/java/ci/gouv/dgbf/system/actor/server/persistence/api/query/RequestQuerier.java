@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.ArithmeticOperator;
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
@@ -432,6 +434,14 @@ public interface RequestQuerier extends Querier {
 			filter.addField(PARAMETER_NAME_EXCLUDED_IDENTIFIERS, excludedIdentifiers,null,ArithmeticOperator.IN);
 			
 			arguments.setFilter(filter);
+			
+			if(MapHelper.isNotEmpty(arguments.getSortOrders())) {
+				Map<String,SortOrder> orders = new LinkedHashMap<>();
+				for(Map.Entry<String,SortOrder> entry : arguments.getSortOrders().entrySet()) {
+					orders.put("t."+entry.getKey(), entry.getValue());
+				}
+				arguments.setSortOrders(orders);
+			}
 		}
 		
 		@Override

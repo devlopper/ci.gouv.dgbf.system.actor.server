@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
@@ -35,13 +37,24 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	@Test
+	//@Test
 	public void scopeFunction_readTransients_actorsNames(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_ACTORS_AS_STRINGS));
 		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments);
 		scopeFunctions.stream().forEach(x -> {
 			System.out.println(x.getCode()+" | "+x.getActorsCodes()+" | "+x.getActorsAsStrings());
+		});
+	}
+	
+	@Test
+	public void requestQuerier_readWhereFilter_sortByFirstName_asc(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.setSortOrders(Map.of(RequestQuerier.PARAMETER_NAME_FIRST_NAME,SortOrder.DESCENDING));
+		queryExecutorArguments.setNumberOfTuples(5);
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilter(queryExecutorArguments);
+		requests.stream().forEach(x -> {
+			System.out.println(x.getCode()+" | "+x.getFirstName()+" | "+x.getLastNames());
 		});
 	}
 }

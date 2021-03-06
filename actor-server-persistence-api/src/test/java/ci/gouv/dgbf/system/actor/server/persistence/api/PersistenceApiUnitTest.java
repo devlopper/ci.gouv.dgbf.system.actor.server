@@ -256,7 +256,7 @@ public class PersistenceApiUnitTest extends AbstractUnitTest {
 					// ordering
 					+ " ORDER BY t.type.code ASC,t.code ASC");
 		
-		QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 		Collection<Scope> scopes = ScopeQuerier.getInstance().readWhereFilter(new QueryExecutorArguments()
 				.setQueryFromIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).addFilterField(ScopeQuerier.PARAMETER_NAME_THIS, "a"));
 		System.out.println(scopes);
