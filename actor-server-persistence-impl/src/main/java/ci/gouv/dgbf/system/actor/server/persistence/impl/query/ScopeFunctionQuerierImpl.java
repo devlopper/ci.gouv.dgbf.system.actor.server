@@ -14,7 +14,6 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -123,7 +122,6 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return null;
 		Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
 				,PARAMETER_NAME_SCOPE_IDENTIFIER,scopeIdentifier,PARAMETER_NAME_FUNCTION_CODE,functionCode);
-		TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
 		return scopeFunctions;
 	}
 	
@@ -260,7 +258,6 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return null;
-		TransientFieldsProcessor.getInstance().process(scopeFunctions, arguments.getProcessableTransientFieldsNames());
 		listenReadForUI(scopeFunctions);
 		return scopeFunctions;
 	}

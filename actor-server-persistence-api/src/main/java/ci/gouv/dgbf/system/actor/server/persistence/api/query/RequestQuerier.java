@@ -97,7 +97,7 @@ public interface RequestQuerier extends Querier {
 	Request readByIdentifier(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForUI");
-	Request readByIdentifierForUI(String identifier);
+	Request readByIdentifierForUI(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Request.class, "readByIdentifierForEdit");
 	Request readByIdentifierForEdit(String identifier);

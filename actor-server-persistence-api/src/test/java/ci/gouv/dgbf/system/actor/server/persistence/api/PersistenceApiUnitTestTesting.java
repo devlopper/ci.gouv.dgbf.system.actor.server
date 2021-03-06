@@ -39,7 +39,8 @@ public class PersistenceApiUnitTestTesting extends AbstractPersistenceApiUnitTes
 	
 	@Test
 	public void request_readByIdentifierForUI(){
-		Request request = RequestQuerier.getInstance().readByIdentifierForUI("f451673d-7330-4ac6-adec-55ac25422ce9");
+		Request request = RequestQuerier.getInstance().readByIdentifierForUI(new QueryExecutorArguments().addFilterField(RequestQuerier.PARAMETER_NAME_IDENTIFIER
+				, "f451673d-7330-4ac6-adec-55ac25422ce9"));
 		System.out.println(request.getActorCode());
 		System.out.println(request.getActorNames());
 		System.out.println(request.getStatusAsString());

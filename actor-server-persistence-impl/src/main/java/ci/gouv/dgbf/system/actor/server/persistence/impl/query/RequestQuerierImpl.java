@@ -53,7 +53,7 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER))
 			return readByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
-			return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			return readByIdentifierForUI(arguments);
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT))
 			return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN))
@@ -138,13 +138,13 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	}
 	
 	@Override
-	public Request readByIdentifierForUI(String identifier) {
-		Request request = readByIdentifier(identifier);
+	public Request readByIdentifierForUI(QueryExecutorArguments arguments) {
+		if(arguments != null /*&& arguments.getQuery() == null*/)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER);
+		Request request = QueryExecutor.getInstance().executeReadOne(Request.class, arguments);
 		if(request == null)
 			return null;
-		TransientFieldsProcessor.getInstance().process(List.of(request), List.of(Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS
-				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
-		prepareForUI(request);			
+		prepareForUI(request);
 		return request;
 	}
 	
@@ -260,7 +260,6 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		Collection<Request> requests = readWhereFilter(arguments);
 		if(CollectionHelper.isEmpty(requests))
 			return null;
-		TransientFieldsProcessor.getInstance().process(requests, arguments.getProcessableTransientFieldsNames());
 		requests.forEach(request -> {
 			prepareForUI(request);
 		});
