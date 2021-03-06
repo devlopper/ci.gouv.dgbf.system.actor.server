@@ -14,7 +14,6 @@ import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
-import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;

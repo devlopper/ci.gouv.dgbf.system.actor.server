@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
+import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -18,7 +19,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		//Initializer.initialize();
 		//ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
 		
-		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class);
+		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class
+				,TransientFieldsProcessor.class);
 		
 		__inject__(org.cyk.utility.server.persistence.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
 		__inject__(ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.class).initialize(null);

@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.actor.server.persistence.api;
+package ci.gouv.dgbf.system.actor.server.persistence.impl;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

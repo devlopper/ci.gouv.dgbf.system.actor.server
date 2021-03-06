@@ -3,12 +3,10 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.persistence.query.EntityCreator;
-import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
