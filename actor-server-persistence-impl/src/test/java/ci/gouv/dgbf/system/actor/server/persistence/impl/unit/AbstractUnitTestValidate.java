@@ -28,6 +28,17 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 	}
 	
 	//@Test
+	public void requestQuerier_section101(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER
+				,"SECTION01172e2c-7eb0-41a3-8d18-4c786e933ff7");
+		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments);
+		requests.stream().forEach(x -> {
+			System.out.println(x.getCode()+" | "+x.getSectionAsString());
+		});
+	}
+	
+	//@Test
 	public void request_readTransients_accountCreationDate_accountCreationMessage(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Request.FIELD_ACCOUNT_CREATION_DATE_AS_STRING));
@@ -47,7 +58,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	@Test
+	//@Test
 	public void requestQuerier_readWhereFilter_sortByFirstName_asc(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setSortOrders(Map.of(RequestQuerier.PARAMETER_NAME_FIRST_NAME,SortOrder.DESCENDING));

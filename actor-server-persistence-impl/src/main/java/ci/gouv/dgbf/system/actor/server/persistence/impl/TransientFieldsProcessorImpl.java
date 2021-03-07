@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
@@ -112,7 +113,11 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		
 		for(String fieldName : fieldsNames) {
 			if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
-				Collection<Object[]> arrays = RequestScopeFunctionQuerier.getInstance().countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers(requestsIdentifiers);
+				Collection<Object[]> arrays = new ReaderByCollection.AbstractImpl<String, Object[]>() {
+					protected Collection<Object[]> __read__(Collection<String> values) {
+						return RequestScopeFunctionQuerier.getInstance().countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers(values);
+					}
+				}.read(requestsIdentifiers);
 				if(CollectionHelper.isNotEmpty(arrays)) {
 					for(Request request : requests) {
 						for(Object[] array : arrays) {
@@ -194,7 +199,13 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	private static Collection<RequestScopeFunction> readRequestScopeFunctions(Collection<String> requestsIdentifiers,Collection<String> fieldsNames) {
 		if(CollectionUtils.containsAny(fieldsNames, Request.FIELD_GRANTED_BUDGETARIES_SCOPE_FUNCTIONS, Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
 				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS))
-			return RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(requestsIdentifiers);
+			return new ReaderByCollection.AbstractImpl<String, RequestScopeFunction>() {
+
+				@Override
+				protected Collection<RequestScopeFunction> __read__(Collection<String> values) {
+					return RequestScopeFunctionQuerier.getInstance().readUsingScalarModeByRequestsIdentifiers(values);
+				}
+			}.read(requestsIdentifiers);
 		return null;
 	}
 }
