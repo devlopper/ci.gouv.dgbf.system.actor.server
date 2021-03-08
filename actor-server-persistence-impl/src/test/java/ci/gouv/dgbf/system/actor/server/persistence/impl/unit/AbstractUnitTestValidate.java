@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
@@ -21,13 +20,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
-	//@Test
+	//@org.junit.jupiter.api.Test
 	public void expenditureNature_readAllForUI(){
 		assertThat(ExpenditureNatureQuerier.getInstance().readAllForUI().stream().map(ExpenditureNature::getCode)
 				.collect(Collectors.toList())).containsExactly("1","2","3","4");
 	}
 	
-	//@Test
+	//@org.junit.jupiter.api.Test
 	public void requestQuerier_section101(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER
@@ -38,7 +37,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	//@Test
+	//@org.junit.jupiter.api.Test
 	public void request_readTransients_accountCreationDate_accountCreationMessage(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Request.FIELD_ACCOUNT_CREATION_DATE_AS_STRING));
@@ -48,7 +47,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	//@Test
+	//@org.junit.jupiter.api.Test
 	public void scopeFunction_readTransients_actorsNames(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_ACTORS_AS_STRINGS));
@@ -58,7 +57,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	//@Test
+	//@org.junit.jupiter.api.Test
 	public void requestQuerier_readWhereFilter_sortByFirstName_asc(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setSortOrders(Map.of(RequestQuerier.PARAMETER_NAME_FIRST_NAME,SortOrder.DESCENDING));
