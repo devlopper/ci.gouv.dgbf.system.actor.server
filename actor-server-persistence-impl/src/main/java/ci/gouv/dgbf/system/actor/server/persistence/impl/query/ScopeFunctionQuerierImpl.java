@@ -42,6 +42,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return readByParentsIdentifiersForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_PARENTS_IDENTIFIERS));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 			return readWhereCodeOrNameLikeByFunctionCode(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
+			return readWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 			return readByScopeIdentifierByFunctionCodeForUI(arguments);
 		return super.readMany(arguments);
@@ -56,6 +58,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return countByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 			return countWhereCodeOrNameLikeByFunctionCode(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
+			return countWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_BY_PARENTS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
 			return countByParentsIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_PARENTS_IDENTIFIERS));
 		return super.count( arguments);
@@ -199,12 +203,20 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	
 	@Override
 	public Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE);
 		prepareWhereCodeOrNameLikeByFunctionCode(arguments);
 		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
 	}
 	
 	@Override
 	public Long countWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE);
 		prepareWhereCodeOrNameLikeByFunctionCode(arguments);
 		return QueryExecutor.getInstance().executeCount(arguments);
 	}
@@ -214,6 +226,34 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
+		arguments.setFilter(filter);
+	}
+	
+	@Override
+	public Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES);
+		prepareWhereCodeOrNameLikeByFunctionsCodes(arguments);
+		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+	}
+	
+	@Override
+	public Long countWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES);
+		prepareWhereCodeOrNameLikeByFunctionsCodes(arguments);
+		return QueryExecutor.getInstance().executeCount(arguments);
+	}
+	
+	protected void prepareWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments) {
+		Filter filter = new Filter();
+		filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+		filter.addField(PARAMETER_NAME_FUNCTIONS_CODES, arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
 		arguments.setFilter(filter);
 	}
 	
@@ -352,6 +392,42 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		if(ArrayHelper.isEmpty(scopeFunctions))
 			return null;
 		return readFromViewByScopeFunctions(CollectionHelper.listOf(scopeFunctions));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<Object[]> readFunctionsCodesByIdentifiers(Collection<String> identifiers) {
+		if(CollectionHelper.isEmpty(identifiers))
+			return null;
+		return new ReaderByCollection.AbstractImpl<String, Object[]>() {
+			@Override
+			protected Collection<Object[]> __read__(Collection<String> values) {
+				return EntityManagerGetter.getInstance().get().createQuery("SELECT sf.identifier,sf.function.code FROM ScopeFunction sf WHERE sf.identifier IN :identifiers")
+						.setParameter("identifiers", values).getResultList();
+			}
+			
+		}.read(identifiers);
+	}
+	
+	@Override
+	public Collection<Object[]> readFunctionsCodesByIdentifiers(String... identifiers) {
+		if(ArrayHelper.isEmpty(identifiers))
+			return null;
+		return readFunctionsCodesByIdentifiers(CollectionHelper.listOf(identifiers));
+	}
+	
+	@Override
+	public Collection<Object[]> readFunctionsCodes(Collection<ScopeFunction> scopeFunctions) {
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return null;
+		return readFunctionsCodesByIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+	}
+	
+	@Override
+	public Collection<Object[]> readFunctionsCodes(ScopeFunction... scopeFunctions) {
+		if(ArrayHelper.isEmpty(scopeFunctions))
+			return null;
+		return readFunctionsCodes(CollectionHelper.listOf(scopeFunctions));
 	}
 	
 	@Override

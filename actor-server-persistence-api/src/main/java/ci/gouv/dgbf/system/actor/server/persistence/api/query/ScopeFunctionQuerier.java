@@ -90,11 +90,18 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Long countByFunctionsCodes(Collection<String> functionsCodes);
 	Long countByFunctionsCodes(String...functionsCodes);
 	
-	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionCode");
+	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodeOrNameLikeByFunctionCode");
 	Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE);
 	Long countWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodeOrNameLikeByFunctionsCodes");
+	Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES);
+	Long countWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments);
+	
 	/*
 	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_WHERE_CODE_OR_NAME_LIKE);
 	Collection<ScopeFunction> readWhereCodeOrNameLike(QueryExecutorArguments arguments);
@@ -140,6 +147,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<Object[]> readFromViewByCodes(String...codes);
 	Collection<Object[]> readFromViewByScopeFunctions(Collection<ScopeFunction> scopeFunctions);
 	Collection<Object[]> readFromViewByScopeFunctions(ScopeFunction...scopeFunctions);
+	
+	Collection<Object[]> readFunctionsCodesByIdentifiers(Collection<String> identifiers);
+	Collection<Object[]> readFunctionsCodesByIdentifiers(String...identifiers);
+	Collection<Object[]> readFunctionsCodes(Collection<ScopeFunction> scopeFunctions);
+	Collection<Object[]> readFunctionsCodes(ScopeFunction...scopeFunctions);
 	
 	/**/
 	
@@ -227,6 +239,13 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 						, getQueryValueCountWhereCodeOrNameLikeByFunctionCode())
+				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES
+						, getQueryValueReadWhereCodeOrNameLikeByFunctionsCodes())
+						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
+				
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES
+						, getQueryValueCountWhereCodeOrNameLikeByFunctionsCodes())
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WITH_CODES_ONLY_BY_FUNCTIONS_IDENTIFIERS
 						, "SELECT sf.code,sf.scope.code,sf.function.code FROM ScopeFunction sf WHERE sf.function.identifier IN :"+PARAMETER_NAME_FUNCTIONS_IDENTIFIERS)
@@ -332,5 +351,27 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	static String getQueryValueCountWhereCodeOrNameLikeByFunctionCode() {
 		return jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereCodeOrNameLikeByFunctionCodeFromWhere());
+	}
+	
+	static String getQueryValueReadWhereCodeOrNameLikeByFunctionsCodesFromWhere() {
+		return jpql(
+				from("ScopeFunction t")
+				,where(and(
+					parenthesis(or(
+						like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
+						,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					))
+					,"t.function.code IN :"+PARAMETER_NAME_FUNCTIONS_CODES
+				))
+			);
+	}
+	
+	static String getQueryValueReadWhereCodeOrNameLikeByFunctionsCodes() {
+		return jpql(select("t.identifier","t.code","t.name"),getQueryValueReadWhereCodeOrNameLikeByFunctionsCodesFromWhere(),order("t.code ASC"));
+	}
+	
+	
+	static String getQueryValueCountWhereCodeOrNameLikeByFunctionsCodes() {
+		return jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereCodeOrNameLikeByFunctionsCodesFromWhere());
 	}
 }

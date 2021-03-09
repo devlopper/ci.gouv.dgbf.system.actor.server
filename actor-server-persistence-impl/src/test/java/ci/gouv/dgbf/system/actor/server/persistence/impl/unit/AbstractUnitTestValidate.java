@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -65,6 +67,41 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		Collection<Request> requests = RequestQuerier.getInstance().readWhereFilter(queryExecutorArguments);
 		requests.stream().forEach(x -> {
 			System.out.println(x.getCode()+" | "+x.getFirstName()+" | "+x.getLastNames());
+		});
+	}
+	
+	//@org.junit.jupiter.api.Test
+	public void scopeFunctionQuerier_readWhereCodeOrNameLikeByFunctionCode(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_CODE, "GC");
+		queryExecutorArguments.setNumberOfTuples(5);
+		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readWhereCodeOrNameLikeByFunctionCode(queryExecutorArguments);
+		scopeFunctions.stream().forEach(x -> {
+			System.out.println(x.getCode());
+		});
+	}
+	
+	//@org.junit.jupiter.api.Test
+	public void scopeFunctionQuerier_readWhereCodeOrNameLikeByFunctionsCodes(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterField(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		queryExecutorArguments.setNumberOfTuples(5);
+		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readWhereCodeOrNameLikeByFunctionsCodes(queryExecutorArguments);
+		scopeFunctions.stream().forEach(x -> {
+			System.out.println(x.getCode());
+		});
+	}
+	
+	@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_readWhereFilterForUI(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		queryExecutorArguments.setNumberOfTuples(100);
+		Collection<Assignments> scopeFunctions = AssignmentsQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments);
+		scopeFunctions.stream().forEach(x -> {
+			System.out.println(x.getCreditManagerHolderAsString());
 		});
 	}
 }

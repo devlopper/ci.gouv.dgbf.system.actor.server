@@ -96,6 +96,18 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 								.collect(Collectors.toList()));
 					}
 				}				
+			}else if(ScopeFunction.FIELD_FUNCTION_CODE.equals(fieldName)) {
+				Collection<Object[]> arrays = ScopeFunctionQuerier.getInstance().readFunctionsCodes(scopeFunctions);
+				if(CollectionHelper.isNotEmpty(arrays)) {
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						for(Object[] array : arrays) {
+							if(array[0].equals(scopeFunction.getIdentifier())) {
+								scopeFunction.setFunctionCode((String)array[1]);
+								break;
+							}
+						}
+					}
+				}				
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
 		}

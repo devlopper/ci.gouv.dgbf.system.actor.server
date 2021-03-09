@@ -18,6 +18,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private String scopeAsString;
 	
 	private FunctionDto function;
+	private String functionCode;
 	private String functionAsString;
 	private ArrayList<String> functionsIdentifiers;
 	private Boolean isHolder;
