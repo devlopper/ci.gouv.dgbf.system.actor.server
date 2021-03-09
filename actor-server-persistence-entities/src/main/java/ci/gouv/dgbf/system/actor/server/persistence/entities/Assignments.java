@@ -215,4 +215,16 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 			,COLUMN_FINANCIAL_CONTROLLER_HOLDER,COLUMN_FINANCIAL_CONTROLLER_ASSISTANT
 			,COLUMN_ACCOUNTING_HOLDER,COLUMN_ACCOUNTING_ASSISTANT
 		);
+	
+	public static String getColumnNameFromFieldName(String fieldName) {
+		if(FIELD_CREDIT_MANAGER_HOLDER.equals(fieldName))
+			return COLUMN_CREDIT_MANAGER_HOLDER;
+		if(FIELD_AUTHORIZING_OFFICER_HOLDER.equals(fieldName))
+			return COLUMN_AUTHORIZING_OFFICER_HOLDER;
+		if(FIELD_FINANCIAL_CONTROLLER_HOLDER.equals(fieldName))
+			return COLUMN_FINANCIAL_CONTROLLER_HOLDER;
+		if(FIELD_ACCOUNTING_HOLDER.equals(fieldName))
+			return COLUMN_ACCOUNTING_HOLDER;
+		throw new RuntimeException(String.format("Column of field named %s not found", fieldName));
+	}
 }

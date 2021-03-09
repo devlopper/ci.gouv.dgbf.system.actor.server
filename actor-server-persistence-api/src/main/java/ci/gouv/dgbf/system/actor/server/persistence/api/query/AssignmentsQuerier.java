@@ -8,12 +8,12 @@ import static org.cyk.utility.persistence.query.Language.Order.order;
 import static org.cyk.utility.persistence.query.Language.Select.fields;
 import static org.cyk.utility.persistence.query.Language.Select.select;
 import static org.cyk.utility.persistence.query.Language.Where.and;
+import static org.cyk.utility.persistence.query.Language.Where.isNotNull;
+import static org.cyk.utility.persistence.query.Language.Where.isNull;
+import static org.cyk.utility.persistence.query.Language.Where.isNullable;
 import static org.cyk.utility.persistence.query.Language.Where.like;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
-import static org.cyk.utility.persistence.query.Language.Where.isNullable;
-import static org.cyk.utility.persistence.query.Language.Where.isNull;
-import static org.cyk.utility.persistence.query.Language.Where.isNotNull;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -21,18 +21,15 @@ import java.util.Date;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.ParameterNameBuilder;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
-import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.value.Value;
-import org.cyk.utility.persistence.ParameterNameBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -43,7 +40,7 @@ public interface AssignmentsQuerier extends Querier {
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
 	String PARAMETER_NAME_SECTION = "section";
-	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnitCodeName";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	String PARAMETER_NAME_ACTION = "action";
 	String PARAMETER_NAME_ACTIVITY = "activity";
 	String PARAMETER_NAME_ECONOMIC_NATURE = "economicNature";
@@ -153,263 +150,20 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readNotFullyAssignedWhereFilterForUI");
 	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(Assignments.class,"readWhereFilterUsingIdentifiersOnly");
+	Collection<Assignments> readWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+	Long countWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
+	
 	void clean(String actor,String functionality,String action,Date date);
 	void import_(String actor,String functionality,String actionCreate,String actionUpdate,Date date);
 	void export(String actor,String functionality,String action,Date date);
 	
 	/**/
 	
-	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AssignmentsQuerier,Serializable {		
+	public static abstract class AbstractImpl extends Querier.AbstractImpl implements AssignmentsQuerier,Serializable {
 		
-		@Override
-		public Assignments readOne(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
-				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
-			throw new RuntimeException("Not yet handled : "+arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readMany(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readFullyAssignedWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return readNotFullyAssignedWhereFilter(arguments);
-
-			if(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return readFullyAssignedWhereFilterForUI(arguments);
-			if(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return readNotFullyAssignedWhereFilterForUI(arguments);
-			
-			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilterForApplyModel(arguments);
-			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilterForUI(arguments);
-			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
-				return readWhereFilterForEdit(arguments);
-			throw new RuntimeException("Not yet handled : "+arguments);
-		}
-		
-		@Override
-		public Long count(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countFullyAssignedWhereFilter(arguments);
-			if(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return countNotFullyAssignedWhereFilter(arguments);
-			/*if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_WITH_ALL.equals(arguments.getQuery().getIdentifier()))
-				return countWhereFilterWithAll(arguments);
-			*/
-			throw new RuntimeException("Not yet handled : "+arguments);
-		}
-		
-		@Override
-		public Assignments readByIdentifierForEdit(String identifier) {
-			Assignments assignments = QueryExecutor.getInstance().executeReadOne(Assignments.class, new QueryExecutorArguments()
-					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterField(PARAMETER_NAME_IDENTIFIER, identifier));
-			return assignments;
-		}
-		
-		@Override
-		public Collection<Assignments> readWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QueryName.READ_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER);
-			prepareWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
-		}
-		
-		@Override
-		public Long countWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QueryName.COUNT_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER);
-			prepareWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private void prepareWhereFilter(QueryExecutorArguments arguments) {
-			Filter filter = new Filter();
-			
-			filter.addFieldsNullable(arguments
-					,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL
-					,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NOT_NULL
-					,PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NULL
-					,PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NOT_NULL
-					
-					,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL
-					,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NOT_NULL
-					,PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NULL
-					,PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NOT_NULL
-					
-					,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL
-					,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NOT_NULL
-					,PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NULL
-					,PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NOT_NULL
-					
-					,PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL
-					,PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NOT_NULL
-					,PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NULL
-					,PARAMETER_NAME_ACCOUNTING_ASSISTANT_IS_NOT_NULL
-					
-					,PARAMETER_NAME_ALL_HOLDERS_DEFINED
-					,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
-					);
-			
-			prepareWhereFilter(filter, arguments);
-			arguments.setFilter(filter);
-		}
-		
-		private void prepareWhereFilter(Filter filter,QueryExecutorArguments arguments) {
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_SECTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTION, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ECONOMIC_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			filter.addFieldContainsStringOrWords(PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-			
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_HOLDER);
-			prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_ASSISTANT);
-		}
-		
-		private void prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(QueryExecutorArguments arguments,Filter filter,String parameterName) {
-			filter.addFieldsNullable(arguments, parameterName);
-			filter.addFieldContainsStringOrWords(parameterName, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
-		}
-	
-		@Override
-		public Collection<Assignments> readWhereFilterForApplyModel(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = new QueryExecutorArguments();
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_APPLY_MODEL);
-			return readWhereFilter(arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readWhereFilterForUI(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = new QueryExecutorArguments();
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI);
-			return readWhereFilter(arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readWhereFilterForEdit(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = new QueryExecutorArguments();
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT);
-			return readWhereFilter(arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER);
-			prepareFullyAssignedWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
-		}
-		
-		@Override
-		public Long countFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER);
-			prepareFullyAssignedWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		private void prepareFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
-			Filter filter = new Filter();
-			prepareWhereFilter(filter, arguments);
-			arguments.setFilter(filter);
-		}
-		
-		@Override
-		public Collection<Assignments> readNotFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER);
-			prepareFullyAssignedWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
-		}
-		
-		@Override
-		public Long countNotFullyAssignedWhereFilter(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER);
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER);
-			prepareFullyAssignedWhereFilter(arguments);
-			return QueryExecutor.getInstance().executeCount(arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = new QueryExecutorArguments();
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
-			return readFullyAssignedWhereFilter(arguments);
-		}
-		
-		@Override
-		public Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments) {
-			if(arguments == null)
-				arguments = new QueryExecutorArguments();
-			if(arguments.getQuery() == null)
-				arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
-			return readNotFullyAssignedWhereFilter(arguments);
-		}
-	
-		@Override
-		public void clean(String actor, String functionality, String action, Date date) {
-			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN
-					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
-				);
-		}
-		
-		@Override
-		public void import_(String actor, String functionality, String actionCreate,String actionUpdate, Date date) {
-			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT
-					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_CREATE,actionCreate
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_UPDATE,actionUpdate
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
-				);
-		}
-		
-		@Override
-		public void export(String actor, String functionality, String action, Date date) {
-			ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
-					, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
-					,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
-				);
-		}		
 	}
 	
 	/**/
@@ -428,7 +182,11 @@ public interface AssignmentsQuerier extends Querier {
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))			
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
-			
+			/*
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
+					, jpql(select("t"),getReadWhereFilterUsingIdentifiersOnlyFromWhere(),getOrder()))			
+			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY, jpql(select("COUNT(t.identifier)"),getReadWhereFilterUsingIdentifiersOnlyFromWhere()))
+			*/
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("t")
 					,getReadFullyAssignedWhereFilterFromWhere(Boolean.TRUE),getOrderBy()))			
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER, jpql(select("COUNT(t.identifier)")
@@ -491,13 +249,14 @@ public interface AssignmentsQuerier extends Querier {
 		return from(
 				"Assignments t"
 				,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_HOLDER, Assignments.COLUMN_CREDIT_MANAGER_HOLDER)
-				,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT)
 				,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER)
-				,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT)
 				,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER)
-				,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT)
 				,getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_HOLDER, Assignments.COLUMN_ACCOUNTING_HOLDER)
-				,getLeftJoinScopeFunction(Assignments.FIELD_ACCOUNTING_ASSISTANT, Assignments.COLUMN_ACCOUNTING_ASSISTANT)
+				
+				,"LEFT JOIN ScopeFunction AGC ON AGC = t.creditManagerAssistant"
+				,"LEFT JOIN ScopeFunction AORD ON AORD = t.authorizingOfficerAssistant"
+				,"LEFT JOIN ScopeFunction ACF ON ACF = t.financialControllerAssistant"
+				,"LEFT JOIN ScopeFunction ACPT ON ACPT = t.accountingAssistant"
 			);
 	}
 	
@@ -512,13 +271,9 @@ public interface AssignmentsQuerier extends Querier {
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT, PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT, PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_HOLDER, PARAMETER_NAME_ACCOUNTING_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_ACCOUNTING_ASSISTANT, PARAMETER_NAME_ACCOUNTING_ASSISTANT)	
 			
 			,parenthesis(or(isNullable(PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
 					, parenthesis(and(isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
@@ -553,6 +308,10 @@ public interface AssignmentsQuerier extends Querier {
 				,parenthesis(or(String.format("(:%s = true)", ParameterNameBuilder.getInstance().build(parameterName, Boolean.FALSE, Boolean.TRUE)),variableName+" IS NOT NULL"))
 			));
 	}
+	
+	/* Read where filter using identifiers only*/
+	
+
 	
 	/* read fully assigned where filter */
 	
@@ -628,10 +387,11 @@ public interface AssignmentsQuerier extends Querier {
 				,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING	
 		};
 	}
-	
+
 	static String getOrderBy() {
 		return order(
 				asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE))
+				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE))
 				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE))
 				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ACTION_CODE))
 				,asc("t",FieldHelper.join(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_ACTIVITY_CODE))

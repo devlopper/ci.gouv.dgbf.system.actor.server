@@ -24,6 +24,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	public void __initialize__(ServletContext context) {
 		Initializer.initialize();
 		ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
+		ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
 		
 		VariableHelper.write(VariableName.KEYCLOAK_REALM_NAME, ConfigurationHelper.getValueAsString("KEYCLOAK_REALM"));
 		/*

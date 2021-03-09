@@ -9,6 +9,8 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsQuerierImpl;
+
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -33,4 +35,9 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	@Override
 	public void __destroy__(Object object) {}
 	
+	/**/
+	
+	public static void initialize() {
+		AssignmentsQuerierImpl.initialize();
+	}
 }
