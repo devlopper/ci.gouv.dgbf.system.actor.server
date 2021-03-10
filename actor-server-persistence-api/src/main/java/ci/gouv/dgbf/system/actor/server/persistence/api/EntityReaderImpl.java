@@ -39,6 +39,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
@@ -74,9 +75,10 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			if(ExecutionImputationQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return (T) ExecutionImputationQuerier.getInstance().readByIdentifierForEdit((String)arguments
 						.getFilterFieldValue(ExecutionImputationQuerier.PARAMETER_NAME_IDENTIFIER));			
+			/*
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return (T) AssignmentsQuerier.getInstance().readByIdentifierForEdit((String)arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER));
-			
+			*/
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
 			
@@ -103,6 +105,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, AdministrativeUnit.class)))
 				return (T) AdministrativeUnitQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Assignments.class)))
+				return (T) AssignmentsQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -175,6 +180,9 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, IdentificationFormAttribute.class)))
 			return (Collection<T>) IdentificationFormAttributeQuerier.getInstance().readMany(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Assignments.class)))
+			return (Collection<T>) AssignmentsQuerier.getInstance().readMany(arguments);
+		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
 				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
@@ -216,7 +224,7 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 			
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
-			
+			/*
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForUI(arguments);
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -225,6 +233,7 @@ public class EntityReaderImpl extends EntityReader.AbstractImpl implements Seria
 				return (Collection<T>) AssignmentsQuerier.getInstance().readNotFullyAssignedWhereFilterForUI(arguments);
 			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForEdit(arguments);
+			*/
 		}
 		return super.readMany(tupleClass, arguments);
 	}

@@ -92,7 +92,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	@org.junit.jupiter.api.Test
+	//@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readWhereFilterForUI(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
@@ -100,6 +100,32 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
 		queryExecutorArguments.setNumberOfTuples(100);
 		Collection<Assignments> scopeFunctions = AssignmentsQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments);
+		scopeFunctions.stream().forEach(x -> {
+			System.out.println(x.getCreditManagerHolderAsString());
+		});
+	}
+	
+	@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_readWhereFilterForUI_activity(){
+		System.out.println("AbstractUnitTestValidate.assignmentsQuerier_readWhereFilterForUI_activity()");
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		queryExecutorArguments.setNumberOfTuples(5);
+		Collection<Assignments> scopeFunctions = AssignmentsQuerier.getInstance().readWhereFilterForUI(queryExecutorArguments);
+		scopeFunctions.stream().forEach(x -> {
+			System.out.println(x.getCreditManagerHolderAsString());
+		});
+	}
+	
+	@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activity(){
+		System.out.println("AbstractUnitTestValidate.assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activity()");
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		queryExecutorArguments.setNumberOfTuples(5);
+		Collection<Assignments> scopeFunctions = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
 		scopeFunctions.stream().forEach(x -> {
 			System.out.println(x.getCreditManagerHolderAsString());
 		});

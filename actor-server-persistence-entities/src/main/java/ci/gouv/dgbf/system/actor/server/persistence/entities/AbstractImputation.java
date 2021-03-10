@@ -60,9 +60,11 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@Column(name = COLUMN_MANAGER_LOCALITY_CODE) private String managerLocalityCode;
 	
 	@Column(name = COLUMN_ACTIVITY_CATEGORY_IDENTIFIER) private String activityCategoryIdentifier;
+	@Column(name = COLUMN_ACTIVITY_CATEGORY_CODE) private String activityCategoryCode;
 	@Column(name = COLUMN_ACTIVITY_CATEGORY_CODE_NAME) private String activityCategoryCodeName;
 	
 	@Column(name = COLUMN_EXPENDITURE_NATURE_IDENTIFIER) private String expenditureNatureIdentifier;
+	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE) private String expenditureNatureCode;
 	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE_NAME) private String expenditureNatureCodeName;
 	
 	@Override
@@ -139,9 +141,11 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String FIELD_ADMINISTRATIVE_UNIT_LOCALITY_CODE = "administrativeUnitLocalityCode";
 	public static final String FIELD_ACTIVITY_CATEGORY = "activityCategory";
 	public static final String FIELD_ACTIVITY_CATEGORY_IDENTIFIER = "activityCategoryIdentifier";
+	public static final String FIELD_ACTIVITY_CATEGORY_CODE = "activityCategoryCode";	
 	public static final String FIELD_ACTIVITY_CATEGORY_CODE_NAME = "activityCategoryCodeName";	
 	public static final String FIELD_EXPENDITURE_NATURE = "expenditureNature";
 	public static final String FIELD_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
+	public static final String FIELD_EXPENDITURE_NATURE_CODE = "expenditureNatureCode";
 	public static final String FIELD_EXPENDITURE_NATURE_CODE_NAME = "expenditureNatureCodeName";	
 	
 	/**/
@@ -180,7 +184,9 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_ADMINISTRATIVE_UNIT_LOCALITY_CODE = "UA_LOCALITE_CODE";
 	
 	public static final String COLUMN_ACTIVITY_CATEGORY_IDENTIFIER = "CA_IDENTIFIANT";
+	public static final String COLUMN_ACTIVITY_CATEGORY_CODE = "CA_CODE";
 	public static final String COLUMN_ACTIVITY_CATEGORY_CODE_NAME = "CA_CODE_LIBELLE";
 	public static final String COLUMN_EXPENDITURE_NATURE_IDENTIFIER = "ND_IDENTIFIANT";
+	public static final String COLUMN_EXPENDITURE_NATURE_CODE = "ND_CODE";
 	public static final String COLUMN_EXPENDITURE_NATURE_CODE_NAME = "ND_CODE_LIBELLE";
 }

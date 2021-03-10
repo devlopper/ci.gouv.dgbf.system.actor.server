@@ -15,22 +15,23 @@ import static org.cyk.utility.persistence.query.Language.Where.where;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.object.AbstractObject;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
+import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.OrderStringBuilder;
 import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -58,7 +59,7 @@ public interface AssignmentsQueryStringBuilder {
 				froms.add("LEFT JOIN ExecutionImputation i ON i = t."+Assignments.FIELD_EXECUTION_IMPUTATION);
 			if(CollectionHelper.isNotEmpty(arguments.joinableHoldersFieldsNames))
 				for(String fieldName : arguments.joinableHoldersFieldsNames) {
-					froms.add(getLeftJoinScopeFunction(fieldName, Assignments.getColumnNameFromFieldName(fieldName)));
+					froms.add(getLeftJoinScopeFunction(fieldName));
 				}
 			String from = from(froms);
 			
@@ -102,87 +103,38 @@ public interface AssignmentsQueryStringBuilder {
 		}
 	}
 	
-	static String getReadWhereFilterUsingIdentifiersOnlyFrom() {
-		return getReadWhereFilterUsingIdentifiersOnlyFrom(Boolean.TRUE,List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER
-				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_ACCOUNTING_HOLDER));
-	}
-
-	static String getReadWhereFilterUsingIdentifiersOnlyFrom(Boolean imputation,Collection<String> holdersFieldsNames) {
-		Collection<String> froms = new ArrayList<>();
-		froms.add("Assignments t");
-		if(Boolean.TRUE.equals(imputation))
-			froms.add("LEFT JOIN ExecutionImputation i ON i = t."+Assignments.FIELD_EXECUTION_IMPUTATION);
-		if(CollectionHelper.isNotEmpty(holdersFieldsNames))
-			for(String fieldName : holdersFieldsNames) {
-				froms.add(getLeftJoinScopeFunction(fieldName, Assignments.getColumnNameFromFieldName(fieldName)));
-			}
-		return from(froms);
+	static String getReadWhereFilterFrom() {
+		FromStringBuilder.Tuple tuple = new FromStringBuilder.Tuple("Assignments","t");
+		tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t").setTupleName("ExecutionImputation")
+				.setVariableName("i")));
+		
+		for(String fieldName : new String[] {Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
+				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
+				,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT}) {
+			tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
+					.setMasterVariableName("t").setMasterFieldName(fieldName).setTupleName("ScopeFunction")));
+		}
+		return FromStringBuilder.getInstance().build(tuple);
 	}
 	
-	static String getReadWhereFilterUsingIdentifiersOnlyWherePredicate() {
-		return getReadWhereFilterUsingIdentifiersOnlyWherePredicate(List.of(ExecutionImputation.FIELD_SECTION,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT
-				,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT,ExecutionImputation.FIELD_ACTION,ExecutionImputation.FIELD_ACTIVITY
-				,ExecutionImputation.FIELD_ECONOMIC_NATURE,ExecutionImputation.FIELD_EXPENDITURE_NATURE,ExecutionImputation.FIELD_ACTIVITY_CATEGORY)
-				,List.of(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER
-						,AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER));
-	}
-	
-	static String getReadWhereFilterUsingIdentifiersOnlyWherePredicate(Collection<String> imputationFieldsNames,Collection<String> holdersParametersNames) {
-		Collection<String> predicates = new ArrayList<>();
-		if(CollectionHelper.isNotEmpty(imputationFieldsNames))
-			for(String fieldName : imputationFieldsNames)
-				predicates.add(parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", fieldName)));
-		if(CollectionHelper.isNotEmpty(holdersParametersNames))
-			for(String parameterName : holdersParametersNames) {
-				String variableName = null;
-				if(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER.equals(parameterName))
-					variableName = Assignments.COLUMN_CREDIT_MANAGER_HOLDER;
-				else if(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER.equals(parameterName))
-					variableName = Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER;
-				else if(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER.equals(parameterName))
-					variableName = Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER;
-				else if(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER.equals(parameterName))
-					variableName = Assignments.COLUMN_ACCOUNTING_HOLDER;
-				if(StringHelper.isBlank(variableName))
-					continue;
-				predicates.add(parenthesis(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", parameterName,variableName)));
-			}
-		
-		predicates.add(parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
-				, parenthesis(and(isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
-						,isNotNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
-						,isNotNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
-						,isNotNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
-						)))
-			));
-		
-		predicates.add(parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE)
-				, or(isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
-						,isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
-						,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
-						,isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
-						))
-			));
-		
-		return and(predicates);
-		/*
+	static String getReadWhereFilterWherePredicate() {
 		return and(
-			parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_SECTION))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_ACTION))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_ACTIVITY))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_ECONOMIC_NATURE))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_EXPENDITURE_NATURE))
-			,parenthesis(String.format(":%1$sNullable = true OR i.%1$sIdentifier = :%1$s", ExecutionImputation.FIELD_ACTIVITY_CATEGORY))
+			String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_SECTION)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTION)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTIVITY)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE)
+			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY)
 			
-			,parenthesis(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", PARAMETER_NAME_CREDIT_MANAGER_HOLDER,Assignments.COLUMN_CREDIT_MANAGER_HOLDER))
-			,parenthesis(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER,Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER))
-			,parenthesis(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER))
-			,parenthesis(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", PARAMETER_NAME_ACCOUNTING_HOLDER,Assignments.COLUMN_ACCOUNTING_HOLDER))
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_CREDIT_MANAGER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
+			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_ACCOUNTING_HOLDER)
 			
-			
-			,parenthesis(or(isNullable(PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
+			,parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
 					, parenthesis(and(isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
 							,isNotNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
 							,isNotNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
@@ -190,26 +142,26 @@ public interface AssignmentsQueryStringBuilder {
 							)))
 				)
 			
-			,parenthesis(or(isNullable(PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE)
+			,parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE)
 					, or(isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
 							,isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
 							,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
 							,isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
 							))
 				)
-		);*/
+		);
 	}
 	
 	static String getReadWhereFilterUsingIdentifiersOnlyFromWhere() {
-		return jpql(getReadWhereFilterUsingIdentifiersOnlyFrom(),where(getReadWhereFilterUsingIdentifiersOnlyWherePredicate()));
+		return jpql(getReadWhereFilterFrom(),where(getReadWhereFilterWherePredicate()));
 	}
 	
-	static String getReadWhereFilterUsingIdentifiersOnlyScopeFunctionPredicate(String variableName,String parameterName) {
-		return parenthesis(or(String.format(":%1$sNullable = true OR %2$s.identifier = :%1$s", parameterName,variableName)));
+	static String getReadWhereFilterScopeFunctionPredicate(String fieldName) {
+		return String.format("(:%1$sIdentifierNullable = true OR %1$s.identifier = :%1$sIdentifier)", fieldName);
 	}
 	
-	static String getLeftJoinScopeFunction(String holderFieldName,String holderVariableName) {
-		return String.format("LEFT JOIN ScopeFunction %2$s ON %2$s = t.%1$s", holderFieldName,holderVariableName);
+	static String getLeftJoinScopeFunction(String fieldName) {
+		return String.format("LEFT JOIN ScopeFunction %1$s ON %1$s = t.%1$s", fieldName);
 	}
 	
 	static String getOrder() {
@@ -221,6 +173,36 @@ public interface AssignmentsQueryStringBuilder {
 				,asc("i",ExecutionImputation.FIELD_ACTIVITY_CODE)
 				,asc("i",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE)
 			);
+	}
+	
+	static String getReadWhereFilterUsingIdentifiersOnlySelect() {
+		SelectStringBuilder.Projection projection = new SelectStringBuilder.Projection();
+		projection
+			.addFromTuple("t", Assignments.FIELD_IDENTIFIER)
+			.addFromTuple("i", ExecutionImputation.FIELD_SECTION_CODE
+				,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE
+				,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_ACTION_CODE,ExecutionImputation.FIELD_ACTIVITY_CODE
+				,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE)
+			.addFromTuple(Assignments.FIELD_CREDIT_MANAGER_HOLDER, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_ACCOUNTING_HOLDER, ScopeFunction.FIELD_CODE)
+			.addFromTuple(Assignments.FIELD_ACCOUNTING_ASSISTANT, ScopeFunction.FIELD_CODE)
+			;
+		return SelectStringBuilder.getInstance().build(projection);
+	}
+	
+	static String[] getTupleFieldsNamesIndexesFromFieldsNames() {
+		return new String[] {Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+				,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING
+				,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
+				,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
+				,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING};
 	}
 	
 	/**/

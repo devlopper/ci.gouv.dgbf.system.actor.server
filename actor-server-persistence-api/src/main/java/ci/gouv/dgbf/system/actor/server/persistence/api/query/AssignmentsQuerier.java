@@ -40,15 +40,24 @@ public interface AssignmentsQuerier extends Querier {
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
 	String PARAMETER_NAME_SECTION = "section";
-	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
-	String PARAMETER_NAME_ACTION = "action";
-	String PARAMETER_NAME_ACTIVITY = "activity";
-	String PARAMETER_NAME_ECONOMIC_NATURE = "economicNature";
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeUnit";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
+	String PARAMETER_NAME_ACTION = "action";
+	String PARAMETER_NAME_ACTION_IDENTIFIER = "actionIdentifier";
+	String PARAMETER_NAME_ACTIVITY = "activity";
+	String PARAMETER_NAME_ACTIVITY_IDENTIFIER = "activityIdentifier";
+	String PARAMETER_NAME_ECONOMIC_NATURE = "economicNature";
+	String PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER = "economicNatureIdentifier";
 	String PARAMETER_NAME_ACTIVITY_CATEGORY = "activityCategory";
+	String PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER = "activityCategoryIdentifier";
 	String PARAMETER_NAME_EXPENDITURE_NATURE = "expenditureNature";
+	String PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
 	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER = "creditManagerHolder";
+	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER = "creditManagerHolderIdentifier";
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.TRUE, null);
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
@@ -63,6 +72,7 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
 	
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER = "authorizingOfficerHolder";
+	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER = "authorizingOfficerHolderIdentifier";
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.TRUE, null);
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
@@ -77,6 +87,7 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_AUTHORIZING_OFFICER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
 	
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER = "financialControllerHolder";
+	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER = "financialControllerHolderIdentifier";
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.TRUE, null);
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER, Boolean.TRUE, Boolean.TRUE);	
@@ -91,6 +102,7 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT_IS_NOT_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_FINANCIAL_CONTROLLER_ASSISTANT, Boolean.FALSE, Boolean.TRUE);
 	
 	String PARAMETER_NAME_ACCOUNTING_HOLDER = "accountingHolder";
+	String PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER = "accountingHolderIdentifier";
 	String PARAMETER_NAME_ACCOUNTING_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.TRUE, null);
 	String PARAMETER_NAME_ACCOUNTING_HOLDER_IS_NULL_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_ACCOUNTING_HOLDER, Boolean.TRUE, Boolean.TRUE);	
@@ -118,8 +130,7 @@ public interface AssignmentsQuerier extends Querier {
 	Assignments readByIdentifierForEdit(String identifier);
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Assignments.class, QueryName.READ_WHERE_FILTER.getValue());
-	Collection<Assignments> readWhereFilter(QueryExecutorArguments arguments);
-	
+	Collection<Assignments> readWhereFilter(QueryExecutorArguments arguments);	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
 	Long countWhereFilter(QueryExecutorArguments arguments);
 	
@@ -151,8 +162,7 @@ public interface AssignmentsQuerier extends Querier {
 	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(Assignments.class,"readWhereFilterUsingIdentifiersOnly");
-	Collection<Assignments> readWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
-	
+	Collection<Assignments> readWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 	Long countWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
 	
@@ -248,6 +258,8 @@ public interface AssignmentsQuerier extends Querier {
 	static String getReadWhereFilterFrom() {
 		return from(
 				"Assignments t"
+				,"LEFT JOIN ExecutionImputation i ON i = t.executionImputation"
+				
 				,getLeftJoinScopeFunction(Assignments.FIELD_CREDIT_MANAGER_HOLDER, Assignments.COLUMN_CREDIT_MANAGER_HOLDER)
 				,getLeftJoinScopeFunction(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER)
 				,getLeftJoinScopeFunction(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER)
@@ -270,6 +282,7 @@ public interface AssignmentsQuerier extends Querier {
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER)

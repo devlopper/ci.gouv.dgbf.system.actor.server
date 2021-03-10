@@ -23,9 +23,11 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	public static void initialize() {
 		QueryHelper.addQueries(
 				Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
-						, jpql(select("t.identifier,i.sectionCode"),AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlyFromWhere()
+						, jpql(AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlySelect()
+								,AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlyFromWhere()
 								,AssignmentsQueryStringBuilder.getOrder()))
-					.setTupleFieldsNamesIndexesFromFieldsNames(Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING)
+					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringBuilder.getTupleFieldsNamesIndexesFromFieldsNames())
+					
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY, jpql(select("COUNT(t.identifier)")
 						,AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlyFromWhere()))	
 			);
@@ -124,6 +126,7 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 				
 				,PARAMETER_NAME_ALL_HOLDERS_DEFINED
 				,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
+				
 				);
 		
 		prepareWhereFilter(filter, arguments);
@@ -265,6 +268,48 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	private void prepareWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments) {
 		Filter filter = new Filter();
 		
+		filter.addFieldsNullable(arguments
+				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER
+				
+				,PARAMETER_NAME_ALL_HOLDERS_DEFINED
+				,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
+				
+				,PARAMETER_NAME_SECTION_IDENTIFIER
+				,PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
+				,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
+				,PARAMETER_NAME_ACTION_IDENTIFIER
+				,PARAMETER_NAME_ACTIVITY_IDENTIFIER
+				,PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER
+				,PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER
+				,PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER
+				
+				);
+		
+		filter.addFieldsEquals(arguments
+				
+				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
+				,PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER
+				
+				, PARAMETER_NAME_SECTION_IDENTIFIER, PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
+				, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, PARAMETER_NAME_ACTION_IDENTIFIER, PARAMETER_NAME_ACTIVITY_IDENTIFIER
+				, PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER, PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER);
+		
+		/*
+		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
+		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
+		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
+		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_HOLDER);
+		*/
+		arguments.setFilter(filter);
+		
+		/*
+		Filter filter = new Filter();
+		
 		filter.addFieldsNullable(arguments,PARAMETER_NAME_ALL_HOLDERS_DEFINED,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
 				, PARAMETER_NAME_SECTION,PARAMETER_NAME_ADMINISTRATIVE_UNIT,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT,PARAMETER_NAME_ACTION
 				,PARAMETER_NAME_ACTIVITY,PARAMETER_NAME_ECONOMIC_NATURE,PARAMETER_NAME_ACTIVITY_CATEGORY,PARAMETER_NAME_EXPENDITURE_NATURE
@@ -274,6 +319,7 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 				,PARAMETER_NAME_ACTIVITY,PARAMETER_NAME_ECONOMIC_NATURE,PARAMETER_NAME_ACTIVITY_CATEGORY,PARAMETER_NAME_EXPENDITURE_NATURE
 				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,PARAMETER_NAME_ACCOUNTING_HOLDER);
 		arguments.setFilter(filter);
+		*/
 	}
 	
 	@Override

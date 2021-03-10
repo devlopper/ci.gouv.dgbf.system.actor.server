@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
@@ -63,6 +64,9 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
 			return RequestDispatchSlipQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Assignments.class)))
+			return AssignmentsQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -117,9 +121,6 @@ public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Ser
 			
 			if(Boolean.TRUE.equals(ExecutionImputationQuerier.getInstance().isOwner(arguments)))
 				return ExecutionImputationQuerier.getInstance().count(arguments);
-			
-			if(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return AssignmentsQuerier.getInstance().countWhereFilter(arguments);
 		}
 		return super.count(tupleClass, arguments);
 	}
