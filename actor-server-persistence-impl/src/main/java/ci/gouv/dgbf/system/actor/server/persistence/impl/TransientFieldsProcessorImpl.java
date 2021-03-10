@@ -11,8 +11,10 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
@@ -28,11 +30,44 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processScopeFunctions(CollectionHelper.cast(ScopeFunction.class, objects),fieldsNames);
 		else if(Request.class.equals(klass))
 			processRequests(CollectionHelper.cast(Request.class, objects),fieldsNames);
+		else if(Assignments.class.equals(klass))
+			processAssignments(CollectionHelper.cast(Assignments.class, objects),fieldsNames);
 		else
 			super.__process__(klass,objects, fieldsNames);
 	}
 	
 	/**/
+	
+	public void processAssignments(Collection<Assignments> assignmentsCollection,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(Assignments.FIELD___ALL__.equals(fieldName)) {
+				Collection<Object[]> arrays = AssignmentsQuerier.getInstance().readAllProperties(assignmentsCollection);
+				for(Assignments assignments : assignmentsCollection) {
+					for(Object[] array : arrays) {
+						if(array[0].equals(assignments.getIdentifier())) {
+							assignments.setSectionAsString((String) array[1]);
+							assignments.setAdministrativeUnitAsString((String) array[2]);
+							assignments.setBudgetSpecializationUnitAsString((String) array[3]);
+							assignments.setActionAsString((String) array[4]);
+							assignments.setActivityAsString((String) array[5]);
+							assignments.setEconomicNatureAsString((String) array[6]);
+							assignments.setExpenditureNatureAsString((String) array[7]);
+							assignments.setActivityCategoryAsString((String) array[8]);
+							assignments.setCreditManagerHolderAsString((String) array[9]);
+							assignments.setCreditManagerAssistantAsString((String) array[10]);
+							assignments.setAuthorizingOfficerHolderAsString((String) array[11]);
+							assignments.setAuthorizingOfficerAssistantAsString((String) array[12]);
+							assignments.setFinancialControllerHolderAsString((String) array[13]);
+							assignments.setFinancialControllerAssistantAsString((String) array[14]);
+							assignments.setAccountingHolderAsString((String) array[15]);
+							assignments.setAccountingAssistantAsString((String) array[16]);
+							break;
+						}
+					}
+				}			
+			}
+		}
+	}
 	
 	public void processScopeFunctions(Collection<ScopeFunction> scopeFunctions,Collection<String> fieldsNames) {
 		Collection<Object[]> fromViewArrays = readFromViewByScopeFunctions(scopeFunctions, fieldsNames);

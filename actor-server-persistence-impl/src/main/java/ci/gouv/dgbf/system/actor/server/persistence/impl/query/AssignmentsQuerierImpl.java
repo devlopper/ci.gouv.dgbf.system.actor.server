@@ -7,16 +7,29 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
+import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
+import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
+import org.cyk.utility.persistence.server.query.string.WhereStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl implements Serializable {
 	
@@ -37,6 +50,8 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	public Assignments readOne(QueryExecutorArguments arguments) {
 		if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 			return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+		if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+			return readByIdentifierForUI(arguments);
 		throw new RuntimeException("Not yet handled : "+arguments);
 	}
 	
@@ -85,6 +100,16 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	public Assignments readByIdentifierForEdit(String identifier) {
 		Assignments assignments = QueryExecutor.getInstance().executeReadOne(Assignments.class, new QueryExecutorArguments()
 				.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT).addFilterField(PARAMETER_NAME_IDENTIFIER, identifier));
+		return assignments;
+	}
+	
+	@Override
+	public Assignments readByIdentifierForUI(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);
+		Assignments assignments = QueryExecutor.getInstance().executeReadOne(Assignments.class, arguments);
 		return assignments;
 	}
 	
@@ -320,6 +345,85 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,PARAMETER_NAME_ACCOUNTING_HOLDER);
 		arguments.setFilter(filter);
 		*/
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<Object[]> readAllPropertiesByIdentifiers(Collection<String> identifiers) {
+		if(CollectionHelper.isEmpty(identifiers))
+			return null;
+		return new ReaderByCollection.AbstractImpl<String, Object[]>() {
+			@Override
+			protected Collection<Object[]> __read__(Collection<String> values) {
+				return EntityManagerGetter.getInstance().get().createQuery(jpql(
+						SelectStringBuilder.getInstance().build(new SelectStringBuilder.Projection().addFromTuple("t", Assignments.FIELD_IDENTIFIER)
+								.addFromTuple("i", ExecutionImputation.FIELD_SECTION_CODE_NAME, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME
+										, ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME, ExecutionImputation.FIELD_ACTION_CODE_NAME
+										, ExecutionImputation.FIELD_ACTIVITY_CODE_NAME, ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE_NAME
+										, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME)
+								.add(Language.Select.concat(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_ACCOUNTING_HOLDER, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								.add(Language.Select.concat(Assignments.COLUMN_ACCOUNTING_ASSISTANT, ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME))
+								)
+						,FromStringBuilder.getInstance().build(new FromStringBuilder.Tuple("Assignments","t")
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setTupleName(PersistenceHelper.getEntityName(ExecutionImputation.class)).setVariableName("i")))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_CREDIT_MANAGER_HOLDER)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_CREDIT_MANAGER_HOLDER)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_CREDIT_MANAGER_ASSISTANT)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_CREDIT_MANAGER_ASSISTANT)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_AUTHORIZING_OFFICER_ASSISTANT)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_FINANCIAL_CONTROLLER_HOLDER)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_FINANCIAL_CONTROLLER_ASSISTANT)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_ACCOUNTING_HOLDER)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_ACCOUNTING_HOLDER)))
+								.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t")
+										.setMasterFieldName(Assignments.FIELD_ACCOUNTING_ASSISTANT)
+										.setTupleName(PersistenceHelper.getEntityName(ScopeFunction.class)).setVariableName(Assignments.COLUMN_ACCOUNTING_ASSISTANT)))
+								)
+						,WhereStringBuilder.getInstance().build(new WhereStringBuilder.Predicate().add("t.identifier IN :"+PARAMETER_NAME_IDENTIFIERS))))
+						.setParameter(PARAMETER_NAME_IDENTIFIERS, values).getResultList();
+			}
+			
+		}.read(identifiers);
+	}
+	
+	@Override
+	public Collection<Object[]> readAllPropertiesByIdentifiers(String... identifiers) {
+		if(ArrayHelper.isEmpty(identifiers))
+			return null;
+		return readAllPropertiesByIdentifiers(CollectionHelper.listOf(identifiers));
+	}
+	
+	@Override
+	public Collection<Object[]> readAllProperties(Collection<Assignments> assignmentsCollection) {
+		if(CollectionHelper.isEmpty(assignmentsCollection))
+			return null;
+		return readAllPropertiesByIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(assignmentsCollection));
+	}
+	
+	@Override
+	public Collection<Object[]> readAllProperties(Assignments... assignmentsCollection) {
+		if(ArrayHelper.isEmpty(assignmentsCollection))
+			return null;
+		return readAllProperties(CollectionHelper.listOf(assignmentsCollection));
 	}
 	
 	@Override

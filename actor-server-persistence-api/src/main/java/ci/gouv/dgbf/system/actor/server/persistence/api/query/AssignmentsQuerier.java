@@ -129,6 +129,9 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class,"readByIdentifierForEdit");
 	Assignments readByIdentifierForEdit(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class,"readByIdentifierForUI");
+	Assignments readByIdentifierForUI(QueryExecutorArguments arguments);
+	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(Assignments.class, QueryName.READ_WHERE_FILTER.getValue());
 	Collection<Assignments> readWhereFilter(QueryExecutorArguments arguments);	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER);
@@ -166,6 +169,11 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 	Long countWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
 	
+	Collection<Object[]> readAllPropertiesByIdentifiers(Collection<String> identifiers);
+	Collection<Object[]> readAllPropertiesByIdentifiers(String... identifiers);
+	Collection<Object[]> readAllProperties(Collection<Assignments> assignmentsCollection);
+	Collection<Object[]> readAllProperties(Assignments... assignmentsCollection);
+	
 	void clean(String actor,String functionality,String action,Date date);
 	void import_(String actor,String functionality,String actionCreate,String actionUpdate,Date date);
 	void export(String actor,String functionality,String action,Date date);
@@ -189,6 +197,11 @@ public interface AssignmentsQuerier extends Querier {
 			Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT
 				, jpql(getForEditSelect(),getReadWhereFilterFrom(),"WHERE t.identifier = :identifier"					
 				)).setTupleFieldsNamesIndexesFromFieldsNames(getForEditTupleFieldsNamesIndexesFromFieldsNames())
+			
+			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI
+					, jpql(select("t.identifier,t.identifier"),from("Assignments t"),where("t.identifier = :identifier")					
+							)).setTupleFieldsNamesIndexesFromFieldsNames(Assignments.FIELD_IDENTIFIER,Assignments.FIELD_IDENTIFIER)
+						
 			
 			,Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))			
 			,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))

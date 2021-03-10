@@ -179,6 +179,8 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String FIELD_ACCOUNTING_HOLDER_AS_STRING = "accountingHolderAsString";
 	public static final String FIELD_ACCOUNTING_ASSISTANT_AS_STRING = "accountingAssistantAsString";
 	
+	public static final String FIELD___ALL__ = "__all__";
+	
 	public static final List<String> FIELDS_SCOPES_FUNCTIONS = List.of(
 			FIELD_CREDIT_MANAGER_HOLDER,FIELD_CREDIT_MANAGER_ASSISTANT
 			,FIELD_AUTHORIZING_OFFICER_HOLDER,FIELD_AUTHORIZING_OFFICER_ASSISTANT

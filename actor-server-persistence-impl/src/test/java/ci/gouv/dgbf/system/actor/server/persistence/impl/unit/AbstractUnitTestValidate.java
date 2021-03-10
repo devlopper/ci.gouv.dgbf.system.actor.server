@@ -105,9 +105,8 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	@org.junit.jupiter.api.Test
+	//@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readWhereFilterForUI_activity(){
-		System.out.println("AbstractUnitTestValidate.assignmentsQuerier_readWhereFilterForUI_activity()");
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
 		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
@@ -119,15 +118,26 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 	}
 	
 	@org.junit.jupiter.api.Test
-	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activity(){
-		System.out.println("AbstractUnitTestValidate.assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activity()");
+	public void assignmentsQuerier_readByIdentifierForUI_allProperties(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
-		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
-		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
-		queryExecutorArguments.setNumberOfTuples(5);
-		Collection<Assignments> scopeFunctions = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
-		scopeFunctions.stream().forEach(x -> {
-			System.out.println(x.getCreditManagerHolderAsString());
-		});
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER,"57ef78b9-629b-40c2-9fb5-ee433dc69537");
+		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Assignments.FIELD___ALL__));
+		Assignments assignments = AssignmentsQuerier.getInstance().readByIdentifierForUI(queryExecutorArguments);
+		System.out.println(assignments.getSectionAsString());
+		System.out.println(assignments.getAdministrativeUnitAsString());
+		System.out.println(assignments.getBudgetSpecializationUnitAsString());
+		System.out.println(assignments.getActionAsString());
+		System.out.println(assignments.getActivityAsString());
+		System.out.println(assignments.getActivityCategoryAsString());
+		System.out.println(assignments.getExpenditureNatureAsString());
+		System.out.println(assignments.getEconomicNatureAsString());
+		System.out.println(assignments.getCreditManagerHolderAsString());
+		System.out.println(assignments.getCreditManagerAssistantAsString());
+		System.out.println(assignments.getAuthorizingOfficerHolderAsString());
+		System.out.println(assignments.getAuthorizingOfficerAssistantAsString());
+		System.out.println(assignments.getFinancialControllerHolderAsString());
+		System.out.println(assignments.getFinancialControllerAssistantAsString());
+		System.out.println(assignments.getAccountingHolderAsString());
+		System.out.println(assignments.getAccountingAssistantAsString());
 	}
 }
