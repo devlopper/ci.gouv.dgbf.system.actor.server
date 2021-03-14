@@ -117,12 +117,57 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
+	//@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
+		//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		queryExecutorArguments.setNumberOfTuples(1);
+		Collection<Assignments> result = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		result.stream().forEach(x -> {
+			print(x);
+		});
+	}
+	
+	//@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activityIdentifier(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
+		queryExecutorArguments.setNumberOfTuples(1);
+		Collection<Assignments> result = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		result.stream().forEach(x -> {
+			print(x);
+		});
+	}
+	
 	@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_countWhereFilterUsingIdentifiersOnly(){
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilterUsingIdentifiersOnly(new QueryExecutorArguments()));
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilterUsingIdentifiersOnly(new QueryExecutorArguments()
+				.addFilterField(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE, Boolean.FALSE)));
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilterUsingIdentifiersOnly(new QueryExecutorArguments()
+				.addFilterField(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE, Boolean.FALSE)));
+	}
+	
+	//@org.junit.jupiter.api.Test
+	public void assignmentsQuerier_countWhereFilterUsingIdentifiersOnly_activityIdentifier(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilterUsingIdentifiersOnly(queryExecutorArguments));
+		System.out.println(AssignmentsQuerier.getInstance().countWhereFilterUsingIdentifiersOnly(queryExecutorArguments));
+	}
+	
+	//@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readByIdentifierForUI_allProperties(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER,"57ef78b9-629b-40c2-9fb5-ee433dc69537");
 		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Assignments.FIELD___ALL__));
 		Assignments assignments = AssignmentsQuerier.getInstance().readByIdentifierForUI(queryExecutorArguments);
+		print(assignments);
+	}
+	
+	private static void print(Assignments assignments) {
 		System.out.println(assignments.getSectionAsString());
 		System.out.println(assignments.getAdministrativeUnitAsString());
 		System.out.println(assignments.getBudgetSpecializationUnitAsString());

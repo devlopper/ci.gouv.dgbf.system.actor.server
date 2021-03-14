@@ -2,17 +2,16 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.string.RuntimeQueryStringBuilder;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsQueryStringBuilder;
 
 public class PersistenceUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
@@ -43,10 +42,38 @@ public class PersistenceUnitTest extends AbstractUnitTest {
 	}
 	
 	@Test
-	public void assignmentsQueryStringBuilder_build(){
-		AssignmentsQueryStringBuilder.Arguments arguments = new AssignmentsQueryStringBuilder.Arguments();
-		arguments.setImputationFieldsNames(List.of(ExecutionImputation.FIELD_SECTION_CODE));
-		arguments.setJoinableHoldersFieldsNames(List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER));
-		assertThat(AssignmentsQueryStringBuilder.getInstance().build(arguments)).isEqualTo("");
+	public void assignmentsQueryStringBuilder_build_where_noCriteria(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+		//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
+		//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		System.out.println("PersistenceUnitTest.assignmentsQueryStringBuilder_build_where_noCriteria()");
+		System.out.println(RuntimeQueryStringBuilder.getInstance().build(queryExecutorArguments));
+	}
+	
+	@Test
+	public void assignmentsQueryStringBuilder_build_where_sectionIdentifier(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,"1");
+		//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
+		//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
+		System.out.println("PersistenceUnitTest.assignmentsQueryStringBuilder_build_where_noCriteria()");
+		System.out.println(RuntimeQueryStringBuilder.getInstance().build(queryExecutorArguments));
+	}
+	
+	@Test
+	public void assignmentsQueryStringBuilder_build_where_allHoldersDefined(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE,Boolean.FALSE);
+		System.out.println("PersistenceUnitTest.assignmentsQueryStringBuilder_build_where_allHoldersDefined()");
+		System.out.println(RuntimeQueryStringBuilder.getInstance().build(queryExecutorArguments));
+	}
+	
+	@Test
+	public void assignmentsQueryStringBuilder_build_where_someHoldersNotDefined(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE,Boolean.FALSE);
+		System.out.println("PersistenceUnitTest.assignmentsQueryStringBuilder_build_where_someHoldersNotDefined()");
+		System.out.println(RuntimeQueryStringBuilder.getInstance().build(queryExecutorArguments));
 	}
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>Persistence Implementation based on JPA</name>
@@ -13,71 +15,71 @@
 	<groupId>ci.gouv.dgbf.system.actor.server.persistence</groupId>
 	<artifactId>actor-server-persistence-impl</artifactId>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>ci.gouv.dgbf.system.actor.server.persistence</groupId>
 			<artifactId>actor-server-persistence-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.server.persistence.impl</groupId>
 			<artifactId>jee-utility-server-persistence-impl</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.persistence.server.hibernate</groupId>
 			<artifactId>jee-utility-persistence-server-hibernate</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-envers</artifactId>
 			<version>${org.hibernate.version}</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-jcache</artifactId>
-		    <version>${org.hibernate.version}</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jcache</artifactId>
+			<version>${org.hibernate.version}</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.ehcache</groupId>
-		    <artifactId>ehcache</artifactId>
-		    <version>3.9.1</version>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>3.9.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.security.keycloak.server</groupId>
 			<artifactId>jee-utility-security-keycloak-server</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.template.freemarker</groupId>
 			<artifactId>jee-utility-template-freemarker</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
-		<!-- Test -->		
+
+		<!-- Test -->
 		<dependency>
 			<groupId>org.cyk.jee.utility.test.persistence.server</groupId>
 			<artifactId>jee-utility-test-persistence-server</artifactId>
 			<version>0.1.0</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>5.4.12.Final</version>
 			<scope>test</scope>
 		</dependency>
-				
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -97,6 +99,13 @@
 			<artifactId>log4jdbc-file</artifactId>
 			<version>0.2.0</version>
 			<scope>test</scope>
-		</dependency>	
-	</dependencies>	
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>1.21</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

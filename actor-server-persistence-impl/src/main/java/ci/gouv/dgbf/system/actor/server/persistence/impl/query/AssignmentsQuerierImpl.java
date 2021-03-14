@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
 import static org.cyk.utility.persistence.query.Language.jpql;
-import static org.cyk.utility.persistence.query.Language.Select.select;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -21,6 +20,7 @@ import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.RuntimeQueryBuilder;
 import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
@@ -36,13 +36,9 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	public static void initialize() {
 		QueryHelper.addQueries(
 				Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
-						, jpql(AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlySelect()
-								,AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlyFromWhere()
-								,AssignmentsQueryStringBuilder.getOrder()))
-					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringBuilder.getTupleFieldsNamesIndexesFromFieldsNames())
-					
-				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY, jpql(select("COUNT(t.identifier)")
-						,AssignmentsQueryStringBuilder.getReadWhereFilterUsingIdentifiersOnlyFromWhere()))	
+						, AssignmentsQueryStringReadWhereFilterBuilder.getRead())
+					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames())					
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY,AssignmentsQueryStringReadWhereFilterBuilder.getCount(null))	
 			);
 	}
 	
@@ -276,7 +272,7 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 			arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 		if(arguments.getQuery() == null)
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
-		prepareWhereFilterUsingIdentifiersOnly(arguments);
+		arguments.setRuntimeQuery(RuntimeQueryBuilder.getInstance().build(arguments));
 		return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
 	}
 	
@@ -286,65 +282,8 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 			arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 		if(arguments.getQuery() == null)
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
-		prepareWhereFilterUsingIdentifiersOnly(arguments);
+		arguments.setRuntimeQuery(RuntimeQueryBuilder.getInstance().build(arguments));
 		return QueryExecutor.getInstance().executeCount(arguments);
-	}
-	
-	private void prepareWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments) {
-		Filter filter = new Filter();
-		
-		filter.addFieldsNullable(arguments
-				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER
-				
-				,PARAMETER_NAME_ALL_HOLDERS_DEFINED
-				,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
-				
-				,PARAMETER_NAME_SECTION_IDENTIFIER
-				,PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
-				,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
-				,PARAMETER_NAME_ACTION_IDENTIFIER
-				,PARAMETER_NAME_ACTIVITY_IDENTIFIER
-				,PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER
-				,PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER
-				,PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER
-				
-				);
-		
-		filter.addFieldsEquals(arguments
-				
-				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
-				,PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER
-				
-				, PARAMETER_NAME_SECTION_IDENTIFIER, PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
-				, PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, PARAMETER_NAME_ACTION_IDENTIFIER, PARAMETER_NAME_ACTIVITY_IDENTIFIER
-				, PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER, PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER, PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER);
-		
-		/*
-		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
-		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);
-		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER);
-		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_ACCOUNTING_HOLDER);
-		*/
-		arguments.setFilter(filter);
-		
-		/*
-		Filter filter = new Filter();
-		
-		filter.addFieldsNullable(arguments,PARAMETER_NAME_ALL_HOLDERS_DEFINED,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
-				, PARAMETER_NAME_SECTION,PARAMETER_NAME_ADMINISTRATIVE_UNIT,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT,PARAMETER_NAME_ACTION
-				,PARAMETER_NAME_ACTIVITY,PARAMETER_NAME_ECONOMIC_NATURE,PARAMETER_NAME_ACTIVITY_CATEGORY,PARAMETER_NAME_EXPENDITURE_NATURE
-				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,PARAMETER_NAME_ACCOUNTING_HOLDER);
-		
-		filter.addFieldsEquals(arguments, PARAMETER_NAME_SECTION,PARAMETER_NAME_ADMINISTRATIVE_UNIT,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT,PARAMETER_NAME_ACTION
-				,PARAMETER_NAME_ACTIVITY,PARAMETER_NAME_ECONOMIC_NATURE,PARAMETER_NAME_ACTIVITY_CATEGORY,PARAMETER_NAME_EXPENDITURE_NATURE
-				,PARAMETER_NAME_CREDIT_MANAGER_HOLDER,PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER,PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER,PARAMETER_NAME_ACCOUNTING_HOLDER);
-		arguments.setFilter(filter);
-		*/
 	}
 	
 	@SuppressWarnings("unchecked")

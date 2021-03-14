@@ -38,20 +38,25 @@ public abstract class AbstractUnitTestDevTestProdPerformance extends AbstractUni
 		}
 	}
 	
-	//@org.junit.jupiter.api.Test
+	@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_dynamic(){
-		for(Integer index = 0 ; index < 3 ; index = index + 1) {
+		//MetricsManager.getInstance().enable();
+		for(Integer index = 0 ; index < 10 ; index = index + 1) {
 			QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 			queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
-			queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
-			queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
+			//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
+			//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
 			//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
 			queryExecutorArguments.setNumberOfTuples(20);
 			EntityReader.getInstance().readMany(Assignments.class, queryExecutorArguments);
+			//Query Plan Cache Hit Count : 0
+			//Query Plan Cache Miss Count : 0
+			//System.out.println("Query Plan Cache Hit : "+MetricsManager.getInstance().get().get("Query Plan Cache Hit Count"));
+			//System.out.println("Query Plan Cache Miss : "+MetricsManager.getInstance().get().get("Query Plan Cache Miss Count"));
 		}
 	}
 	
-	@org.junit.jupiter.api.Test
+	//@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_countWhereFilterUsingIdentifiersOnly_dynamic(){
 		for(Integer index = 0 ; index < 3 ; index = index + 1) {
 			QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();

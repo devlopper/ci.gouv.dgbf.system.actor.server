@@ -8,7 +8,6 @@ import static org.cyk.utility.persistence.query.Language.Order.order;
 import static org.cyk.utility.persistence.query.Language.Where.and;
 import static org.cyk.utility.persistence.query.Language.Where.isNotNull;
 import static org.cyk.utility.persistence.query.Language.Where.isNull;
-import static org.cyk.utility.persistence.query.Language.Where.isNullable;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
 
@@ -22,11 +21,15 @@ import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.object.AbstractObject;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.__kernel__.value.ValueConverter;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.OrderStringBuilder;
 import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
+import org.cyk.utility.persistence.server.query.string.WhereStringBuilder;
+import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -36,12 +39,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-public interface AssignmentsQueryStringBuilder {
+public interface AssignmentsQueryStringReadWhereFilterBuilder {
 
 	String build(Arguments arguments);	
 	String build(QueryExecutorArguments arguments);
 	
-	public static abstract class AbstractImpl extends AbstractObject implements AssignmentsQueryStringBuilder,Serializable {
+	public static abstract class AbstractImpl extends AbstractObject implements AssignmentsQueryStringReadWhereFilterBuilder,Serializable {
 		
 		@Override
 		public String build(Arguments arguments) {
@@ -103,76 +106,21 @@ public interface AssignmentsQueryStringBuilder {
 		}
 	}
 	
-	static String getReadWhereFilterFrom() {
-		FromStringBuilder.Tuple tuple = new FromStringBuilder.Tuple("Assignments","t");
-		tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t").setTupleName("ExecutionImputation")
-				.setVariableName("i")));
-		
-		for(String fieldName : new String[] {Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
-				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
-				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
-				,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT}) {
-			tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
-					.setMasterVariableName("t").setMasterFieldName(fieldName).setTupleName("ScopeFunction")));
-		}
-		return FromStringBuilder.getInstance().build(tuple);
+	static String getRead() {
+		return getRead(null);
 	}
 	
-	static String getReadWhereFilterWherePredicate() {
-		return and(
-			String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_SECTION)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTION)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTIVITY)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE)
-			,String.format("(:%1$sIdentifierNullable = true OR i.%1$sIdentifier = :%1$sIdentifier)",AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY)
-			
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_CREDIT_MANAGER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
-			,getReadWhereFilterScopeFunctionPredicate(Assignments.FIELD_ACCOUNTING_HOLDER)
-			
-			,parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE)
-					, parenthesis(and(isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
-							,isNotNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
-							,isNotNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
-							,isNotNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
-							)))
-				)
-			
-			,parenthesis(or(isNullable(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE)
-					, or(isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER)
-							,isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
-							,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)
-							,isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
-							))
-				)
-		);
+	static String getRead(QueryExecutorArguments arguments) {
+		return  jpql(AssignmentsQueryStringReadWhereFilterBuilder.getReadWhereFilterUsingIdentifiersOnlySelect()
+				,AssignmentsQueryStringReadWhereFilterBuilder.getReadWhereFilterFrom()
+				,AssignmentsQueryStringReadWhereFilterBuilder.getReadWhereFilterWherePredicate(arguments)
+				,AssignmentsQueryStringReadWhereFilterBuilder.getOrder());
 	}
 	
-	static String getReadWhereFilterUsingIdentifiersOnlyFromWhere() {
-		return jpql(getReadWhereFilterFrom(),where(getReadWhereFilterWherePredicate()));
-	}
-	
-	static String getReadWhereFilterScopeFunctionPredicate(String fieldName) {
-		return String.format("(:%1$sIdentifierNullable = true OR %1$s.identifier = :%1$sIdentifier)", fieldName);
-	}
-	
-	static String getLeftJoinScopeFunction(String fieldName) {
-		return String.format("LEFT JOIN ScopeFunction %1$s ON %1$s = t.%1$s", fieldName);
-	}
-	
-	static String getOrder() {
-		return order(
-				asc("i",ExecutionImputation.FIELD_SECTION_CODE)
-				,asc("i",ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE)
-				,asc("i",ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE)
-				,asc("i",ExecutionImputation.FIELD_ACTION_CODE)
-				,asc("i",ExecutionImputation.FIELD_ACTIVITY_CODE)
-				,asc("i",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE)
-			);
+	static String getCount(QueryExecutorArguments arguments) {
+		return  jpql("SELECT COUNT(t.identifier)"
+				,AssignmentsQueryStringReadWhereFilterBuilder.getReadWhereFilterFrom()
+				,AssignmentsQueryStringReadWhereFilterBuilder.getReadWhereFilterWherePredicate(arguments));
 	}
 	
 	static String getReadWhereFilterUsingIdentifiersOnlySelect() {
@@ -193,6 +141,126 @@ public interface AssignmentsQueryStringBuilder {
 			.addFromTuple(Assignments.FIELD_ACCOUNTING_ASSISTANT, ScopeFunction.FIELD_CODE)
 			;
 		return SelectStringBuilder.getInstance().build(projection);
+	}
+	
+	static String getReadWhereFilterFrom() {
+		FromStringBuilder.Tuple tuple = new FromStringBuilder.Tuple("Assignments","t");
+		tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t").setTupleName("ExecutionImputation")
+				.setVariableName("i")));
+		
+		for(String fieldName : new String[] {Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
+				,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
+				,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
+				,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT}) {
+			tuple.addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
+					.setMasterVariableName("t").setMasterFieldName(fieldName).setTupleName("ScopeFunction")));
+		}
+		return FromStringBuilder.getInstance().build(tuple);
+	}
+	
+	static Filter buildFilterFrom(QueryExecutorArguments queryExecutorArguments) {
+		if(queryExecutorArguments == null || queryExecutorArguments.getFilter() == null || CollectionHelper.isEmpty(queryExecutorArguments.getFilter().getFields()))
+			return null;
+		Filter filter = new Filter();
+		
+		filter.addFieldsNullable(queryExecutorArguments,AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED);
+		
+		filter.addFieldsEquals(queryExecutorArguments
+				
+				,AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER
+				
+				,AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER);
+		
+		return filter;
+	}
+	
+	static String getReadWhereFilterWherePredicate(QueryExecutorArguments queryExecutorArguments) {
+		if(queryExecutorArguments == null || queryExecutorArguments.getFilter() == null || CollectionHelper.isEmpty(queryExecutorArguments.getFilter().getFields()))
+			return null;
+		Filter sourceFilter = queryExecutorArguments.getFilter(),destinationFilter = new Filter();
+		Collection<String> notNullablesPredicates = new ArrayList<>();
+		//imputation filter
+		for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER})
+			if(Boolean.TRUE.equals(sourceFilter.hasFieldWithPath(parameterName))) {
+				notNullablesPredicates.add(String.format("i.%1$s = :%1$s",parameterName));
+				destinationFilter.addFieldEquals(parameterName, queryExecutorArguments);
+			}
+		//scope function filter
+		for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER})
+			if(Boolean.TRUE.equals(sourceFilter.hasFieldWithPath(parameterName))) {
+				notNullablesPredicates.add(String.format("%1$s.identifier = :%1$sIdentifier",getScopeFunctionFieldNameFromIdentifierParameterName(parameterName)));
+				destinationFilter.addFieldEquals(parameterName, queryExecutorArguments);
+			}
+		
+		if(Boolean.FALSE.equals(ValueConverter.getInstance().convertToBoolean(sourceFilter.getFieldValue(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED_NULLABLE))))
+			notNullablesPredicates.add(parenthesis(and(
+					isNotNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER),isNotNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+					,isNotNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER),isNotNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
+			)));
+		
+		if(Boolean.FALSE.equals(ValueConverter.getInstance().convertToBoolean(sourceFilter.getFieldValue(AssignmentsQuerier.PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED_NULLABLE))))
+			notNullablesPredicates.add(parenthesis(or(
+					isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER),isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
+					,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER),isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
+			)));
+		
+		queryExecutorArguments.setRuntimeFilter(destinationFilter);
+		
+		if(CollectionHelper.isEmpty(notNullablesPredicates))
+			return null;
+		Predicate predicate = new Predicate();
+		predicate.ands(notNullablesPredicates);
+		return WhereStringBuilder.getInstance().build(predicate);		
+	}
+	
+	public static String getScopeFunctionFieldNameFromIdentifierParameterName(String fieldName) {
+		if(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER.equals(fieldName))
+			return Assignments.FIELD_CREDIT_MANAGER_HOLDER;
+		if(AssignmentsQuerier.PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER_IDENTIFIER.equals(fieldName))
+			return Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER;
+		if(AssignmentsQuerier.PARAMETER_NAME_FINANCIAL_CONTROLLER_HOLDER_IDENTIFIER.equals(fieldName))
+			return Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER;
+		if(AssignmentsQuerier.PARAMETER_NAME_ACCOUNTING_HOLDER_IDENTIFIER.equals(fieldName))
+			return Assignments.FIELD_ACCOUNTING_HOLDER;
+		throw new RuntimeException(String.format("Scope function field of parameter named %s not found", fieldName));
+	}
+	/*
+	static String getReadWhereFilterWhere(Filter filter) {
+		return where(getReadWhereFilterWherePredicate(filter));
+	}
+	*/
+	static String getReadWhereFilterUsingIdentifiersOnlyFromWhere() {
+		return jpql(getReadWhereFilterFrom(),getReadWhereFilterWherePredicate(null));
+	}
+	
+	static String getReadWhereFilterScopeFunctionPredicate(String fieldName) {
+		return String.format("(:%1$sIdentifierNullable = true OR %1$s.identifier = :%1$sIdentifier)", fieldName);
+	}
+	
+	static String getLeftJoinScopeFunction(String fieldName) {
+		return String.format("LEFT JOIN ScopeFunction %1$s ON %1$s = t.%1$s", fieldName);
+	}
+	
+	static String getOrder() {
+		return order(
+				asc("i",ExecutionImputation.FIELD_SECTION_CODE)
+				,asc("i",ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE)
+				,asc("i",ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE)
+				,asc("i",ExecutionImputation.FIELD_ACTION_CODE)
+				,asc("i",ExecutionImputation.FIELD_ACTIVITY_CODE)
+				,asc("i",ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE)
+			);
 	}
 	
 	static String[] getTupleFieldsNamesIndexesFromFieldsNames() {
@@ -216,8 +284,8 @@ public interface AssignmentsQueryStringBuilder {
 	
 	/**/
 	
-	static AssignmentsQueryStringBuilder getInstance() {
-		return Helper.getInstance(AssignmentsQueryStringBuilder.class, INSTANCE);
+	static AssignmentsQueryStringReadWhereFilterBuilder getInstance() {
+		return Helper.getInstance(AssignmentsQueryStringReadWhereFilterBuilder.class, INSTANCE);
 	}
 	
 	Value INSTANCE = new Value();
