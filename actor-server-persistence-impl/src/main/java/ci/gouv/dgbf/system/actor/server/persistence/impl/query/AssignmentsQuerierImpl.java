@@ -5,6 +5,7 @@ import static org.cyk.utility.persistence.query.Language.jpql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -37,9 +38,11 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 		QueryHelper.addQueries(
 				Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
 						, AssignmentsQueryStringReadWhereFilterBuilder.getRead())
-					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames())					
-				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY,AssignmentsQueryStringReadWhereFilterBuilder.getCount(null))	
+					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames())
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY,AssignmentsQueryStringReadWhereFilterBuilder.getCount(null))
 			);
+		RuntimeQueryBuilder.BUILDABLES.addAll(List.of(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
+				,QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY));
 	}
 	
 	@Override
@@ -272,7 +275,6 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 			arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 		if(arguments.getQuery() == null)
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
-		arguments.setRuntimeQuery(RuntimeQueryBuilder.getInstance().build(arguments));
 		return QueryExecutor.getInstance().executeReadMany(Assignments.class, arguments);
 	}
 	
@@ -282,7 +284,6 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 			arguments = QueryExecutorArguments.instantiate(Assignments.class, QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 		if(arguments.getQuery() == null)
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
-		arguments.setRuntimeQuery(RuntimeQueryBuilder.getInstance().build(arguments));
 		return QueryExecutor.getInstance().executeCount(arguments);
 	}
 	
