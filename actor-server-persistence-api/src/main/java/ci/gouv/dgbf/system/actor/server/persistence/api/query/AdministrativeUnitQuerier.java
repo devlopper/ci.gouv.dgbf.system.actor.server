@@ -14,7 +14,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
@@ -187,7 +187,7 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 				,Query.FIELD_VALUE,Querier.CodableAndNamable.getQueryValueReadWhereCodeOrNameLike("AdministrativeUnit", "t.identifier,t.code,t.name,t.sectionCodeName")
 				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(AdministrativeUnit
 						.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME,AdministrativeUnit.FIELD_SECTION_CODE_NAME)));
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER
 					, "SELECT t FROM AdministrativeUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" ORDER BY t.code ASC")
 			

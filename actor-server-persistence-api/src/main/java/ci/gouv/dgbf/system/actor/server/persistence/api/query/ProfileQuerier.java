@@ -23,7 +23,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
@@ -235,17 +235,17 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Profile.class);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,"SELECT t FROM Profile t WHERE t.type.code = '"+ProfileType.CODE_SYSTEME+"' ORDER BY t.code ASC")
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,"SELECT COUNT(t) FROM Profile t WHERE t.type.code = '"+ProfileType.CODE_SYSTEME+"'")
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			
@@ -254,7 +254,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Profile t")			
@@ -262,7 +262,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 						,Language.Order.of("t.code ASC"))
 				)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Profile t")			
@@ -270,7 +270,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,jpql(select("t")
 						,from("Profile t JOIN ActorProfile actorProfile ON actorProfile.profile = t")			
@@ -279,7 +279,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Profile.class,Query.FIELD_RESULT_CLASS,Profile.class
 				,Query.FIELD_VALUE,jpql(select("t")
 						,from("Profile t JOIN ProfileFunction profileFunction ON profileFunction.profile.identifier = t.identifier")			

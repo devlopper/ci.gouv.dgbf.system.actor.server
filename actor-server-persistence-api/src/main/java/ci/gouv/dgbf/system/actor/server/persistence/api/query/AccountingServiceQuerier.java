@@ -8,7 +8,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -75,7 +75,7 @@ public interface AccountingServiceQuerier extends Querier.CodableAndNamable<Acco
 	
 	static void initialize() {
 		//Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(AccountingService.class, QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION
 					, "SELECT t.identifier,locality.code FROM AccountingService t LEFT JOIN Locality locality ON locality = t.locality")
 			.setTupleFieldsNamesIndexesFromFieldsNames(AccountingService.FIELD_IDENTIFIER,AccountingService.FIELD_LOCALITY_CODE)

@@ -20,7 +20,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -326,7 +326,7 @@ public interface ScopeOfTypeQuerier extends Querier {
 	}
 	
 	static void initialize(ScopeOfTypeQuerier querier) {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(Scope.class,querier.getQueryIdentifierReadVisibleWhereFilter()
 					,jpql(select("scope"),from("Scope scope"),querier.buildQueryValueReadVisibleWhereFilterWhere(),order(asc("scope","code"))))
 			

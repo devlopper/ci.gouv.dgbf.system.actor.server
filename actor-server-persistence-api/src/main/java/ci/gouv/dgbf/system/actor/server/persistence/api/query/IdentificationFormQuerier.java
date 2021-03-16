@@ -9,7 +9,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.query.TypedQuerier;
@@ -101,7 +101,7 @@ public interface IdentificationFormQuerier extends TypedQuerier<IdentificationFo
 	
 	static void initialize() {
 		TypedQuerier.initialize(IdentificationForm.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(IdentificationForm.class, QUERY_IDENTIFIER_READ_BY_CODE, "SELECT t FROM IdentificationForm t WHERE t.code = :"+PARAMETER_NAME_CODE)
 			,Query.buildSelect(IdentificationForm.class, QUERY_IDENTIFIER_READ_FOR_UI, "SELECT t.identifier,t.code,t.name FROM IdentificationForm t ORDER BY t.code ASC")
 			.setTupleFieldsNamesIndexesFromFieldsNames(IdentificationForm.FIELD_IDENTIFIER,IdentificationForm.FIELD_CODE,IdentificationForm.FIELD_NAME)

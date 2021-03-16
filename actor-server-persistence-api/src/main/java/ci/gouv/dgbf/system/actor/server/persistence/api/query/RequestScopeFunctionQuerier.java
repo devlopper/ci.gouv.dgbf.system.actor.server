@@ -12,7 +12,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
@@ -160,7 +160,7 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIERS
 					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
 					,Query.FIELD_VALUE,jpql("SELECT t","FROM RequestScopeFunction t","WHERE t.request.identifier IN :"+PARAMETER_NAME_REQUESTS_IDENTIFIERS,"ORDER BY t.scopeFunction.code ASC"))

@@ -23,7 +23,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.query.Filter;
@@ -273,7 +273,7 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Activity.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(select("t"),getReadWhereFilterFromWhere(),getOrderBy()))			
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
 				,Query.buildSelect(Activity.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI

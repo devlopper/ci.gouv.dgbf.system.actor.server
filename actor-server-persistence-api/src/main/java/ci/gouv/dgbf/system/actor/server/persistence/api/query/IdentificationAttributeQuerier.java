@@ -8,7 +8,7 @@ import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.query.TypedQuerier;
@@ -88,7 +88,7 @@ public interface IdentificationAttributeQuerier extends TypedQuerier<Identificat
 	
 	static void initialize() {
 		TypedQuerier.initialize(IdentificationAttribute.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(IdentificationAttribute.class, QUERY_IDENTIFIER_READ_FOR_UI, "SELECT t.identifier,t.code,t.name FROM IdentificationAttribute t ORDER BY t.code ASC")
 			.setTupleFieldsNamesIndexesFromFieldsNames(IdentificationAttribute.FIELD_IDENTIFIER,IdentificationAttribute.FIELD_CODE,IdentificationAttribute.FIELD_NAME)
 			

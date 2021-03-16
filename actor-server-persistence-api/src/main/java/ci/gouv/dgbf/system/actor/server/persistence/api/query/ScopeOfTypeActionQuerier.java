@@ -19,7 +19,7 @@ import org.cyk.utility.persistence.query.Language.Select;
 import org.cyk.utility.persistence.query.Language.Where;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -108,31 +108,31 @@ public interface ScopeOfTypeActionQuerier extends ScopeOfTypeQuerier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a","sectionCodeName",Action.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME))
 				,getQueryValueReadVisibleWhereFilterFromWhere(), order(asc("scope","code")))
 				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_VISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,jpql(select("COUNT(scope.identifier)") ,getQueryValueReadVisibleWhereFilterFromWhere())
 				)
 			);
 	
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_INVISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Scope.class
 				,Query.FIELD_VALUE,jpql(select(fields("scope","identifier","code","name"),fields("a","sectionCodeName",Action.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME))
 				,getQueryValueReadInvisibleWhereFilterFromWhere(),order(asc("scope","code")))
 				).setTupleFieldsNamesIndexesFromFieldsNames(Scope.FIELD_IDENTIFIER,Scope.FIELD_CODE,Scope.FIELD_NAME,Scope.FIELD_SECTION_AS_STRING,Scope.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_INVISIBLE_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,Scope.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,jpql(select("COUNT(scope.identifier)") ,getQueryValueReadInvisibleWhereFilterFromWhere())
 				)
 			);
 		
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Scope.class, QUERY_IDENTIFIER_READ_WHERE_FILTER
 						, jpql(select(Select.fields("t", Action.FIELD_IDENTIFIER,Action.FIELD_CODE,Action.FIELD_NAME
 								,Action.FIELD_SECTION_CODE_NAME,Action.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME))

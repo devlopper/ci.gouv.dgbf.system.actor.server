@@ -10,7 +10,7 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -139,25 +139,25 @@ public interface ActorScopeQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_SCOPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_SCOPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_SCOPES_CODES));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_BY_SCOPE_CODE
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTOR_CODE_BY_SCOPE_CODE
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTOR_CODE_BY_SCOPE_CODE));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES_BY_SCOPES_CODES));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,Long.class,Query.FIELD_VALUE,QUERY_VALUE_COUNT_BY_ACTORS_CODES_BY_SCOPE_TYPES_CODES));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ORDER_BY_ACTOR_CODE_ASCENDING_BY_SCOPE_CODE_ASCENDING
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ORDER_BY_ACTOR_CODE_ASCENDING_BY_SCOPE_CODE_ASCENDING
 				,Query.FIELD_TUPLE_CLASS,ActorScope.class,Query.FIELD_RESULT_CLASS,ActorScope.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_ORDER_BY_ACTOR_CODE_ASCENDING_BY_SCOPE_CODE_ASCENDING
 				)

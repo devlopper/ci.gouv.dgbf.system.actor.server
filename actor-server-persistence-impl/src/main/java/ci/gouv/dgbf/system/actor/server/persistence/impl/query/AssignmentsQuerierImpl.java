@@ -5,7 +5,6 @@ import static org.cyk.utility.persistence.query.Language.jpql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -17,11 +16,10 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
-import org.cyk.utility.persistence.server.query.RuntimeQueryBuilder;
 import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
@@ -35,14 +33,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl implements Serializable {
 	
 	public static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
-						, AssignmentsQueryStringReadWhereFilterBuilder.getRead())
+						, AssignmentsQueryStringReadWhereFilterBuilder.getRead()).setRegisterableToEntityManager(Boolean.FALSE)
 					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames())
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY,AssignmentsQueryStringReadWhereFilterBuilder.getCount(null))
+				.setRegisterableToEntityManager(Boolean.FALSE)
 			);
-		RuntimeQueryBuilder.BUILDABLES.addAll(List.of(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
-				,QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY));
 	}
 	
 	@Override

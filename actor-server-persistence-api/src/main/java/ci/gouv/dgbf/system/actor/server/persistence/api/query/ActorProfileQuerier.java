@@ -11,7 +11,7 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -65,7 +65,7 @@ public interface ActorProfileQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,ActorProfile.class,Query.FIELD_RESULT_CLASS,ActorProfile.class,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACTORS_CODES)
 				,Query.buildSelect(ActorProfile.class, QUERY_IDENTIFIER_READ_BY_PROFILES_CODES, "SELECT t FROM ActorProfile t WHERE t.profile.code IN :"

@@ -8,7 +8,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
@@ -119,7 +119,7 @@ public interface ActivityCategoryQuerier extends Querier.CodableAndNamable<Activ
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(ActivityCategory.class);
-		QueryHelper.addQueries(Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
+		QueryManager.getInstance().register(Query.buildSelect(ActivityCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
 				, "SELECT t.identifier,t.code,t.name FROM ActivityCategory t ORDER BY t.code ASC")
 				.setTupleFieldsNamesIndexesFromFieldsNames(ActivityCategory.FIELD_IDENTIFIER,ActivityCategory.FIELD_CODE,ActivityCategory.FIELD_NAME)
 				

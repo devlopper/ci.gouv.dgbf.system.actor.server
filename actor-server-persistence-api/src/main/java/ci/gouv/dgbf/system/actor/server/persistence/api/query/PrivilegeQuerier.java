@@ -20,7 +20,7 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -239,7 +239,7 @@ public interface PrivilegeQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_TYPES_CODES_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Privilege t"
@@ -251,17 +251,17 @@ public interface PrivilegeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,jpql(select("DISTINCT(t.identifier),t.code,t.name,t.type,t.parentIdentifier"),getReadByActorsFromWhere(),order("t.code ASC"))
 				).setTupleFieldsNamesIndexesFromFieldsNames(Privilege.FIELD_IDENTIFIER,Privilege.FIELD_CODE,Privilege.FIELD_NAME,Privilege.FIELD_TYPE,Privilege.FIELD_PARENT_IDENTIFIER)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_ACTORS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,jpql(select("COUNT(DISTINCT t.identifier)"),getReadByActorsFromWhere()))
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Privilege t"
@@ -270,7 +270,7 @@ public interface PrivilegeQuerier extends Querier {
 						,Language.Order.of("t.code ASC"))
 				)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Privilege t"
@@ -280,7 +280,7 @@ public interface PrivilegeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Privilege t"
@@ -290,7 +290,7 @@ public interface PrivilegeQuerier extends Querier {
 						,Language.Order.of("t.code ASC"))
 				)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Privilege t"
@@ -301,7 +301,7 @@ public interface PrivilegeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES_NOT_ASSOCIATED
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_PROFILES_CODES_NOT_ASSOCIATED
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
 						,Language.From.of("Privilege t")			
@@ -309,7 +309,7 @@ public interface PrivilegeQuerier extends Querier {
 						,Language.Order.of("t.code ASC"))
 				)
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES_NOT_ASSOCIATED
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_PROFILES_CODES_NOT_ASSOCIATED
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Privilege t")			
@@ -318,7 +318,7 @@ public interface PrivilegeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("DISTINCT(t.identifier),t.code,t.name,t.type,t.parentIdentifier")
 						,Language.From.of("Privilege t"
@@ -336,7 +336,7 @@ public interface PrivilegeQuerier extends Querier {
 				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(Privilege.FIELD_IDENTIFIER,Privilege.FIELD_CODE
 						,Privilege.FIELD_NAME,Privilege.FIELD_TYPE,Privilege.FIELD_PARENT_IDENTIFIER))
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_CODES
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Privilege t"
@@ -354,7 +354,7 @@ public interface PrivilegeQuerier extends Querier {
 				)
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_IDENTIFIERS
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_PARENTS_BY_CHILDREN_IDENTIFIERS
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Privilege.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("DISTINCT(t.identifier),t.code,t.name,t.type,t.parentIdentifier")
 						,Language.From.of("Privilege t"
@@ -372,7 +372,7 @@ public interface PrivilegeQuerier extends Querier {
 				).setTupleFieldsNamesIndexes(MapHelper.instantiateStringIntegerByStrings(Privilege.FIELD_IDENTIFIER,Privilege.FIELD_CODE
 						,Privilege.FIELD_NAME,Privilege.FIELD_TYPE,Privilege.FIELD_PARENT_IDENTIFIER))
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_IDENTIFIERS
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_PARENTS_BY_CHILDREN_IDENTIFIERS
 				,Query.FIELD_TUPLE_CLASS,Privilege.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Privilege t"

@@ -15,7 +15,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.value.Value;
@@ -182,14 +182,14 @@ public interface AccountRequestQuerier extends Querier {
 	Value INSTANCE = new Value();
 	
 	static void initialize() {
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,AccountRequest.class,Query.FIELD_RESULT_CLASS,AccountRequest.class
 				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueReadWhereFilter(AccountRequest.class
 						,List.of(AccountRequest.FIELD_CREATION_DATE),getQueryValueReadWhereFilterAdditionalJoins()
 						,List.of(getQueryValueReadWhereFilterAdditionalPredicates()))
 				).setTupleFieldsNamesIndexes(IdentityQuerier.getQueryTupleFieldsNamesIndexesReadWhereFilter(AccountRequest.FIELD_CREATION_DATE))
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_WHERE_FILTER
 				,Query.FIELD_TUPLE_CLASS,AccountRequest.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,IdentityQuerier.getQueryValueCountWhereFilter(AccountRequest.class
 						,getQueryValueReadWhereFilterAdditionalJoins()
@@ -202,17 +202,17 @@ public interface AccountRequestQuerier extends Querier {
 						)*/
 			);
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN
 				,Query.FIELD_TUPLE_CLASS,AccountRequest.class,Query.FIELD_RESULT_CLASS,AccountRequest.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ACCESS_TOKEN
 				)
 			);
 		
-		QueryHelper.addQueries(buildReadProjection01WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_01_BY_ACCESS_TOKEN, AccountRequest.FIELD_ACCESS_TOKEN,PARAMETER_NAME_ACCESS_TOKEN));
-		QueryHelper.addQueries(buildReadProjection01WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_01_BY_IDENTIFIER, AccountRequest.FIELD_IDENTIFIER,PARAMETER_NAME_IDENTIFIER));
-		QueryHelper.addQueries(buildReadProjection02WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_02_BY_IDENTIFIER, AccountRequest.FIELD_IDENTIFIER,PARAMETER_NAME_IDENTIFIER));
+		QueryManager.getInstance().register(buildReadProjection01WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_01_BY_ACCESS_TOKEN, AccountRequest.FIELD_ACCESS_TOKEN,PARAMETER_NAME_ACCESS_TOKEN));
+		QueryManager.getInstance().register(buildReadProjection01WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_01_BY_IDENTIFIER, AccountRequest.FIELD_IDENTIFIER,PARAMETER_NAME_IDENTIFIER));
+		QueryManager.getInstance().register(buildReadProjection02WithBudgetaryFunctionsAndFunctionsByQuery(QUERY_IDENTIFIER_READ_PROJECTION_02_BY_IDENTIFIER, AccountRequest.FIELD_IDENTIFIER,PARAMETER_NAME_IDENTIFIER));
 		
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_ELECTRONIC_MAIL_ADDRESS
 				,Query.FIELD_TUPLE_CLASS,AccountRequest.class,Query.FIELD_RESULT_CLASS,AccountRequest.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_ELECTRONIC_MAIL_ADDRESS
 				)

@@ -7,7 +7,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -44,7 +44,7 @@ public interface LocalityQuerier extends Querier.CodableAndNamable<Locality> {
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Locality.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Locality.class, QUERY_IDENTIFIER_READ_BY_CODE, "SELECT t FROM Locality t WHERE t.code = :"+PARAMETER_NAME_CODE)
 			);
 	}

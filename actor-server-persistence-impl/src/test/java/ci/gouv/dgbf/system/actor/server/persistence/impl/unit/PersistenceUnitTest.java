@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public class PersistenceUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,12 @@ public class PersistenceUnitTest extends AbstractUnitTest {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "default";
+	}
+	
+	@Test
+	public void sectionQuerier_readAll(){
+		assertThat(SectionQuerier.getInstance().read().stream().map(Section::getCode)
+				.collect(Collectors.toList())).containsExactly("101");
 	}
 	
 	@Test

@@ -8,7 +8,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -121,7 +121,7 @@ public interface ScopeTypeFunctionQuerier extends Querier {
 	/**/
 	
 	static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(ScopeTypeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_CODES
 						, "SELECT stf FROM ScopeTypeFunction stf WHERE stf.scopeType.code IN :"+PARAMETER_NAME_SCOPE_TYPES_CODES)
 				,Query.buildSelect(ScopeTypeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTIONS_IDENTIFIERS

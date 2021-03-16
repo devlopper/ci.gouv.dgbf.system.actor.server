@@ -9,7 +9,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.value.Value;
@@ -110,7 +110,7 @@ public interface ClusterQuerier extends Querier.CodableAndNamable<Cluster> {
 	/**/
 	
 	static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Cluster.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, "SELECT t FROM Cluster t ORDER BY t.code ASC")
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, "SELECT COUNT(t.identifier) FROM Cluster t")
 		);

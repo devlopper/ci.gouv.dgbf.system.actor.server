@@ -25,7 +25,7 @@ import org.cyk.utility.persistence.query.Language.Select;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
@@ -172,7 +172,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(ScopeFunction.class);
 		
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(ScopeFunction.class, QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ)
 						, "SELECT sf FROM ScopeFunction sf ORDER BY sf.code ASC")
 				,Query.buildCount(QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.COUNT)

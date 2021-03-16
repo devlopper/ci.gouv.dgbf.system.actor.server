@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,7 +17,6 @@ import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.EntitySaver;
 import org.cyk.utility.persistence.query.NativeQueryStringBuilder;
-import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryResultMapper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountRequestQuerier;
@@ -111,7 +109,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 				,Assignments.COLUMN_ACCOUNTING_ASSISTANT,FieldHelper.getByName(Assignments.class, Assignments.FIELD_ACCOUNTING_ASSISTANT)
 			));
 		
-		QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
+		//QueryHelper.scan(List.of(ActorQuerier.class.getPackage()));	
 		
 		IdentityQuerier.initialize();
 		

@@ -8,7 +8,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -51,7 +51,7 @@ public interface EconomicNatureQuerier extends Querier.CodableAndNamable<Economi
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(EconomicNature.class);
-		QueryHelper.addQueries(Query.buildSelect(EconomicNature.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
+		QueryManager.getInstance().register(Query.buildSelect(EconomicNature.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI
 				, "SELECT t.identifier,t.code,t.name FROM EconomicNature t ORDER BY t.code ASC")
 				.setTupleFieldsNamesIndexesFromFieldsNames(EconomicNature.FIELD_IDENTIFIER,EconomicNature.FIELD_CODE,EconomicNature.FIELD_NAME));
 	}

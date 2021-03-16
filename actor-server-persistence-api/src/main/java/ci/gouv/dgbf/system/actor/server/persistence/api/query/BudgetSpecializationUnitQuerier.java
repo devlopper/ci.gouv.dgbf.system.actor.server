@@ -12,7 +12,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -171,7 +171,7 @@ public interface BudgetSpecializationUnitQuerier extends Querier.CodableAndNamab
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(BudgetSpecializationUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER
 						, "SELECT t FROM BudgetSpecializationUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" ORDER BY t.code ASC")
 				

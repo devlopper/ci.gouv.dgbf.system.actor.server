@@ -7,7 +7,7 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.__kernel__.value.Value;
 
@@ -52,7 +52,7 @@ public interface AuthorizingOfficerServiceQuerier extends Querier.CodableAndNama
 	
 	static void initialize() {
 		//Querier.CodableAndNamable.initialize(BudgetSpecializationUnit.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(AuthorizingOfficerService.class, QUERY_IDENTIFIER_READ_ALL_FOR_ASSIGNMENTS_INITIALIZATION
 					, "SELECT t.identifier,t.budgetSpecializationUnit.code,locality.code FROM AuthorizingOfficerService t "
 							+ "LEFT JOIN Locality locality ON locality = t.locality")

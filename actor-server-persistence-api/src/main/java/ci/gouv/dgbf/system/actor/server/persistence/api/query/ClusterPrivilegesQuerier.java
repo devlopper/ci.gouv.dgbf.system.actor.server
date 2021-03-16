@@ -8,7 +8,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.__kernel__.value.Value;
@@ -84,7 +84,7 @@ public interface ClusterPrivilegesQuerier extends Querier.CodableAndNamable<Clus
 	/**/
 	
 	static void initialize() {
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(ClusterPrivileges.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI, "SELECT t FROM ClusterPrivileges t ORDER BY t.code ASC")
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, "SELECT COUNT(t.identifier) FROM ClusterPrivileges t")
 		);

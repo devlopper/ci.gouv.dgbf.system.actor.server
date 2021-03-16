@@ -7,7 +7,7 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
@@ -59,7 +59,7 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 	
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(ScopeType.class);
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 			Query.buildSelect(ScopeType.class, QueryIdentifierGetter.getInstance().get(ScopeType.class, QueryName.READ)
 				, "SELECT t FROM ScopeType t ORDER BY t.orderNumber ASC,t.code ASC")
 			,Query.buildCount(QueryIdentifierGetter.getInstance().get(ScopeType.class, QueryName.COUNT), "SELECT COUNT(t.identifier) FROM ScopeType t")

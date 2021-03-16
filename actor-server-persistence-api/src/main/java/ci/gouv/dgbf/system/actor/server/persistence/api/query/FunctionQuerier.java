@@ -23,7 +23,7 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryName;
@@ -365,7 +365,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	static void initialize() {
 		Querier.CodableAndNamable.initialize(Function.class);
 		
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.buildSelect(Function.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODES, jpql(select("t"),from("Function t")
 				,where(exists("SELECT stf FROM ScopeTypeFunction stf WHERE stf.function = t AND stf.scopeType.code IN :"+PARAMETER_NAME_SCOPE_TYPE_CODES))
 				,order(asc("t", "code"))))
@@ -403,7 +403,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 					.setTupleFieldsNamesIndexesFromFieldsNames(Function.FIELD_IDENTIFIER,Function.FIELD_CODE,Function.FIELD_NAME)
 			);
 		
-		QueryHelper.addQueries(
+		QueryManager.getInstance().register(
 				Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Function.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("t")
@@ -416,7 +416,7 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER, jpql(select("COUNT(t)"),From.ofTuple(Function.class)
 						,where("t.type.identifier = :"+PARAMETER_NAME_TYPE_IDENTIFIER)))
 			);
-		QueryHelper.addQueries(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
+		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES
 				,Query.FIELD_TUPLE_CLASS,Function.class,Query.FIELD_RESULT_CLASS,Long.class
 				,Query.FIELD_VALUE,Language.of(Language.Select.of("COUNT(t.identifier)")
 						,Language.From.of("Function t")			
