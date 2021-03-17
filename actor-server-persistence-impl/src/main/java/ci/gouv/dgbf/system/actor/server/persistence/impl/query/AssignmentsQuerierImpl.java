@@ -34,11 +34,8 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	
 	public static void initialize() {
 		QueryManager.getInstance().register(
-				Query.buildSelect(Assignments.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY
-						, AssignmentsQueryStringReadWhereFilterBuilder.getRead()).setRegisterableToEntityManager(Boolean.FALSE)
-					.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames())
-				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY,AssignmentsQueryStringReadWhereFilterBuilder.getCount(null))
-				.setRegisterableToEntityManager(Boolean.FALSE)
+				Query.buildDynamicSelect(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY, Assignments.class)
+				,Query.buildDynamicCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY)
 			);
 	}
 	

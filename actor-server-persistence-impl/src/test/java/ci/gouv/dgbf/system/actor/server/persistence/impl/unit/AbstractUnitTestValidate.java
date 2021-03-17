@@ -130,7 +130,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 		});
 	}
 	
-	//@org.junit.jupiter.api.Test
+	@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly_activityIdentifier(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE22086050001");
