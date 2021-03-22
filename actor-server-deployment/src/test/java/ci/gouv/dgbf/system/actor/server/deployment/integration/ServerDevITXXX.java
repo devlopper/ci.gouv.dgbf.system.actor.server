@@ -21,7 +21,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQ
 import ci.gouv.dgbf.system.actor.server.representation.entities.ExpenditureNatureDto;
 
 @RunWith(Arquillian.class)
-public class ServerDevIT {
+public class ServerDevITXXX {
 
     @Deployment
     public static Archive<?> buildArchive() {

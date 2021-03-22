@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 
@@ -47,7 +46,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class EntityReaderImpl extends EntityReader.AbstractImpl implements Serializable {
+public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.EntityReaderImpl implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -69,6 +69,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
 		if(StringHelper.isBlank(scopeFunction.getIdentifier()) /*&& StringHelper.isBlank(scopeFunction.getCode()) && StringHelper.isBlank(scopeFunction.getName())*/) {
 			__codify__(List.of(scopeFunction));
+			if(StringHelper.isBlank(scopeFunction.getCode()))
+				throw new RuntimeException(String.format("Impossible de générer le code à partir du domaine %s et la fonction %s",scopeFunction.getScope(),scopeFunction.getFunction()));
 		}
 	}
 	
@@ -78,13 +80,28 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		//add assistants where possible
 		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
 		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(scopeFunction.getScope() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				if(scopeFunction.getParent() == null)
+					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+				if(scopeFunction.getParent() != null)
+					scopeFunction.setScope(scopeFunction.getParent().getScope());
+			}
+			if(scopeFunction.getFunction() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				if(scopeFunction.getParent() == null)
+					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+				if(scopeFunction.getParent() != null)
+					scopeFunction.setFunctionFromIdentifier("A"+scopeFunction.getParent().getFunction().getIdentifier());
+			}
+			if(scopeFunction.getParent() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+			}
 			if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
 				Function assistant = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
 				if(assistant == null)
 					continue;
 				if(allScopeFunctions == null)
 					allScopeFunctions = new ArrayList<>();
-				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE));
+				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE).setParent(scopeFunction));
 			}else if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())) {
 				if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
 					scopeFunction.setParent(__persistence__.readBySystemIdentifier(scopeFunction.getParentIdentifier()));
@@ -100,6 +117,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			scopeFunction.setIdentifier(scopeFunction.getCode());
 		});
 		__persistence__.createMany(allScopeFunctions);
+		for(ScopeFunction scopeFunction : allScopeFunctions)
+			if(scopeFunction.getParent() != null) {
+				scopeFunction.setParentIdentifier(scopeFunction.getParent().getIdentifier());
+				__persistence__.update(scopeFunction);
+			}		
 		return this;
 	}
 	
@@ -338,6 +360,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			return;
 		Collection<ScopeTypeFunction> scopeTypeFunctions = ScopeTypeFunctionQuerier.getInstance().readByScopeTypesCodes(scopeTypes.stream().map(x -> x.getCode())
 				.collect(Collectors.toList()));
+		if(CollectionHelper.isEmpty(scopeTypeFunctions))
+			return;
 		for(ScopeType scopeType : scopeTypes) {
 			Collection<Function> functions = scopeFunctions.stream().filter(x -> x.getScope().getType().equals(scopeType))
 					.map(x -> x.getFunction()).collect(Collectors.toList());
@@ -345,9 +369,6 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				ScopeTypeFunction scopeTypeFunction = CollectionHelper.getFirst(scopeTypeFunctions.stream()
 						.filter(x -> x.getScopeType().equals(scopeType) && x.getFunction().equals(function))
 						.collect(Collectors.toList()));
-				scopeFunctions.stream()
-						.filter(x -> x.getScope().getType().equals(scopeType) && x.getFunction().equals(function))
-						.collect(Collectors.toList());
 				__codify__(scopeType.getCode(),function.getCode(), scopeFunctions.stream()
 						.filter(x -> x.getScope().getType().equals(scopeType) && x.getFunction().equals(function))
 						.collect(Collectors.toList()), scopeTypeFunction.getScopeFunctionCodeScript(), scopeTypeFunction.getScopeFunctionNameScript());
