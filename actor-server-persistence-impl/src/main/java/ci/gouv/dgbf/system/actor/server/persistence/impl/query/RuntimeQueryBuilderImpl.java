@@ -18,4 +18,13 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 			query.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames());
 		return query;
 	}
+	
+	@Override
+	protected Boolean isBuildable(QueryExecutorArguments arguments) {
+		if(arguments.getQuery().getIdentifier().equals(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY))
+			return Boolean.TRUE;
+		if(arguments.getQuery().getIdentifier().equals(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY))
+			return Boolean.TRUE;
+		return super.isBuildable(arguments);
+	}
 }

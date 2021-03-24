@@ -41,20 +41,28 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String PARAMETER_NAME_SECTION = "section";
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_SECTION_CODE = "sectionCode";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeUnit";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE = "administrativeUnitCode";
 	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
 	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE = "budgetSpecializationUnitCode";
 	String PARAMETER_NAME_ACTION = "action";
 	String PARAMETER_NAME_ACTION_IDENTIFIER = "actionIdentifier";
+	String PARAMETER_NAME_ACTION_CODE = "actionCode";
 	String PARAMETER_NAME_ACTIVITY = "activity";
 	String PARAMETER_NAME_ACTIVITY_IDENTIFIER = "activityIdentifier";
+	String PARAMETER_NAME_ACTIVITY_CODE = "activityCode";
 	String PARAMETER_NAME_ECONOMIC_NATURE = "economicNature";
 	String PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER = "economicNatureIdentifier";
+	String PARAMETER_NAME_ECONOMIC_NATURE_CODE = "economicNatureCode";	
 	String PARAMETER_NAME_ACTIVITY_CATEGORY = "activityCategory";
 	String PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER = "activityCategoryIdentifier";
+	String PARAMETER_NAME_ACTIVITY_CATEGORY_CODE = "activityCategoryCode";
 	String PARAMETER_NAME_EXPENDITURE_NATURE = "expenditureNature";
 	String PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
+	String PARAMETER_NAME_EXPENDITURE_NATURE_CODE = "expenditureNatureCode";
 	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER = "creditManagerHolder";
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER = "creditManagerHolderIdentifier";
