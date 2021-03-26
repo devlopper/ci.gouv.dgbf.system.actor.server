@@ -32,8 +32,8 @@ public class ScopeTypeFunction extends AbstractIdentifiableSystemScalarStringImp
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE_TYPE) @NotNull private ScopeType scopeType;
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Column(name = COLUMN_SCOPE_FUNCTION_DERIVABLE) private Boolean scopeFunctionDerivable;
-	@Column(name = COLUMN_SCOPE_FUNCTION_CODE_SCRIPT) private String scopeFunctionCodeScript;
-	@Column(name = COLUMN_SCOPE_FUNCTION_NAME_SCRIPT) private String scopeFunctionNameScript;
+	@Column(name = COLUMN_SCOPE_FUNCTION_CODE_SCRIPT,length = 1024 * 2) private String scopeFunctionCodeScript;
+	@Column(name = COLUMN_SCOPE_FUNCTION_NAME_SCRIPT,length = 1024 * 2) private String scopeFunctionNameScript;
 	
 	@Transient private String scopeTypeAsString;
 	@Transient private String functionAsString;

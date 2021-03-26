@@ -338,6 +338,25 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	}
 	
 	@Override
+	public Integer readMaxOrderNumberByFunctionCode(String functionCode) {
+		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.orderNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
+				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
+	}
+	
+	@Override
+	public ScopeFunction readMaxCodeWhereCodeStartsWith(String string) {
+		return CollectionHelper.getFirst(EntityManagerGetter.getInstance().get()
+				.createQuery(String.format("SELECT t FROM ScopeFunction t WHERE t.code LIKE :%s ORDER BY t.code DESC"
+				, PARAMETER_NAME_CODE), ScopeFunction.class).setParameter(PARAMETER_NAME_CODE, string+"%").setMaxResults(1).getResultList());
+	}
+	
+	@Override
+	public Integer readMaxDocumentNumberByFunctionCode(String functionCode) {
+		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.documentNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
+				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
+	}
+	
+	@Override
 	public Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments) {
 		if(arguments == null)
 			arguments = new QueryExecutorArguments();

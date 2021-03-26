@@ -9,6 +9,20 @@ Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('SERVIC
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('SERVICE_CPT','SERVICE_CPT','Postes comptables',9);
 
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('13010222','13010222','DTI','UA');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('22086','22086','Budget','USB');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('ORD001','ORD001','Budget Dimbokro','SERVICE_ORD');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CF001','CF001','CF 001','SERVICE_CF');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CPT001','CPT001','CPT 001','SERVICE_CPT');
+
+Insert into VM_APP_SECTION (IDENTIFIANT,CODE,LIBELLE) values ('327','327','Ministère du Budget et du Portefeuille de l''Etat');
+
+Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('22086','22086','Budget','327');
+
+Insert into VM_APP_LOCALITE (IDENTIFIANT,CODE,LIBELLE) values ('DIMBOKRO','DIMBOKRO','Dimbokro');
+
+Insert into SERVICE_ORD (IDENTIFIANT,CODE,LIBELLE,USB,LOCALITE) values ('ORD001','ORD001','Budget Dimbokro','22086','DIMBOKRO');
+Insert into SERVICE_CF (IDENTIFIANT,CODE,LIBELLE) values ('CF001','CF001','CF 001');
+Insert into SERVICE_CPT (IDENTIFIANT,CODE,LIBELLE) values ('CPT001','CPT001','CPT 001');
 
 Insert into TYPE_FONCTION (IDENTIFIANT,CODE,LIBELLE) values ('ADMINISTRATIF','ADMINISTRATIF','Administrative');
 Insert into TYPE_FONCTION (IDENTIFIANT,CODE,LIBELLE) values ('BUDGETAIRE','BUDGETAIRE','Budgétaire');
@@ -22,8 +36,14 @@ Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) val
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('GC','GC','Gestionnaire de credits','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('OD','ORD','Ordonnateur','BUDGETAIRE',1);
 
-Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('1','UA','GC',1,'''G1''+(''00000''+(numero_ordre++)).slice(-5)','poste.fonction.libelle+'' ''+poste.ua.libelle');
-Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('2','UA','AGC',1,'(''A1''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','poste.fonction.libelle+'' ''+poste.ua.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('1','UA','GC',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.fonction.libelle+'' ''+poste.ua.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('2','SERVICE_ORD','OD',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.libelle == null ? poste.fonction.libelle+'' ''+(poste.localite == null ? ''délégué'' : ''secondaire'')+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.code.startsWith("0") || poste.usb.code.startsWith("1") ? ''de la Dotation'' : ''du Programme''))+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.libelle.toLowerCase().startsWith("programme ") ? poste.usb.libelle.slice(10) : poste.usb.libelle))+(poste.usb.code.startsWith("21") ? '' du ''+poste.section.libelle : '''')+(poste.localite == null ? '''' : '' a ''+(poste.localite.libelle.toLowerCase().startsWith("sous-préfecture de ") ? poste.localite.libelle.slice(19) : poste.localite.libelle)) : poste.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('3','SERVICE_CF','CF',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.service_cf.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('4','SERVICE_CPT','CA',1,'"''T''+(poste.service_cpt.libelle.toLowerCase().startsWith(''paierie'')?',null);
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('5','UA','AGC',1,'(''A1''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','poste.fonction.libelle+'' ''+poste.ua.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('6','SERVICE_ORD','AOD',1,'(''A2''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','poste.libelle == null ? poste.fonction.libelle+'' ''+(poste.localite == null ? ''délégué'' : ''secondaire'')+'' ''+(poste.usb.code.startsWith("0") || poste.usb.code.startsWith("1") ? ''de la Dotation'' : ''du Programme'')+'' ''+(poste.usb.libelle.toLowerCase().startsWith("programme ") ? poste.usb.libelle.slice(10) : poste.usb.libelle)+(poste.usb.code.startsWith("21") ? '' du ''+poste.section.libelle : '''')+(poste.localite == null ? '''' : '' a ''+(poste.localite.libelle.toLowerCase().startsWith("sous-préfecture de ") ? poste.localite.libelle.slice(19) : poste.localite.libelle)) : poste.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('7','SERVICE_CF','ACF',1,'(''A3''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','''Assistant ''+poste.service_cf.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('8','SERVICE_CPT','ACA',1,'(''A4''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','''Assistant ''+poste.service_cpt.libelle');
 
 Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('1','1','Personnel');
 Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('2','2','Bienss et services');

@@ -21,7 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.script.ScriptExecutor;
@@ -47,6 +49,8 @@ import lombok.experimental.Accessors;
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements MeaEntity,Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	@Transient private String codePrefix;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
 	@Transient private String scopeAsString;
@@ -149,6 +153,14 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return this;
 	}
 	
+	public ScopeFunction setLocalityFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setLocality(null);
+		else
+			setLocality(EntityFinder.getInstance().find(Locality.class, identifier));
+		return this;
+	}
+	
 	public ScopeFunction setCodeFromScript() {
 		return setCodeFromScript(scopeTypeFunction.getScopeFunctionCodeScript());
 	}
@@ -177,6 +189,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("script", script);
 		name = ScriptExecutor.getInstance().execute(String.class, script,getScriptVariables(this));
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return code+" "+name;
 	}
 	
 	public static Object[] getScriptVariables(ScopeFunction scopeFunction) {
@@ -290,10 +307,29 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return String.format(List.of(FIELD_SCOPE,FIELD_FUNCTION,FIELD_LOCALITY).stream().map(x -> "l.get(i)."+x+".%1$s").collect(Collectors.joining(",")), fieldName);
 	}
 	
-	@Override
-	public String toString() {
-		return code+" "+name;
+	public static Integer getOrderNumberFromCode(String code) {
+		if(NumberHelper.compare(StringHelper.getLength(code),7,ComparisonOperator.EQ))
+			return NumberHelper.getInteger(code.substring(2));
+		return null;
 	}
+	
+	public static String getAssistantCategoryCodeFromHolderCategoryCode(String holderCategoryCode) {
+		if(StringHelper.isBlank(holderCategoryCode))
+			return null;
+		if(CATEGORY_NAME_G1.equals(holderCategoryCode))
+			return CATEGORY_CODE_A1;
+		if(CATEGORY_NAME_O3.equals(holderCategoryCode))
+			return CATEGORY_CODE_A2;
+		if(CATEGORY_NAME_C2.equals(holderCategoryCode) || CATEGORY_NAME_C3.equals(holderCategoryCode))
+			return CATEGORY_CODE_A3;
+		if(CATEGORY_NAME_T1.equals(holderCategoryCode) || CATEGORY_NAME_T2.equals(holderCategoryCode) || CATEGORY_NAME_T3.equals(holderCategoryCode)
+				|| CATEGORY_NAME_T4.equals(holderCategoryCode) || CATEGORY_NAME_T5.equals(holderCategoryCode) || CATEGORY_NAME_T6.equals(holderCategoryCode)
+				|| CATEGORY_NAME_T8.equals(holderCategoryCode) || CATEGORY_NAME_T9.equals(holderCategoryCode))
+			return CATEGORY_CODE_A4;
+		return null;
+	}
+	
+	
 	
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
@@ -352,9 +388,56 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	/**/
 	
+	public static final String CATEGORY_CODE_G1 = "G1";
+	public static final String CATEGORY_NAME_G1 = "Gestionnaire de crédits";
+	
+	public static final String CATEGORY_CODE_O3 = "O3";
+	public static final String CATEGORY_NAME_O3 = "Ordonnateur secondaire";
+	
+	public static final String CATEGORY_CODE_C2 = "C2";
+	public static final String CATEGORY_NAME_C2 = "Contrôleur financier régional";
+	
+	public static final String CATEGORY_CODE_C3 = "C3";
+	public static final String CATEGORY_NAME_C3 = "Contrôleur financier de projet";
+	
+	public static final String CATEGORY_CODE_T1 = "T1";
+	public static final String CATEGORY_NAME_T1 = "Payeur général";
+	
+	public static final String CATEGORY_CODE_T2 = "T2";
+	public static final String CATEGORY_NAME_T2 = "Payeur régional";
+	
+	public static final String CATEGORY_CODE_T3 = "T3";
+	public static final String CATEGORY_NAME_T3 = "Payeur à l'étranger";
+	
+	public static final String CATEGORY_CODE_T4 = "T4";
+	public static final String CATEGORY_NAME_T4 = "Trésorier général";
+	
+	public static final String CATEGORY_CODE_T5 = "T5";
+	public static final String CATEGORY_NAME_T5 = "Trésorier principal";
+	
+	public static final String CATEGORY_CODE_T6 = "T6";
+	public static final String CATEGORY_NAME_T6 = "Trésorier régional";
+	
+	public static final String CATEGORY_CODE_T8 = "T8";
+	public static final String CATEGORY_NAME_T8 = "Trésorier de projet";
+	
+	public static final String CATEGORY_CODE_T9 = "T9";
+	public static final String CATEGORY_NAME_T9 = "Recetteur général";
+	
+	public static final String CATEGORY_CODE_A1 = "A1";
+	public static final String CATEGORY_CODE_A2 = "A2";
+	public static final String CATEGORY_CODE_A3 = "A3";
+	public static final String CATEGORY_CODE_A4 = "A4";
+	
+	/**/
+	
 	public static class ScriptDto {
 		public ScopeFunction scopeFunction;
 		public Holder titulaire;
+		
+		/**/
+		public String codePrefix;
+		public String libelle;
 		
 		/* Scopes */
 		public CodeName section = new CodeName();
@@ -374,6 +457,12 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		public CodeName activite = new CodeName();
 		
 		/**/
+		/*
+		public String calculerLibelle() {
+			//'poste.fonction.libelle+'' ''+(poste.localite == null ? ''délégué'' : ''secondaire'')+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.code.startsWith("0") || poste.usb.code.startsWith("1") ? ''de la Dotation'' : ''du Programme''))+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.libelle.toLowerCase().startsWith("programme ") ? poste.usb.libelle.slice(10) : poste.usb.libelle))+(poste.usb.code.startsWith("21") ? '' du ''+poste.section.libelle : '''')+(poste.localite == null ? '''' : '' à ''+(poste.localite.libelle.toLowerCase().startsWith("sous-préfecture de ") ? poste.localite.libelle.slice(19) : poste.localite.libelle))'
+			if(StringHelper.isNotBlank(scopeFunction.name))
+				return scopeFunction.name;
+		}*/
 		
 		@Override
 		public String toString() {
@@ -384,6 +473,27 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			if(scopeFunction == null)
 				return null;
 			ScriptDto scriptDto = new ScriptDto();
+			scriptDto.codePrefix = scopeFunction.codePrefix;
+			if(StringHelper.isNotBlank(scopeFunction.name))
+				scriptDto.libelle = scopeFunction.name;
+			if(StringHelper.isBlank(scriptDto.codePrefix)) {
+				if(scopeFunction.function.getCode().equals(Function.CODE_CREDIT_MANAGER_HOLDER))
+					scriptDto.codePrefix = "G1";
+				else if(scopeFunction.function.getCode().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER)) {
+					if(scopeFunction.locality == null)
+						scriptDto.codePrefix = "O2";
+					else if(scopeFunction.locality == null)
+						scriptDto.codePrefix = "O3";
+				}else if(scopeFunction.function.getCode().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER)) {
+					if(scopeFunction.locality == null)
+						scriptDto.codePrefix = "C2";
+					else if(scopeFunction.locality == null)
+						scriptDto.codePrefix = "C3";
+				}else if(scopeFunction.function.getCode().equals(Function.CODE_ACCOUNTING_HOLDER)) {
+					scriptDto.codePrefix = "T1";					
+				}
+			}
+				
 			scriptDto.scopeFunction = scopeFunction;
 			if(scopeFunction.parent != null) {
 				scriptDto.titulaire = new Holder();

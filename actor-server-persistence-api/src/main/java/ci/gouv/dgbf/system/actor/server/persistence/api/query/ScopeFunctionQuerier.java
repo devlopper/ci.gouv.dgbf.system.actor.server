@@ -18,16 +18,15 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.value.Value;
-import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.Language.From;
 import org.cyk.utility.persistence.query.Language.Order;
 import org.cyk.utility.persistence.query.Language.Select;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -133,15 +132,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_BY_IDENTIFIER_FOR_UI);
 	ScopeFunction readByIdentifierForUI(String identifier);
 	
-	default Integer readMaxOrderNumberByFunctionCode(String functionCode) {
-		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.orderNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
-				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
-	}
-	
-	default Integer readMaxDocumentNumberByFunctionCode(String functionCode) {
-		return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.documentNumber) FROM ScopeFunction t WHERE t.function.code = :%s", PARAMETER_NAME_CODE)
-				, Integer.class).setParameter(PARAMETER_NAME_CODE, functionCode).getSingleResult();
-	}
+	Integer readMaxOrderNumberByFunctionCode(String functionCode);
+	ScopeFunction readMaxCodeWhereCodeStartsWith(String string);
+	Integer readMaxDocumentNumberByFunctionCode(String functionCode);
 	
 	Collection<Object[]> readFromViewByCodes(Collection<String> codes);
 	Collection<Object[]> readFromViewByCodes(String...codes);

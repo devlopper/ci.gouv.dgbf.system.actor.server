@@ -113,6 +113,11 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	public static final String TABLE_NAME = "FONCTION";	
 	
+	public static final String FORMAT_ASSISTANT_IDENTIFIER = "A%s";
+	public static String formatAssistantIdentifier(String holderIdentifier) {
+		return String.format(FORMAT_ASSISTANT_IDENTIFIER, holderIdentifier);
+	}
+	
 	public static final String FORMAT_ASSISTANT_CODE = "A%s";
 	public static String formatAssistantCode(String holderCode) {
 		return String.format(FORMAT_ASSISTANT_CODE, holderCode);

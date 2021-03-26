@@ -10,23 +10,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.cyk.utility.business.server.EntityCreator;
-import org.cyk.utility.business.server.EntityUpdater;
-import org.cyk.utility.business.server.NativeQueryStringExecutor;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.persistence.PersistenceHelper;
-import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.business.server.EntityCreator;
+import org.cyk.utility.business.server.EntityUpdater;
+import org.cyk.utility.business.server.NativeQueryStringExecutor;
+import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.PersistenceHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessEntity;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
@@ -70,13 +73,15 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		if(StringHelper.isBlank(scopeFunction.getIdentifier()) /*&& StringHelper.isBlank(scopeFunction.getCode()) && StringHelper.isBlank(scopeFunction.getName())*/) {
 			__codify__(List.of(scopeFunction));
 			if(StringHelper.isBlank(scopeFunction.getCode()))
-				throw new RuntimeException(String.format("Impossible de générer le code à partir du domaine %s et la fonction %s",scopeFunction.getScope(),scopeFunction.getFunction()));
+				throw new RuntimeException(String.format("Impossible de générer le code à partir du domaine %s et la fonction %s",scopeFunction.getScope()
+						,scopeFunction.getFunction()));
 		}
 	}
 	
 	@Override @Transactional
 	public BusinessServiceProvider<ScopeFunction> createMany(Collection<ScopeFunction> scopeFunctions, Properties properties) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
+		//ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		//add assistants where possible
 		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
 		for(ScopeFunction scopeFunction : scopeFunctions) {
@@ -90,7 +95,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(scopeFunction.getParent() == null)
 					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
 				if(scopeFunction.getParent() != null)
-					scopeFunction.setFunctionFromIdentifier("A"+scopeFunction.getParent().getFunction().getIdentifier());
+					scopeFunction.setFunctionFromIdentifier(Function.formatAssistantIdentifier(scopeFunction.getParent().getFunction().getIdentifier()));
 			}
 			if(scopeFunction.getParent() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
 				scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
@@ -101,7 +106,14 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					continue;
 				if(allScopeFunctions == null)
 					allScopeFunctions = new ArrayList<>();
-				allScopeFunctions.add(new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE).setParent(scopeFunction));
+				ScopeFunction assistantScopeFunction = new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE)
+						.setParent(scopeFunction)
+						.setCodePrefix(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
+						.setName(scopeFunction.getName());
+				if(StringHelper.isNotBlank(scopeFunction.getName()))
+					assistantScopeFunction.setName("Assistant "+scopeFunction.getName());
+				
+				allScopeFunctions.add(assistantScopeFunction);
 			}else if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())) {
 				if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
 					scopeFunction.setParent(__persistence__.readBySystemIdentifier(scopeFunction.getParentIdentifier()));
@@ -116,12 +128,19 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			__listenExecuteCreateOrUpdateBefore__(scopeFunction);
 			scopeFunction.setIdentifier(scopeFunction.getCode());
 		});
-		__persistence__.createMany(allScopeFunctions);
+		Collection<String> existingCodes = CodeExecutor.getInstance().getExisting(ScopeFunction.class, FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions));
+		if(CollectionHelper.isNotEmpty(existingCodes))
+			throw new RuntimeException("Les codes suivants existe déjà : "+existingCodes);
+		EntityManager entityManager = EntityManagerGetter.getInstance().get();
+		org.cyk.utility.persistence.query.EntityCreator.getInstance().createMany(allScopeFunctions,entityManager);
+		//__persistence__.createMany(allScopeFunctions);
 		for(ScopeFunction scopeFunction : allScopeFunctions)
 			if(scopeFunction.getParent() != null) {
 				scopeFunction.setParentIdentifier(scopeFunction.getParent().getIdentifier());
-				__persistence__.update(scopeFunction);
-			}		
+				org.cyk.utility.persistence.query.EntityUpdater.getInstance().updateMany(entityManager, scopeFunction);
+				//__persistence__.update(scopeFunction);
+			}
+		//throwablesMessages.throwIfNotEmpty();
 		return this;
 	}
 	
@@ -173,7 +192,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					return;
 				LogHelper.logInfo(String.format("\t\tCodification des postes",scopeFunctions.size()), getClass());
-				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript()
+				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),null,scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript()
 						,scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement des postes",scopeFunctions.size()), getClass());
 				EntityCreator.getInstance().createMany(CollectionHelper.cast(Object.class, scopeFunctions));
@@ -267,15 +286,28 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	}
 	*/
 	
-	private void __codify__(String scopeTypeCode,String functionCode,Collection<ScopeFunction> pScopeFunctions,String codeScript,String nameScript) {
+	private void __codify__(String scopeTypeCode,String functionCode,String codePrefix,Collection<ScopeFunction> pScopeFunctions,String codeScript,String nameScript) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", pScopeFunctions);
 		Collection<ScopeFunction> scopeFunctions = pScopeFunctions.stream().filter(x -> x.getCodificationDate() == null).collect(Collectors.toList());
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
 		Long count = ScopeFunctionQuerier.getInstance().countByFunctionsCodes(functionCode);
-		Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
-		LogHelper.logInfo(String.format("Numéro d'ordre à partir de %s", orderNumber), getClass());
-		Integer documentNumber = count == 0 ? null : ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode) + 1;		
+		ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(codePrefix);
+		//Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
+		Integer orderNumber = scopeFunctionMax == null ? null : ScopeFunction.getOrderNumberFromCode(scopeFunctionMax.getCode());
+		if(orderNumber == null)
+			orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
+		else
+			orderNumber = orderNumber + 1;
+		
+		Integer documentNumber = scopeFunctionMax == null ? null : scopeFunctionMax.getDocumentNumber();
+		if(documentNumber == null)
+			documentNumber = count == 0 ? null : ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode) + 1;
+		else
+			documentNumber = documentNumber + 1;
+		
+		LogHelper.logInfo(String.format("Numéro d'ordre à partir de %s , numéro de document à partir de %s", orderNumber,documentNumber), getClass());
+		
 		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
 			if(documentNumber == null)
 				documentNumber = 10000;
@@ -369,9 +401,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				ScopeTypeFunction scopeTypeFunction = CollectionHelper.getFirst(scopeTypeFunctions.stream()
 						.filter(x -> x.getScopeType().equals(scopeType) && x.getFunction().equals(function))
 						.collect(Collectors.toList()));
-				__codify__(scopeType.getCode(),function.getCode(), scopeFunctions.stream()
+				Collection<ScopeFunction> collection = scopeFunctions.stream()
 						.filter(x -> x.getScope().getType().equals(scopeType) && x.getFunction().equals(function))
-						.collect(Collectors.toList()), scopeTypeFunction.getScopeFunctionCodeScript(), scopeTypeFunction.getScopeFunctionNameScript());
+						.collect(Collectors.toList());
+				__codify__(scopeType.getCode(),function.getCode(),collection.iterator().next().getCodePrefix(), collection, scopeTypeFunction.getScopeFunctionCodeScript()
+						, scopeTypeFunction.getScopeFunctionNameScript());
 			}			
 		}
 	}
@@ -427,7 +461,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				if(CollectionHelper.isEmpty(scopeFunctions))
 					continue;
 				LogHelper.logInfo(String.format("\t\tCodification"), getClass());
-				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
+				__codify__(scopeTypeFunction.getScopeType().getCode(),function.getCode(),null,scopeFunctions,scopeTypeFunction.getScopeFunctionCodeScript(),scopeTypeFunction.getScopeFunctionNameScript());
 				LogHelper.logInfo(String.format("\t\tEnregistrement",scopeFunctions.size()), getClass());
 				QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 				queryExecutorArguments.addObjects(CollectionHelper.cast(Object.class,scopeFunctions));

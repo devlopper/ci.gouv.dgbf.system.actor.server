@@ -2,13 +2,11 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.junit.jupiter.api.Test;
 
-public class PersistenceEntitiesUnitTest extends AbstractUnitTestMemory {
+public class ScopeFunctionPersistenceEntitiesUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 
 	@Test
@@ -101,68 +99,65 @@ public class PersistenceEntitiesUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void buildFieldNames(){
-		assertThat(ExecutionImputation.FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER).isEqualTo("creditManagerHolderScopeFunctionIdentifier");
+	public void scopeFunction_computeCodeOnly(){
+		String nameScript = "poste.libelle == null ? poste.fonction.libelle+' '+poste.ua.libelle : poste.libelle";
+		ScopeFunction scopeFunction = new ScopeFunction()
+				.setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"))
+				.setLocality(new Locality().setCode(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE).setName("S/P Bingerville"));
+			
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		scopeFunction.setName("");
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		scopeFunction.setName(" ");
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		scopeFunction.setName("This is my name");
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("This is my name");
 	}
 	
 	@Test
-	public void privilege_getParent(){
-		Collection<Privilege> privileges = CollectionHelper.listOf(
-				new Privilege().setIdentifier("M1")
-				,new Privilege().setIdentifier("S1").setParentIdentifier("M1")
-				,new Privilege().setIdentifier("S2").setParentIdentifier("M1")
-				,new Privilege().setIdentifier("ME1").setParentIdentifier("S1")
-				,new Privilege().setIdentifier("ME1.1").setParentIdentifier("ME1")
-				,new Privilege().setIdentifier("ME1.2").setParentIdentifier("ME1")
-				,new Privilege().setIdentifier("ME2").setParentIdentifier("S1")
-				,new Privilege().setIdentifier("ME2.1").setParentIdentifier("ME2")
-				,new Privilege().setIdentifier("ME2.2").setParentIdentifier("ME2")
-				,new Privilege().setIdentifier("ME2.3").setParentIdentifier("ME2")
-			);
-		assertParent(privileges, "M1",null);
-		assertParent(privileges, "S1","M1");
-		assertParent(privileges, "ME1","S1");
-		assertParent(privileges, "ME1.1","ME1");
+	public void scopeFunction_computeCode_creditManager(){
+		String nameScript = "poste.libelle == null ? poste.fonction.libelle+' '+poste.ua.libelle : poste.libelle";
+		ScopeFunction scopeFunction = new ScopeFunction()
+				.setScope(new Scope().setCode("13010222").setName("DTI").setType(new ScopeType().setCode("UA")))
+				.setFunction(new Function().setCode(Function.CODE_CREDIT_MANAGER_HOLDER).setName("Gestionnaire de crédits"));
+			
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits DTI");
+		
+		scopeFunction.setName("Gestionnaire de crédits de carburant de la DTI");
+		ScopeFunction.computeCodeAndName("UA", List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("GC13010222");
+		assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de crédits de carburant de la DTI");
 	}
 	
-	@Test
-	public void privilege_isLeaf(){
-		Collection<Privilege> privileges = CollectionHelper.listOf(
-				new Privilege().setIdentifier("M1")
-				,new Privilege().setIdentifier("S1").setParentIdentifier("M1")
-				,new Privilege().setIdentifier("S2").setParentIdentifier("M1")
-				,new Privilege().setIdentifier("ME1").setParentIdentifier("S1")
-				,new Privilege().setIdentifier("ME1.1").setParentIdentifier("ME1")
-				,new Privilege().setIdentifier("ME1.2").setParentIdentifier("ME1")
-				,new Privilege().setIdentifier("ME2").setParentIdentifier("S1")
-				,new Privilege().setIdentifier("ME2.1").setParentIdentifier("ME2")
-				,new Privilege().setIdentifier("ME2.2").setParentIdentifier("ME2")
-				,new Privilege().setIdentifier("ME2.3").setParentIdentifier("ME2")
-			);
-		assertIsLeaf(privileges, "M1",Boolean.FALSE);
-		assertIsLeaf(privileges, "S1",Boolean.FALSE);
-		assertIsLeaf(privileges, "ME1",Boolean.FALSE);
-		assertIsLeaf(privileges, "ME1.1",Boolean.TRUE);
-	}
-	
-	private static void assertParent(Collection<Privilege> privileges,String childIdentifier,String expectedParentIdentifier) {
-		Privilege parent = Privilege.getParent(privileges, getPrivilegeByIdentifier(privileges,childIdentifier));
-		if(parent == null)
-			assertThat(parent).isNull();
-		else
-			assertThat(parent.getIdentifier()).isEqualTo(expectedParentIdentifier);
-	}
-	
-	private static void assertIsLeaf(Collection<Privilege> privileges,String identifier,Boolean expected) {
-		assertThat(Privilege.isLeaf(privileges, getPrivilegeByIdentifier(privileges, identifier))).isEqualTo(expected);
-	}
-	
-	private static Privilege getPrivilegeByIdentifier(Collection<Privilege> privileges,String identifier) {
-		if(CollectionHelper.isEmpty(privileges))
-			return null;
-		for(Privilege privilege : privileges)
-			if(privilege.getIdentifier().equals(identifier))
-				return privilege;
-		return null;
+	//@Test
+	public void scopeFunction_computeCode_authorizingOfficer(){
+		String nameScript = "poste.libelle == null ? poste.fonction.libelle+' '+poste.ua.libelle : poste.libelle";
+		ScopeFunction scopeFunction = new ScopeFunction()
+				.setScope(new Scope().setCode("22086").setName("Budget").setType(new ScopeType().setCode(ScopeType.CODE_USB)))
+				.setFunction(new Function().setCode(Function.CODE_AUTHORIZING_OFFICER_HOLDER).setName("Ordonnateur"))
+				.setLocality(new Locality().setCode("l01").setName("Dimbokro"));
+			
+		ScopeFunction.computeCodeAndName(ScopeType.CODE_USB, List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("O300000");
+		assertThat(scopeFunction.getName()).isEqualTo("Ordonnateur Budget Dimbokro");
+		
+		scopeFunction.setName("Ordonnateur Pgr. Budget à Dimbokro");
+		ScopeFunction.computeCodeAndName(ScopeType.CODE_USB, List.of(scopeFunction),0,0, "poste.fonction.code+poste.ua.code", nameScript);
+		assertThat(scopeFunction.getCode()).isEqualTo("O300000");
+		assertThat(scopeFunction.getName()).isEqualTo("Ordonnateur Pgr. Budget à Dimbokro");
 	}
 }
