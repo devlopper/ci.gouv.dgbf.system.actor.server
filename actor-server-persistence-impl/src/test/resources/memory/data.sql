@@ -20,8 +20,14 @@ REM INSERTING into VM_APP_SECTION
 SET DEFINE OFF;
 Insert into VM_APP_SECTION (IDENTIFIANT,CODE,LIBELLE) values ('SECTIONf07cb924-5838-40c2-9de9-13084501d91e','101','Représentation Nationale');
 Insert into VM_APP_SECTION (IDENTIFIANT,CODE,LIBELLE) values ('SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5','102','Sénat');
-REM INSERTING into VM_APP_DOMAINE
-SET DEFINE OFF;
+
+Insert into VM_APP_LOCALITE (IDENTIFIANT,CODE,LIBELLE) values ('DIMBOKRO','DIMBOKRO','Dimbokro');
+
+Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('DTI','DTI','Direction des traitements informatiques','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
+
+Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','22086','Budget','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
+
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('DTI','DTI','Direction des traitements informatiques','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CFSECTION321','321','Côntroleur financier du Ministère des Affaires Etrangères','SERVICE_CF');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CFSECTION327','327','Côntroleur financier du Ministère du Budget et du Portefeuille de l''Etat','SERVICE_CF');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CFINSTITUTIONS','CFINSTITUTIONS','Côntroleur financier des Hautes Institutions','SERVICE_CF');
@@ -72,7 +78,7 @@ Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) val
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('DAF','DAF','Directeur des affaires financières','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('AC','AC','Administrateur de crédits','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('OP','OP','Ordonnateur principal','BUDGETAIRE',null);
-Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('OD','ORD','Ordonnateur','BUDGETAIRE',1);
+Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('ORD','ORD','Ordonnateur','BUDGETAIRE',1);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('CF','CF','Contrôleur financier','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('CB','CB','Contrôleur budgétaire','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('CA','CPT','Comptable Assignataire','BUDGETAIRE',null);
@@ -83,15 +89,23 @@ Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) val
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('e7bc48ee-a2d4-4125-b9d4-d36ee462a4a9','CE-DPE (Dépenses Centralisées)','Chargé d''Etudes DPE-Gestion des Dépenses Centralisées','ADMINISTRATIF',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('fd391891-7d05-412e-bc28-90d0d596ff2d','CE-DOCD','Chargé d''Etudes DOCD','ADMINISTRATIF',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('2ec179d7-9293-4ef2-b84c-cef8cbcbe32f','ADM_DBE','Administrateur DBE','ADMINISTRATIF',null);
-REM INSERTING into POSTE
-SET DEFINE OFF;
+
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('1','UA','GC',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.fonction.libelle+'' ''+poste.ua.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('2','SERVICE_ORD','ORD',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.libelle == null ? poste.fonction.libelle+'' ''+(poste.localite == null ? ''délégué'' : ''secondaire'')+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.code.startsWith("0") || poste.usb.code.startsWith("1") ? ''de la Dotation'' : ''du Programme''))+'' ''+(poste.usb == null ? ''NULL'' : (poste.usb.libelle.toLowerCase().startsWith("programme ") ? poste.usb.libelle.slice(10) : poste.usb.libelle))+(poste.usb.code.startsWith("21") ? '' du ''+poste.section.libelle : '''')+(poste.localite == null ? '''' : '' a ''+(poste.localite.libelle.toLowerCase().startsWith("sous-préfecture de ") ? poste.localite.libelle.slice(19) : poste.localite.libelle)) : poste.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('3','SERVICE_CF','CF',1,'poste.codePrefix+(''00000''+(numero_ordre++)).slice(-5)','poste.service_cf.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('4','SERVICE_CPT','CA',1,'"''T''+(poste.service_cpt.libelle.toLowerCase().startsWith(''paierie'')?',null);
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('5','UA','AGC',1,'(''A1''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','poste.fonction.libelle+'' ''+poste.ua.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('6','SERVICE_ORD','AOD',1,'(''A2''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','poste.libelle == null ? poste.fonction.libelle+'' ''+(poste.localite == null ? ''délégué'' : ''secondaire'')+'' ''+(poste.usb.code.startsWith("0") || poste.usb.code.startsWith("1") ? ''de la Dotation'' : ''du Programme'')+'' ''+(poste.usb.libelle.toLowerCase().startsWith("programme ") ? poste.usb.libelle.slice(10) : poste.usb.libelle)+(poste.usb.code.startsWith("21") ? '' du ''+poste.section.libelle : '''')+(poste.localite == null ? '''' : '' a ''+(poste.localite.libelle.toLowerCase().startsWith("sous-préfecture de ") ? poste.localite.libelle.slice(19) : poste.localite.libelle)) : poste.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('7','SERVICE_CF','ACF',1,'(''A3''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','''Assistant ''+poste.service_cf.libelle');
+Insert into TYPE_DOMAINE_FONCTION (IDENTIFIANT,TYPE_DOMAINE,FONCTION,POSTE_DERIVABLE,POSTE_CODE_SCRIPT,POSTE_LIBELLE_SCRIPT) values ('8','SERVICE_CPT','ACA',1,'(''A4''+(poste.titulaire == null || poste.titulaire.code == null ? '''' : poste.titulaire.code).slice(-5))+(poste.titulaire.incrementerNombreAssistant()-1)','''Assistant ''+poste.service_cpt.libelle');
+
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A3002110','A3002110','Assistant Côntroleur financier des Hautes Institutions','ACF','CFINSTITUTIONS','C100211',60212);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A4000000','A4000000','Assistant Paierie Générale des Affaires Economiques','ACA','CFR1','T100000',70001);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A4000010','A4000010','Assistant Paierie Générale de la Sante','ACA','CFR10','T100001',70002);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A1007510','A1007510','Assistant gestionnaire de crédits Direction de la Solde (Gestion des dépenses centralisées)','AGC','UA447f9d44-b312-4a23-86f6-1a71bd5839f2','G100751',10752);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A1007620','A1007620','Assistant gestionnaire de crédits Direction des Affaires Financières - MBPE','AGC','UA68a6d9e7-420a-4bd9-9c01-12cfdad33fb9','G100762',10763);
-Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O402500','O402500','Ordonnateur des dépenses centralisées de solde','OD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2',null,42502);
-Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O502501','O502501','Ordonnateur des crédits centralisés de patrimoine','OD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2',null,42503);
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O402500','O402500','Ordonnateur des dépenses centralisées de solde','ORD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2',null,42502);
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O502501','O502501','Ordonnateur des crédits centralisés de patrimoine','ORD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2',null,42503);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A2025000','A2025000','Assistant ordonnateur des dépenses centralisées de solde','AOD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','O402500',42502);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G101190','G301190','Gestionnaire de crédits Direction du Patrimoine de l''Etat (DPE Gestion des dépenses centralisées)','GC','UAb67353ea-ba5f-4aee-bf7a-bc736baa6329',null,11191);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A4002450','A4002450','Assistant Paieries Générales des Armées','ACA','CFR4','T100245',70246);
@@ -113,8 +127,8 @@ Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUM
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A2000090','A2000090','Assistant ordonnateur délégué de la Dotation Recettes Propres des EPN','AOD','2ef77772-1053-4983-84d0-45c34b13bf66','O200009',40010);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A1011900','A1011900','Assistant gestionnaire de crédits Direction du Patrimoine de l''Etat (DPE Gestion des dépenses centralisées)','AGC','UAb67353ea-ba5f-4aee-bf7a-bc736baa6329','G101190',11191);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A2001090','A2001090','Assistant ordonnateur délégué du Programme Administration Générale du Ministère du Budget et du Portefeuille de l''Etat','AOD','e0477349-144f-4ee7-bda3-131bda45df09','O200109',40110);
-Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200000','O200000','Ordonnateur délégué de la Dotation Recettes intérieures Budgétaire','OD','7f4adc5c-4fea-46e9-9e0f-74fabb4d3282',null,40001);
-Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200009','O200009','Ordonnateur délégué de la Dotation Recettes Propres des EPN','OD','2ef77772-1053-4983-84d0-45c34b13bf66',null,40010);
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200000','O200000','Ordonnateur délégué de la Dotation Recettes intérieures Budgétaire','ORD','7f4adc5c-4fea-46e9-9e0f-74fabb4d3282',null,40001);
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200009','O200009','Ordonnateur délégué de la Dotation Recettes Propres des EPN','ORD','2ef77772-1053-4983-84d0-45c34b13bf66',null,40010);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G100000','G100000','Gestionnaire de crédits Cabinet du Premier Ministre','GC','UAd6034c0e-e90a-454e-b7e0-19f76d888dbd',null,10001);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G100001','G100001','Gestionnaire de crédits Cabinet du Ministre d''Etat, Ministre de la Défense','GC','UA8157bb66-82a1-4cc7-8937-daf60d4c5873',null,10002);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G100002','G100002','Gestionnaire de crédits Cabinet du Ministre des Affaires Etrangères','GC','UAe22dcb6e-5bb4-4322-8fa7-293fdbe5e82f',null,10003);
@@ -124,7 +138,7 @@ Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUM
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G100006','G100006','Gestionnaire de crédits DAF/MEF  ou Cabinet MSPC','GC','UA6d5ea08d-c317-420b-9ef1-476f3401d1e5',null,10007);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('G100008','G100008','Gestionnaire de crédits Cabinet du Ministre chargé du Budget','GC','UA1f59abcf-2ba2-4a85-9d7e-a5fd85cf3f8c',null,10009);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('T100245','T100245','Paieries Générales des Armées','CA','CFR4',null,70246);
-Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200109','O200109','Ordonnateur délégué du Programme Administration Générale du Ministère du Budget et du Portefeuille de l''Etat','OD','e0477349-144f-4ee7-bda3-131bda45df09',null,40110);
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('O200109','O200109','Ordonnateur délégué du Programme Administration Générale du Ministère du Budget et du Portefeuille de l''Etat','ORD','e0477349-144f-4ee7-bda3-131bda45df09',null,40110);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A2025010','A2025010','Assistant ordonnateur des dépenses centralisées de Patrimoine','AOD','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','O502501',25010);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('A1000060','A1000060','Assistant gestionnaire de crédits DAF/MEF  ou Cabinet MSPC','AGC','UA6d5ea08d-c317-420b-9ef1-476f3401d1e5','G100006',10007);
 Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,PARENT,NUMERO_DOCUMENT) values ('C100001','C100001','Côntroleur financier du Ministère des Affaires Etrangères','CF','CFSECTION321',null,60002);

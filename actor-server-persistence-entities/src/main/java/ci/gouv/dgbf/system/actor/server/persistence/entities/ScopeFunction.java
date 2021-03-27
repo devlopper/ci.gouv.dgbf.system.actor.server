@@ -329,8 +329,6 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return null;
 	}
 	
-	
-	
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
 	public static final String FIELD_SCOPE_IDENTIFIER = "scopeIdentifier";

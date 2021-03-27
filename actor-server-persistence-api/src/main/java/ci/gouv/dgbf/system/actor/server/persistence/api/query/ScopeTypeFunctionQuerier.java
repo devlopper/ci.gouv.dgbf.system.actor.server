@@ -4,20 +4,22 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
 public interface ScopeTypeFunctionQuerier extends Querier {
 
 	String PARAMETER_NAME_SCOPE_TYPES_CODES = "scopeTypesCodes";
+	String PARAMETER_NAME_SCOPE_TYPE_CODE = "scopeTypeCode";
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
+	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	
 	String QUERY_IDENTIFIER_READ_FOR_UI = QueryIdentifierBuilder.getInstance().build(ScopeTypeFunction.class, "readForUI");
 	Collection<ScopeTypeFunction> readForUI();
@@ -50,6 +52,9 @@ public interface ScopeTypeFunctionQuerier extends Querier {
 	/* read for ui by functions identifiers */
 	String QUERY_IDENTIFIER_READ_FOR_UI_BY_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(ScopeTypeFunction.class, "readByForUIFunctionsIdentifiers");
 	Collection<ScopeTypeFunction> readForUIByFunctionsIdentifiers(QueryExecutorArguments queryExecutorArguments);
+	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODE_BY_FUNCTION_CODE = QueryIdentifierBuilder.getInstance().build(ScopeTypeFunction.class, "readByScopeTypeCodeByFunctionCode");
+	ScopeTypeFunction readByScopeTypeCodeByFunctionCode(String scopeTypeCode,String functionCode);
 	
 	/**/
 	
@@ -108,6 +113,14 @@ public interface ScopeTypeFunctionQuerier extends Querier {
 		public Long count() {
 			return QueryExecutor.getInstance().executeCount(QUERY_IDENTIFIER_COUNT);
 		}
+		
+		@Override
+		public ScopeTypeFunction readByScopeTypeCodeByFunctionCode(String scopeTypeCode,String functionCode) {
+			return QueryExecutor.getInstance().executeReadOne(ScopeTypeFunction.class, new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODE_BY_FUNCTION_CODE)
+					.addFilterFieldsValues(PARAMETER_NAME_SCOPE_TYPE_CODE,scopeTypeCode,PARAMETER_NAME_FUNCTION_CODE,functionCode)
+					.setIsResultCachable(Boolean.TRUE));
+		}
 	}
 	
 	/**/
@@ -142,6 +155,9 @@ public interface ScopeTypeFunctionQuerier extends Querier {
 						+ " ORDER BY t.scopeType.orderNumber ASC,t.function.code ASC")
 					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeTypeFunction.FIELD_IDENTIFIER,ScopeTypeFunction.FIELD_SCOPE_TYPE_AS_STRING,ScopeTypeFunction.FIELD_FUNCTION_AS_STRING
 							,ScopeTypeFunction.FIELD_SCOPE_FUNCTION_DERIVABLE_AS_STRING)
+					
+				,Query.buildSelect(ScopeTypeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_TYPE_CODE_BY_FUNCTION_CODE
+						, "SELECT stf FROM ScopeTypeFunction stf WHERE stf.scopeType.code = :"+PARAMETER_NAME_SCOPE_TYPE_CODE+" AND stf.function.code = :"+PARAMETER_NAME_FUNCTION_CODE)
 			);
 	}
 }
