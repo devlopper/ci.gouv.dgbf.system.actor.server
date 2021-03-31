@@ -2,9 +2,11 @@ package ci.gouv.dgbf.system.actor.server.representation.api;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -79,6 +81,31 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	//@Operation(description = "Supprimer les postes par fonctions")
 	Response deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
+	@GET
+	@Path(PATH_COMPUTE_CREDIT_MANAGER_HOLDER_NAME)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Supprimer les postes par fonctions")
+	Response computeCreditManagerHolderNameByAdministrativeUnitIdentifier(@QueryParam("unite_administrative") String administrativeUnitIdentifier);
+	
+	@GET
+	@Path(PATH_COMPUTE_AUTHORIZING_OFFICER_HOLDER_NAME)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Supprimer les postes par fonctions")
+	Response computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(@QueryParam("unite_specialisation_budget") String budgetSpecializationUnitIdentifier
+			,@QueryParam("localite") String localityIdentifier);
+	
+	@GET
+	@Path(PATH_GET_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Supprimer les postes par fonctions")
+	Response getByScopeIdentifierByFunctionIdentifier(@QueryParam("domaine") String scopeIdentifier,@QueryParam("fonction") String functionIdentifier);
+	
+	String PATH_GET_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER = "getByScopeIdentifierByFunctionIdentifier";
+	String PATH_COMPUTE_CREDIT_MANAGER_HOLDER_NAME = "computeCreditManagerHolderName";
+	String PATH_COMPUTE_AUTHORIZING_OFFICER_HOLDER_NAME = "computeAuthorizingOfficerHolderName";
 	String PATH_SAVE = "save";
 	String PATH_DERIVE_ALL = "deriveAll";
 	String PATH_DERIVE_BY_FUNCTIONS_IDENTIFIERS = "deriveByFunctionsIdentifiers";

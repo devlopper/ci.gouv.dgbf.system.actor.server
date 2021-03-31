@@ -2,17 +2,21 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
@@ -23,6 +27,18 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 	public void sectionQuerier_read(){
 		assertThat(SectionQuerier.getInstance().read().stream().map(Section::getCode)
 				.collect(Collectors.toList())).contains("101");
+	}
+	
+	@Test
+	public void functionQuerier_readExecutionHolders(){
+		assertThat(FunctionQuerier.getInstance().readExecutionHolders(null).stream().map(Function::getCode)
+				.collect(Collectors.toList())).containsExactly("GC","ORD","CF","CPT");
+	}
+	
+	@Test
+	public void functionQuerier_readExecutionHoldersAndAssistants(){
+		assertThat(FunctionQuerier.getInstance().readExecutionHoldersAndAssistants(null).stream().map(Function::getCode)
+				.collect(Collectors.toList())).containsExactly("GC","AGC","ORD","AORD","CF","ACF","CPT","ACPT");
 	}
 	
 	@Test
@@ -42,6 +58,15 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G1", "G100762");
 		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G2", "G200751");
 		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G3", "G301190");
+	}
+	
+	@Test
+	public void scopeFunctionPersistence_readByScopeIdentifierByFunctionIdentifier(){
+		Collection<ScopeFunction> collection = ScopeFunctionQuerier.getInstance().readByScopeIdentifierByFunctionIdentifier(new QueryExecutorArguments()
+				.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_SCOPE_IDENTIFIER,"UA68a6d9e7-420a-4bd9-9c01-12cfdad33fb9"
+						,ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"GC"));
+		assertThat(collection).hasSize(1);
+		assertThat(collection.iterator().next().getCode()).isEqualTo("G100762");
 	}
 	
 	@Test

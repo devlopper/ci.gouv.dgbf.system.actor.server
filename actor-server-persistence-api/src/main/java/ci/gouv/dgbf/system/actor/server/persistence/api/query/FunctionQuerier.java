@@ -11,12 +11,14 @@ import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.From;
 import org.cyk.utility.persistence.query.Querier;
@@ -30,6 +32,7 @@ import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.FunctionComparator;
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
@@ -117,9 +120,34 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	/*read where associated to scope for UI */
 	String QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_FOR_UI = Querier.buildIdentifier(Function.class,"readWhereAssociatedToScopeForUI");
 	
+	String QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS = Querier.buildIdentifier(Function.class, "readExecutionHolders");
+	Collection<Function> readExecutionHolders(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS_AND_ASSISTANTS = Querier.buildIdentifier(Function.class, "readExecutionHoldersAndAssistants");
+	Collection<Function> readExecutionHoldersAndAssistants(QueryExecutorArguments arguments);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Function> implements FunctionQuerier,Serializable {
+		
+		private Collection<Function> __readExecutionHoldersOrAssistants__(QueryExecutorArguments arguments,Collection<String> codes) {
+			List<Function> functions = (List<Function>) EntityReader.getInstance().readMany(Function.class, FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
+					,FunctionQuerier.PARAMETER_NAME_CODES,codes);
+			if(CollectionHelper.isEmpty(functions))
+				return null;
+			Collections.sort(functions,new FunctionComparator());
+			return functions;
+		}
+		
+		@Override
+		public Collection<Function> readExecutionHolders(QueryExecutorArguments arguments) {
+			return __readExecutionHoldersOrAssistants__(arguments, Function.EXECUTION_HOLDERS_CODES);
+		}
+		
+		@Override
+		public Collection<Function> readExecutionHoldersAndAssistants(QueryExecutorArguments arguments) {
+			return __readExecutionHoldersOrAssistants__(arguments, Function.EXECUTION_CODES);
+		}
 		
 		@Override
 		public Collection<Function> readWhereAssociatedToScopeType(QueryExecutorArguments arguments) {
@@ -333,6 +361,10 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return QueryExecutor.getInstance().executeReadMany(Function.class, QUERY_IDENTIFIER_READ_WHERE_ASSOCIATED_TO_SCOPE_TYPE_FOR_UI);
 			if(QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readByCodesForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_CODES));
+			if(QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS.equals(arguments.getQuery().getIdentifier()))
+				return readExecutionHolders(arguments);
+			if(QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS_AND_ASSISTANTS.equals(arguments.getQuery().getIdentifier()))
+				return readExecutionHoldersAndAssistants(arguments);
 			return super.readMany(arguments);
 		}
 		

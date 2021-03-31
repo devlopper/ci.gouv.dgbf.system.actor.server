@@ -14,16 +14,21 @@ import lombok.experimental.Accessors;
 public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private String codePrefix;
+	
 	private ScopeDto scope;
+	private String scopeIdentifier;
 	private String scopeAsString;
 	
 	private FunctionDto function;
+	private String functionIdentifier;
 	private String functionCode;
 	private String functionAsString;
 	private ArrayList<String> functionsIdentifiers;
 	private Boolean isHolder;
 	
 	private LocalityDto locality;
+	private String localityIdentifier;
 	private String localityAsString;
 	
 	private Integer numberOfActor;
@@ -53,5 +58,10 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	@Override
 	public ScopeFunctionDto setIdentifier(String identifier) {
 		return (ScopeFunctionDto) super.setIdentifier(identifier);
+	}
+	
+	@Override
+	public ScopeFunctionDto setName(String name) {
+		return (ScopeFunctionDto) super.setName(name);
 	}
 }

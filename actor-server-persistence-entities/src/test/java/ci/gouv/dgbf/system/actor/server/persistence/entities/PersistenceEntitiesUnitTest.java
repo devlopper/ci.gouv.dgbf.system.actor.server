@@ -12,6 +12,26 @@ public class PersistenceEntitiesUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 
 	@Test
+	public void scopeFunction_getFunctionCodeFromCategoryCode(){
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_G1)).isEqualTo(Function.CODE_CREDIT_MANAGER_HOLDER);
+		
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_O2)).isEqualTo(Function.CODE_AUTHORIZING_OFFICER_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_O3)).isEqualTo(Function.CODE_AUTHORIZING_OFFICER_HOLDER);
+		
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_C2)).isEqualTo(Function.CODE_FINANCIAL_CONTROLLER_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_C3)).isEqualTo(Function.CODE_FINANCIAL_CONTROLLER_HOLDER);
+		
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T1)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T2)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T3)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T4)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T5)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T6)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T8)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+		assertThat(ScopeFunction.getFunctionCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T9)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+	}
+	
+	@Test
 	public void scopeFunction_getOrderNumberFromCode(){
 		assertThat(ScopeFunction.getOrderNumberFromCode(null)).isNull();
 		assertThat(ScopeFunction.getOrderNumberFromCode("")).isNull();

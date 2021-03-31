@@ -72,6 +72,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
 	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionIdentifier");
+	Collection<ScopeFunction> readByScopeIdentifierByFunctionIdentifier(QueryExecutorArguments arguments);
+	
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionCodeForUI");
 	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(QueryExecutorArguments arguments);
 	
@@ -172,10 +175,15 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 						, "SELECT COUNT(sf.identifier) FROM ScopeFunction sf")
 				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
-						, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.code = :%s ORDER BY t.code ASC"
-								,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_CODE))
+					, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.code = :%s ORDER BY t.code ASC"
+							,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_CODE))
 					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
 				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER
+					, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.identifier = :%s ORDER BY t.code ASC"
+							,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_IDENTIFIER))
+						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)	
+					
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY
 						, "SELECT t.identifier,t.code,t.scope.identifier,t.scope.code,t.function.code,locality.identifier,locality.code,t.activityIdentifier FROM ScopeFunction t "
 								+ "LEFT JOIN Locality locality ON locality = t.locality")

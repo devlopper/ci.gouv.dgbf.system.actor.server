@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
@@ -51,7 +52,7 @@ public class ScopeFunctionPersistenceImpl extends AbstractPersistenceEntityImpl<
 		ScopeTypeFunction scopeTypeFunction = ScopeTypeFunctionQuerier.getInstance().readByScopeTypeCodeByFunctionCode(ScopeType.CODE_SERVICE_ORD, Function.CODE_AUTHORIZING_OFFICER_HOLDER);
 		ScopeFunction scopeFunction = new ScopeFunction()
 				.setScope(EntityFinder.getInstance().find(Scope.class,budgetSpecialisationUnit.getIdentifier()))
-				.setFunction(EntityFinder.getInstance().find(Function.class,Function.CODE_AUTHORIZING_OFFICER_HOLDER))
+				.setFunction(CodeExecutor.getInstance().getOne(Function.class,Function.CODE_AUTHORIZING_OFFICER_HOLDER))
 				.setLocality(locality);
 		ScopeFunction.computeCodeAndName(ScopeType.CODE_SERVICE_ORD, List.of(scopeFunction), 0, 0, scopeTypeFunction.getScopeFunctionCodeScript()
 				, scopeTypeFunction.getScopeFunctionNameScript());

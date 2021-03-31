@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
@@ -80,8 +81,15 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	@Override @Transactional
 	public BusinessServiceProvider<ScopeFunction> createMany(Collection<ScopeFunction> scopeFunctions, Properties properties) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);
-		//ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);		
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(scopeFunction.getScope() == null)
+				throwablesMessages.add("Le domaine est obligatoire");
+			if(scopeFunction.getFunction() == null)
+				throwablesMessages.add("La fonction est obligatoire");
+		}
+		throwablesMessages.throwIfNotEmpty();
 		//add assistants where possible
 		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
 		for(ScopeFunction scopeFunction : scopeFunctions) {
@@ -296,7 +304,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		//Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
 		Integer orderNumber = scopeFunctionMax == null ? null : ScopeFunction.getOrderNumberFromCode(scopeFunctionMax.getCode());
 		if(orderNumber == null)
-			orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
+			orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));
 		else
 			orderNumber = orderNumber + 1;
 		
@@ -306,27 +314,30 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		else
 			documentNumber = documentNumber + 1;
 		
-		LogHelper.logInfo(String.format("Numéro d'ordre à partir de %s , numéro de document à partir de %s", orderNumber,documentNumber), getClass());
+		LogHelper.logInfo(String.format("%s|%s|%s - Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
+				,orderNumber,documentNumber), getClass());
 		
 		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
 			if(documentNumber == null)
 				documentNumber = 10000;
-		}else if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
+		}else if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode) || ScopeType.CODE_USB.equals(scopeTypeCode)) {
 			if(documentNumber == null)
 				documentNumber = 40000;
-			List<String> authorizingOfficerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
-			List<List<String>> batches = CollectionHelper.getBatches(authorizingOfficerServiceIdentifiers, 900);
-			for(List<String> identifiers : batches) {
-				Collection<AuthorizingOfficerService> authorizingOfficerServices = EntityFinder.getInstance().findMany(AuthorizingOfficerService.class, identifiers);
-				for(ScopeFunction scopeFunction : scopeFunctions) {
-					for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices)
-						if(scopeFunction.getScope().getIdentifier().equals(authorizingOfficerService.getIdentifier())) {
-							scopeFunction.setBudgetSpecializationUnit(authorizingOfficerService.getBudgetSpecializationUnit());
-							scopeFunction.setLocality(authorizingOfficerService.getLocality());
-							break;
-						}
+			if(ScopeType.CODE_SERVICE_ORD.equals(scopeTypeCode)) {
+				List<String> authorizingOfficerServiceIdentifiers = scopeFunctions.stream().map(x -> x.getScope().getIdentifier()).collect(Collectors.toList());
+				List<List<String>> batches = CollectionHelper.getBatches(authorizingOfficerServiceIdentifiers, 900);
+				for(List<String> identifiers : batches) {
+					Collection<AuthorizingOfficerService> authorizingOfficerServices = EntityFinder.getInstance().findMany(AuthorizingOfficerService.class, identifiers);
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices)
+							if(scopeFunction.getScope().getIdentifier().equals(authorizingOfficerService.getIdentifier())) {
+								scopeFunction.setBudgetSpecializationUnit(authorizingOfficerService.getBudgetSpecializationUnit());
+								scopeFunction.setLocality(authorizingOfficerService.getLocality());
+								break;
+							}
+					}
 				}
-			}			
+			}
 		}else if(ScopeType.CODE_SERVICE_CF.equals(scopeTypeCode)) {
 			if(documentNumber == null)
 				documentNumber = 60000;

@@ -130,6 +130,15 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	}
 	
 	@Override
+	public Collection<ScopeFunction> readByScopeIdentifierByFunctionIdentifier(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER);
+		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+	}
+	
+	@Override
 	public Collection<ScopeFunction> readWithCodesOnlyByFunctionsIdentifiers(Collection<String> functionsIdentifiers) {
 		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_WITH_CODES_ONLY_BY_FUNCTIONS_IDENTIFIERS
 				,PARAMETER_NAME_FUNCTIONS_IDENTIFIERS,functionsIdentifiers);

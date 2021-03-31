@@ -389,6 +389,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CATEGORY_CODE_G1 = "G1";
 	public static final String CATEGORY_NAME_G1 = "Gestionnaire de crédits";
 	
+	public static final String CATEGORY_CODE_O2 = "O2";
+	public static final String CATEGORY_NAME_O2 = "Ordonnateur délégué";
+	
 	public static final String CATEGORY_CODE_O3 = "O3";
 	public static final String CATEGORY_NAME_O3 = "Ordonnateur secondaire";
 	
@@ -426,6 +429,53 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CATEGORY_CODE_A2 = "A2";
 	public static final String CATEGORY_CODE_A3 = "A3";
 	public static final String CATEGORY_CODE_A4 = "A4";
+	
+	public static String getCategoryCodeFromCategoryName(String categoryName) {
+		if(CATEGORY_NAME_G1.equals(categoryName))
+			return CATEGORY_CODE_G1;
+		
+		if(CATEGORY_NAME_O2.equals(categoryName))
+			return CATEGORY_CODE_O2;
+		if(CATEGORY_NAME_O3.equals(categoryName))
+			return CATEGORY_CODE_O3;
+		
+		if(CATEGORY_NAME_C2.equals(categoryName))
+			return CATEGORY_CODE_C2;
+		if(CATEGORY_NAME_C3.equals(categoryName))
+			return CATEGORY_CODE_C3;
+		
+		if(CATEGORY_NAME_T1.equals(categoryName))
+			return CATEGORY_CODE_T1;
+		if(CATEGORY_NAME_T2.equals(categoryName))
+			return CATEGORY_CODE_T2;
+		if(CATEGORY_NAME_T3.equals(categoryName))
+			return CATEGORY_CODE_T3;
+		if(CATEGORY_NAME_T4.equals(categoryName))
+			return CATEGORY_CODE_T4;
+		if(CATEGORY_NAME_T5.equals(categoryName))
+			return CATEGORY_CODE_T5;
+		if(CATEGORY_NAME_T6.equals(categoryName))
+			return CATEGORY_CODE_T6;
+		if(CATEGORY_NAME_T8.equals(categoryName))
+			return CATEGORY_CODE_T8;
+		if(CATEGORY_NAME_T9.equals(categoryName))
+			return CATEGORY_CODE_T9;
+		return null;
+	}
+	
+	public static String getFunctionCodeFromCategoryCode(String categoryCode) {
+		if(StringHelper.isBlank(categoryCode))
+			return null;
+		if(categoryCode.startsWith("G"))
+			return Function.CODE_CREDIT_MANAGER_HOLDER;
+		if(categoryCode.startsWith("O"))
+			return Function.CODE_AUTHORIZING_OFFICER_HOLDER;
+		if(categoryCode.startsWith("C"))
+			return Function.CODE_FINANCIAL_CONTROLLER_HOLDER;
+		if(categoryCode.startsWith("T"))
+			return Function.CODE_ACCOUNTING_HOLDER;
+		return null;
+	}
 	
 	/**/
 	
