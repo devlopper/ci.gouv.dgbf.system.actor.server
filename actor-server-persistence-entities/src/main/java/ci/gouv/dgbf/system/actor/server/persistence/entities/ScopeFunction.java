@@ -75,10 +75,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	//@Transient private String activityCode;
 	
 	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
-	@Column(name = COLUMN_ACTORS_CODES) private String actorsCodes;
+	//@Column(name = COLUMN_ACTORS_CODES) private String actorsCodes;
 	@Transient private Collection<String> actorsNames;
 	
 	@Transient private Collection<String> actorsAsStrings;
+	@Transient private Collection<String> actorsCodes;
 	@Transient private String actorAsString;
 	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
 	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;

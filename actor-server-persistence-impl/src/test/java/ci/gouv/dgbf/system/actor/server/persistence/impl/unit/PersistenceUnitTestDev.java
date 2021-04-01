@@ -1,10 +1,16 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public class PersistenceUnitTestDev extends AbstractUnitTestValidate {
 	private static final long serialVersionUID = 1L;
@@ -12,6 +18,15 @@ public class PersistenceUnitTestDev extends AbstractUnitTestValidate {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readActorsCodes(){
+		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, new QueryExecutorArguments()
+				.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_ACTORS_CODES)));
+		scopeFunctions.forEach(x -> {
+			System.out.println(x.getActorsCodes());
+		});
 	}
 	
 	//@Test

@@ -458,9 +458,48 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		return readFunctionsCodes(CollectionHelper.listOf(scopeFunctions));
 	}
 	
+	/**/
+	
+	@Override
+	public Collection<Object[]> readActorsCodesByIdentifiers(Collection<String> identifiers) {
+		if(CollectionHelper.isEmpty(identifiers))
+			return null;
+		return new ReaderByCollection.AbstractImpl<String, Object[]>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			protected Collection<Object[]> __read__(Collection<String> values) {
+				return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT poste,utilisateur FROM V_APP_EX_POSTE_UTILISATEUR WHERE poste IN :identifiers")
+						.setParameter("identifiers", values).getResultList();
+			}
+			
+		}.read(identifiers);
+	}
+	
+	@Override
+	public Collection<Object[]> readActorsCodesByIdentifiers(String... identifiers) {
+		if(ArrayHelper.isEmpty(identifiers))
+			return null;
+		return readActorsCodesByIdentifiers(CollectionHelper.listOf(identifiers));
+	}
+	
+	@Override
+	public Collection<Object[]> readActorsCodes(Collection<ScopeFunction> scopeFunctions) {
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			return null;
+		return readActorsCodesByIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctions));
+	}
+	
+	@Override
+	public Collection<Object[]> readActorsCodes(ScopeFunction... scopeFunctions) {
+		if(ArrayHelper.isEmpty(scopeFunctions))
+			return null;
+		return readActorsCodes(CollectionHelper.listOf(scopeFunctions));
+	}
+	
+	/**/
+	
 	@Override
 	protected Class<ScopeFunction> getKlass() {
 		return ScopeFunction.class;
-	}
-	
+	}	
 }

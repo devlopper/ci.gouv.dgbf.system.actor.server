@@ -149,6 +149,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<Object[]> readFunctionsCodes(Collection<ScopeFunction> scopeFunctions);
 	Collection<Object[]> readFunctionsCodes(ScopeFunction...scopeFunctions);
 	
+	Collection<Object[]> readActorsCodesByIdentifiers(Collection<String> identifiers);
+	Collection<Object[]> readActorsCodesByIdentifiers(String...identifiers);
+	Collection<Object[]> readActorsCodes(Collection<ScopeFunction> scopeFunctions);
+	Collection<Object[]> readActorsCodes(ScopeFunction...scopeFunctions);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeFunction> implements ScopeFunctionQuerier,Serializable {	
@@ -259,7 +264,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 						, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
 						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_PARENT_IDENTIFIER,ScopeFunction.FIELD_SCOPE_AS_STRING
-						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_ACTORS_CODES)
+						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING)
 				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
 				
@@ -320,7 +325,6 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				select(				
 					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR,ScopeFunction.FIELD_PARENT_IDENTIFIER)
 					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
-					,Select.fields("t",ScopeFunction.FIELD_ACTORS_CODES)
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()

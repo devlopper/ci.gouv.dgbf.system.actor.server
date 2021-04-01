@@ -45,6 +45,8 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	String DELETE_HOLDERS_AND_ASSISTANTS_BY_HOLDERS_FUNCTIONS_IDENTIFIERS = "ScopeFunction.deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers";
 	void deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(Collection<String> holdersFunctionsIdentifiers);
 	
+	void updateActorsCodesFromExternal();
+	
 	String SAVE = "ScopeFunction.save";
 	//String SAVE_NAME = "ScopeFunction.saveName";
 

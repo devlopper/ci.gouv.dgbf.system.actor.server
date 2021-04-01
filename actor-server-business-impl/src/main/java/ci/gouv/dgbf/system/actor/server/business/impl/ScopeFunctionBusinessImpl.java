@@ -549,4 +549,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				.addQueriesStrings("DELETE FROM POSTE"));
 		return this;
 	}
+	
+	@Override
+	public void updateActorsCodesFromExternal() {
+		
+	}
 }

@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.persistence.query.EntityReader;
@@ -82,6 +83,15 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		
 		assertThat(__inject__(ScopeFunctionPersistence.class).computeAuthorizingOfficerHolderName("USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2", "DIMBOKRO"))
 			.isEqualTo("Ordonnateur secondaire du Programme Budget a Dimbokro");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readActorsCodes(){
+		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, new QueryExecutorArguments()
+				.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_ACTORS_CODES)));
+		scopeFunctions.forEach(x -> {
+			System.out.println(x.getActorsCodes());
+		});
 	}
 	
 	/**/
