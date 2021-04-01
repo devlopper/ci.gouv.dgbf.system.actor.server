@@ -60,6 +60,13 @@
 			<version>${com.h2database.h2.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.4.12.Final</version>
+			<scope>test</scope>
+		</dependency>
 						
 		<!-- Integration Test -->
 		

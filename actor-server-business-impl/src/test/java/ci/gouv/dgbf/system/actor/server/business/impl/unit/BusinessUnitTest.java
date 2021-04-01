@@ -17,7 +17,6 @@ import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.test.business.server.AbstractUnitTest;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AccountRequestBusiness;
@@ -33,7 +32,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.AccountRequestPersistenc
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorScopePersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.IdentityPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.PrivilegePersistence;
@@ -77,15 +75,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
-public class BusinessUnitTest extends AbstractUnitTest {
+public class BusinessUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
-	
-	@Override
-	protected void initializeEntityManagerFactory(String persistenceUnitName) {
-		super.initializeEntityManagerFactory(persistenceUnitName);
-		ApplicationScopeLifeCycleListener.initialize();
-	}
-	
+		
 	@Test
 	public void create_profileType() throws Exception{
 		assertThat(EntityCounter.getInstance().count(ProfileType.class)).isEqualTo(0l);
@@ -102,13 +94,6 @@ public class BusinessUnitTest extends AbstractUnitTest {
 		//queryExecutorArguments.getEntityManager().getTransaction().commit();
 		
 		__inject__(ProfileTypeBusiness.class).create(profileType);
-		
-		executeTransaction(new Runnable() {			
-			@Override
-			public void run() {
-				//EntityCreator.getInstance().create(queryExecutorArguments);
-			}
-		});
 		
 		assertThat(EntityCounter.getInstance().count(ProfileType.class)).isEqualTo(1l);
 		profileType = EntityFinder.getInstance().find(ProfileType.class, "P01");

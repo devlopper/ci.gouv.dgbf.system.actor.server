@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +15,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.cyk.utility.business.server.EntitySaver;
-import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -25,16 +24,20 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
-import org.cyk.utility.persistence.EntityManagerGetter;
-import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.rest.RestHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.business.server.EntitySaver;
+import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.mail.MailSender;
+import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.report.ReportGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
@@ -95,9 +98,9 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	
 	private static void validateProcess(Request request) {
 		if(request.getStatus() != null && RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été acceptée");
+			throw new RuntimeException(String.format("La demande codifiée %s a déja été acceptée",request.getCode()));
 		if(request.getStatus() != null && RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
-			throw new RuntimeException("La demande a déja été rejetée");
+			throw new RuntimeException(String.format("La demande codifiée %s a déja été rejetée",request.getCode()));
 	}
 	
 	private void setFields(Request request) {
@@ -153,8 +156,26 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.set__auditFunctionality__("Initialisation");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		setFields(request);
-		request.setIdentifier(IdentifiableSystem.generateRandomly());
-		request.setCode("D"+RandomHelper.getNumeric(3)+RandomHelper.getAlphabetic(4).toUpperCase()+RandomHelper.getNumeric(3));
+		if(StringHelper.isBlank(request.getCode())) {
+			Integer numberOfAttempts = 10;
+			do {
+				request.setCode("D"+TimeHelper.formatLocalDate(LocalDate.now(), "yyMMdd")+RandomHelper.getAlphabetic(2).toUpperCase()
+					+RandomHelper.getNumeric(2));
+				numberOfAttempts--;
+				if(Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Request.class, request.getCode())))
+					LogHelper.logWarning(String.format("Le code de demande %s existe. Un nouveau code sera généré. Nombre de tentative(s) restante(s) %s", request.getCode()
+							,numberOfAttempts), getClass());
+				else
+					break;
+			}while(numberOfAttempts > 0);
+		}
+		if(StringHelper.isBlank(request.getCode()))
+			new RuntimeException("Impossible de générer un code de demande");
+		if(StringHelper.isBlank(request.getIdentifier()))
+			request.setIdentifier(request.getCode());
+		//if(StringHelper.isBlank(request.getIdentifier()))
+		//	request.setIdentifier(IdentifiableSystem.generateRandomly());
+		
 		request.setCreationDate(LocalDateTime.now());
 		if(request.getActor() == null) {
 			request.setAccessToken(RandomHelper.getAlphanumeric(12));
@@ -424,7 +445,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		validate(request,Boolean.FALSE);
 		validateProcess(request);		
 		if(StringHelper.isBlank(request.getRejectionReason()))
-			throw new RuntimeException("Le motif de rejet est obligatoire");
+			throw new RuntimeException(String.format("Le motif de rejet de la demande %s est obligatoire",request.getCode()));
 		request.set__auditFunctionality__("Rejet demande");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
 		request.setProcessingDate(LocalDateTime.now());

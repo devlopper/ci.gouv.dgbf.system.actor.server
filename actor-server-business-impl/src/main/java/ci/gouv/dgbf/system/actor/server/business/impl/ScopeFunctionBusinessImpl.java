@@ -84,6 +84,8 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);		
 		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier()))
+				continue;
 			if(scopeFunction.getScope() == null)
 				throwablesMessages.add("Le domaine est obligatoire");
 			if(scopeFunction.getFunction() == null)

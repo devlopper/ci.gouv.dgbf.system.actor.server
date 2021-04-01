@@ -1,3 +1,12 @@
+Insert into ID_FORMULAIRE (IDENTIFIANT,CODE,LIBELLE) values ('1','1','Formulaire de demande de postes budgétaires');
+
+Insert into DM_STATUT (IDENTIFIANT,CODE,LIBELLE) values ('INITIEE','INITIEE','Initiée');
+Insert into DM_STATUT (IDENTIFIANT,CODE,LIBELLE) values ('ACCEPTEE','ACCEPTEE','Acceptée');
+Insert into DM_STATUT (IDENTIFIANT,CODE,LIBELLE) values ('REJETEE','REJETEE','Rejetée');
+Insert into DM_STATUT (IDENTIFIANT,CODE,LIBELLE) values ('SOUMISE','SOUMISE','Soumise');
+
+Insert into DM_TYPE (IDENTIFIANT,CODE,LIBELLE,FORMULAIRE) values ('DPB','DEMANDE_POSTES_BUDGETAIRES','Demande de postes budgétaires','1');
+
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('SECTION','SECTION','Section',1);
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('USB','USB','Unité de spécialisation du budget',2);
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('CATEGORIE_ACTIVITE','CATEGORIE_ACTIVITE','Catégorie Activité',3);
@@ -15,6 +24,8 @@ Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CF001','CF00
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CPT001','CPT001','CPT 001','SERVICE_CPT');
 
 Insert into VM_APP_SECTION (IDENTIFIANT,CODE,LIBELLE) values ('327','327','Ministère du Budget et du Portefeuille de l''Etat');
+
+Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('13010222','13010222','DTI','327');
 
 Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('22086','22086','Budget','327');
 
@@ -49,3 +60,5 @@ Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('1','1','Pe
 Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('2','2','Bienss et services');
 Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('3','3','Transferts');
 Insert into VM_APP_NATURE_DEPENSE (IDENTIFIANT,CODE,LIBELLE) values ('4','4','Investissements');
+
+Insert into POSTE (IDENTIFIANT,CODE,LIBELLE,FONCTION,DOMAINE,NUMERO_DOCUMENT) values ('1','1','Assistant','AGC','13010222',1);

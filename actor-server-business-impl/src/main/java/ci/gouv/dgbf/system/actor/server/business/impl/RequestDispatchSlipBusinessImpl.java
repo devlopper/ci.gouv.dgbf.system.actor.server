@@ -167,6 +167,8 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		
 		RequestBusiness requestBusiness = __inject__(RequestBusiness.class);
 		for(Request request : requestDispatchSlip.getRequests()) {
+			if(RequestStatus.CODE_ACCEPTED.equals(request.getStatus().getCode()) || RequestStatus.CODE_REJECTED.equals(request.getStatus().getCode()))
+				continue;
 			request.set__auditWho__(requestDispatchSlip.get__auditWho__());
 			if(RequestStatus.CODE_ACCEPTED.equals(request.getStatusAsString())) {
 				RequestBusinessImpl.accept(request, grantedRequestScopeFunctions, grantedRequestScopeFunctions.stream()

@@ -27,8 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,7 +58,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private String typeAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_STATUS) @NotNull private RequestStatus status;
 	@Transient private String statusAsString;
-	@Column(name = COLUMN_ACCOUNT_CREATION_DATE) @NotNull private LocalDateTime accountCreationDate;
+	@Column(name = COLUMN_ACCOUNT_CREATION_DATE) private LocalDateTime accountCreationDate;
 	@Transient private String accountCreationDateAsString;
 	@Column(name = COLUMN_ACCOUNT_CREATION_MESSAGE) private String accountCreationMessage;
 	//@Transient private Boolean isInitializedStatus;
@@ -155,6 +155,11 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Override
 	public Request setIdentifier(String identifier) {
 		return (Request) super.setIdentifier(identifier);
+	}
+	
+	@Override
+	public Request setCode(String code) {
+		return (Request) super.setCode(code);
 	}
 	
 	public Request setTypeFromIdentifier(String identifier) {
