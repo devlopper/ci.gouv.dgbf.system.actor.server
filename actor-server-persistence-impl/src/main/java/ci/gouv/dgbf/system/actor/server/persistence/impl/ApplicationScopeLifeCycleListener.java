@@ -16,6 +16,7 @@ import org.cyk.utility.persistence.server.query.string.RuntimeQueryStringBuilder
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsQuerierImpl;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeFunctionQuerierImpl;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -48,5 +49,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		QueryManager.getInstance().scan(List.of(ActorQuerier.class.getPackage()));	
 		ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
 		AssignmentsQuerierImpl.initialize();
+		ScopeFunctionQuerierImpl.initialize();
 	}
 }

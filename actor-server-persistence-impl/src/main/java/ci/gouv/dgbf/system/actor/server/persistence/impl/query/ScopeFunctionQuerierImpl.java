@@ -1,5 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
+import static org.cyk.utility.persistence.query.Language.jpql;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -11,8 +13,10 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
@@ -25,7 +29,7 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@Override
 	public ScopeFunction readOne(QueryExecutorArguments arguments) {
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-			return readByIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			return readByIdentifierForUI(arguments);
 		return super.readOne(arguments);
 	}
 	
@@ -46,6 +50,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return readWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 			return readByScopeIdentifierByFunctionCodeForUI(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+			return readByFunctionIdentifierByBudgetSpecializationUnitIdentifier(arguments);
 		return super.readMany(arguments);
 	}
 	
@@ -62,6 +68,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return countWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_BY_PARENTS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
 			return countByParentsIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_PARENTS_IDENTIFIERS));
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+			return countByFunctionIdentifierByBudgetSpecializationUnitIdentifier(arguments);
 		return super.count( arguments);
 	}
 	
@@ -375,13 +383,32 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	}
 	
 	@Override
-	public ScopeFunction readByIdentifierForUI(String identifier) {
-		if(StringHelper.isBlank(identifier))
-			return null;
-		ScopeFunction scopeFunction = QueryExecutor.getInstance().executeReadOne(ScopeFunction.class, new QueryExecutorArguments()
-				.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI).addFilterField(PARAMETER_NAME_IDENTIFIER,identifier));
+	public ScopeFunction readByIdentifierForUI(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI);
+		ScopeFunction scopeFunction = QueryExecutor.getInstance().executeReadOne(ScopeFunction.class, arguments);
 		listenReadForUI(scopeFunction);
 		return scopeFunction;
+	}
+	
+	@Override
+	public Collection<ScopeFunction> readByFunctionIdentifierByBudgetSpecializationUnitIdentifier(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
+		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+	}
+	
+	@Override
+	public Long countByFunctionIdentifierByBudgetSpecializationUnitIdentifier(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
+		return QueryExecutor.getInstance().executeCount(arguments);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -501,5 +528,24 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@Override
 	protected Class<ScopeFunction> getKlass() {
 		return ScopeFunction.class;
-	}	
+	}
+	
+	/**/
+	
+	public static void initialize() {
+		QueryManager.getInstance().register(
+				Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
+						, jpql("SELECT sf.identifier,sf.code,sf.name",getReadByBudgetSpecializationUnitsIdentifiersFromWhere(),"ORDER BY sf.code ASC"))
+					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
+						, jpql("SELECT COUNT(sf.identifier)",getReadByBudgetSpecializationUnitsIdentifiersFromWhere()))
+			);
+	}
+	
+	private static String getReadByBudgetSpecializationUnitsIdentifiersFromWhere() {
+		return jpql("FROM ScopeFunction sf"
+				,String.format("WHERE sf.function.identifier = :%1$s AND (sf.scope.identifier = :%2$s "
+						+ "OR EXISTS(SELECT t FROM AuthorizingOfficerService t WHERE t.identifier = sf.scope.identifier AND t.budgetSpecializationUnit.identifier = :%2$s))"
+						,PARAMETER_NAME_FUNCTION_IDENTIFIER,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER));
+	}
 }

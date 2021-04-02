@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
@@ -87,11 +88,24 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 	
 	@Test
 	public void scopeFunctionQuerier_readActorsCodes(){
-		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, new QueryExecutorArguments()
+		ScopeFunction scopeFunction = EntityReader.getInstance().readOne(ScopeFunction.class, new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI)
+				.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_IDENTIFIER,"A3002110")
 				.setProcessableTransientFieldsNames(List.of(ScopeFunction.FIELD_ACTORS_CODES)));
-		scopeFunctions.forEach(x -> {
-			System.out.println(x.getActorsCodes());
-		});
+		assertThat(scopeFunction).isNotNull();
+		assertThat(scopeFunction.getActorsCodes()).containsExactly("kycdev@gmail.com");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readByBudgetSpecializationUnitIdentifier() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments()
+				.setQueryFromIdentifier(ScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER);
+		arguments.addFilterFieldsValues(ScopeFunctionQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER,"ORD"
+				,ScopeFunctionQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,"USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2"
+				);
+		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, arguments);
+		assertThat(scopeFunctions).isNotEmpty();
+		assertThat(FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions)).containsExactly("O3001","O402500","O502501");
 	}
 	
 	/**/

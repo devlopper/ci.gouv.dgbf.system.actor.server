@@ -91,12 +91,6 @@ public class PersistenceApiUnitTestDev extends AbstractPersistenceApiUnitTestVal
 	}
 	
 	@Test
-	public void scopeFunction_readByIdentifierForUI(){
-		ScopeFunction scopeFunction = ScopeFunctionQuerier.getInstance().readByIdentifierForUI("G100000");
-		System.out.println(scopeFunction);
-	}
-	
-	@Test
 	public void expenditureNature_readBySectionIdentifierForUI(){
 		Collection<Section> sections = SectionQuerier.getInstance().readAllForUI();
 		if(CollectionHelper.isEmpty(sections))

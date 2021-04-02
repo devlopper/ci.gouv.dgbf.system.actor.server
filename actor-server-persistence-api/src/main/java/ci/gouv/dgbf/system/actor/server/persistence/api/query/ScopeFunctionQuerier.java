@@ -34,6 +34,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFunction> {
 
+	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
 	String PARAMETER_NAME_PARENTS_IDENTIFIERS = "parentsIdentifiers";
 	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
@@ -133,7 +134,13 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<ScopeFunction> readWhereFilterForUI(QueryExecutorArguments arguments);
 	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI = QueryIdentifierGetter.getInstance().get(ScopeFunction.class, QueryName.READ_BY_IDENTIFIER_FOR_UI);
-	ScopeFunction readByIdentifierForUI(String identifier);
+	ScopeFunction readByIdentifierForUI(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = Querier.buildIdentifier(ScopeFunction.class, "readByFunctionIdentifierByBudgetSpecializationUnitIdentifier");
+	Collection<ScopeFunction> readByFunctionIdentifierByBudgetSpecializationUnitIdentifier(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = Querier.buildIdentifier(ScopeFunction.class, "countByFunctionIdentifierByBudgetSpecializationUnitIdentifier");
+	Long countByFunctionIdentifierByBudgetSpecializationUnitIdentifier(QueryExecutorArguments arguments);
 	
 	Integer readMaxOrderNumberByFunctionCode(String functionCode);
 	ScopeFunction readMaxCodeWhereCodeStartsWith(String string);
