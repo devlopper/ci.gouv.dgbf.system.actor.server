@@ -75,7 +75,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 
-public class BusinessUnitTest extends AbstractUnitTestMemory {
+public class BusinessUnitTestToBeRefactored extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 		
 	@Test
