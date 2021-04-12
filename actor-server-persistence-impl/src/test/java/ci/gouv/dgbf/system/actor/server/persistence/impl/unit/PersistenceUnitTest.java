@@ -46,7 +46,7 @@ public class PersistenceUnitTest extends AbstractUnitTest {
 		System.out.println("AFF : "+EntityCounter.getInstance().count(Assignments.class));
 		
 		assertThat(ScopeFunctionQuerier.getInstance().read().stream().map(ScopeFunction::getCode)
-				.collect(Collectors.toList())).contains("101");
+				.collect(Collectors.toList())).contains("A1000000");
 	}
 	
 	@Test
