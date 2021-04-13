@@ -184,6 +184,7 @@ public interface AssignmentsQuerier extends Querier {
 	
 	void clean(String actor,String functionality,String action,Date date);
 	void import_(String actor,String functionality,String actionCreate,String actionUpdate,Date date);
+	void importNews(String actor,String functionality,String action,Date date);
 	void export(String actor,String functionality,String action,Date date);
 	
 	/**/

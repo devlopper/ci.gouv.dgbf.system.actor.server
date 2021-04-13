@@ -66,6 +66,7 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	
 	Integer notifyAccessTokens(String electronicMailAddress,String readPageURL);
 	
+	@Transactional
 	void exportForAccountCreation(String actorCode);
 	
 	/**/

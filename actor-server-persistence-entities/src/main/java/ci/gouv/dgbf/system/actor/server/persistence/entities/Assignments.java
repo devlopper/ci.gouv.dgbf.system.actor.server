@@ -53,8 +53,16 @@ import lombok.experimental.Accessors;
 					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION_UPDATE , mode = ParameterMode.IN,type = String.class)
 					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
 				}
-		)
-	,@NamedStoredProcedureQuery(
+	),@NamedStoredProcedureQuery(
+			name = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS, 
+			procedureName = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS
+			,parameters = {
+					@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION , mode = ParameterMode.IN,type = String.class)
+					,@StoredProcedureParameter(name = Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE , mode = ParameterMode.IN,type = java.sql.Date.class)
+				}
+	),@NamedStoredProcedureQuery(
 			name = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT, 
 			procedureName = Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
 			,parameters = {
@@ -191,6 +199,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String TABLE_NAME = "AFFECTATIONS";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN = "P_EFFACER_AFFECTATIONS";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT = "P_IMPORTER_AFFECTATIONS";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS = "P_IMPORTER_AFFECTATIONS_NVL";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT = "P_EXPORTER_AFFECTATIONS";
 	
 	public static final String STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR = "audit_acteur";

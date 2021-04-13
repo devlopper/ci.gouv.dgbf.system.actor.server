@@ -171,6 +171,21 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	}
 	
 	@Override
+	public Response importNews(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(AssignmentsBusiness.class).importNews(actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response export(String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override

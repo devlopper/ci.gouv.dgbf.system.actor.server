@@ -37,10 +37,16 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	String DELETE_ALL = "Assignments.deleteAll";
 	
 	String CLEAN = "Assignments.clean";
+	@Transactional
 	void clean(String actorCode);
 	
 	String IMPORT = "Assignments.import";
+	@Transactional
 	void import_(String actorCode);
+	
+	String IMPORT_NEWS = "Assignments.importNews";
+	@Transactional
+	void importNews(String actorCode);
 	
 	String EXPORT = "Assignments.export";
 	@Transactional

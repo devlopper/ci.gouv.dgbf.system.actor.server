@@ -20,6 +20,7 @@ call install.bat
 
 cd ../../..
 cd actor-server-business-impl/script/maven
+call test.bat
 call install.bat
 
 cd ../../..

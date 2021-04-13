@@ -622,7 +622,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}).start();
 	}
 	
-	@Override
+	@Override @Transactional
 	public void exportForAccountCreation(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		RequestQuerier.getInstance().exportForAccountCreation(actorCode, "export_pour_creation_compte", EntityLifeCycleListener.Event.READ.getValue(), new Date());

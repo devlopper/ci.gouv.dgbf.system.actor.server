@@ -70,6 +70,13 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	Response import_(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
+	@Path(PATH_IMPORT_NEWS)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response importNews(@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
+	
+	@POST
 	@Path(PATH_EXPORT)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -84,6 +91,7 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	String PATH_SAVE_SCOPE_FUNCTIONS = "saveScopeFunctions";
 	String PATH_CLEAN = "effacer";
 	String PATH_IMPORT = "importer";
+	String PATH_IMPORT_NEWS = "importernouvelles";
 	String PATH_EXPORT = "exporter";
 	String TAG = "Affectations";
 	

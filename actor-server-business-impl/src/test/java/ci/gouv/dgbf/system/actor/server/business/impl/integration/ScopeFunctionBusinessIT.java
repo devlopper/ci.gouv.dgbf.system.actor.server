@@ -16,7 +16,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class ScopeFunctionBusinessIT extends AbstractBusinessIT {
+public class ScopeFunctionBusinessIT extends AbstractBusinessInMemoryIT {
 
 	@Inject private ScopeFunctionBusiness scopeFunctionBusiness;
 	

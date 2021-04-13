@@ -382,6 +382,16 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	}
 	
 	@Override
+	public void importNews(String actor, String functionality, String action,Date date) {
+		ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS
+				, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
+			);
+	}
+	
+	@Override
 	public void export(String actor, String functionality, String action, Date date) {
 		ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
 				, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor

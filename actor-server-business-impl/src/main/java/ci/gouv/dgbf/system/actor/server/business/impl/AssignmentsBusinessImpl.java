@@ -704,17 +704,26 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return this;
 	}
 
+	@Transactional
 	@Override
 	public void clean(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().clean(actorCode, "effacement", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
+	@Transactional
 	@Override
 	public void import_(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().import_(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue()
 				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+	}
+	
+	@Transactional
+	@Override
+	public void importNews(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date());
 	}
 	
 	@Transactional

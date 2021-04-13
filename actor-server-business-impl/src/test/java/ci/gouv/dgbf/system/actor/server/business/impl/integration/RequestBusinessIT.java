@@ -25,7 +25,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public class RequestBusinessIT extends AbstractBusinessIT {
+public class RequestBusinessIT extends AbstractBusinessInMemoryIT {
 
 	@Inject private RequestBusiness requestBusiness;
 	@Inject private RequestDispatchSlipBusiness requestDispatchSlipBusiness;
