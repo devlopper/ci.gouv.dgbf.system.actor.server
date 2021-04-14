@@ -192,6 +192,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override @Transactional
 	public void record(Request request) {
 		validateRecord(request,Boolean.TRUE);
+		if(StringHelper.isNotBlank(request.getElectronicMailAddress()))
+			request.setElectronicMailAddress(RequestBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
 		request.set__auditFunctionality__("Modification");
 		setFields(request);
 		EntityManager entityManager = __inject__(EntityManager.class);

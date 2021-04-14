@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
-import org.cyk.utility.business.server.TransactionResult;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.server.business.BusinessEntity;
 

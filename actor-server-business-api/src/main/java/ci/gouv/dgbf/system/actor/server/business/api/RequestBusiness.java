@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.RegExUtils;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -88,4 +90,14 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	
 	String REPRESENTATION_PATH = "demande";
 	String REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER = "construireetatparidentifiant";
+	
+	/**/
+	
+	static String normalizeElectronicMailAddress(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			return null;
+		electronicMailAddress = electronicMailAddress.toLowerCase();
+		electronicMailAddress = RegExUtils.removeAll(electronicMailAddress, " ");
+		return electronicMailAddress;
+	}
 }
