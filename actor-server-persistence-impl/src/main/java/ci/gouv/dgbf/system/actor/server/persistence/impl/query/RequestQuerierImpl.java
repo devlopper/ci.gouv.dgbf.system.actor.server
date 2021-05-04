@@ -337,7 +337,7 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 				,dispatchSlipIdentifier);
 		if(CollectionHelper.isEmpty(requests))
 			return null;
-		TransientFieldsProcessor.getInstance().process(requests, List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
+		TransientFieldsProcessor.getInstance().process(requests,null, List.of(Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_AS_STRINGS
 				,Request.FIELD_BUDGETARIES_SCOPE_FUNCTIONS_GRANTED_AS_STRINGS));
 		for(Request request : requests)
 			prepareForUI(request);			

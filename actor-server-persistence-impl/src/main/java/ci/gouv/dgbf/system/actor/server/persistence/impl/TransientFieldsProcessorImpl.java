@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -25,7 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.server.TransientFieldsProcessorImpl {
 
 	@Override
-	protected void __process__(Class<?> klass,Collection<?> objects, Collection<String> fieldsNames) {
+	protected void __process__(Class<?> klass,Collection<?> objects,Filter filter, Collection<String> fieldsNames) {
 		if(ScopeFunction.class.equals(klass))
 			processScopeFunctions(CollectionHelper.cast(ScopeFunction.class, objects),fieldsNames);
 		else if(Request.class.equals(klass))
@@ -33,7 +34,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		else if(Assignments.class.equals(klass))
 			processAssignments(CollectionHelper.cast(Assignments.class, objects),fieldsNames);
 		else
-			super.__process__(klass,objects, fieldsNames);
+			super.__process__(klass,objects,filter, fieldsNames);
 	}
 	
 	/**/
