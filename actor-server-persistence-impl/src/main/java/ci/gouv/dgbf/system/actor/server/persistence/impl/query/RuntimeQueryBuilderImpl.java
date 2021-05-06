@@ -21,9 +21,9 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 	
 	@Override
 	protected Boolean isBuildable(QueryExecutorArguments arguments) {
-		if(arguments.getQuery().getIdentifier().equals(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY))
+		if(arguments != null && arguments.getQuery() != null && AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
 			return Boolean.TRUE;
-		if(arguments.getQuery().getIdentifier().equals(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY))
+		if(arguments != null && arguments.getQuery() != null && AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
 			return Boolean.TRUE;
 		return super.isBuildable(arguments);
 	}
