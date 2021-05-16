@@ -40,9 +40,9 @@ public class PersistenceHelperUnitTest extends AbstractUnitTest {
 	
 	@Test
 	public void assignments_columnsValues(){
-		assertThat(PersistenceHelper.getColumnsValues(new Assignments())).containsExactly("NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL");
+		assertThat(PersistenceHelper.getColumnsValues(new Assignments(),null)).containsExactly("NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL");
 		
-		assertThat(PersistenceHelper.getColumnsValues(new Assignments().setExecutionImputation(new ExecutionImputation().setIdentifier("i1"))))
+		assertThat(PersistenceHelper.getColumnsValues(new Assignments().setExecutionImputation(new ExecutionImputation().setIdentifier("i1")),null))
 			.containsExactly("NULL","'i1'","NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL");
 	}
 	
