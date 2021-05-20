@@ -83,6 +83,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(LocalityQuerier.getInstance().isOwner(arguments)))
+				return (T) LocalityQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(BudgetSpecializationUnitQuerier.getInstance().isOwner(arguments)))
 				return (T) BudgetSpecializationUnitQuerier.getInstance().readOne(arguments);
 			
@@ -132,6 +135,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeImputationQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(LocalityQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) LocalityQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ClusterQuerier.getInstance().readMany(arguments);

@@ -18,6 +18,10 @@ public class AdministrativeUnitDto extends AbstractIdentifiableSystemScalarStrin
 	private String sectionAsString;
 	private String sectionIdentifier;
 	
+	private LocalityDto locality;
+	private LocalityDto localityRegion;
+	private LocalityDto localityDepartment;
+	
 	@Override
 	public AdministrativeUnitDto setIdentifier(String identifier) {
 		return (AdministrativeUnitDto) super.setIdentifier(identifier);

@@ -185,7 +185,8 @@ public interface AssignmentsQueryStringReadWhereFilterBuilder {
 		for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
 				,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER
 				,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER
-				,AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER})
+				,AssignmentsQuerier.PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_CATEGORY_IDENTIFIER
+				,AssignmentsQuerier.PARAMETER_NAME_REGION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_DEPARTMENT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER})
 			if(Boolean.TRUE.equals(sourceFilter.hasFieldWithPath(parameterName))) {
 				notNullablesPredicates.add(String.format("i.%1$s = :%1$s",parameterName));
 				destinationFilter.addFieldEquals(parameterName, queryExecutorArguments);

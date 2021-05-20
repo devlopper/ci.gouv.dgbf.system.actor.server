@@ -9,11 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,10 +28,15 @@ import lombok.experimental.Accessors;
 public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@Column(name= COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	@Transient private String sectionAsString;
 	@Transient private String sectionIdentifier;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
+	@Column(name= COLUMN_LOCALITY_CODE_NAME) private String localityCodeName;
+	@Transient private Locality localityRegion;
+	@Transient private Locality localityDepartment;
 	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {
@@ -65,10 +69,13 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
-	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
-	
-	public static final String COLUMN_SECTION = "SECTION";
-	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
+	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";	
+	public static final String FIELD_LOCALITY_IDENTIFIER = "localityIdentifier";
 	
 	public static final String TABLE_NAME = "VM_APP_UNITE_ADMINISTRATIVE";	
+	
+	public static final String COLUMN_SECTION = "SECTION";	
+	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
+	public static final String COLUMN_LOCALITY = "LOCALITE";
+	public static final String COLUMN_LOCALITY_CODE_NAME = "LOCALITE_CODE_LIBELLE";
 }

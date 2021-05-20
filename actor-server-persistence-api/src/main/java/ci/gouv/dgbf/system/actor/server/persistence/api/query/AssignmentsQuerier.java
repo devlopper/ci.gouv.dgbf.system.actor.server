@@ -64,6 +64,10 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_EXPENDITURE_NATURE_IDENTIFIER = "expenditureNatureIdentifier";
 	String PARAMETER_NAME_EXPENDITURE_NATURE_CODE = "expenditureNatureCode";
 	
+	String PARAMETER_NAME_REGION_IDENTIFIER = "regionIdentifier";
+	String PARAMETER_NAME_DEPARTMENT_IDENTIFIER = "departmentIdentifier";
+	String PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER = "subPrefectureIdentifier";
+	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER = "creditManagerHolder";
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER = "creditManagerHolderIdentifier";
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_CREDIT_MANAGER_HOLDER, null, Boolean.TRUE);	

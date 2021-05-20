@@ -67,6 +67,10 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE) private String expenditureNatureCode;
 	@Column(name = COLUMN_EXPENDITURE_NATURE_CODE_NAME) private String expenditureNatureCodeName;
 	
+	@Column(name = COLUMN_REGION_IDENTIFIER) private String regionIdentifier;
+	@Column(name = COLUMN_DEPARTMENT_IDENTIFIER) private String departmentIdentifier;
+	@Column(name = COLUMN_SUB_PREFECTURE_IDENTIFIER) private String subPrefectureIdentifier;
+	
 	@Override
 	public AbstractImputation setIdentifier(String identifier) {
 		return (AbstractImputation) super.setIdentifier(identifier);
@@ -189,4 +193,8 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	public static final String COLUMN_EXPENDITURE_NATURE_IDENTIFIER = "ND_IDENTIFIANT";
 	public static final String COLUMN_EXPENDITURE_NATURE_CODE = "ND_CODE";
 	public static final String COLUMN_EXPENDITURE_NATURE_CODE_NAME = "ND_CODE_LIBELLE";
+	
+	public static final String COLUMN_REGION_IDENTIFIER = "REGION_IDENTIFIANT";
+	public static final String COLUMN_DEPARTMENT_IDENTIFIER = "DEPARTEMENT_IDENTIFIANT";
+	public static final String COLUMN_SUB_PREFECTURE_IDENTIFIER = "SOUS_PREFECTURE_IDENTIFIANT";
 }
