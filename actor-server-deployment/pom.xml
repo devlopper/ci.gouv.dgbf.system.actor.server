@@ -30,8 +30,8 @@
 		<cyk.variable.system.uri.context>/api</cyk.variable.system.uri.context>
 		
 		<!-- Development -->
-		<data.source.oracle.dev.user>SIIBC_Actor</data.source.oracle.dev.user>
-		<data.source.oracle.dev.password>actor</data.source.oracle.dev.password>
+		<data.source.oracle.dev.user>SIIBC_Acteur</data.source.oracle.dev.user>
+		<data.source.oracle.dev.password>acteur</data.source.oracle.dev.password>
 		<security.single.sign.on.system.keycloak.dev.url>http://localhost:8230/auth</security.single.sign.on.system.keycloak.dev.url>
 		<security.single.sign.on.system.keycloak.dev.realm.name>SIIB</security.single.sign.on.system.keycloak.dev.realm.name>
 		<security.single.sign.on.system.keycloak.dev.client.identifier>admin-cli</security.single.sign.on.system.keycloak.dev.client.identifier>
@@ -206,8 +206,8 @@
 		                            <failIfNoTests>true</failIfNoTests>
 		                            <environmentVariables>
 		                            	<ORACLE_DATASOURCE>actor/server</ORACLE_DATASOURCE>
-		                            	<ORACLE_USER>SIIBC_Actor</ORACLE_USER>
-		                            	<ORACLE_PASSWORD>actor</ORACLE_PASSWORD>
+		                            	<ORACLE_USER>SIIBC_Acteur</ORACLE_USER>
+		                            	<ORACLE_PASSWORD>acteur</ORACLE_PASSWORD>
 		                            	<ORACLE_URL>jdbc:oracle:thin:@localhost:1521:XE</ORACLE_URL>
 		                            </environmentVariables>
 		                            <systemPropertyVariables>

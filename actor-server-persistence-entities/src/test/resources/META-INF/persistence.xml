@@ -158,8 +158,8 @@
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver" />
 		    <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521:xe" />
-		   	<property name="javax.persistence.jdbc.user" value="SIIBC_Actor" />
-		  	<property name="javax.persistence.jdbc.password" value="actor" />
+		   	<property name="javax.persistence.jdbc.user" value="SIIBC_Acteur" />
+		  	<property name="javax.persistence.jdbc.password" value="acteur" />
 		  	<property name="hibernate.hbm2ddl.auto" value="validate" />
 		  	<property name="hibernate.show_sql" value = "false" />
 			<property name="hibernate.format_sql" value="false" />
