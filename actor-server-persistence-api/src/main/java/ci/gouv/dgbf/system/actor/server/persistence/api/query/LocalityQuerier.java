@@ -74,7 +74,10 @@ public interface LocalityQuerier extends Querier.CodableAndNamable<Locality> {
 		public Locality readByIdentifierWithCodesNamesForUI(String identifier,Locality.Type type) {
 			Locality locality = DynamicOneExecutor.getInstance().read(Locality.class, new QueryExecutorArguments().addProjectionsFromStrings(Locality.FIELD_IDENTIFIER
 					,Locality.FIELD_CODE,Locality.FIELD_NAME,Locality.FIELD_REGION_IDENTIFIER,Locality.FIELD_REGION_CODE_NAME
-					,Locality.FIELD_DEPARTMENT_IDENTIFIER,Locality.FIELD_DEPARTMENT_CODE_NAME).addFilterFieldsValues(LocalityQuerier.PARAMETER_NAME_IDENTIFIER,identifier));
+					,Locality.FIELD_DEPARTMENT_IDENTIFIER,Locality.FIELD_DEPARTMENT_CODE_NAME).addFilterFieldsValues(LocalityQuerier.PARAMETER_NAME_IDENTIFIER,identifier
+							,LocalityQuerier.PARAMETER_NAME_TYPE,type));
+			if(locality == null)
+				return null;
 			if(StringHelper.isNotBlank(locality.getRegionIdentifier()))
 				locality.setRegion(new Locality().setIdentifier(locality.getRegionIdentifier()).setCode(StringUtils.substringBefore(locality.getRegionCodeName(), " "))
 					.setName(StringUtils.substringAfter(locality.getRegionCodeName(), " ")));

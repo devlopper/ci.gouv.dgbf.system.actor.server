@@ -15,12 +15,14 @@ import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.server.TransientFieldsProcessorImpl {
@@ -33,11 +35,23 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processRequests(CollectionHelper.cast(Request.class, objects),fieldsNames);
 		else if(Assignments.class.equals(klass))
 			processAssignments(CollectionHelper.cast(Assignments.class, objects),fieldsNames);
+		else if(AdministrativeUnit.class.equals(klass))
+			processAdministrativeUnits(CollectionHelper.cast(AdministrativeUnit.class, objects),fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
 	}
 	
 	/**/
+	
+	public void processAdministrativeUnits(Collection<AdministrativeUnit> administrativeUnits,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(AdministrativeUnit.FIELD_SUB_PREFECTURE_DEPARTMENT_REGION.equals(fieldName)) {
+				AdministrativeUnitLocalitiesNativeReader administrativeUnitLocalitiesNativeReader = new AdministrativeUnitLocalitiesNativeReader();
+				Collection<Object[]> arrays = administrativeUnitLocalitiesNativeReader.read(administrativeUnits, null);
+				administrativeUnitLocalitiesNativeReader.set(administrativeUnits, arrays);
+			}
+		}
+	}
 	
 	public void processAssignments(Collection<Assignments> assignmentsCollection,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {

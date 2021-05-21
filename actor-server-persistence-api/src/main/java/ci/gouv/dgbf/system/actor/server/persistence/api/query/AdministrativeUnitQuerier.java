@@ -4,22 +4,22 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -101,9 +101,16 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		
 		@Override
 		public AdministrativeUnit readByIdentifierWithCodesNamesForUI(String identifier) {
-			AdministrativeUnit administrativeUnit = QueryExecutor.getInstance().executeReadOne(AdministrativeUnit.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
+			AdministrativeUnit administrativeUnit = DynamicOneExecutor.getInstance().read(AdministrativeUnit.class, new QueryExecutorArguments()
+					.addProjectionsFromStrings(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME
+							,AdministrativeUnit.FIELD_SECTION_IDENTIFIER,AdministrativeUnit.FIELD_SECTION_CODE_NAME)
+					.addProcessableTransientFieldsNames(AdministrativeUnit.FIELD_SUB_PREFECTURE_DEPARTMENT_REGION)
 					.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
-			administrativeUnit.setSection(new Section().setIdentifier(administrativeUnit.getSectionIdentifier()).setCode(StringUtils.substringBefore(administrativeUnit.getSectionCodeName(), " ")).setName(StringUtils.substringAfter(administrativeUnit.getSectionCodeName(), " ")));
+			if(administrativeUnit == null)
+				return null;
+			//QueryExecutor.getInstance().executeReadOne(AdministrativeUnit.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI)
+			//		.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
+			administrativeUnit.setSection(Section.instantiateFromIdentifierCodeName(Section.class,administrativeUnit.getSectionIdentifier(),administrativeUnit.getSectionCodeName()));
 			return administrativeUnit;
 		}
 		
@@ -208,8 +215,11 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 					, "SELECT t.identifier,t.code,t.name FROM AdministrativeUnit t WHERE t.section.identifier IN :"+PARAMETER_NAME_SECTIONS_IDENTIFIERS+" ORDER BY t.code ASC")
 				.setTupleFieldsNamesIndexesFromFieldsNames(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)
 			
-			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
+			/*,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI
 					, "SELECT t.identifier,t.code,t.name"
+							+ ",s.identifier,t.sectionCodeName"
+							+ ",s.identifier,t.sectionCodeName"
+							+ ",s.identifier,t.sectionCodeName"
 							+ ",s.identifier,t.sectionCodeName"
 							+ " FROM AdministrativeUnit t "
 							+ "LEFT JOIN Section s ON s = t.section "
@@ -217,7 +227,10 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 				.setTupleFieldsNamesIndexesFromFieldsNames(
 						AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME
 						,AdministrativeUnit.FIELD_SECTION_IDENTIFIER,AdministrativeUnit.FIELD_SECTION_CODE_NAME
-						)	
+						,AdministrativeUnit.FIELD_SUB_PREFECTURE_IDENTIFIER,AdministrativeUnit.FIELD_SUB_PREFECTURE_CODE_NAME
+						,AdministrativeUnit.FIELD_DEPARTMENT_IDENTIFIER,AdministrativeUnit.FIELD_DEPARTMENT_CODE_NAME
+						,AdministrativeUnit.FIELD_REGION_IDENTIFIER,AdministrativeUnit.FIELD_REGION_CODE_NAME
+						)*/	
 		);
 	}
 }

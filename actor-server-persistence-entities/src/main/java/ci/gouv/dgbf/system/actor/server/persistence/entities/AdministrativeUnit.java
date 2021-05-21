@@ -29,14 +29,16 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@Column(name = COLUMN_SECTION_IDENTIFIER) private String sectionIdentifier;
 	@Column(name= COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
 	@Transient private String sectionAsString;
-	@Transient private String sectionIdentifier;
+	//@Transient private String sectionIdentifier;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
-	@Column(name= COLUMN_LOCALITY_CODE_NAME) private String localityCodeName;
-	@Transient private Locality localityRegion;
-	@Transient private Locality localityDepartment;
+	
+	@Transient private Locality subPrefecture;
+	@Transient private Locality region;
+	@Transient private Locality department;
 	
 	@Override
 	public AdministrativeUnit setIdentifier(String identifier) {
@@ -70,12 +72,28 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";	
-	public static final String FIELD_LOCALITY_IDENTIFIER = "localityIdentifier";
+	public static final String FIELD_LOCALITY = "locality";
+	
+	public static final String FIELD_SUB_PREFECTURE_DEPARTMENT_REGION = "subPrefectureDepartmentRegion";
 	
 	public static final String TABLE_NAME = "VM_APP_UNITE_ADMINISTRATIVE";	
+	public static final String VIEW_NAME = "VA_UNITE_ADMINISTRATIVE";
 	
-	public static final String COLUMN_SECTION = "SECTION";	
+	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
+	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_SECTION_IDENTIFIER = "SECTION_IDENTIFIANT";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
+	
 	public static final String COLUMN_LOCALITY = "LOCALITE";
-	public static final String COLUMN_LOCALITY_CODE_NAME = "LOCALITE_CODE_LIBELLE";
+	
+	/* View */
+	
+	public static final String COLUMN_SUB_PREFECTURE_IDENTIFIER = "SOUS_PREFECTURE_IDENTIFIANT";
+	public static final String COLUMN_SUB_PREFECTURE_CODE_NAME = "SOUS_PREFECTURE_CODE_LIBELLE";
+	
+	public static final String COLUMN_DEPARTMENT_IDENTIFIER = "DEPARTEMENT_IDENTIFIANT";
+	public static final String COLUMN_DEPARTMENT_CODE_NAME = "DEPARTEMENT_CODE_LIBELLE";
+	
+	public static final String COLUMN_REGION_IDENTIFIER = "REGION_IDENTIFIANT";
+	public static final String COLUMN_REGION_CODE_NAME = "REGION_CODE_LIBELLE";
 }
