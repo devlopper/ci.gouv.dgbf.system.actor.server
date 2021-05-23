@@ -145,6 +145,9 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 				,PARAMETER_NAME_ALL_HOLDERS_DEFINED
 				,PARAMETER_NAME_SOME_HOLDERS_NOT_DEFINED
 				
+				,PARAMETER_NAME_REGION_IDENTIFIER
+				,PARAMETER_NAME_DEPARTMENT_IDENTIFIER
+				,PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER
 				);
 		
 		prepareWhereFilter(filter, arguments);
@@ -160,6 +163,8 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+		
+		filter.addFieldsEquals(arguments, PARAMETER_NAME_REGION_IDENTIFIER,PARAMETER_NAME_DEPARTMENT_IDENTIFIER,PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER);
 		
 		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_CREDIT_MANAGER_HOLDER);
 		prepareWhereFilterAddScopeFunctionFieldContainsStringOrWords(arguments, filter, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER);

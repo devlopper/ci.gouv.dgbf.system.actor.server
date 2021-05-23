@@ -65,8 +65,11 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_EXPENDITURE_NATURE_CODE = "expenditureNatureCode";
 	
 	String PARAMETER_NAME_REGION_IDENTIFIER = "regionIdentifier";
+	String PARAMETER_NAME_REGION_IDENTIFIER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_REGION_IDENTIFIER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_DEPARTMENT_IDENTIFIER = "departmentIdentifier";
+	String PARAMETER_NAME_DEPARTMENT_IDENTIFIER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_DEPARTMENT_IDENTIFIER, null, Boolean.TRUE);	
 	String PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER = "subPrefectureIdentifier";
+	String PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER_NULLABLE = ParameterNameBuilder.getInstance().build(PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER, null, Boolean.TRUE);	
 	
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER = "creditManagerHolder";
 	String PARAMETER_NAME_CREDIT_MANAGER_HOLDER_IDENTIFIER = "creditManagerHolderIdentifier";
@@ -308,6 +311,10 @@ public interface AssignmentsQuerier extends Querier {
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE_NAME, PARAMETER_NAME_ADMINISTRATIVE_UNIT, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE_NAME, PARAMETER_NAME_ACTIVITY_CATEGORY, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 			,like("t."+Assignments.FIELD_EXECUTION_IMPUTATION, ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE_NAME, PARAMETER_NAME_EXPENDITURE_NATURE, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+			
+			,parenthesis(or(isNullable(PARAMETER_NAME_REGION_IDENTIFIER_NULLABLE),"t.executionImputation.regionIdentifier = :regionIdentifier"))
+			,parenthesis(or(isNullable(PARAMETER_NAME_DEPARTMENT_IDENTIFIER_NULLABLE),"t.executionImputation.departmentIdentifier = :departmentIdentifier"))
+			,parenthesis(or(isNullable(PARAMETER_NAME_SUB_PREFECTURE_IDENTIFIER_NULLABLE),"t.executionImputation.subPrefectureIdentifier = :subPrefectureIdentifier"))
 			
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_CREDIT_MANAGER_HOLDER, PARAMETER_NAME_CREDIT_MANAGER_HOLDER)
 			,getReadWhereFilterScopeFunctionPredicate(Assignments.COLUMN_AUTHORIZING_OFFICER_HOLDER, PARAMETER_NAME_AUTHORIZING_OFFICER_HOLDER)

@@ -26,6 +26,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessEntity;
 
@@ -530,7 +531,15 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	private void setAssistants(Collection<Assignments> collection, Collection<String> overridablesHoldersFieldsNames) {
 		if(CollectionHelper.isEmpty(collection))
 			return;
-		Collection<Assignments> database = __persistence__.readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(collection));
+		//Collection<Assignments> database = __persistence__.readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(collection));
+		
+		Collection<Assignments> database = new ReaderByCollection.AbstractImpl<String, Assignments>() {
+			@Override
+			protected Collection<Assignments> __read__(Collection<String> identifiers) {
+				return __persistence__.readBySystemIdentifiers(CollectionHelper.cast(Object.class,identifiers));
+			}			
+		}.read(FieldHelper.readSystemIdentifiersAsStrings(collection));
+		
 		collection.forEach(x -> {
 			Assignments origin = CollectionHelper.isEmpty(database) ? null 
 					: CollectionHelper.getFirst(database.stream().filter(y -> y.getIdentifier().equals(x.getIdentifier())).collect(Collectors.toList()));
