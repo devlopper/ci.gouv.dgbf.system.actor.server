@@ -128,7 +128,7 @@ public class ServiceBusinessImpl extends AbstractBusinessEntityImpl<Service, Ser
 				.map(menu -> Resource.build(menu.getName(),menu.getUniformResourceIdentifier()))
 				.collect(Collectors.toList());
 			if(CollectionHelper.isEmpty(resources))
-				return null;
+				continue;			
 			resources.add(new Resource().setName(getRootName(service)).setUniformResourceIdentifiers(List.of(getRootUrl(service))));
 			count = NumberHelper.getInteger(NumberHelper.add(count,ClientManager.getInstance().createAuthorizationResources(List.of(service.getCode()), resources)));
 		}

@@ -51,5 +51,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		DependencyInjection.setQualifierClass(MailSender.class, org.cyk.utility.mail.postmark.Postmark.class);
 		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOGGABLE = Boolean.TRUE;
 		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
+		//ClientManager.AbstractImpl.LOGGING_LEVEL = Level.INFO;
 	}
 }

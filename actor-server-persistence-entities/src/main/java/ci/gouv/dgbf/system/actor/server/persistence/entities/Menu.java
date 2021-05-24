@@ -44,6 +44,11 @@ public class Menu extends AbstractIdentifiableSystemScalarStringIdentifiableBusi
 		return (Menu) super.setIdentifier(identifier);
 	}
 	
+	@Override
+	public String toString() {
+		return name+" - "+uniformResourceIdentifier;
+	}
+	
 	public static final String FIELD_MODULE_AS_STRING = "moduleAsString";
 	public static final String FIELD_MODULE_CODE_NAME = "moduleCodeName";
 	public static final String FIELD_SERVICE = "service";

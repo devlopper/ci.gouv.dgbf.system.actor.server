@@ -246,25 +246,15 @@ ALTER TABLE VM_APP_SERVICE ADD CONSTRAINT VM_APP_SERVICE_PK PRIMARY KEY (IDENTIF
 -- Menu
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_MENU;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_MENU
-REFRESH ON COMMIT 
-COMPLETE
-AS
-SELECT
-    'MENU'||t.id AS "IDENTIFIANT"
-    ,t.code AS "CODE"
-    ,t.name AS "LIBELLE"
-    ,t.url AS "URL"
-    ,'SERVICE'||t.id_service AS "SERVICE"
-    ,s.code||' '||s.name AS "SERVICE_CODE_LIBELLE"
-    ,m.code||' '||m.name AS "MODULE_CODE_LIBELLE"
+REFRESH ON COMMIT COMPLETE AS
+SELECT 'MENU'||t.id AS "IDENTIFIANT",t.code AS "CODE",t.name AS "LIBELLE",t.url AS "URL"
+    ,'SERVICE'||t.id_service AS "SERVICE",s.code||' '||s.name AS "SERVICE_CODE_LIBELLE",m.code||' '||m.name AS "MODULE_CODE_LIBELLE"
     --,CASE WHEN t.menuparent_id IS NULL THEN 'SERVICE'||t.id_service ELSE 'MENU'||t.menuparent_id END AS "PARENT"
-FROM
-    PRT.msvc_menu t,PRT.msvc_service s,PRT.msvc_module m
-WHERE
-    t.id_service = s.id AND s.id_module = m.id AND t.abstrait = 0;
+FROM PRT.msvc_menu t,PRT.msvc_service s,PRT.msvc_module m
+WHERE t.id_service = s.id AND s.id_module = m.id AND t.abstrait = 0;
 ALTER TABLE VM_APP_MENU ADD CONSTRAINT VM_APP_MENU_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_MENU ADD CONSTRAINT VM_APP_MENU_UK_CODE UNIQUE (CODE);
--- Privil�ge
+-- Privilége
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_PRIVILEGE;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_PRIVILEGE
 --REFRESH ON COMMIT 
