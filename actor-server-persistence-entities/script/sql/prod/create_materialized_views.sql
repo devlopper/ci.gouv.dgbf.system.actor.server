@@ -375,8 +375,8 @@ SELECT
     ,ld.etat
     ,ld.date_etat
 FROM
-    MEATEST.ligne_de_depenses ld
-    --ligne_de_depenses@dblink_elabo_bidf ld
+    --MEATEST.ligne_de_depenses ld
+    ligne_de_depenses@dblink_elabo_bidf ld
     ,CPP.categorie_budget cb
     ,ADS.activite_de_service adp
     ,NEC.nature_economique nec
