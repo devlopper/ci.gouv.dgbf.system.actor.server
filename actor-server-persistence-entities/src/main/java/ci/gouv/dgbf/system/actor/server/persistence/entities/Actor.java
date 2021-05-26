@@ -133,6 +133,23 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 			setIdentity(EntityFinder.getInstance().find(Identity.class, identifier));
 		return this;
 	}
+	
+	public Actor setCivilityFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setCivility(null);
+		else
+			setCivility(EntityFinder.getInstance().find(Civility.class, identifier));
+		return this;
+	}
+	
+	public Actor setGroupFromIdentifier(String identifier) {
+		if(StringHelper.isBlank(identifier))
+			setGroup(null);
+		else
+			setGroup(EntityFinder.getInstance().find(IdentityGroup.class, identifier));
+		return this;
+	}
+	
 	/*
 	public static void setKeycloakUsers(Collection<Actor> actors,Collection<User> users) {
 		if(CollectionHelper.isEmpty(actors) || CollectionHelper.isEmpty(users))
