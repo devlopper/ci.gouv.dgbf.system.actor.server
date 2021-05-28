@@ -78,10 +78,19 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 	}
 	
 	@Test
-	public void scopeFunctionPersistence_computeAuthorizingOfficerHolderName(){
+	public void scopeFunctionPersistence_computeAuthorizingOfficerHolderName_delegue_administrationGenerale(){
+		assertThat(__inject__(ScopeFunctionPersistence.class).computeAuthorizingOfficerHolderName("USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3",null))
+		.isEqualTo("Ordonnateur délégué du Programme Administration générale du Sénat");
+	}
+	
+	@Test
+	public void scopeFunctionPersistence_computeAuthorizingOfficerHolderName_delegue(){
 		assertThat(__inject__(ScopeFunctionPersistence.class).computeAuthorizingOfficerHolderName("USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2",null))
 		.isEqualTo("Ordonnateur délégué du Programme Budget");
-		
+	}
+	
+	@Test
+	public void scopeFunctionPersistence_computeAuthorizingOfficerHolderName_secondaire(){
 		assertThat(__inject__(ScopeFunctionPersistence.class).computeAuthorizingOfficerHolderName("USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2", "DIMBOKRO"))
 			.isEqualTo("Ordonnateur secondaire du Programme Budget a Dimbokro");
 	}
@@ -106,13 +115,5 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, arguments);
 		assertThat(scopeFunctions).isNotEmpty();
 		assertThat(FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions)).containsExactly("O3001","O402500","O502501");
-	}
-	
-	/**/
-	
-	private void assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith(String string,String expectedCode) {
-		ScopeFunction scopeFunction = ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(string);
-		assertThat(scopeFunction).as("No scope function starting with "+string+" not found").isNotNull();
-		assertThat(scopeFunction.getCode()).as(scopeFunction.getCode()+" is not equal to "+expectedCode).isEqualTo(expectedCode);
 	}
 }

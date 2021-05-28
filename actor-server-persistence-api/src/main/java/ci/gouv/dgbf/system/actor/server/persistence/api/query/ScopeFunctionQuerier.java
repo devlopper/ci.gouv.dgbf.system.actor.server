@@ -144,6 +144,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	Integer readMaxOrderNumberByFunctionCode(String functionCode);
 	ScopeFunction readMaxCodeWhereCodeStartsWith(String string);
+	ScopeFunction readMaxCodeUsingSubstringWhereCodeStartsWith(String string);
 	Integer readMaxDocumentNumberByFunctionCode(String functionCode);
 	
 	Collection<Object[]> readFromViewByCodes(Collection<String> codes);

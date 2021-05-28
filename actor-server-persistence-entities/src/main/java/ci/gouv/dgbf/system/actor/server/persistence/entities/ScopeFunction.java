@@ -396,6 +396,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CATEGORY_CODE_O3 = "O3";
 	public static final String CATEGORY_NAME_O3 = "Ordonnateur secondaire";
 	
+	public static final String CATEGORY_CODE_O9 = "O9";
+	public static final String CATEGORY_NAME_O9 = "Ordonnateur autres Dépenses Centralisées";
+	
 	public static final String CATEGORY_CODE_C2 = "C2";
 	public static final String CATEGORY_NAME_C2 = "Contrôleur financier régional";
 	
@@ -559,9 +562,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 				scope = scriptDto.usb;	
 			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_UA))
 				scope = scriptDto.ua;
-			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_ORD))
+			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_ORD)) {
 				scope = scriptDto.service_ord;
-			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_CF))
+			}else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_CF))
 				scope = scriptDto.service_cf;
 			else if(scopeFunction.getScope().getType().getCode().equals(ScopeType.CODE_SERVICE_CPT))
 				scope = scriptDto.service_cpt;
@@ -606,6 +609,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 				scriptDto.activite.code = scopeFunction.activityIdentifier;
 				scriptDto.activite.libelle = scopeFunction.activityIdentifier;
 			}
+			
 			return scriptDto;
 		}
 		

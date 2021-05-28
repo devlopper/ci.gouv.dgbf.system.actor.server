@@ -27,6 +27,10 @@ public class ScopeFunctionRepresentationIT extends AbstractIT {
     @Test @InSequence(2)
     public void computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier() {
     	assertThat(__inject__(ScopeFunctionRepresentation.class).computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(
+    			"USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3", null).getEntity())
+    		.isEqualTo("Ordonnateur delegue du Programme Administration Générale du Sénat");
+    	
+    	assertThat(__inject__(ScopeFunctionRepresentation.class).computeAuthorizingOfficerHolderNameByBudgetSpecializationUnitIdentifierByLocalityIdentifier(
     			"USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2", null).getEntity())
     		.isEqualTo("Ordonnateur delegue du Programme Budget");
     	

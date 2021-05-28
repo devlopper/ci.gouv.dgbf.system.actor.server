@@ -15,12 +15,47 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class PersistenceUnitTestDev extends AbstractUnitTestLive {
+public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxOrderNumberByFunctionCode_GC(){
+		assert_scopeFunctionQuerier_readMaxOrderNumberByFunctionCode("GC", 8526);
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_G1(){
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G1", "G108526");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_G2(){
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G2", "G200751");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_G3(){
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("G3", "G301190");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxOrderNumberByFunctionCode_OD(){
+		assert_scopeFunctionQuerier_readMaxOrderNumberByFunctionCode("ORD", 2514);
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_O2(){
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("O2", "O202507");
+	}
+	
+	@Test
+	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_O3(){
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("O3", "O302514");
 	}
 	
 	@Test

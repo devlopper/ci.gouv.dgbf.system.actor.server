@@ -22,6 +22,7 @@ Insert into VM_APP_LOCALITE (IDENTIFIANT,CODE,LIBELLE) values ('DIMBOKRO','DIMBO
 Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('DTI','DTI','Direction des traitements informatiques','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
 
 Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','22086','Budget','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
+Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3','21086','Administration Générale','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
 
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('DTI','DTI','Direction des traitements informatiques','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('CFSECTION321','321','Côntroleur financier du Ministère des Affaires Etrangères','SERVICE_CF');
@@ -45,6 +46,7 @@ Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UA447f9d44-b
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UA68a6d9e7-420a-4bd9-9c01-12cfdad33fb9','13010223','Direction des Affaires Financières - MBPE','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UAb67353ea-ba5f-4aee-bf7a-bc736baa6329','13010695','Direction du Patrimoine de l''Etat (DPE Gestion des dépenses centralisées)','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','22086','Budget','USB');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3','21086','Administration Générale','USB');
 
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('GC','GC','Gestionnaire de credits','BUDGETAIRE',null);
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('AGC','AGC','Assistant gestionnaire de crédits','BUDGETAIRE',null);

@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
@@ -302,7 +303,10 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
 		Long count = ScopeFunctionQuerier.getInstance().countByFunctionsCodes(functionCode);
-		ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(codePrefix);
+		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(codePrefix);
+		String categoryType = StringUtils.substring(codePrefix,0,1);
+		ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeUsingSubstringWhereCodeStartsWith(categoryType);
+		
 		//Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
 		Integer orderNumber = scopeFunctionMax == null ? null : ScopeFunction.getOrderNumberFromCode(scopeFunctionMax.getCode());
 		if(orderNumber == null)

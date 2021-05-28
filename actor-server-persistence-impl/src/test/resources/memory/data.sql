@@ -40,6 +40,7 @@ Insert into VM_APP_LOCALITE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('7','r02','R
 Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('DTI','DTI','Direction des traitements informatiques','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
 
 Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','22086','Budget','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
+Insert into VM_APP_USB (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3','21087','Administration générale','SECTIONf72d49eb-16ac-43c0-a864-f816fb4d3ed5');
 
 Insert into SERVICE_ORD (IDENTIFIANT,CODE,LIBELLE,USB) values ('O3001','O3001','Budget Daloa','USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2');
 
@@ -65,6 +66,7 @@ Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UA447f9d44-b
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UA68a6d9e7-420a-4bd9-9c01-12cfdad33fb9','13010223','Direction des Affaires Financières - MBPE','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('UAb67353ea-ba5f-4aee-bf7a-bc736baa6329','13010695','Direction du Patrimoine de l''Etat (DPE Gestion des dépenses centralisées)','UA');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b2','22086','Budget','USB');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('USB7d152f5a-3bcb-4ba3-a107-b680b6a230b3','21087','Administration générale','USB');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('O3001','O3001','Budget Daloa','SERVICE_ORD');
 
 Insert into FONCTION (IDENTIFIANT,CODE,LIBELLE,TYPE,NOMBRE_ACTEUR_PAR_POSTE) values ('GC','GC','Gestionnaire de crédits','BUDGETAIRE',null);

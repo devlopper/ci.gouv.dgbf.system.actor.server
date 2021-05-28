@@ -46,13 +46,14 @@ public class ScopeFunctionPersistenceImpl extends AbstractPersistenceEntityImpl<
 	}
 	
 	@Override
-	public String computeAuthorizingOfficerHolderName(BudgetSpecializationUnit budgetSpecialisationUnit,Locality locality) {
-		if(budgetSpecialisationUnit == null)
+	public String computeAuthorizingOfficerHolderName(BudgetSpecializationUnit budgetSpecializationUnit,Locality locality) {
+		if(budgetSpecializationUnit == null)
 			return null;
 		ScopeTypeFunction scopeTypeFunction = ScopeTypeFunctionQuerier.getInstance().readByScopeTypeCodeByFunctionCode(ScopeType.CODE_SERVICE_ORD, Function.CODE_AUTHORIZING_OFFICER_HOLDER);
 		ScopeFunction scopeFunction = new ScopeFunction()
-				.setScope(EntityFinder.getInstance().find(Scope.class,budgetSpecialisationUnit.getIdentifier()))
+				.setScope(EntityFinder.getInstance().find(Scope.class,budgetSpecializationUnit.getIdentifier()))
 				.setFunction(CodeExecutor.getInstance().getOne(Function.class,Function.CODE_AUTHORIZING_OFFICER_HOLDER))
+				.setBudgetSpecializationUnit(budgetSpecializationUnit)
 				.setLocality(locality);
 		ScopeFunction.computeCodeAndName(ScopeType.CODE_SERVICE_ORD, List.of(scopeFunction), 0, 0, scopeTypeFunction.getScopeFunctionCodeScript()
 				, scopeTypeFunction.getScopeFunctionNameScript());
@@ -63,7 +64,8 @@ public class ScopeFunctionPersistenceImpl extends AbstractPersistenceEntityImpl<
 	public String computeAuthorizingOfficerHolderName(String budgetSpecialisationUnitIdentifier,String localityIdentifier) {
 		if(StringHelper.isBlank(budgetSpecialisationUnitIdentifier))
 			return null;
-		return computeAuthorizingOfficerHolderName(EntityFinder.getInstance().find(BudgetSpecializationUnit.class, budgetSpecialisationUnitIdentifier)
+		BudgetSpecializationUnit budgetSpecializationUnit = EntityFinder.getInstance().find(BudgetSpecializationUnit.class, budgetSpecialisationUnitIdentifier);
+		return computeAuthorizingOfficerHolderName(budgetSpecializationUnit
 				,StringHelper.isBlank(localityIdentifier) ? null : EntityFinder.getInstance().find(Locality.class, localityIdentifier));
 	}
 	

@@ -26,6 +26,7 @@ import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityUpdater;
+import org.cyk.utility.persistence.server.query.executor.field.GenericFieldExecutor;
 import org.cyk.utility.security.keycloak.server.KeycloakHelper;
 import org.cyk.utility.security.keycloak.server.User;
 import org.cyk.utility.security.keycloak.server.UserManager;
@@ -217,7 +218,10 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 		super.__listenExecuteCreateBefore__(actor, properties, function);
 		//we create identity first
 		actor.setCode(StringUtils.stripToNull(actor.getCode()));
-		actor.setElectronicMailAddress(StringUtils.stripToNull(actor.getElectronicMailAddress()));	
+		actor.setElectronicMailAddress(StringUtils.lowerCase(StringUtils.stripToNull(actor.getElectronicMailAddress())));
+		Identity identity = GenericFieldExecutor.getInstance().getOne(Identity.class, String.class, Identity.FIELD_ELECTRONIC_MAIL_ADDRESS, actor.getElectronicMailAddress());
+		if(identity != null)
+			throw new RuntimeException(String.format("Le mail %s est déja lié à un compte",actor.getElectronicMailAddress()));
 		
 		if(actor.getIdentity() == null)
 			actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));

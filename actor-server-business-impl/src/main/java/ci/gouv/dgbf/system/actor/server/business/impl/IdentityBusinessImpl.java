@@ -7,6 +7,7 @@ import java.time.ZoneId;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
@@ -21,6 +22,12 @@ public class IdentityBusinessImpl extends AbstractBusinessEntityImpl<Identity, I
 	public Identity createFromInterface(Identity.Interface identity) {
 		if(identity == null)
 			return null;
+		if(StringHelper.isBlank(identity.getFirstName()))
+			throw new RuntimeException("Le nom est obligatoire");
+		if(StringHelper.isBlank(identity.getLastNames()))
+			throw new RuntimeException("Le prénom est obligatoire");
+		if(StringHelper.isBlank(identity.getElectronicMailAddress()))
+			throw new RuntimeException("L'adresse de courriel est obligatoire");
 		Identity __identity__ = new Identity()
 				.setActOfAppointmentReference(identity.getActOfAppointmentReference())
 				.setActOfAppointmentSignatory(identity.getActOfAppointmentSignatory())
@@ -49,5 +56,4 @@ public class IdentityBusinessImpl extends AbstractBusinessEntityImpl<Identity, I
 		create(__identity__);
 		return __identity__;
 	}
-
 }
