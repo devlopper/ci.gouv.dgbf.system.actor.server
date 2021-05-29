@@ -397,7 +397,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CATEGORY_NAME_O3 = "Ordonnateur secondaire";
 	
 	public static final String CATEGORY_CODE_O9 = "O9";
-	public static final String CATEGORY_NAME_O9 = "Ordonnateur autres Dépenses Centralisées";
+	public static final String CATEGORY_NAME_O9 = "Autre ordonnateur délégué";
+	//public static final String CATEGORY_NAME_O9 = "Ordonnateur autres Dépenses Centralisées";
 	
 	public static final String CATEGORY_CODE_C2 = "C2";
 	public static final String CATEGORY_NAME_C2 = "Contrôleur financier régional";
