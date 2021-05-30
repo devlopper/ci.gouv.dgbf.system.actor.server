@@ -26,7 +26,7 @@ public abstract class AbstractUnitTestDevTestProdPerformance extends AbstractUni
 	
 	//@org.junit.jupiter.api.Test
 	public void assignmentsQuerier_readWhereFilterUsingIdentifiersOnly(){
-		Query query = QueryGetter.getInstance().get(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+		Query query = QueryGetter.getInstance().get(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
 		System.out.println(query.getValue());
 		for(Integer index = 0 ; index < 10 ; index = index + 1) {
 			QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
@@ -34,7 +34,7 @@ public abstract class AbstractUnitTestDevTestProdPerformance extends AbstractUni
 			queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
 			//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
 			queryExecutorArguments.setNumberOfTuples(20);
-			AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+			AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		}
 	}
 	
@@ -43,7 +43,7 @@ public abstract class AbstractUnitTestDevTestProdPerformance extends AbstractUni
 		//MetricsManager.getInstance().enable();
 		for(Integer index = 0 ; index < 10 ; index = index + 1) {
 			QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
-			queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+			queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
 			//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
 			//queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
 			//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));
@@ -60,7 +60,7 @@ public abstract class AbstractUnitTestDevTestProdPerformance extends AbstractUni
 	public void assignmentsQuerier_countWhereFilterUsingIdentifiersOnly_dynamic(){
 		for(Integer index = 0 ; index < 3 ; index = index + 1) {
 			QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
-			queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
+			queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC);
 			queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ALL_HOLDERS_DEFINED,Boolean.TRUE);
 			queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_CREDIT_MANAGER_HOLDER,"G100761");
 			//queryExecutorArguments.addFilterField(AssignmentsQuerier.PARAMETER_NAME_FUNCTIONS_CODES, List.of("GC"));

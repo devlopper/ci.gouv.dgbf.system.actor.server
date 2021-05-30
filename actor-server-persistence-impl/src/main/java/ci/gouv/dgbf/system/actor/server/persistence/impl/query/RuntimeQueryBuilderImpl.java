@@ -5,15 +5,17 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.query.RuntimeQueryBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl implements Serializable {
-
+	/*
 	@Override
 	protected Query instantiateQuery(QueryExecutorArguments queryExecutorArguments) {
 		Query query = super.instantiateQuery(queryExecutorArguments);
@@ -21,7 +23,28 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 			query.setTupleFieldsNamesIndexesFromFieldsNames(AssignmentsQueryStringReadWhereFilterBuilder.getTupleFieldsNamesIndexesFromFieldsNames());
 		return query;
 	}
+	*/
+	@Override
+	protected void setTupleFieldsNamesIndexesFromFieldsNames(QueryExecutorArguments arguments, Query query) {
+		if(arguments.getQuery().isIdentifierEqualsDynamic(Assignments.class,QueryName.READ_DYNAMIC,QueryName.READ_DYNAMIC_ONE)) {
+			if(Boolean.TRUE.equals(arguments.isFlagged(AssignmentsQuerier.FLAG_APPLY_MODEL))) {
+				
+			}else {
+				query.setIntermediateResultClass(Object[].class);
+				query.setTupleFieldsNamesIndexesFromFieldsNames(new String[] {
+						Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
+						,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING
+						,Assignments.FIELD_ECONOMIC_NATURE_AS_STRING,Assignments.FIELD_EXPENDITURE_NATURE_AS_STRING,Assignments.FIELD_ACTIVITY_CATEGORY_AS_STRING
+						,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
+						,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING});
+			}			
+		}else
+			super.setTupleFieldsNamesIndexesFromFieldsNames(arguments, query);
+	}
 	
+	/*
 	@Override
 	protected Boolean isBuildable(QueryExecutorArguments arguments) {
 		if(arguments != null && arguments.getQuery() != null && AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
@@ -30,7 +53,7 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 			return Boolean.TRUE;
 		return super.isBuildable(arguments);
 	}
-	
+	*/
 	@Override
 	protected void processQueryExecutorArguments(QueryExecutorArguments arguments) {
 		super.processQueryExecutorArguments(arguments);

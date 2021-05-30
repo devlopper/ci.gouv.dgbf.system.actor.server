@@ -641,16 +641,17 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		LogHelper.logInfo(String.format("Options d'écrasement : %s", overridablesFieldsNames), getClass());
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setFilter(filter);
-		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER);		
+		queryExecutorArguments.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC));		
 		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
 		Long t = System.currentTimeMillis();
-		Long numberOfExecutionImputations = AssignmentsQuerier.getInstance().countWhereFilter(queryExecutorArguments);
+		Long numberOfExecutionImputations = AssignmentsQuerier.getInstance().count(queryExecutorArguments);
 		LogHelper.logInfo(String.format("%s affectations à traiter compté en %s", numberOfExecutionImputations,TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 			return null;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / READ_BATCH_SIZE) + (numberOfExecutionImputations % READ_BATCH_SIZE == 0 ? 0 : 1);
 		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",READ_BATCH_SIZE,numberOfBatches), getClass());
-		queryExecutorArguments.setQueryFromIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER).setNumberOfTuples(READ_BATCH_SIZE);
+		queryExecutorArguments.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).addFlags(AssignmentsQuerier.FLAG_APPLY_MODEL)
+			.setNumberOfTuples(READ_BATCH_SIZE);
 		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
 			applyModel(model, overridablesFieldsNames,actorCode, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult);
 			//TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize
@@ -663,7 +664,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	
 	private void applyModel(Assignments model, Collection<String> overridablesFieldsNames,String actorCode,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
 		Long t = System.currentTimeMillis();
-		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterForApplyModel(queryExecutorArguments);	
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);	
 		LogHelper.logInfo(String.format("\tChargement de %s affectation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(collection))

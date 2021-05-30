@@ -189,6 +189,11 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	
 	public static final String FIELD___ALL__ = "__all__";
 	
+	public static final String FIELDS_ALL = "all";
+	public static final String FIELDS_ALL_STRINGS = "allStrings";
+	public static final String FIELDS_ALL_STRINGS_CODES_ONLY = "allStringsCodesOnly";
+	public static final String FIELDS_ALL_STRINGS_NAMES_ONLY_OR_CODES_ONLY = "allStringsNamesOnlyOrCodesOnly";
+	
 	public static final List<String> FIELDS_SCOPES_FUNCTIONS = List.of(
 			FIELD_CREDIT_MANAGER_HOLDER,FIELD_CREDIT_MANAGER_ASSISTANT
 			,FIELD_AUTHORIZING_OFFICER_HOLDER,FIELD_AUTHORIZING_OFFICER_ASSISTANT

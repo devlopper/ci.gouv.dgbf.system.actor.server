@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
@@ -25,37 +26,46 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
+	public void countDynamic(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC));
+		Long count = AssignmentsQuerier.getInstance().count(queryExecutorArguments);
+		assertThat(count).isGreaterThan(1l);
+	}
+	
+	@Test
 	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifier(){
-		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003");
-		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64320000","64323000");
 	}
 	
 	@Test
 	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifierAndEconomicNatureCode(){
-		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE,"64323000");
-		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
 	}
 	
 	@Test
 	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifierAndEconomicNature(){
-		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE,"64323000");
-		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
 		
-		queryExecutorArguments = new QueryExecutorArguments();
+		queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE,"64323");
-		collection = AssignmentsQuerier.getInstance().readWhereFilterUsingIdentifiersOnly(queryExecutorArguments);
+		collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
 	}

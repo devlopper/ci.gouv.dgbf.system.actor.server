@@ -178,11 +178,17 @@ public interface AssignmentsQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Assignments.class, "readNotFullyAssignedWhereFilterForUI");
 	Collection<Assignments> readNotFullyAssignedWhereFilterForUI(QueryExecutorArguments arguments);
-	
+	/*
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().build(Assignments.class,"readWhereFilterUsingIdentifiersOnly");
 	Collection<Assignments> readWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 	Long countWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments);
+	*/
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.READ_DYNAMIC);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.COUNT_DYNAMIC);
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.READ_DYNAMIC_ONE);
+	
+	String FLAG_APPLY_MODEL = "applyModel";
 	
 	Collection<Object[]> readAllPropertiesByIdentifiers(Collection<String> identifiers);
 	Collection<Object[]> readAllPropertiesByIdentifiers(String... identifiers);

@@ -13,13 +13,13 @@ import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
-import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 import org.cyk.utility.persistence.server.query.string.FromStringBuilder;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.SelectStringBuilder;
@@ -33,14 +33,16 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl implements Serializable {
 	
 	public static void initialize() {
-		QueryManager.getInstance().register(
+		/*QueryManager.getInstance().register(
 				Query.buildDynamicSelect(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY, Assignments.class)
 				,Query.buildDynamicCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY)
-			);
+			);*/
 	}
 	
 	@Override
 	public Assignments readOne(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+			return DynamicOneExecutor.getInstance().read(Assignments.class,arguments.setQuery(null));
 		if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 			return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 		if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -50,10 +52,12 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	
 	@Override
 	public Collection<Assignments> readMany(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().read(Assignments.class,arguments.setQuery(null));
 		if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return readWhereFilter(arguments);
-		if(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
-			return readWhereFilterUsingIdentifiersOnly(arguments);
+		//if(QUERY_IDENTIFIER_READ_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
+		//	return readWhereFilterUsingIdentifiersOnly(arguments);
 		if(QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return readFullyAssignedWhereFilter(arguments);
 		if(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -75,10 +79,12 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	
 	@Override
 	public Long count(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().count(Assignments.class,arguments.setQuery(null));
 		if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return countWhereFilter(arguments);
-		if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
-			return countWhereFilterUsingIdentifiersOnly(arguments);
+		//if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY.equals(arguments.getQuery().getIdentifier()))
+		//	return countWhereFilterUsingIdentifiersOnly(arguments);
 		if(QUERY_IDENTIFIER_COUNT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return countFullyAssignedWhereFilter(arguments);
 		if(QUERY_IDENTIFIER_COUNT_NOT_FULLY_ASSIGNED_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -267,7 +273,7 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI);
 		return readNotFullyAssignedWhereFilter(arguments);
 	}
-	
+	/*
 	@Override
 	public Collection<Assignments> readWhereFilterUsingIdentifiersOnly(QueryExecutorArguments arguments) {
 		if(arguments == null)
@@ -284,7 +290,7 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 		if(arguments.getQuery() == null)
 			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_FILTER_USING_IDENTIFIERS_ONLY);
 		return QueryExecutor.getInstance().executeCount(arguments);
-	}
+	}*/
 	
 	@SuppressWarnings("unchecked")
 	@Override
