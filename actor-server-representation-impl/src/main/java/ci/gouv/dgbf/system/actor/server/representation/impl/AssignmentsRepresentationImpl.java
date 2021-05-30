@@ -7,21 +7,18 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
-import org.cyk.utility.__kernel__.runnable.Runner.Arguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.business.TransactionResult;
-import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -30,7 +27,7 @@ import ci.gouv.dgbf.system.actor.server.representation.api.AssignmentsRepresenta
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
 
 @ApplicationScoped
-public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityImpl<AssignmentsDto> implements AssignmentsRepresentation,Serializable {
+public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentationImpl<AssignmentsDto> implements AssignmentsRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -65,7 +62,6 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 
 	@Override
 	public Response applyModel(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames,String actorCode) {
-		TransactionResult[] transactionResult = {null};
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
@@ -90,18 +86,10 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, assignmentsDto);
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, assignmentsDto);
 						Filter filter = MappingHelper.getDestination(filterDto, Filter.class);
-						transactionResult[0] = __inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode);
+						TransactionResult transactionResult = __inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode);
+						setHeaders(responseBuilderArguments, transactionResult);
 					}
 				};
-			}
-			
-			@Override
-			public ResponseBuilder getResponseBuilderWhenThrowableIsNull(Arguments runnerArguments) {
-				ResponseBuilder builder = super.getResponseBuilderWhenThrowableIsNull(runnerArguments);
-				builder.header(Action.UPDATE.name(), transactionResult[0].getNumberOfUpdate());
-				System.out.println(
-						"AssignmentsRepresentationImpl.applyModel(...).new AbstractImpl() {...}.getResponseBuilderWhenThrowableIsNull() : "+transactionResult[0].getNumberOfUpdate());
-				return builder;
 			}
 		});
 	}
@@ -109,21 +97,6 @@ public class AssignmentsRepresentationImpl extends AbstractRepresentationEntityI
 	@Override
 	public Response applyModel(AssignmentsDto assignmentsDto,String actorCode) {
 		return applyModel(assignmentsDto,assignmentsDto.getFilter(),assignmentsDto.getOverridablesFieldsNames(),actorCode);
-	}
-	
-	@Override
-	public Response deleteAll() {
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
-			@Override
-			public Runnable getRunnable() {
-				return new Runnable() {					
-					@Override
-					public void run() {
-						__inject__(AssignmentsBusiness.class).deleteAll();
-					}
-				};
-			}
-		});
 	}
 	
 	@Override

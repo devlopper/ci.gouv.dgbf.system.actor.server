@@ -9,18 +9,17 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.instance.InstanceCopier;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.runnable.Runner.Arguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.report.ReportRepresentation;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
@@ -151,11 +150,12 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 						}
 						__inject__(RequestBusiness.class).initialize(request);
 						arguments.setResult(request);
+						responseBuilderArguments.setHeader(Request.FIELD_IDENTIFIER, request.getIdentifier());
 					}
 				};
 			}
 			
-			@Override
+			/*@Override
 			public ResponseBuilder getResponseBuilderWhenThrowableIsNull(Arguments runnerArguments) {
 				ResponseBuilder responseBuilder = super.getResponseBuilderWhenThrowableIsNull(runnerArguments);
 				if(getRunnerArguments() != null) {
@@ -165,7 +165,7 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 					}
 				}
 				return responseBuilder;
-			}
+			}*/
 		});
 	}
 	

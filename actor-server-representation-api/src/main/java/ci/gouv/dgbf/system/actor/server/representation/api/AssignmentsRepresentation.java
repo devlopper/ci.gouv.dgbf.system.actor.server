@@ -11,12 +11,12 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.server.representation.RepresentationEntity;
+import org.cyk.utility.representation.SpecificRepresentation;
 
 import ci.gouv.dgbf.system.actor.server.representation.entities.AssignmentsDto;
 
 @Path(AssignmentsRepresentation.PATH)
-public interface AssignmentsRepresentation extends RepresentationEntity<AssignmentsDto> {
+public interface AssignmentsRepresentation extends SpecificRepresentation<AssignmentsDto> {
 	
 	@POST
 	@Path(PATH_INITIALIZE)
@@ -98,7 +98,7 @@ public interface AssignmentsRepresentation extends RepresentationEntity<Assignme
 	String QUERY_PARAMETER_OVERRIDABLE = "ecraser";
 	String QUERY_PARAMETER_NAME_HOLDERS_SETTABLE = "titulaire";
 	String QUERY_PARAMETER_NAME_ASSISTANTS_SETTABLE = "assistant";
-	
+	String QUERY_PARAMETER_NAME_ACTOR = "acteur";
 	
 	static AssignmentsRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(AssignmentsRepresentation.class);

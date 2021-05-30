@@ -5,14 +5,13 @@ import java.util.ArrayList;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner.Arguments;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.RequestDispatchSlipBusiness;
@@ -63,11 +62,12 @@ public class RequestDispatchSlipRepresentationImpl extends AbstractRepresentatio
 						}
 						__inject__(RequestDispatchSlipBusiness.class).record(requestDispatchSlip);
 						arguments.setResult(requestDispatchSlip);
+						responseBuilderArguments.setHeader(RequestDispatchSlip.FIELD_IDENTIFIER, requestDispatchSlip.getIdentifier());
 					}
 				};
 			}
 			
-			@Override
+			/*@Override
 			public ResponseBuilder getResponseBuilderWhenThrowableIsNull(Arguments runnerArguments) {
 				ResponseBuilder responseBuilder = super.getResponseBuilderWhenThrowableIsNull(runnerArguments);
 				if(getRunnerArguments() != null) {
@@ -77,7 +77,7 @@ public class RequestDispatchSlipRepresentationImpl extends AbstractRepresentatio
 					}
 				}
 				return responseBuilder;
-			}
+			}*/
 		});
 	}
 
