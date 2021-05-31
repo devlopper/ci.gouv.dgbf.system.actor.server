@@ -12,10 +12,8 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
-import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
-import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
@@ -62,13 +60,7 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 
 	@Override
 	public Response applyModel(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames,String actorCode) {
-		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
-			@Override
-			public Runner.Arguments getRunnerArguments() {
-				return runnerArguments;
-			}
-			
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {					
@@ -86,8 +78,8 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, assignmentsDto);
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, assignmentsDto);
 						Filter filter = MappingHelper.getDestination(filterDto, Filter.class);
-						TransactionResult transactionResult = __inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode);
-						setHeaders(responseBuilderArguments, transactionResult);
+						processTransactionResult(__inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode)
+								,responseBuilderArguments);
 					}
 				};
 			}

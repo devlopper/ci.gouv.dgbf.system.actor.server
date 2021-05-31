@@ -634,7 +634,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("model", model);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
-		TransactionResult transactionResult = new TransactionResult().setName("Application de modèle").setTupleName("Affectation");
+		TransactionResult transactionResult = new TransactionResult().setName("Application de modèle").setTupleName("Affectation").setIsTupleNameFeminine(Boolean.TRUE);
 		LogHelper.logInfo(String.format("Modèle d'écrasement : %s|%s|%s|%s", model.getCreditManagerHolder(),model.getAuthorizingOfficerHolder()
 				,model.getFinancialControllerHolder(),model.getAccountingHolder()), getClass());
 		LogHelper.logInfo(String.format("Filtre d'écrasement : %s", filter), getClass());
