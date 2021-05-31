@@ -30,7 +30,7 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 			if(Boolean.TRUE.equals(arguments.isFlagged(AssignmentsQuerier.FLAG_APPLY_MODEL))) {
 				
 			}else {
-				query.setIntermediateResultClass(Object[].class);
+				/*query.setIntermediateResultClass(Object[].class);
 				query.setTupleFieldsNamesIndexesFromFieldsNames(new String[] {
 						Assignments.FIELD_IDENTIFIER,Assignments.FIELD_SECTION_AS_STRING,Assignments.FIELD_ADMINISTRATIVE_UNIT_AS_STRING
 						,Assignments.FIELD_BUDGET_SPECIALIZATION_UNIT_AS_STRING,Assignments.FIELD_ACTION_AS_STRING,Assignments.FIELD_ACTIVITY_AS_STRING
@@ -39,6 +39,8 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 						,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER_AS_STRING,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT_AS_STRING
 						,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER_AS_STRING,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING
 						,Assignments.FIELD_ACCOUNTING_HOLDER_AS_STRING,Assignments.FIELD_ACCOUNTING_ASSISTANT_AS_STRING});
+				*/
+				super.setTupleFieldsNamesIndexesFromFieldsNames(arguments, query);
 			}			
 		}else
 			super.setTupleFieldsNamesIndexesFromFieldsNames(arguments, query);

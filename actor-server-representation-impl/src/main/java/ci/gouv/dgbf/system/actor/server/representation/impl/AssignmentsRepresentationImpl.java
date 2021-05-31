@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.mapping.MappingHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
@@ -63,9 +64,9 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
-				return new Runnable() {					
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){					
 					@Override
-					public void run() {
+					public TransactionResult transact() {
 						ThrowableHelper.throwIllegalArgumentExceptionIfNull("assignmentsDto", assignmentsDto);
 						ThrowableHelper.throwIllegalArgumentExceptionIfNull("filterDto", filterDto);
 						Assignments assignments = MappingHelper.getDestination(assignmentsDto, Assignments.class);
@@ -78,8 +79,7 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, assignmentsDto);
 						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, assignmentsDto);
 						Filter filter = MappingHelper.getDestination(filterDto, Filter.class);
-						processTransactionResult(__inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode)
-								,responseBuilderArguments);
+						return __inject__(AssignmentsBusiness.class).applyModel(assignments, filter, overridablesFieldsNames,actorCode);
 					}
 				};
 			}

@@ -190,6 +190,7 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.READ_DYNAMIC_ONE);
 	
 	String FLAG_APPLY_MODEL = "applyModel";
+	String FLAG_READ_HOLDERS = "readHolders";
 	
 	Collection<Object[]> readAllPropertiesByIdentifiers(Collection<String> identifiers);
 	Collection<Object[]> readAllPropertiesByIdentifiers(String... identifiers);

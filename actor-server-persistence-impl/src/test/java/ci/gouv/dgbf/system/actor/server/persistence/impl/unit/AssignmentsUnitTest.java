@@ -35,19 +35,49 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifier(){
+	public void readDynamic_filterByActivityIdentifier(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003");
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64320000","64323000");
+		collection.forEach(x -> assertThat(x.getCreditManagerHolder()).isNull());
+		collection.forEach(x -> assertThat(x.getCreditManagerHolderAsString()).isNotNull());
 	}
 	
 	@Test
-	public void readWhereFilterUsingIdentifiersOnly_filterByActivitiesIdentifiers(){
+	public void readDynamic_filterByActivityIdentifier_holdersAreNotNull(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY_WITHOUT_SCOPE_FUNCTIONS);
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_HOLDERS);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003");
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
+		assertThat(collection).isNotEmpty();
+		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64320000","64323000");
+		collection.forEach(x -> {
+			assertThat(x.getCreditManagerHolderAsString()).isNull();
+			assertThat(x.getCreditManagerHolder()).isNotNull();
+			assertThat(x.getCreditManagerAssistant()).isNull();
+			assertThat(x.getAuthorizingOfficerHolderAsString()).isNull();
+			assertThat(x.getAuthorizingOfficerHolder()).isNotNull();
+			assertThat(x.getAuthorizingOfficerAssistant()).isNull();
+			assertThat(x.getFinancialControllerHolderAsString()).isNull();
+			assertThat(x.getFinancialControllerHolder()).isNotNull();
+			assertThat(x.getFinancialControllerAssistant()).isNull();
+			assertThat(x.getAccountingHolderAsString()).isNull();
+			assertThat(x.getAccountingHolder()).isNotNull();
+			assertThat(x.getAccountingAssistant()).isNull();
+		});
+	}
+	
+	@Test
+	public void readDynamic_filterByActivitiesIdentifiers(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS,List.of("ACTIVITE13001010003"));
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
@@ -55,8 +85,9 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifierAndEconomicNatureCode(){
+	public void readDynamic_filterByActivityIdentifierAndEconomicNatureCode(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE_CODE,"64323000");
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
@@ -65,8 +96,9 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void readWhereFilterUsingIdentifiersOnly_filterByActivityIdentifierAndEconomicNature(){
+	public void readDynamic_filterByActivityIdentifierAndEconomicNature(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE,"64323000");
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
@@ -74,6 +106,7 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
 		
 		queryExecutorArguments = new QueryExecutorArguments().setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003"
 				,AssignmentsQuerier.PARAMETER_NAME_ECONOMIC_NATURE,"64323");
 		collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);

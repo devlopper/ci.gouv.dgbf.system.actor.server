@@ -21,7 +21,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.AbstractImpl implements Serializable {
@@ -33,6 +32,7 @@ public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.Abs
 			if(Boolean.TRUE.equals(arguments.isFlagged(AssignmentsQuerier.FLAG_APPLY_MODEL))) {
 				builderArguments.getProjection(Boolean.TRUE).add("t");
 			}else {
+				/*
 				builderArguments.getProjection(Boolean.TRUE)
 				.addFromTuple("t", Assignments.FIELD_IDENTIFIER)
 				.addFromTuple("i", ExecutionImputation.FIELD_SECTION_CODE
@@ -48,6 +48,8 @@ public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.Abs
 				.addFromTuple(Assignments.FIELD_ACCOUNTING_HOLDER, ScopeFunction.FIELD_CODE)
 				.addFromTuple(Assignments.FIELD_ACCOUNTING_ASSISTANT, ScopeFunction.FIELD_CODE)
 				;
+				*/
+				super.setProjection(arguments, builderArguments);
 			}
 			return;
 		}								
@@ -59,14 +61,14 @@ public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.Abs
 		super.setTuple(arguments, builderArguments);
 		if(arguments.getQuery().isIdentifierEqualsDynamic(Assignments.class)) {
 			builderArguments.getTuple(Boolean.TRUE).add("Assignments t");
-			builderArguments.getTuple(Boolean.TRUE).addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t").setTupleName("ExecutionImputation")
+			builderArguments.getTuple().addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments().setMasterVariableName("t").setTupleName("ExecutionImputation")
 					.setVariableName("i")));
 			
 			for(String fieldName : new String[] {Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_CREDIT_MANAGER_ASSISTANT
 					,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT
 					,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT
 					,Assignments.FIELD_ACCOUNTING_HOLDER,Assignments.FIELD_ACCOUNTING_ASSISTANT}) {
-				builderArguments.getTuple(Boolean.TRUE).addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
+				builderArguments.getTuple().addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
 						.setMasterVariableName("t").setMasterFieldName(fieldName).setTupleName("ScopeFunction")));
 			}
 		}		
