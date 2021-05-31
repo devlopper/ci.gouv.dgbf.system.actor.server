@@ -18,17 +18,19 @@ import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.ParameterNameBuilder;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language.Where;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.value.Value;
-import org.cyk.utility.persistence.ParameterNameBuilder;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
@@ -92,12 +94,18 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Activity.class, "readWhereFilterForUI");
 	Collection<Activity> readWhereFilterForUI(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Activity.class,QueryName.READ_DYNAMIC);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Activity.class,QueryName.COUNT_DYNAMIC);
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Activity.class,QueryName.READ_DYNAMIC_ONE);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Activity> implements ActivityQuerier,Serializable {
 		
 		@Override
 		public Activity readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(Activity.class,arguments.setQuery(null));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI))
 				return readByIdentifierForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER))
@@ -109,6 +117,8 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 		
 		@Override
 		public Collection<Activity> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(Activity.class,arguments.setQuery(null));
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return readWhereFilter(arguments);
 			if(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -137,6 +147,8 @@ public interface ActivityQuerier extends Querier.CodableAndNamable<Activity> {
 		
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(Activity.class,arguments.setQuery(null));
 			if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return countWhereFilter(arguments);
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER))

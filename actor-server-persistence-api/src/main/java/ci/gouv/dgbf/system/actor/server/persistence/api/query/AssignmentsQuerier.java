@@ -53,6 +53,7 @@ public interface AssignmentsQuerier extends Querier {
 	String PARAMETER_NAME_ACTION_CODE = "actionCode";
 	String PARAMETER_NAME_ACTIVITY = "activity";
 	String PARAMETER_NAME_ACTIVITY_IDENTIFIER = "activityIdentifier";
+	String PARAMETER_NAME_ACTIVITIES_IDENTIFIERS = "activitiesIdentifiers";
 	String PARAMETER_NAME_ACTIVITY_CODE = "activityCode";
 	String PARAMETER_NAME_ECONOMIC_NATURE = "economicNature";
 	String PARAMETER_NAME_ECONOMIC_NATURE_IDENTIFIER = "economicNatureIdentifier";

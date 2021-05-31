@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.persistence.query.Query;
@@ -38,6 +39,16 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITY_IDENTIFIER,"ACTIVITE13001010003");
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
+		assertThat(collection).isNotEmpty();
+		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64320000","64323000");
+	}
+	
+	@Test
+	public void readWhereFilterUsingIdentifiersOnly_filterByActivitiesIdentifiers(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS,List.of("ACTIVITE13001010003"));
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64320000","64323000");

@@ -90,6 +90,12 @@ public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.Abs
 					predicate.add(String.format("i.%1$s = :%1$s",parameterName));
 					filter.addFieldEquals(parameterName, arguments);
 				}
+			//	by identifiers			
+			if(Boolean.TRUE.equals(isQueryExecutorArgumentsFilterHasFieldsWithPaths(arguments,AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS))) {
+				predicate.add(String.format("i.activityIdentifier IN :%1$s",AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS));
+				filter.addField(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS, arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_ACTIVITIES_IDENTIFIERS));
+			}
+			
 			//	by code
 			for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_SECTION_CODE,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_CODE
 					,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_CODE,AssignmentsQuerier.PARAMETER_NAME_ACTION_CODE
