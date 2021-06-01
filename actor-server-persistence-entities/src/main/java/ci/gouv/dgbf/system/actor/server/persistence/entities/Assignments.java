@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -18,7 +19,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringAuditedImpl;
+import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -158,6 +163,25 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 		return this;
 	}
 	
+	public static Boolean isOneHolderHasChanged(Assignments assignments1,Assignments assignments2,Collection<String> fieldsNames) {
+		if(assignments1 == null || assignments2 == null || CollectionHelper.isEmpty(fieldsNames))
+			return Boolean.FALSE;
+		for(String fieldName : fieldsNames) {
+			if(StringHelper.isBlank(fieldName))
+				continue;
+			if(isOneHolderHasChanged(assignments1, assignments2, fieldName))
+				return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+	
+	private static Boolean isOneHolderHasChanged(Assignments assignments1,Assignments assignments2,String fieldName) {
+		if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual((ScopeFunction)FieldHelper.read(assignments1, fieldName)
+				, (ScopeFunction)FieldHelper.read(assignments2, fieldName))))
+			return Boolean.TRUE;
+		return Boolean.FALSE;
+	}
+	
 	/**/
 	
 	public static final String FIELD_EXECUTION_IMPUTATION = "executionImputation";
@@ -192,6 +216,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String FIELDS_ALL = "all";
 	public static final String FIELDS_ALL_STRINGS = "allStrings";
 	public static final String FIELDS_ALL_STRINGS_CODES_ONLY = "allStringsCodesOnly";
+	public static final String FIELDS_ALL_STRINGS_CODES_NAMES_WITH_ASSISTANTS = "allStringsCodesNamesWithAssistants";
 	public static final String FIELDS_ALL_STRINGS_CODES_ONLY_WITHOUT_SCOPE_FUNCTIONS = "allStringsCodesOnlyWithoutScopeFunctions";
 	public static final String FIELDS_ALL_STRINGS_NAMES_ONLY_OR_CODES_ONLY = "allStringsNamesOnlyOrCodesOnly";
 	

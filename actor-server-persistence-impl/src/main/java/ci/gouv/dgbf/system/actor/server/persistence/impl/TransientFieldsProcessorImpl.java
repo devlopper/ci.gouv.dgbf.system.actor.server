@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHoldersReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
 
@@ -84,6 +85,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				}
 			}else */if(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY.equals(fieldName))
 				new AssignmentsStringsCodesOnlyReader().readThenSet(assignmentsCollection, null);
+			else if(Assignments.FIELDS_ALL_STRINGS_CODES_NAMES_WITH_ASSISTANTS.equals(fieldName))
+				new AssignmentsStringsCodesNamesWithAssistantsReader().readThenSet(assignmentsCollection, null);
 			else if(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY_WITHOUT_SCOPE_FUNCTIONS.equals(fieldName))
 				new AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader().readThenSet(assignmentsCollection, null);
 			else if(Assignments.FIELDS_HOLDERS.equals(fieldName))

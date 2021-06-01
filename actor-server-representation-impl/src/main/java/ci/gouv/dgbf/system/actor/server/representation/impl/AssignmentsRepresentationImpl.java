@@ -64,7 +64,7 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
-				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){					
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
 						ThrowableHelper.throwIllegalArgumentExceptionIfNull("assignmentsDto", assignmentsDto);
@@ -96,9 +96,9 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
-				return new Runnable() {					
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
-					public void run() {
+					public TransactionResult transact() {
 						if(CollectionHelper.isEmpty(collection))
 							throw new RuntimeException("Les affectations sont obligatoire");
 						Collection<Assignments> assignmentsCollection = new ArrayList<>();
@@ -119,7 +119,7 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 						});
 						if(CollectionHelper.isEmpty(assignmentsCollection))
 							throw new RuntimeException("Les affectations sont obligatoire");
-						__inject__(AssignmentsBusiness.class).saveScopeFunctions(assignmentsCollection);
+						return __inject__(AssignmentsBusiness.class).saveScopeFunctions(assignmentsCollection);
 					}
 				};
 			}

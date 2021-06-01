@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -15,6 +16,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
+import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
@@ -22,11 +24,13 @@ import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessEntity;
 
@@ -54,6 +58,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE = 15000;
 	public static Integer DERIVE_VALUES_READ_BATCH_SIZE = 15000;
 	public static Integer READ_BATCH_SIZE = 10000;
+	public static Boolean EXPORT = Boolean.TRUE;
 	
 	//public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE = 25;
 	
@@ -507,28 +512,34 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return null;
 	}
 	
-	/**
-	 * Enregistre les modifications.
-	 */
 	@Transactional
 	@Override
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
+		return saveScopeFunctions(collection, null);
+	}
+	
+	/**
+	 * Enregistre les modifications.
+	 */
+	public static TransactionResult saveScopeFunctions(Collection<Assignments> collection,EntityManager entityManager) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
 		collection.forEach(x -> {
 			x.set__auditFunctionality__("Modification");	
 		});
 		setAssistants(collection,List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER
-				,Assignments.FIELD_ACCOUNTING_HOLDER));
-		EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection));
+				,Assignments.FIELD_ACCOUNTING_HOLDER),entityManager);
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments().setEntityManager(entityManager);
+		queryExecutorArguments.setObjects(CollectionHelper.cast(Object.class, collection));
+		EntityUpdater.getInstance().update(queryExecutorArguments);
 		transactionResult.setNumberOfUpdateFromSavables(collection);
-		transactionResult.log(getClass());
+		transactionResult.log(AssignmentsBusinessImpl.class);
 		String actorCode = collection.iterator().next().get__auditWho__();
 		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
 	
-	private void setAssistants(Collection<Assignments> collection, Collection<String> overridablesHoldersFieldsNames) {
+	private static void setAssistants(Collection<Assignments> collection, Collection<String> overridablesHoldersFieldsNames,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(collection))
 			return;
 		//Collection<Assignments> database = __persistence__.readBySystemIdentifiers(FieldHelper.readSystemIdentifiers(collection));
@@ -536,8 +547,8 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		Collection<Assignments> database = new ReaderByCollection.AbstractImpl<String, Assignments>() {
 			@Override
 			protected Collection<Assignments> __read__(Collection<String> identifiers) {
-				return __persistence__.readBySystemIdentifiers(CollectionHelper.cast(Object.class,identifiers));
-			}			
+				return EntityFinder.getInstance().findMany(Assignments.class, identifiers); //__persistence__.readBySystemIdentifiers(CollectionHelper.cast(Object.class,identifiers));
+			}
 		}.read(FieldHelper.readSystemIdentifiersAsStrings(collection));
 		
 		collection.forEach(x -> {
@@ -554,7 +565,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 						if(x.getCreditManagerAssistant() == null) {
 							String assistantCode = computeAssistantCodeFromHolderCode(x.getCreditManagerHolder().getCode(),1);
 							if(StringHelper.isNotBlank(assistantCode)) {
-								ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+								ScopeFunction assistant = CodeExecutor.getInstance().getOne(ScopeFunction.class, assistantCode); //__inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
 								if(assistant != null) {
 									x.setCreditManagerAssistant(assistant);
 								}
@@ -574,7 +585,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 						if(x.getAuthorizingOfficerAssistant() == null) {
 							String assistantCode = computeAssistantCodeFromHolderCode(x.getAuthorizingOfficerHolder().getCode(),2);
 							if(StringHelper.isNotBlank(assistantCode)) {
-								ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+								ScopeFunction assistant = CodeExecutor.getInstance().getOne(ScopeFunction.class, assistantCode);
 								if(assistant != null) {
 									x.setAuthorizingOfficerAssistant(assistant);
 								}
@@ -594,7 +605,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 						if(x.getFinancialControllerAssistant() == null) {
 							String assistantCode = computeAssistantCodeFromHolderCode(x.getFinancialControllerHolder().getCode(),3);
 							if(StringHelper.isNotBlank(assistantCode)) {
-								ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+								ScopeFunction assistant = CodeExecutor.getInstance().getOne(ScopeFunction.class, assistantCode);
 								if(assistant != null) {
 									x.setFinancialControllerAssistant(assistant);
 								}
@@ -614,7 +625,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 						if(x.getAccountingAssistant() == null) {
 							String assistantCode = computeAssistantCodeFromHolderCode(x.getAccountingHolder().getCode(),4);
 							if(StringHelper.isNotBlank(assistantCode)) {
-								ScopeFunction assistant = __inject__(ScopeFunctionPersistence.class).readByBusinessIdentifier(assistantCode);
+								ScopeFunction assistant = CodeExecutor.getInstance().getOne(ScopeFunction.class, assistantCode);
 								if(assistant != null) {
 									x.setAccountingAssistant(assistant);
 								}
@@ -626,75 +637,98 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		});
 	}
 	
+	@Transactional
+	@Override
+	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {		
+		return applyModel(model, filter, overridablesFieldsNames, actorCode, null);
+	}
+	
 	/**
 	 * La liste ,éligible sur la base du filtre, est modifiée avec les valeurs du modèle.
 	 * NB : Si une valeur est non nulle alors elle sera écrasée si cela à été explicitement spécifié.
 	 */
-	@Override
-	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {
+	public static TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode,EntityManager entityManager) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("model", model);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
 		TransactionResult transactionResult = new TransactionResult().setName("Application de modèle").setTupleName("Affectation").setIsTupleNameFeminine(Boolean.TRUE);
 		LogHelper.logInfo(String.format("Modèle d'écrasement : %s|%s|%s|%s", model.getCreditManagerHolder(),model.getAuthorizingOfficerHolder()
-				,model.getFinancialControllerHolder(),model.getAccountingHolder()), getClass());
-		LogHelper.logInfo(String.format("Filtre d'écrasement : %s", filter), getClass());
-		LogHelper.logInfo(String.format("Options d'écrasement : %s", overridablesFieldsNames), getClass());
+				,model.getFinancialControllerHolder(),model.getAccountingHolder()), AssignmentsBusinessImpl.class);
+		LogHelper.logInfo(String.format("Filtre d'écrasement : %s", filter), AssignmentsBusinessImpl.class);
+		LogHelper.logInfo(String.format("Options d'écrasement : %s", overridablesFieldsNames), AssignmentsBusinessImpl.class);
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setFilter(filter);
 		queryExecutorArguments.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC));		
-		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), getClass());
+		LogHelper.logInfo(String.format("Compte des affectations à traiter en cours..."), AssignmentsBusinessImpl.class);
 		Long t = System.currentTimeMillis();
 		Long numberOfExecutionImputations = AssignmentsQuerier.getInstance().count(queryExecutorArguments);
-		LogHelper.logInfo(String.format("%s affectations à traiter compté en %s", numberOfExecutionImputations,TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		LogHelper.logInfo(String.format("%s affectations à traiter compté en %s", numberOfExecutionImputations,TimeHelper.formatDuration(System.currentTimeMillis() - t)), AssignmentsBusinessImpl.class);
 		if(NumberHelper.isLessThanOrEqualZero(numberOfExecutionImputations))
 			return null;
 		Integer numberOfBatches = (int) (numberOfExecutionImputations / READ_BATCH_SIZE) + (numberOfExecutionImputations % READ_BATCH_SIZE == 0 ? 0 : 1);
-		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",READ_BATCH_SIZE,numberOfBatches), getClass());
+		LogHelper.logInfo(String.format("taille du lot est de %s. %s lot(s) à traiter",READ_BATCH_SIZE,numberOfBatches), AssignmentsBusinessImpl.class);
 		queryExecutorArguments.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).addFlags(AssignmentsQuerier.FLAG_APPLY_MODEL)
 			.setNumberOfTuples(READ_BATCH_SIZE);
-		for(Integer index = 0; index < numberOfBatches; index = index + 1) {
-			applyModel(model, overridablesFieldsNames,actorCode, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult);
-			//TransactionResult r = deriveScopeFunctionsFromModel(executionImputationModel, queryExecutorArguments, batchSize, index*batchSize
-			//		,DERIVE_SCOPE_FUNCTIONS_FROM_MODEL_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE);			
-		}
-		transactionResult.log(getClass());
+		for(Integer index = 0; index < numberOfBatches; index = index + 1)
+			applyModel(model, overridablesFieldsNames,actorCode, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult,entityManager);	
+		transactionResult.log(AssignmentsBusinessImpl.class);
 		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
 	
-	private void applyModel(Assignments model, Collection<String> overridablesFieldsNames,String actorCode,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult) {
+	private static void applyModel(Assignments model, Collection<String> overridablesFieldsNames,String actorCode,QueryExecutorArguments queryExecutorArguments,TransactionResult transactionResult,EntityManager entityManager) {
 		Long t = System.currentTimeMillis();
 		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);	
 		LogHelper.logInfo(String.format("\tChargement de %s affectation(s) à partir l'index %s en %s",CollectionHelper.getSize(collection)
-				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), AssignmentsBusinessImpl.class);
 		if(CollectionHelper.isEmpty(collection))
 			return;
+		/*
+		collection = collection.stream().filter(index -> Boolean.TRUE.equals(Assignments.isOneHolderHasChanged(index, model,overridablesFieldsNames))).collect(Collectors.toList());
+		if(CollectionHelper.isEmpty(collection))
+			return;
+		LogHelper.logInfo(String.format("\t%s affectation(s) ayant un changement à prendre en compte",CollectionHelper.getSize(collection)), getClass());
+		*/
+		Collection<Assignments> changes = new ArrayList<>();
 		collection.parallelStream().forEach(index -> {
-			index.set__auditWho__(actorCode);
-			index.set__auditFunctionality__("Modification en masse");
 			
-			if(index.getCreditManagerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_HOLDER))
+			Boolean changed = null;
+			if(index.getCreditManagerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_HOLDER)) {			
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getCreditManagerHolder(), model.getCreditManagerHolder())))
+					changed = Boolean.TRUE;
 				index.setCreditManagerHolder(model.getCreditManagerHolder());
-			//if(index.getCreditManagerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT))
-			//	index.setCreditManagerAssistant(model.getCreditManagerAssistant());
+			}
 			
-			if(index.getAuthorizingOfficerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER))
+			if(index.getAuthorizingOfficerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)) {
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAuthorizingOfficerHolder(), model.getAuthorizingOfficerHolder())))
+					changed = Boolean.TRUE;
 				index.setAuthorizingOfficerHolder(model.getAuthorizingOfficerHolder());
-			//if(index.getAuthorizingOfficerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT))
-			//	index.setAuthorizingOfficerAssistant(model.getAuthorizingOfficerAssistant());
+			}
 			
-			if(index.getFinancialControllerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER))
+			if(index.getFinancialControllerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)) {
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getFinancialControllerHolder(), model.getFinancialControllerHolder())))
+					changed = Boolean.TRUE;
 				index.setFinancialControllerHolder(model.getFinancialControllerHolder());
-			//if(index.getFinancialControllerAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT))
-			//	index.setFinancialControllerAssistant(model.getFinancialControllerAssistant());
+			}
 			
-			if(index.getAccountingHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_HOLDER))
+			if(index.getAccountingHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_HOLDER)) {
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAccountingHolder(), model.getAccountingHolder())))
+					changed = Boolean.TRUE;
 				index.setAccountingHolder(model.getAccountingHolder());
-			//if(index.getAccountingAssistant() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_ASSISTANT))
-			//	index.setAccountingAssistant(model.getAccountingAssistant());
+			}
+			
+			if(Boolean.TRUE.equals(changed)) {
+				index.set__auditWho__(actorCode);
+				index.set__auditFunctionality__("Modification en masse");
+				changes.add(index);
+			}
 		});
 		
-		setAssistants(collection,overridablesFieldsNames);
+		collection = changes;
+		LogHelper.logInfo(String.format("\t%s affectation(s) ayant un changement à prendre en compte",CollectionHelper.getSize(collection)), AssignmentsBusinessImpl.class);
+		if(CollectionHelper.isEmpty(collection))
+			return;
+		
+		setAssistants(collection,overridablesFieldsNames,entityManager);
 		
 		t = System.currentTimeMillis();
 		
@@ -702,8 +736,8 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
 		updaterQueryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
 		EntityUpdater.getInstance().update(updaterQueryExecutorArguments);
-		LogHelper.logInfo(String.format("\tEnregistrement en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
-		transactionResult.setNumberOfUpdate(NumberHelper.add(transactionResult.getNumberOfUpdate(),collection.size()).longValue());
+		LogHelper.logInfo(String.format("\tEnregistrement en %s",TimeHelper.formatDuration(System.currentTimeMillis() - t)), AssignmentsBusinessImpl.class);
+		transactionResult.incrementNumberOfUpdate(Integer.valueOf(collection.size()).longValue());
 		collection.clear();
 		collection = null;
 	}
@@ -739,16 +773,22 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Transactional
 	@Override
 	public void export(String actorCode) {
+		export(actorCode, null);
+	}
+	
+	public static void export(String actorCode,EntityManager entityManager) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
-	private void exportAsynchronously(String actorCode) {
+	private static void exportAsynchronously(String actorCode) {
+		if(!Boolean.TRUE.equals(EXPORT))
+			return;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					export(actorCode);
+					export(actorCode,null);
 				} catch (Exception exception) {
 					LogHelper.log(exception, AssignmentsBusinessImpl.class);
 				}
