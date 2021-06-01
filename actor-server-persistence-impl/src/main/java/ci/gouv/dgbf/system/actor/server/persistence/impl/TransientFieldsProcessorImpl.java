@@ -12,7 +12,6 @@ import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -58,7 +57,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	
 	public void processAssignments(Collection<Assignments> assignmentsCollection,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
-			if(Assignments.FIELD___ALL__.equals(fieldName)) {
+			/*if(Assignments.FIELD___ALL__.equals(fieldName)) {
 				Collection<Object[]> arrays = AssignmentsQuerier.getInstance().readAllProperties(assignmentsCollection);
 				for(Assignments assignments : assignmentsCollection) {
 					for(Object[] array : arrays) {
@@ -83,7 +82,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 						}
 					}
 				}
-			}else if(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY.equals(fieldName))
+			}else */if(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY.equals(fieldName))
 				new AssignmentsStringsCodesOnlyReader().readThenSet(assignmentsCollection, null);
 			else if(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY_WITHOUT_SCOPE_FUNCTIONS.equals(fieldName))
 				new AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader().readThenSet(assignmentsCollection, null);

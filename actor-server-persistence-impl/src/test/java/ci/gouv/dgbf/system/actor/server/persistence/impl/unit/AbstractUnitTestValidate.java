@@ -167,7 +167,7 @@ public abstract class AbstractUnitTestValidate extends AbstractUnitTest {
 	public void assignmentsQuerier_readByIdentifierForUI_allProperties(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_IDENTIFIER,"57ef78b9-629b-40c2-9fb5-ee433dc69537");
-		queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Assignments.FIELD___ALL__));
+		//queryExecutorArguments.setProcessableTransientFieldsNames(List.of(Assignments.FIELD___ALL__));
 		Assignments assignments = AssignmentsQuerier.getInstance().readByIdentifierForUI(queryExecutorArguments);
 		print(assignments);
 	}
