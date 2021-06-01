@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -24,6 +26,7 @@ import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
@@ -36,7 +39,6 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AssignmentsBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.AssignmentsPersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AccountingServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AuthorizingOfficerServiceQuerier;
@@ -515,7 +517,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Transactional
 	@Override
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
-		return saveScopeFunctions(collection, null);
+		return saveScopeFunctions(collection, EntityManagerGetter.getInstance().get());
 	}
 	
 	/**
@@ -640,7 +642,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Transactional
 	@Override
 	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {		
-		return applyModel(model, filter, overridablesFieldsNames, actorCode, null);
+		return applyModel(model, filter, overridablesFieldsNames, actorCode, EntityManagerGetter.getInstance().get());
 	}
 	
 	/**
@@ -682,37 +684,39 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), AssignmentsBusinessImpl.class);
 		if(CollectionHelper.isEmpty(collection))
 			return;
-		/*
-		collection = collection.stream().filter(index -> Boolean.TRUE.equals(Assignments.isOneHolderHasChanged(index, model,overridablesFieldsNames))).collect(Collectors.toList());
-		if(CollectionHelper.isEmpty(collection))
-			return;
-		LogHelper.logInfo(String.format("\t%s affectation(s) ayant un changement à prendre en compte",CollectionHelper.getSize(collection)), getClass());
-		*/
+		Set<String> assistantOverridablesFieldsNames = new HashSet<>();
 		Collection<Assignments> changes = new ArrayList<>();
-		collection.parallelStream().forEach(index -> {
-			
+		collection.stream().forEach(index -> {			
 			Boolean changed = null;
 			if(index.getCreditManagerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_CREDIT_MANAGER_HOLDER)) {			
-				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getCreditManagerHolder(), model.getCreditManagerHolder())))
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getCreditManagerHolder(), model.getCreditManagerHolder()))) {
 					changed = Boolean.TRUE;
+					assistantOverridablesFieldsNames.add(Assignments.FIELD_CREDIT_MANAGER_HOLDER);
+				}
 				index.setCreditManagerHolder(model.getCreditManagerHolder());
 			}
 			
 			if(index.getAuthorizingOfficerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)) {
-				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAuthorizingOfficerHolder(), model.getAuthorizingOfficerHolder())))
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAuthorizingOfficerHolder(), model.getAuthorizingOfficerHolder()))) {
 					changed = Boolean.TRUE;
+					assistantOverridablesFieldsNames.add(Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER);
+				}
 				index.setAuthorizingOfficerHolder(model.getAuthorizingOfficerHolder());
 			}
 			
 			if(index.getFinancialControllerHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER)) {
-				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getFinancialControllerHolder(), model.getFinancialControllerHolder())))
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getFinancialControllerHolder(), model.getFinancialControllerHolder()))) {
 					changed = Boolean.TRUE;
+					assistantOverridablesFieldsNames.add(Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER);
+				}
 				index.setFinancialControllerHolder(model.getFinancialControllerHolder());
 			}
 			
 			if(index.getAccountingHolder() == null || CollectionHelper.contains(overridablesFieldsNames, Assignments.FIELD_ACCOUNTING_HOLDER)) {
-				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAccountingHolder(), model.getAccountingHolder())))
+				if(!Boolean.TRUE.equals(IdentifiableSystem.areIdentifiersEqual(index.getAccountingHolder(), model.getAccountingHolder()))) {
 					changed = Boolean.TRUE;
+					assistantOverridablesFieldsNames.add(Assignments.FIELD_ACCOUNTING_HOLDER);
+				}
 				index.setAccountingHolder(model.getAccountingHolder());
 			}
 			
@@ -728,11 +732,11 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		if(CollectionHelper.isEmpty(collection))
 			return;
 		
-		setAssistants(collection,overridablesFieldsNames,entityManager);
+		setAssistants(collection,assistantOverridablesFieldsNames,entityManager);
 		
 		t = System.currentTimeMillis();
 		
-		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
+		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments().setEntityManager(entityManager);
 		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
 		updaterQueryExecutorArguments.setIsEntityManagerFlushable(Boolean.TRUE).setIsEntityManagerClearable(Boolean.TRUE).setIsEntityManagerClosable(Boolean.TRUE);
 		EntityUpdater.getInstance().update(updaterQueryExecutorArguments);
