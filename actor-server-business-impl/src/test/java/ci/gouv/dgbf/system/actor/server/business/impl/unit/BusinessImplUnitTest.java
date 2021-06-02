@@ -11,9 +11,11 @@ import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.server.MetricsManager;
 import org.cyk.utility.test.business.server.Transaction;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.impl.AssignmentsBusinessImpl;
+import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -21,6 +23,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 
+	@BeforeAll
+	public static void beforeAll() {
+		ApplicationScopeLifeCycleListener.INTEGRATION = Boolean.FALSE;
+	}
+	
 	@Override
 	protected void __listenBefore__() {
 		super.__listenBefore__();
@@ -38,9 +45,9 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	public void saveScopeFunctions() {
 		Assignments instance = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(instance).isNotNull();
-		assertThat(instance.getCreditManagerHolder()).isNull();
-		assertThat(instance.getCreditManagerAssistant()).isNull();
-		instance.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "G100000"));
+		assertThat(instance.getFinancialControllerHolder()).isNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNull();
+		instance.setFinancialControllerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "C300000"));
 		Collection<Assignments> collection = List.of(instance);
 		new Transaction.AbstractImpl() {
 			@Override
@@ -50,18 +57,18 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 		}.run();		
 		instance = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(instance).isNotNull();
-		assertThat(instance.getCreditManagerHolder()).isNotNull();
-		assertThat(instance.getCreditManagerAssistant()).isNotNull();
+		assertThat(instance.getFinancialControllerHolder()).isNotNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNotNull();
 	}
 	
 	@Test
 	public void applyModel_doNotOverride() {
 		Assignments instance = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(instance).isNotNull();
-		assertThat(instance.getCreditManagerHolder()).isNull();
-		assertThat(instance.getCreditManagerAssistant()).isNull();
+		assertThat(instance.getFinancialControllerHolder()).isNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNull();
 		Assignments model = new Assignments();
-		model.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "G100000"));
+		model.setFinancialControllerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "C300000"));
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_SECTION_CODE,"327");
 		new Transaction.AbstractImpl() {
@@ -69,10 +76,10 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 			protected void __run__(EntityManager entityManager) {
 				AssignmentsBusinessImpl.applyModel(model, filter, null, null, entityManager);
 			}
-		}.run();		
+		}.run();
 		instance = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(instance).isNotNull();
-		assertThat(instance.getCreditManagerHolder()).isNotNull();
-		assertThat(instance.getCreditManagerAssistant()).isNotNull();
+		assertThat(instance.getFinancialControllerHolder()).isNotNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNotNull();
 	}
 }

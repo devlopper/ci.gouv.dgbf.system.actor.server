@@ -7,9 +7,12 @@ import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener {
 
+	public static Boolean INTEGRATION = Boolean.TRUE;
+	
 	@Override
 	public void __initialize__(Object object) {
-		ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
+		if(Boolean.TRUE.equals(INTEGRATION))
+			ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
 	}
 	
 	@Override
