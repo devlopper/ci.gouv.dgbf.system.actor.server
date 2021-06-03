@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.value.Value;
@@ -27,8 +29,8 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -199,8 +201,8 @@ public interface AssignmentsQuerier extends Querier {
 	
 	void clean(String actor,String functionality,String action,Date date);
 	void import_(String actor,String functionality,String actionCreate,String actionUpdate,Date date);
-	void importNews(String actor,String functionality,String action,Date date);
-	void export(String actor,String functionality,String action,Date date);
+	void importNews(String actor,String functionality,String action,Date date,EntityManager entityManager);
+	void export(String actor,String functionality,String action,Date date,EntityManager entityManager);
 	
 	/**/
 	

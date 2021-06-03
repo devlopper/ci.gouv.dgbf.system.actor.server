@@ -3,12 +3,19 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.Date;
 
+import javax.persistence.PersistenceException;
+
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.MetricsManager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -45,12 +52,12 @@ public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 	
 	@Test
 	public void scopeFunctionQuerier_readMaxOrderNumberByFunctionCode_OD(){
-		assert_scopeFunctionQuerier_readMaxOrderNumberByFunctionCode("ORD", 2514);
+		assert_scopeFunctionQuerier_readMaxOrderNumberByFunctionCode("ORD", 2515);
 	}
 	
 	@Test
 	public void scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith_O2(){
-		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("O2", "O202507");
+		assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith("O2", "O202515");
 	}
 	
 	@Test
@@ -106,5 +113,23 @@ public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 		
 		assertThat(administrativeUnit.getRegion().getCode()).isEqualTo("62");
 		assertThat(administrativeUnit.getRegion().getName()).isEqualTo("REGION DU GONTOUGO");
+	}
+	
+	@Test
+	public void assignments_export_entityManagerNotProvided() {
+		MetricsManager.getInstance().enable();
+		for(Integer index = 0; index < 100; index = index + 1) {
+			AssignmentsQuerier.getInstance().export("test", "test", "test", new Date(), null);
+		}
+		MetricsManager.getInstance().disable();
+	}
+	
+	@Test
+	public void assignments_export_entityManagerProvided() {
+		Assertions.assertThrows(PersistenceException.class, () -> {
+			for(Integer index = 0; index < 100; index = index + 1) {
+				AssignmentsQuerier.getInstance().export("test", "test", "test", new Date(), EntityManagerGetter.getInstance().get());
+			}
+		});
 	}
 }

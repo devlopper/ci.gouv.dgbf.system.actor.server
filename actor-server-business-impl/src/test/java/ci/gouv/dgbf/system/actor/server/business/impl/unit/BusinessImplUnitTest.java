@@ -32,7 +32,6 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	protected void __listenBefore__() {
 		super.__listenBefore__();
 		MetricsManager.getInstance().enable();
-		AssignmentsBusinessImpl.EXPORT = Boolean.FALSE;
 	}
 	
 	@Override
@@ -82,4 +81,6 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(instance.getFinancialControllerHolder()).isNotNull();
 		assertThat(instance.getFinancialControllerAssistant()).isNotNull();
 	}
+	
+	/**/
 }

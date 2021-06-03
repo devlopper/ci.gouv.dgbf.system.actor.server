@@ -60,7 +60,6 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_READ_BATCH_SIZE = 15000;
 	public static Integer DERIVE_VALUES_READ_BATCH_SIZE = 15000;
 	public static Integer READ_BATCH_SIZE = 10000;
-	public static Boolean EXPORT = Boolean.TRUE;
 	
 	//public static Integer INITIALIZE_EXECUTION_IMPUTATIONS_PROCESS_BATCH_SIZE = 25;
 	
@@ -517,7 +516,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Transactional
 	@Override
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
-		return saveScopeFunctions(collection, EntityManagerGetter.getInstance().get());
+		TransactionResult transactionResult = saveScopeFunctions(collection, EntityManagerGetter.getInstance().get());
+		exportAsynchronously(collection.iterator().next().get__auditWho__());
+		return transactionResult;
 	}
 	
 	/**
@@ -536,8 +537,6 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		EntityUpdater.getInstance().update(queryExecutorArguments);
 		transactionResult.setNumberOfUpdateFromSavables(collection);
 		transactionResult.log(AssignmentsBusinessImpl.class);
-		String actorCode = collection.iterator().next().get__auditWho__();
-		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
 	
@@ -642,7 +641,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Transactional
 	@Override
 	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {		
-		return applyModel(model, filter, overridablesFieldsNames, actorCode, EntityManagerGetter.getInstance().get());
+		TransactionResult transactionResult = applyModel(model, filter, overridablesFieldsNames, actorCode, EntityManagerGetter.getInstance().get());
+		exportAsynchronously(actorCode);
+		return transactionResult;
 	}
 	
 	/**
@@ -673,7 +674,6 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		for(Integer index = 0; index < numberOfBatches; index = index + 1)
 			applyModel(model, overridablesFieldsNames,actorCode, queryExecutorArguments.setFirstTupleIndex(index * READ_BATCH_SIZE),transactionResult,entityManager);	
 		transactionResult.log(AssignmentsBusinessImpl.class);
-		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
 	
@@ -767,32 +767,24 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
-	@Transactional
 	@Override
 	public void importNews(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
-		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date());
+		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),null);
 	}
 	
-	@Transactional
 	@Override
 	public void export(String actorCode) {
-		export(actorCode, null);
-	}
-	
-	public static void export(String actorCode,EntityManager entityManager) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
-		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
+		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date(),null);
 	}
 	
-	private static void exportAsynchronously(String actorCode) {
-		if(!Boolean.TRUE.equals(EXPORT))
-			return;
+	private void exportAsynchronously(String actorCode) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					export(actorCode,null);
+					export(actorCode);
 				} catch (Exception exception) {
 					LogHelper.log(exception, AssignmentsBusinessImpl.class);
 				}

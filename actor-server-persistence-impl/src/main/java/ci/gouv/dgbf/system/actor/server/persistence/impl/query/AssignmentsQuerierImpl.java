@@ -5,6 +5,9 @@ import static org.cyk.utility.persistence.query.Language.jpql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -17,6 +20,7 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
@@ -393,24 +397,24 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	}
 	
 	@Override
-	public void importNews(String actor, String functionality, String action,Date date) {
-		ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS
-				, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
-			);
+	public void importNews(String actor, String functionality, String action,Date date,EntityManager entityManager) {
+		executeProcedure(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS, actor, functionality, action, date, entityManager);
 	}
 	
 	@Override
-	public void export(String actor, String functionality, String action, Date date) {
-		ProcedureExecutor.getInstance().execute(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
-				, Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,new java.sql.Date(date.getTime())
-			);
+	public void export(String actor, String functionality, String action, Date date,EntityManager entityManager) {
+		executeProcedure(Assignments.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT, actor, functionality, action, date, entityManager);
 	}		
 	
 	/**/
+	
+	private void executeProcedure(String name,String actor, String functionality, String action, Date date,EntityManager entityManager) {
+		ProcedureExecutorArguments arguments = new ProcedureExecutorArguments();
+		arguments.setName(name);
+		arguments.setParameters(Map.of(Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION
+				,action,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,date));
+		arguments.setEntityManager(entityManager);
+		ProcedureExecutor.getInstance().execute(arguments);
+	}
 }
