@@ -27,5 +27,5 @@ public class EntitySaverImpl extends EntitySaver.AbstractImpl implements Seriali
 			__inject__(ProfileFunctionPersistence.class).deleteMany(CollectionHelper.cast(ProfileFunction.class, collection));
 		else
 			super.delete(tupleClass, collection, listener, entityManager);
-	}	
+	}
 }

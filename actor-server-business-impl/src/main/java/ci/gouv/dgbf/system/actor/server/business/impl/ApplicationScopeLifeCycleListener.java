@@ -3,6 +3,8 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
+import org.cyk.utility.business.server.EntitySaver;
 import org.cyk.utility.server.business.AbstractApplicationScopeLifeCycleListenerImplementation;
 
 @ApplicationScoped
@@ -12,6 +14,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	@Override
 	public void __initialize__(Object object) {
 		__inject__(ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
+		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntitySaver.class);
 	}
 	
 	@Override

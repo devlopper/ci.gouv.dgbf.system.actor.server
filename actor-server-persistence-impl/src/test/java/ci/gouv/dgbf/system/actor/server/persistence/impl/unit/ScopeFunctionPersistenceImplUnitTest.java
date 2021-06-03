@@ -6,19 +6,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.test.persistence.server.Transaction;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeFunctionPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExpenditureNatureQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.FunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
@@ -115,5 +120,42 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		Collection<ScopeFunction> scopeFunctions = EntityReader.getInstance().readMany(ScopeFunction.class, arguments);
 		assertThat(scopeFunctions).isNotEmpty();
 		assertThat(FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions)).containsExactly("O3001","O402500","O502501");
+	}
+	
+	@Test
+	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers_trueBecomesFalse() {
+		assertRequestScopeFunctionGranted("1", Boolean.TRUE);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(entityManager,"user","maj","update",null,"O3001");
+			}
+		}.run();
+		assertRequestScopeFunctionGranted("1", Boolean.FALSE);
+		assertAudits(RequestScopeFunction.class, "1", "user", "maj","update");
+	}
+	
+	@Test
+	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers_nullStaysNull() {
+		assertRequestScopeFunctionGranted("2", null);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(entityManager,"user","maj","update",null,"C100006");
+			}
+		}.run();
+		assertRequestScopeFunctionGranted("2", null);
+	}
+	
+	@Test
+	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers_falseStatysFalse() {
+		assertRequestScopeFunctionGranted("3", Boolean.FALSE);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(entityManager,"user","maj","update",null,"C100001");
+			}
+		}.run();
+		assertRequestScopeFunctionGranted("3", Boolean.FALSE);
 	}
 }

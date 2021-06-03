@@ -2,10 +2,12 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryManager;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.server.AbstractUnitTest {
@@ -31,5 +33,10 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	protected static void assert_scopeFunctionQuerier_readMaxOrderNumberByFunctionCode(String functionCode,Integer expectedOrderNumber) {
 		Integer orderNumber = ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode);
 		assertThat(orderNumber).as("Max order number of "+functionCode).isEqualTo(expectedOrderNumber);
+	}
+	
+	protected static void assertRequestScopeFunctionGranted(String identifier,Boolean expectedValue) {		
+		RequestScopeFunction requestScopeFunction = EntityFinder.getInstance().find(RequestScopeFunction.class, identifier);
+		assertThat(requestScopeFunction.getGranted()).as("granted").isEqualTo(expectedValue);
 	}
 }

@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -10,7 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringAuditedImpl;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +21,13 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=RequestScopeFunction.TABLE_NAME)
-public class RequestScopeFunction extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
+@AttributeOverrides(value= {
+		@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
+		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
+		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
+		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONNALITE"))
+})
+public class RequestScopeFunction extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_REQUEST) @NotNull private Request request;

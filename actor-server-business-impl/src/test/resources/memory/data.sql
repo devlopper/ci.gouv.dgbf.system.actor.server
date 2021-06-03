@@ -1,5 +1,5 @@
-DROP ALIAS IF EXISTS P_EXPORTER_AFFECTATIONS;
-CREATE ALIAS P_EXPORTER_AFFECTATIONS FOR "ci.gouv.dgbf.system.actor.server.business.impl.unit.BusinessImplUnitTest.p_exporter_affectations";
+--DROP ALIAS IF EXISTS P_EXPORTER_AFFECTATIONS;
+--CREATE ALIAS P_EXPORTER_AFFECTATIONS FOR "ci.gouv.dgbf.system.actor.server.business.impl.unit.BusinessImplUnitTest.p_exporter_affectations";
 
 Insert into ID_FORMULAIRE (IDENTIFIANT,CODE,LIBELLE) values ('1','1','Formulaire de demande de postes budgétaires');
 
