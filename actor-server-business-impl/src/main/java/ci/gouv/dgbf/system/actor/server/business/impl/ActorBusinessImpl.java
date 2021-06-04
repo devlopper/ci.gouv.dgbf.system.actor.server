@@ -26,6 +26,7 @@ import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityUpdater;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.persistence.server.query.executor.field.GenericFieldExecutor;
 import org.cyk.utility.security.keycloak.server.KeycloakHelper;
 import org.cyk.utility.security.keycloak.server.User;
@@ -67,13 +68,22 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 	@Override @Transactional
 	public void createByPublic(Actor actor) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
-		actor.setElectronicMailAddress(StringUtils.stripToNull(actor.getElectronicMailAddress()));			
+		actor.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(actor.getElectronicMailAddress()));			
 		actor.setIdentity(__inject__(IdentityBusiness.class).createFromInterface((Interface) actor));
 		actor.setCode(actor.getIdentity().getElectronicMailAddress());
 		actor.setIdentifier("ACT_"+actor.getCode());
 		actor.setCreationDate(LocalDateTime.now());
 		create(actor);
 		//EntityCreator.getInstance().createMany(List.of(actor));
+	}
+	
+	@Override @Transactional
+	public void createRequerantOfCeliopeByPublic(Actor actor) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actor);
+		createByPublic(actor);
+		ActorProfile actorProfile = new ActorProfile();
+		actorProfile.setActor(actor).setProfile(CodeExecutor.getInstance().getOne(Profile.class, Profile.CODE_REQUERANT_CELIOPE));
+		__inject__(ActorProfileBusiness.class).create(actorProfile);
 	}
 	
 	@Override @Transactional

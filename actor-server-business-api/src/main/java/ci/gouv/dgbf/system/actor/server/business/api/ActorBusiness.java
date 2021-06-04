@@ -4,7 +4,10 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -35,8 +38,13 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	
 	Actor instantiateOneToBeCreatedByPublic();
 	
+	String CREATE_FROM_PUBLIC = "Actor.createByPublic";
 	@Transactional
 	void createByPublic(Actor actor);
+	
+	String CREATE_FROM_PUBLIC_REQUERANT_OF_CELIOPE = "Actor.createRequerantOfCeliopeByPublic";
+	@Transactional
+	void createRequerantOfCeliopeByPublic(Actor actor);
 	
 	String CREATE_PRIVILEGES_FROM_FUNCTIONS = "Actor.createPrivilegesFromFunctions";
 	String CREATE_PROFILES = "Actor.createProfiles";
@@ -46,11 +54,18 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	String SAVE_PREFERENCES = "Actor.savePreferences";
 	String SAVE_PROFILE = "Actor.saveProfile";
 	
-	String CREATE_FROM_PUBLIC = "Actor.createFromPublic";
-	
 	/**/
 	
 	static String generatePassword() {
 		return RandomHelper.getAlphabetic(8);
+	}
+	
+	static String normalizeElectronicMailAddress(String electronicMailAddress) {
+		electronicMailAddress = StringUtils.stripToNull(electronicMailAddress);
+		if(StringHelper.isBlank(electronicMailAddress))
+			return null;
+		electronicMailAddress = electronicMailAddress.toLowerCase();
+		electronicMailAddress = RegExUtils.removeAll(electronicMailAddress, " ");
+		return electronicMailAddress;
 	}
 }

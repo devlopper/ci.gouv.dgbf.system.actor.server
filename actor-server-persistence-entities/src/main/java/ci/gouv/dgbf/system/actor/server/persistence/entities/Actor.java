@@ -80,6 +80,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@Transient private String creationDateAsString;
 	
 	@Transient private Collection<Profile> profiles;
+	@Transient private Collection<String> profilesCodes;
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<Privilege> visibleModules;

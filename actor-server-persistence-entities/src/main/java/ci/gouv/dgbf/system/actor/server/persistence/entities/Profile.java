@@ -95,4 +95,5 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
 	public static final String CODE_CHARGE_ETUDE_DAS = "CEDAS";
 	public static final String CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE = "RFFIM";
+	public static final String CODE_REQUERANT_CELIOPE = "REQUERANT_CELIOPE";
 }
