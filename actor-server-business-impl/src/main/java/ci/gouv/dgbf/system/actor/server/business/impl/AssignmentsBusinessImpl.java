@@ -767,16 +767,16 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
-	@Override
+	@Override @Transactional
 	public void importNews(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
-		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),null);
+		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),EntityManagerGetter.getInstance().get());
 	}
 	
-	@Override
+	@Override @Transactional
 	public void export(String actorCode) {
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
-		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date(),null);
+		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date(),EntityManagerGetter.getInstance().get());
 	}
 	
 	private void exportAsynchronously(String actorCode) {

@@ -412,8 +412,9 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 		ProcedureExecutorArguments arguments = new ProcedureExecutorArguments();
 		arguments.setName(name);
 		arguments.setParameters(Map.of(Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTOR,actor
-				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION
-				,action,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,date));
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_FUNCTIONALITY,functionality
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_ACTION,action
+				,Assignments.STORED_PROCEDURE_PARAMETER_NAME_AUDIT_DATE,date));
 		arguments.setEntityManager(entityManager);
 		ProcedureExecutor.getInstance().execute(arguments);
 	}

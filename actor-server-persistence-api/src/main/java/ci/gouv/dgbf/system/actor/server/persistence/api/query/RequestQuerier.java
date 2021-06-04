@@ -17,6 +17,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
@@ -130,7 +132,7 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "readSignedRequestSheetByIdentifier");
 	byte[] readSignedRequestSheetByIdentifier(String identifier);
 	
-	void exportForAccountCreation(String actor,String functionality,String action,Date date);
+	void exportForAccountCreation(String actor,String functionality,String action,Date date,EntityManager entityManager);
 	
 	Collection<Object[]> readFromViewByElectronicMailAddresses(Collection<String> emails);
 	Collection<Object[]> readFromViewByElectronicMailAddresses(String...emails);

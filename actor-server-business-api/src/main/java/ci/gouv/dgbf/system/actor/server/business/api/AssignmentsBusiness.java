@@ -45,8 +45,10 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	void import_(String actorCode);
 	
 	String IMPORT_NEWS = "Assignments.importNews";
+	@Transactional
 	void importNews(String actorCode);
 	
 	String EXPORT = "Assignments.export";
+	@Transactional
 	void export(String actorCode);
 }

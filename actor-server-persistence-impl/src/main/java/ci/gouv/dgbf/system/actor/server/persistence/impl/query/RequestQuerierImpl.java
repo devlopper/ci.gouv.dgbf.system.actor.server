@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.ArithmeticOperator;
@@ -28,6 +30,7 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
@@ -369,8 +372,11 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	}
 	
 	@Override
-	public void exportForAccountCreation(String actor, String functionality, String action, Date date) {
-		ProcedureExecutor.getInstance().execute(Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS);
+	public void exportForAccountCreation(String actor, String functionality, String action, Date date,EntityManager entityManager) {
+		ProcedureExecutorArguments arguments = new ProcedureExecutorArguments();
+		arguments.setName(Request.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS);
+		arguments.setEntityManager(entityManager);
+		ProcedureExecutor.getInstance().execute(arguments);
 	}
 	
 	@SuppressWarnings("unchecked")
