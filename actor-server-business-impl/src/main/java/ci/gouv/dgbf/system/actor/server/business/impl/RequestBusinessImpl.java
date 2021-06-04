@@ -41,6 +41,7 @@ import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.report.ReportGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
+import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
@@ -193,7 +194,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	public void record(Request request) {
 		validateRecord(request,Boolean.TRUE);
 		if(StringHelper.isNotBlank(request.getElectronicMailAddress()))
-			request.setElectronicMailAddress(RequestBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
+			request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
 		request.set__auditFunctionality__("Modification");
 		setFields(request);
 		EntityManager entityManager = __inject__(EntityManager.class);
