@@ -31,8 +31,15 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	@Transactional
 	TransactionResult saveScopeFunctions(Collection<Assignments> collection);
 	
+	String SAVE_SCOPE_FUNCTIONS_THEN_EXPORT = "Assignments.saveScopeFunctionsThenExport";
+	TransactionResult saveScopeFunctionsThenExport(Collection<Assignments> collection);
+	
 	String APPLY_MODEL = "Assignments.applyModel";
+	@Transactional
 	TransactionResult applyModel(Assignments model,Filter filter,Collection<String> overridablesFieldsNames,String actorCode);
+	
+	String APPLY_MODEL_THEN_EXPORT = "Assignments.applyModelThenExport";
+	TransactionResult applyModelThenExport(Assignments model,Filter filter,Collection<String> overridablesFieldsNames,String actorCode);
 	
 	String DELETE_ALL = "Assignments.deleteAll";
 	
@@ -51,4 +58,7 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	String EXPORT = "Assignments.export";
 	@Transactional
 	void export(String actorCode);
+	
+	String EXPORT_ASYNCHRONOUSLY = "Assignments.exportAsynchronously";
+	void exportAsynchronously(String actorCode);
 }

@@ -87,8 +87,40 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 	}
 	
 	@Override
+	public Response applyModelThenExport(AssignmentsDto assignmentsDto, Filter.Dto filterDto, List<String> overridablesFieldsNames,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						ThrowableHelper.throwIllegalArgumentExceptionIfNull("assignmentsDto", assignmentsDto);
+						ThrowableHelper.throwIllegalArgumentExceptionIfNull("filterDto", filterDto);
+						Assignments assignments = MappingHelper.getDestination(assignmentsDto, Assignments.class);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_CREDIT_MANAGER_HOLDER, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, assignmentsDto);
+						setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, assignmentsDto);
+						Filter filter = MappingHelper.getDestination(filterDto, Filter.class);
+						return __inject__(AssignmentsBusiness.class).applyModelThenExport(assignments, filter, overridablesFieldsNames,actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response applyModel(AssignmentsDto assignmentsDto,String actorCode) {
 		return applyModel(assignmentsDto,assignmentsDto.getFilter(),assignmentsDto.getOverridablesFieldsNames(),actorCode);
+	}
+	
+	@Override
+	public Response applyModelThenExport(AssignmentsDto assignmentsDto,String actorCode) {
+		return applyModelThenExport(assignmentsDto,assignmentsDto.getFilter(),assignmentsDto.getOverridablesFieldsNames(),actorCode);
 	}
 	
 	@Override
@@ -120,6 +152,41 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 						if(CollectionHelper.isEmpty(assignmentsCollection))
 							throw new RuntimeException("Les affectations sont obligatoire");
 						return __inject__(AssignmentsBusiness.class).saveScopeFunctions(assignmentsCollection);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response saveScopeFunctionsThenExport(List<AssignmentsDto> collection) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						if(CollectionHelper.isEmpty(collection))
+							throw new RuntimeException("Les affectations sont obligatoire");
+						Collection<Assignments> assignmentsCollection = new ArrayList<>();
+						collection.forEach(index -> {
+							Assignments assignments = EntityFinder.getInstance().find(Assignments.class, index.getIdentifier());
+							assignments.set__auditWho__(index.get__auditWho__());
+							if(assignments != null) {
+								assignmentsCollection.add(assignments);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_CREDIT_MANAGER_HOLDER, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_CREDIT_MANAGER_ASSISTANT, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_AUTHORIZING_OFFICER_ASSISTANT, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_FINANCIAL_CONTROLLER_ASSISTANT, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_HOLDER, index);
+								setScopeFunctionFromString(assignments, Assignments.FIELD_ACCOUNTING_ASSISTANT, index);
+							}							
+						});
+						if(CollectionHelper.isEmpty(assignmentsCollection))
+							throw new RuntimeException("Les affectations sont obligatoire");
+						return __inject__(AssignmentsBusiness.class).saveScopeFunctionsThenExport(assignmentsCollection);
 					}
 				};
 			}

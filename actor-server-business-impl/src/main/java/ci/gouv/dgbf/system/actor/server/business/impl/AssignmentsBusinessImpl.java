@@ -517,6 +517,15 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Override
 	public TransactionResult saveScopeFunctions(Collection<Assignments> collection) {
 		TransactionResult transactionResult = saveScopeFunctions(collection, EntityManagerGetter.getInstance().get());
+		
+		//Because transaction has not been committed yet
+		//exportAsynchronously(collection.iterator().next().get__auditWho__());
+		return transactionResult;
+	}
+	
+	@Override
+	public TransactionResult saveScopeFunctionsThenExport(Collection<Assignments> collection) {
+		TransactionResult transactionResult = saveScopeFunctions(collection);
 		exportAsynchronously(collection.iterator().next().get__auditWho__());
 		return transactionResult;
 	}
@@ -642,6 +651,14 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Override
 	public TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode) {		
 		TransactionResult transactionResult = applyModel(model, filter, overridablesFieldsNames, actorCode, EntityManagerGetter.getInstance().get());
+		//Because transaction has not been committed yet
+		//exportAsynchronously(actorCode);
+		return transactionResult;
+	}
+	
+	@Override
+	public TransactionResult applyModelThenExport(Assignments model, Filter filter,Collection<String> overridablesFieldsNames, String actorCode) {
+		TransactionResult transactionResult = applyModel(model, filter, overridablesFieldsNames, actorCode);
 		exportAsynchronously(actorCode);
 		return transactionResult;
 	}
@@ -779,7 +796,8 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		AssignmentsQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date(),EntityManagerGetter.getInstance().get());
 	}
 	
-	private void exportAsynchronously(String actorCode) {
+	@Override
+	public void exportAsynchronously(String actorCode) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

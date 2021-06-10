@@ -42,6 +42,13 @@ public interface AssignmentsRepresentation extends SpecificRepresentation<Assign
 	Response applyModel(AssignmentsDto assignments,Filter.Dto filter,List<String> overridablesFieldsNames,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
+	@Path(PATH_APPLY_MODEL_THEN_EXPORT)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Appliquer un modèle")
+	Response applyModelThenExport(AssignmentsDto assignments,Filter.Dto filter,List<String> overridablesFieldsNames,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
+	
+	@POST
 	@Path(PATH_APPLY_MODEL_INTERNAL)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
@@ -49,11 +56,25 @@ public interface AssignmentsRepresentation extends SpecificRepresentation<Assign
 	Response applyModel(AssignmentsDto assignments,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
 	
 	@POST
+	@Path(PATH_APPLY_MODEL_THEN_EXPORT_INTERNAL)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Appliquer un modèle")
+	Response applyModelThenExport(AssignmentsDto assignments,@QueryParam(QUERY_PARAMETER_NAME_ACTOR) String actorCode);
+	
+	@POST
 	@Path(PATH_SAVE_SCOPE_FUNCTIONS)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Enregistrer des affectations")
 	Response saveScopeFunctions(List<AssignmentsDto> collection);
+	
+	@POST
+	@Path(PATH_SAVE_SCOPE_FUNCTIONS_THEN_EXPORT)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	//@Operation(description = "Enregistrer des affectations")
+	Response saveScopeFunctionsThenExport(List<AssignmentsDto> collection);
 	
 	@POST
 	@Path(PATH_CLEAN)
@@ -87,8 +108,11 @@ public interface AssignmentsRepresentation extends SpecificRepresentation<Assign
 	String PATH_DERIVE_ALL_VALUES = "derivertouteslesvaleurs";
 	String PATH_INITIALIZE = "initialize";
 	String PATH_APPLY_MODEL = "applyModel";
+	String PATH_APPLY_MODEL_THEN_EXPORT = "applyModelThenExport";
 	String PATH_APPLY_MODEL_INTERNAL = "applyModelInternal";
+	String PATH_APPLY_MODEL_THEN_EXPORT_INTERNAL = "applyModelThenExportInternal";
 	String PATH_SAVE_SCOPE_FUNCTIONS = "saveScopeFunctions";
+	String PATH_SAVE_SCOPE_FUNCTIONS_THEN_EXPORT = "saveScopeFunctionsThenExport";
 	String PATH_CLEAN = "effacer";
 	String PATH_IMPORT = "importer";
 	String PATH_IMPORT_NEWS = "importernouvelles";
