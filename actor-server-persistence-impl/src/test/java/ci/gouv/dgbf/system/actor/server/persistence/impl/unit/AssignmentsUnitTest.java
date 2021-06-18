@@ -6,8 +6,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityUpdater;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.audit.AuditReader;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
@@ -17,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsReader;
 
 public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -112,5 +118,42 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
 		assertThat(collection).isNotEmpty();
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
+	}
+	
+	@Test
+	public void create(){
+		String identifier = "AFF01";
+		Collection<Assignments> histories = null;
+		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
+		assertThat(histories).isNull();		
+		
+		Assignments assignments = new Assignments().setIdentifier(identifier);
+		assignments.setExecutionImputation(EntityFinder.getInstance().find(ExecutionImputation.class, "2021130010100034266B70FF1A84632B0981B585E11CE7F"));
+		EntityCreator.getInstance().createOneInTransaction(assignments);
+		assignments = EntityFinder.getInstance().find(Assignments.class, identifier);
+		assertThat(assignments).isNotNull();
+		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
+		assertThat(histories).hasSize(1);
+		for(Assignments history : histories) {
+			assertThat(history.getCreditManagerHolder()).isNull();
+		}
+		
+		assignments.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "O3001"));
+		EntityUpdater.getInstance().updateOneInTransaction(assignments);
+		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
+		assertThat(histories).hasSize(2);
+		
+		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNotNull();
+		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder().getIdentifier()).isEqualTo("O3001");
+		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder().getName()).isEqualTo("Mon ordo du budget");
+		
+		assertThat(assignments.get__auditRecords__()).isNull();
+		new AssignmentsAuditsReader().readThenSet(List.of(assignments), null);
+		assertThat(assignments.get__auditRecords__()).isNotNull();
+		histories = assignments.get__auditRecords__();
+		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolderAsString()).isEqualTo("O3001");
 	}
 }

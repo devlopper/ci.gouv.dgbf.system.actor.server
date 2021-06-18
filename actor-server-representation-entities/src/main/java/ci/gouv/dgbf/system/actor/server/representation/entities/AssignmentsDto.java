@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringAuditedImpl;
@@ -54,4 +55,6 @@ public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringAudite
 	public AssignmentsDto setIdentifier(String identifier) {
 		return (AssignmentsDto) super.setIdentifier(identifier);
 	}
+	
+	private ArrayList<AssignmentsDto> __auditRecords__;
 }

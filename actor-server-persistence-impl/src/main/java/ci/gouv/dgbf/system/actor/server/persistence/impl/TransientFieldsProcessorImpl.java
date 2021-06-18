@@ -22,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunctio
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHoldersReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
@@ -91,6 +92,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader().readThenSet(assignmentsCollection, null);
 			else if(Assignments.FIELDS_HOLDERS.equals(fieldName))
 				new AssignmentsHoldersReader().readThenSet(assignmentsCollection, null);
+			else if(Assignments.FIELD___AUDIT_RECORDS__.equals(fieldName))
+				new AssignmentsAuditsReader().readThenSet(assignmentsCollection, null);
 		}
 	}
 	

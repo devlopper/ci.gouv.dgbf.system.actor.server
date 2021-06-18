@@ -24,6 +24,10 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringAuditedImpl;
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.AuditOverrides;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,10 +82,14 @@ import lombok.experimental.Accessors;
 				}
 		)
 })
+//@Audited
+@AuditOverrides(value = {
+		@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringAuditedImpl.class)
+})
 public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedImpl implements MeaEntity,Serializable {
 
 	/* Imputation */
-	
+	//@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_EXECUTION_IMPUTATION) @NotNull private ExecutionImputation executionImputation;
 	
 	@Transient private String sectionAsString;
@@ -97,22 +105,30 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	
 	/* Gestionnaire de crédits */
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_CREDIT_MANAGER_HOLDER) private ScopeFunction creditManagerHolder;
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_CREDIT_MANAGER_ASSISTANT) private ScopeFunction creditManagerAssistant;
 	
 	/* Ordonnateur */
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_AUTHORIZING_OFFICER_HOLDER) private ScopeFunction authorizingOfficerHolder;
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_AUTHORIZING_OFFICER_ASSISTANT) private ScopeFunction authorizingOfficerAssistant;
 	
 	/* Controleur financier */
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_FINANCIAL_CONTROLLER_HOLDER) private ScopeFunction financialControllerHolder;
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_FINANCIAL_CONTROLLER_ASSISTANT) private ScopeFunction financialControllerAssistant;
 	
 	/* Comptable */
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_ACCOUNTING_HOLDER) private ScopeFunction accountingHolder;
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_ACCOUNTING_ASSISTANT) private ScopeFunction accountingAssistant;
 	
 	/**/
@@ -131,6 +147,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	@Transient private String accountingHolderAsString;
 	@Transient private String accountingAssistantAsString;
 	
+	@Transient private Collection<Assignments> __auditRecords__;
 	/**/
 	
 	public Assignments(String identifier,String executionImputationIdentifier
