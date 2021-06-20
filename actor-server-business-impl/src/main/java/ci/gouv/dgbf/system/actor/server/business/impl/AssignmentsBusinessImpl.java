@@ -537,7 +537,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("Assignments collection", collection);
 		TransactionResult transactionResult = new TransactionResult().setName("Enregistrement").setTupleName("Affectation");
 		collection.forEach(x -> {
-			x.set__auditFunctionality__("Modification");	
+			x.set__auditFunctionality__("Modification par élément");	
 		});
 		setAssistants(collection,List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER,Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER,Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER
 				,Assignments.FIELD_ACCOUNTING_HOLDER),entityManager);

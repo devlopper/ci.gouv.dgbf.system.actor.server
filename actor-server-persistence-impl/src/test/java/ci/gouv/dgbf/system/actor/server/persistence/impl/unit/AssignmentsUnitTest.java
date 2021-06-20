@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.object.marker.AuditableWhoDoneWhatWhen;
 import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.EntityUpdater;
+import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.audit.AuditReader;
@@ -22,7 +25,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsReader;
 
 public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -130,9 +132,11 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		Assignments assignments = new Assignments().setIdentifier(identifier);
 		assignments.setExecutionImputation(EntityFinder.getInstance().find(ExecutionImputation.class, "2021130010100034266B70FF1A84632B0981B585E11CE7F"));
 		EntityCreator.getInstance().createOneInTransaction(assignments);
-		assignments = EntityFinder.getInstance().find(Assignments.class, identifier);
+		assignments = EntityReader.getInstance().readOneDynamically(Assignments.class, new QueryExecutorArguments()
+				.addFilterFieldsValues(Querier.PARAMETER_NAME_IDENTIFIER,identifier).addProcessableTransientFieldsNames(AuditableWhoDoneWhatWhen.FIELD___AUDIT_RECORDS__));
+		//EntityFinder.getInstance().find(Assignments.class, identifier);
 		assertThat(assignments).isNotNull();
-		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
+		histories = assignments.get__auditRecords__();
 		assertThat(histories).hasSize(1);
 		for(Assignments history : histories) {
 			assertThat(history.getCreditManagerHolder()).isNull();
@@ -140,18 +144,11 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		
 		assignments.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "O3001"));
 		EntityUpdater.getInstance().updateOneInTransaction(assignments);
-		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
+		assignments = EntityReader.getInstance().readOneDynamically(Assignments.class, new QueryExecutorArguments()
+				.addFilterFieldsValues(Querier.PARAMETER_NAME_IDENTIFIER,identifier).addProcessableTransientFieldsNames(AuditableWhoDoneWhatWhen.FIELD___AUDIT_RECORDS__));
+		histories = assignments.get__auditRecords__();
 		assertThat(histories).hasSize(2);
 		
-		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNotNull();
-		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder().getIdentifier()).isEqualTo("O3001");
-		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder().getName()).isEqualTo("Mon ordo du budget");
-		
-		assertThat(assignments.get__auditRecords__()).isNull();
-		new AssignmentsAuditsReader().readThenSet(List.of(assignments), null);
-		assertThat(assignments.get__auditRecords__()).isNotNull();
-		histories = assignments.get__auditRecords__();
 		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolderAsString()).isEqualTo("O3001");
