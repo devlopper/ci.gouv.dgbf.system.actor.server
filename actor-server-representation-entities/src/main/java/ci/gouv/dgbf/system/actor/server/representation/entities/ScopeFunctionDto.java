@@ -56,6 +56,8 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	
 	private String signatureSpecimenReadReportURIQuery;
 	
+	private ArrayList<ScopeFunctionDto> __auditRecords__;
+	
 	@Override
 	public ScopeFunctionDto setIdentifier(String identifier) {
 		return (ScopeFunctionDto) super.setIdentifier(identifier);

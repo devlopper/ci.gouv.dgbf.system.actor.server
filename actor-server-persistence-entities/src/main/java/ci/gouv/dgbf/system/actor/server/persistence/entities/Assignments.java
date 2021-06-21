@@ -37,10 +37,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Assignments.TABLE_NAME)
 @AttributeOverrides(value= {
-		@AttributeOverride(name = Assignments.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+		@AttributeOverride(name = Assignments.FIELD___AUDIT_WHO__,column = @Column(name=Assignments.COLUMN_AUDIT_ACTOR))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHAT__,column = @Column(name=Assignments.COLUMN_AUDIT_ACTION))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name=Assignments.COLUMN_AUDIT_DATE))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name=Assignments.COLUMN_AUDIT_FUNCTIONALITY))
 })
 @NamedStoredProcedureQueries(value = {
 	@NamedStoredProcedureQuery(
@@ -273,6 +273,11 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String COLUMN_FINANCIAL_CONTROLLER_ASSISTANT = "A"+COLUMN_FINANCIAL_CONTROLLER_HOLDER;
 	public static final String COLUMN_ACCOUNTING_HOLDER = "CPT";
 	public static final String COLUMN_ACCOUNTING_ASSISTANT = "A"+COLUMN_ACCOUNTING_HOLDER;
+	
+	public static final String COLUMN_AUDIT_ACTOR = "AUDIT_ACTEUR";
+	public static final String COLUMN_AUDIT_FUNCTIONALITY = "AUDIT_FONCTIONALITE";
+	public static final String COLUMN_AUDIT_ACTION = "AUDIT_ACTION";
+	public static final String COLUMN_AUDIT_DATE = "AUDIT_DATE";
 	
 	public static final List<String> COLUMNS_SCOPES_FUNCTIONS = List.of(
 			COLUMN_CREDIT_MANAGER_HOLDER,COLUMN_CREDIT_MANAGER_ASSISTANT

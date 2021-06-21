@@ -144,3 +144,49 @@ MERGE
     ,l.etat = a.etat,l.date_etat = a.date_etat;
     COMMIT;
 END;
+
+CREATE OR REPLACE PROCEDURE P_IMPORTER_POSTE_AUD_NVL IS
+rev INTEGER;
+date_ DATE;
+timestamp_ INTEGER;
+BEGIN
+    SELECT TO_DATE('2021/01/01', 'yyyy/mm/dd') INTO date_ FROM DUAL;
+    SELECT TRUNC((((TRUNC(date_, 'MI') - DATE '1970-01-01') * 86400 + EXTRACT(SECOND FROM CURRENT_TIMESTAMP)) * 10) / 10) INTO timestamp_ FROM DUAL;
+    FOR p IN (
+        SELECT p.identifiant,p.code,p.libelle,p.fonction,p.domaine,p.localite,p.audit_acteur,p.audit_fonctionalite,p.audit_action,p.audit_date
+        FROM SIIBC_ACTEUR.poste p 
+        WHERE p.identifiant NOT IN (SELECT DISTINCT identifiant FROM SIIBC_ACTEUR.poste_aud)
+    )LOOP
+        SELECT SIIBC_ACTEUR.HIBERNATE_SEQUENCE.NEXTVAL INTO rev FROM DUAL;
+        INSERT INTO REVINFO(REV,REVTSTMP) VALUES (rev,timestamp_);        
+        INSERT INTO SIIBC_ACTEUR.poste_aud(identifiant, rev, revtype,code,libelle,fonction,domaine,localite
+        ,audit_acteur,audit_fonctionalite,audit_action,audit_date) 
+        VALUES (p.identifiant,rev,0,p.code,p.libelle,p.fonction,p.domaine,p.localite,NVL(p.audit_acteur,'SYSTEME')
+        ,NVL(p.audit_fonctionalite,'INITIALISATION'),NVL(p.audit_action,'CREATION'),NVL(p.audit_date,date_));        
+        rev := rev + 1;
+    END LOOP;
+    COMMIT;
+END;
+
+CREATE OR REPLACE PROCEDURE P_IMPORTER_AFF_AUD_NVL IS
+rev INTEGER;
+date_ DATE;
+timestamp_ INTEGER;
+BEGIN
+    SELECT TO_DATE('2021/01/01', 'yyyy/mm/dd') INTO date_ FROM DUAL;
+    SELECT TRUNC((((TRUNC(date_, 'MI') - DATE '1970-01-01') * 86400 + EXTRACT(SECOND FROM CURRENT_TIMESTAMP)) * 10) / 10) INTO timestamp_ FROM DUAL;
+    FOR a IN (
+        SELECT a.identifiant,a.gc,a.agc,a.ord,a.aord,a.cf,a.acf,a.cpt,a.acpt,a.audit_acteur,a.audit_fonctionalite,a.audit_action,a.audit_date
+        FROM SIIBC_ACTEUR.affectations a 
+        WHERE a.identifiant NOT IN (SELECT DISTINCT identifiant FROM SIIBC_ACTEUR.affectations_aud)
+    )LOOP
+        SELECT SIIBC_ACTEUR.HIBERNATE_SEQUENCE.NEXTVAL INTO rev FROM DUAL;
+        INSERT INTO REVINFO(REV,REVTSTMP) VALUES (rev,timestamp_);        
+        INSERT INTO SIIBC_ACTEUR.affectations_aud(identifiant, rev,revtype,gc,agc,ord,aord,cf,acf,cpt,acpt
+        ,audit_acteur,audit_fonctionalite,audit_action,audit_date) 
+        VALUES (a.identifiant,rev,0,a.gc,a.agc,a.ord,a.aord,a.cf,a.acf,a.cpt,a.acpt,NVL(a.audit_acteur,'SYSTEME')
+        ,NVL(a.audit_fonctionalite,'INITIALISATION'),NVL(a.audit_action,'CREATION'),NVL(a.audit_date,date_));
+        rev := rev + 1;
+    END LOOP;
+    COMMIT;
+END;

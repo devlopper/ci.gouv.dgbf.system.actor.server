@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Cacheable;
@@ -24,13 +26,20 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl;
-import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 import org.cyk.utility.__kernel__.script.ScriptExecutor;
 import org.cyk.utility.__kernel__.script.ScriptHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.AuditOverrides;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +47,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-@Entity @Table(name=ScopeFunction.TABLE_NAME)
+@Entity @Access(AccessType.FIELD) @Table(name=ScopeFunction.TABLE_NAME)
 @AttributeOverrides(value= {
 		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
 		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
@@ -47,44 +56,54 @@ import lombok.experimental.Accessors;
 })
 @Cacheable
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
+@AuditOverrides(value = {
+	@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl.class)
+	,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl.class)
+	,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl.class)
+	//,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringImpl.class)
+})
+//@Audited
 public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements MeaEntity,Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Transient private String codePrefix;
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE) @NotNull private Scope scope;
 	@Transient private String scopeAsString;
 	@Transient private String scopeIdentifier;
 	@Transient private String scopeCode;
 	@Transient private ScopeTypeFunction scopeTypeFunction;
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
 	@Transient private String functionCode;
 	@Transient private String functionAsString;
 	@Transient private Boolean isHolder;
 	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
 	@Transient private String localityAsString;
 	@Transient private String localityIdentifier;
 	@Transient private String localityCode;
 	
 	//@ManyToOne @JoinColumn(name = COLUMN_ACTIVITY) private Activity activity;
-	@Column(name = COLUMN_ACTIVITY_IDENTIFIER) private String activityIdentifier;
+	@NotAudited @Column(name = COLUMN_ACTIVITY_IDENTIFIER) private String activityIdentifier;
 	//@Transient private String activityAsString;
 	//@Transient private String activityIdentifier;
 	//@Transient private String activityCode;
 	
-	@Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
+	@NotAudited @Column(name = COLUMN_NUMBER_OF_ACTOR) private Integer numberOfActor;
 	//@Column(name = COLUMN_ACTORS_CODES) private String actorsCodes;
 	@Transient private Collection<String> actorsNames;
 	
 	@Transient private Collection<String> actorsAsStrings;
 	@Transient private Collection<String> actorsCodes;
 	@Transient private String actorAsString;
-	@Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
-	@Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
+	@NotAudited @Column(name = COLUMN_DOCUMENT_NUMBER) private Integer documentNumber;
+	@NotAudited @Column(name = COLUMN_ORDER_NUMBER) private Integer orderNumber;
 	
-	@Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
+	@NotAudited @Column(name = COLUMN_PARENT_IDENTIFIER) private String parentIdentifier;
 	@Transient private ScopeFunction parent;
 	@Transient private String parentCode;
 	@Transient private String parentAsString;
@@ -92,10 +111,10 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Collection<String> childrenIdentifiers;
 	@Transient private Collection<String> childrenCodesNames;
 	
-	@Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
+	@NotAudited @Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
 	
-	@Column(name = "ETAT") private String __mea_statut__;
-	@Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;
+	@NotAudited @Column(name = "ETAT") private String __mea_statut__;
+	@NotAudited @Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;
 	
 	@Transient private Boolean shared;
 	@Transient private String sharedAsString;
@@ -107,6 +126,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private String grantedAsString;
 		
 	@Transient private String assignmentToActorMessage;
+	
+	@Transient private Collection<ScopeFunction> __auditRecords__;
 	
 	public Byte incrementChildrenCount() {		
 		if(childrenCount == null)

@@ -26,7 +26,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public class AssignmentsUnitTest extends AbstractUnitTestMemory {
+public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 
 	@Test
@@ -149,8 +149,9 @@ public class AssignmentsUnitTest extends AbstractUnitTestMemory {
 		histories = assignments.get__auditRecords__();
 		assertThat(histories).hasSize(2);
 		
-		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolderAsString()).isEqualTo("O3001");
+		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolderAsString()).isEqualTo("O3001");
 	}
+	
 }

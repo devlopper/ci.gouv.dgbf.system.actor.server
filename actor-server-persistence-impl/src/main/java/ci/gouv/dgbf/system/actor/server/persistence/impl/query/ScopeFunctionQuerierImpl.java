@@ -19,6 +19,8 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -28,6 +30,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 
 	@Override
 	public ScopeFunction readOne(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+			return DynamicOneExecutor.getInstance().read(ScopeFunction.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 			return readByIdentifierForUI(arguments);
 		return super.readOne(arguments);
@@ -36,6 +40,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<ScopeFunction> readMany(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().read(ScopeFunction.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return readWhereFilter(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -58,6 +64,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Long count(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().count(ScopeFunction.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return countWhereFilter(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))

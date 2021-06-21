@@ -48,7 +48,7 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	void updateActorsCodesFromExternal();
 	
 	String SAVE = "ScopeFunction.save";
-	//String SAVE_NAME = "ScopeFunction.saveName";
+	String SAVE_NAME = "ScopeFunction.saveName";
 
 	String DELETE_ALL = "ScopeFunction.deleteAll";	
 }
