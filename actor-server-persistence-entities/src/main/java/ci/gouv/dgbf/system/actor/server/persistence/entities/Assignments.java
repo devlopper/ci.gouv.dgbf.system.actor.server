@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -243,6 +244,13 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 			FIELD_CREDIT_MANAGER_HOLDER,FIELD_AUTHORIZING_OFFICER_HOLDER,FIELD_FINANCIAL_CONTROLLER_HOLDER,FIELD_ACCOUNTING_HOLDER
 		);
 	
+	public static final List<String> FIELDS_SCOPE_FUNCTIONS_HOLDERS_AS_STRING = new ArrayList<>();
+	static {
+		FIELDS_SCOPES_FUNCTIONS_HOLDERS.forEach(fieldName -> {
+			FIELDS_SCOPE_FUNCTIONS_HOLDERS_AS_STRING.add(fieldName+"AsString");
+		});
+	}
+	
 	public static final List<String> FIELDS_SCOPES_FUNCTIONS = List.of(
 			FIELD_CREDIT_MANAGER_HOLDER,FIELD_CREDIT_MANAGER_ASSISTANT
 			,FIELD_AUTHORIZING_OFFICER_HOLDER,FIELD_AUTHORIZING_OFFICER_ASSISTANT
@@ -278,6 +286,9 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String COLUMN_AUDIT_FUNCTIONALITY = "AUDIT_FONCTIONALITE";
 	public static final String COLUMN_AUDIT_ACTION = "AUDIT_ACTION";
 	public static final String COLUMN_AUDIT_DATE = "AUDIT_DATE";
+	
+	public static final List<String> COLUMNS_SCOPE_FUNCTIONS_HOLDERS = List.of(
+			COLUMN_CREDIT_MANAGER_HOLDER,COLUMN_AUTHORIZING_OFFICER_HOLDER,COLUMN_FINANCIAL_CONTROLLER_HOLDER,COLUMN_ACCOUNTING_HOLDER);
 	
 	public static final List<String> COLUMNS_SCOPES_FUNCTIONS = List.of(
 			COLUMN_CREDIT_MANAGER_HOLDER,COLUMN_CREDIT_MANAGER_ASSISTANT

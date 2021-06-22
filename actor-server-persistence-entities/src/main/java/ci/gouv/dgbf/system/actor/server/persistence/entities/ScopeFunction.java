@@ -49,10 +49,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Access(AccessType.FIELD) @Table(name=ScopeFunction.TABLE_NAME)
 @AttributeOverrides(value= {
-		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name=ScopeFunction.COLUMN_AUDIT_ACTOR))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name=ScopeFunction.COLUMN_AUDIT_ACTION))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name=ScopeFunction.COLUMN_AUDIT_DATE))
+		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name=ScopeFunction.COLUMN_AUDIT_FUNCTIONALITY))
 })
 @Cacheable
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
@@ -389,6 +389,8 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static final String TABLE_NAME = "POSTE";
 	
+	public static final String COLUMN_CODE = "CODE";
+	public static final String COLUMN_NAME = "LIBELLE";
 	public static final String COLUMN_SCOPE = "DOMAINE";
 	public static final String COLUMN_FUNCTION = "FONCTION";
 	public static final String COLUMN_LOCALITY = "LOCALITE";
@@ -399,6 +401,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_DOCUMENT_NUMBER = "NUMERO_DOCUMENT";
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
 	public static final String COLUMN_CODIFICATION_DATE = "DATE_CODIFICATION";
+	
+	public static final String COLUMN_AUDIT_ACTOR = "AUDIT_ACTEUR";
+	public static final String COLUMN_AUDIT_FUNCTIONALITY = "AUDIT_FONCTIONALITE";
+	public static final String COLUMN_AUDIT_ACTION = "AUDIT_ACTION";
+	public static final String COLUMN_AUDIT_DATE = "AUDIT_DATE";
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_CODE_FORMAT = "code_%s";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_SCOPE_NAME_FORMAT = "libelle_%s";

@@ -198,8 +198,8 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertThat(scopeFunction).isNotNull();
 		assertThat(scopeFunction.get__auditRecords__()).hasSize(2);
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 0).getCode()).isEqualTo("sf01");
-		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 0).getName()).isEqualTo("mysf 01");
+		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 0).getName()).isEqualTo("New Name");
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getCode()).isEqualTo("sf01");
-		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getName()).isEqualTo("New Name");
+		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getName()).isEqualTo("mysf 01");
 	}
 }

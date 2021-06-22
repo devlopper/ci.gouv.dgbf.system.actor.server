@@ -16,8 +16,10 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Argume
 import org.cyk.utility.persistence.server.query.string.RuntimeQueryStringBuilder;
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
@@ -77,7 +79,9 @@ public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.Abs
 	@Override
 	protected void populatePredicate(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		super.populatePredicate(arguments, builderArguments, predicate, filter);
-		if(arguments.getQuery().isIdentifierEqualsDynamic(Locality.class)) {
+		if(arguments.getQuery().isIdentifierEqualsDynamic(Actor.class)) {
+			addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ActorQuerier.PARAMETER_NAME_CODE);
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Locality.class)) {
 			addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_TYPE);
 			addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
 		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Assignments.class)) {

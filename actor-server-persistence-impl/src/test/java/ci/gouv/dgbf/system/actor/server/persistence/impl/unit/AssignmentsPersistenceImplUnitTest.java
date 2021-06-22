@@ -142,7 +142,7 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 			assertThat(history.getCreditManagerHolder()).isNull();
 		}
 		
-		assignments.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "O3001"));
+		assignments.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "x001"));
 		EntityUpdater.getInstance().updateOneInTransaction(assignments);
 		assignments = EntityReader.getInstance().readOneDynamically(Assignments.class, new QueryExecutorArguments()
 				.addFilterFieldsValues(Querier.PARAMETER_NAME_IDENTIFIER,identifier).addProcessableTransientFieldsNames(AuditableWhoDoneWhatWhen.FIELD___AUDIT_RECORDS__));
@@ -151,7 +151,7 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		
 		assertThat(CollectionHelper.getElementAt(histories, 1).getCreditManagerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolderAsString()).isEqualTo("O3001");
+		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolderAsString()).isEqualTo("O3000");
 	}
 	
 }

@@ -21,7 +21,11 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.From;
 import org.cyk.utility.persistence.query.Language.Order;
@@ -31,12 +35,11 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.time.TimeHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -87,6 +90,10 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE_NULLABLE = PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_ADMINISTRATIVE_UNIT_NAME = "visibleAdministrativeUnitName";
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Actor.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Actor.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Actor.class, QueryName.COUNT_DYNAMIC);
+	
 	/* Read profile informations by identifier */
 	String QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(Actor.class, "readProfileInformationsByIdentifierForUI");
 	Actor readProfileInformationsByIdentifierForUI(String identifier);
@@ -99,6 +106,8 @@ public interface ActorQuerier extends Querier {
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
 	Actor readOne(QueryExecutorArguments arguments);
+	Collection<Actor> readMany(QueryExecutorArguments arguments);
+	Long count(QueryExecutorArguments arguments);
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ActorQuerier,Serializable {
@@ -114,6 +123,8 @@ public interface ActorQuerier extends Querier {
 		
 		@Override
 		public Actor readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(Actor.class,arguments.setQuery(null));
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_ONE_WITH_ALL_PRIVILEGES_BY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readOneWithAllPrivilegesByIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_PROFILE_INFORMATIONS_BY_CODE.equals(arguments.getQuery().getIdentifier()))
@@ -123,6 +134,20 @@ public interface ActorQuerier extends Querier {
 			if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
 				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			return QueryExecutor.getInstance().executeReadOne(Actor.class, arguments);
+		}
+		
+		@Override
+		public Collection<Actor> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(Actor.class,arguments.setQuery(null));
+			throw new RuntimeException("Actor read many not yet handled : "+arguments);
+		}
+		
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(Actor.class,arguments.setQuery(null));
+			throw new RuntimeException("Actor count not yet handled : "+arguments);
 		}
 		
 		@Override

@@ -2,19 +2,18 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.persistence.server.audit.AuditIdentity;
-import org.hibernate.envers.AuditReader;
+import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsNativeReader;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsRecordsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.IdentityIdentifierAsCodeNamesReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeFunctionsAuditsRecordsReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class AuditReaderImpl extends org.cyk.utility.persistence.server.hibernate.AuditReaderImpl implements Serializable {
@@ -49,10 +48,12 @@ public class AuditReaderImpl extends org.cyk.utility.persistence.server.hibernat
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> Collection<T> getInstanceByIdentifierByRevision(Class<T> klass, Arguments<T> arguments, AuditReader reader,Object identifier, Collection<Number> numbers) {
+	protected <T> AbstractAuditsRecordsNativeReader<T> getAuditsRecordsNativeReader(Class<T> klass,Arguments<T> arguments, Object identifier, Collection<Number> numbers) {
 		if(Assignments.class.equals(klass))
-			return (Collection<T>) new AssignmentsAuditsRecordsReader().readByIdentifiersThenInstantiate(List.of(identifier.toString()), Map.of("numbers",numbers));
-		return super.getInstanceByIdentifierByRevision(klass, arguments, reader, identifier, numbers);
+			return (AbstractAuditsRecordsNativeReader<T>) new AssignmentsAuditsRecordsReader();
+		if(ScopeFunction.class.equals(klass))
+			return (AbstractAuditsRecordsNativeReader<T>) new ScopeFunctionsAuditsRecordsReader();
+		return super.getAuditsRecordsNativeReader(klass, arguments, identifier, numbers);
 	}
 	
 	/**/
