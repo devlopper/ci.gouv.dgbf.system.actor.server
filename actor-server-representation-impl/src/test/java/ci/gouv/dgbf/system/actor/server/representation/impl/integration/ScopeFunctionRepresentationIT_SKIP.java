@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 
-public class ScopeFunctionRepresentationIT extends AbstractIT {
+public class ScopeFunctionRepresentationIT_SKIP extends AbstractIT {
 
     @Test @InSequence(1)
     public void computeCreditManagerHolderNameByAdministrativeUnitIdentifier() {

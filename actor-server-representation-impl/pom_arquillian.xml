@@ -48,5 +48,11 @@
 			<artifactId>jee-utility-test-arquillian-bootablejar</artifactId>
 			<version>0.1.0</version>
 		</dependency>		
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.test.representation.server</groupId>
+			<artifactId>jee-utility-test-representation-server</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>	
 </project>

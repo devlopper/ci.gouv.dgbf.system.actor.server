@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -9,7 +11,7 @@
 	</parent>
 
 	<name>Representation Implementation based on JAXRS</name>
-	
+
 	<groupId>ci.gouv.dgbf.system.actor.server.representation</groupId>
 	<artifactId>actor-server-representation-impl</artifactId>
 	<packaging>jar</packaging>
@@ -30,26 +32,33 @@
 			<artifactId>jee-utility-server-representation-impl</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.representation.server</groupId>
 			<artifactId>jee-utility-representation-server</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.jboss.weld.se</groupId>
-		    <artifactId>weld-se-core</artifactId>
-		    <version>3.1.5.Final</version>
+			<groupId>org.jboss.weld.se</groupId>
+			<artifactId>weld-se-core</artifactId>
+			<version>3.1.5.Final</version>
 		</dependency>
-		
+
 		<!-- Integration Test -->
-		
-        <dependency>
+
+		<dependency>
 			<groupId>org.cyk.jee.utility.test.arquillian.bootablejar</groupId>
 			<artifactId>jee-utility-test-arquillian-bootablejar</artifactId>
 			<version>0.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>		
+
+		<dependency>
+			<groupId>org.cyk.jee.utility.test.representation.server</groupId>
+			<artifactId>jee-utility-test-representation-server</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

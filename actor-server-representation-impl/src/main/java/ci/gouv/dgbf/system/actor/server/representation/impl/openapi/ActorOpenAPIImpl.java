@@ -1,5 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl.openapi;
 
+import java.io.Serializable;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -19,13 +21,13 @@ import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.eclipse.microprofile.openapi.annotations.servers.Server;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
@@ -33,28 +35,23 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 
-@Path(OpenAPIImpl.PATH)
-@Server(url = "/api")
-public class OpenAPIImpl extends AbstractOpenAPIImpl {
+@Path(ActorOpenAPIImpl.PATH)
+@Tag(name = "Acteur")
+public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements Serializable {
 
-	public static final String PATH = "open";
+	public static final String PATH = "open/acteur";
 	
-	/* Acteur */
-	private static final String TAG_ACTOR = "Acteur";
-	private static final String PATH_ACTOR = "acteur";
-	private static final String PATH_ACTOR_CREATE = PATH_ACTOR+"/creer";
-	
+	public static final String OPERATION_CREATE = "creer";
 	@POST
-	@Path(PATH_ACTOR_CREATE)
+	@Path(OPERATION_CREATE)
 	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 	@Produces({ MediaType.TEXT_PLAIN})
-	@Tag(name = TAG_ACTOR)
 	@Operation(description = "Créer un acteur",operationId = "creer_acteur")
 	@APIResponses(value = {
-			@APIResponse(responseCode = "200",description = "Acteur créé", content = @Content(mediaType = MediaType.TEXT_PLAIN))
-			,@APIResponse(responseCode = "500",description = "Erreur lors de la création de l'acteur", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			@APIResponse(description = "Acteur créé",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Erreur lors de la création de l'acteur",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})	
-	public Response createActor(
+	public Response create(
 			@Parameter(allowEmptyValue = false,description = "Nom",example = "Komenan",name = "nom",required = true)
 			@FormParam("nom") String firstName
 			
@@ -78,7 +75,7 @@ public class OpenAPIImpl extends AbstractOpenAPIImpl {
 					public TransactionResult transact() {
 						Actor actor = new Actor();
 						actor.setFirstName(firstName).setLastNames(lastNames).setElectronicMailAddress(electronicMailAddress).setCivilityFromIdentifier(civilityIdentifier)
-							.setGroupFromIdentifier(groupIdentifier);
+							.setGroupFromIdentifier(groupIdentifier).setEmailSendableAfterCreation(Boolean.TRUE);
 						__inject__(ActorBusiness.class).create(actor);
 						responseBuilderArguments.setStatus(Response.Status.CREATED);
 						return new TransactionResult().incrementNumberOfCreation(1l).setTupleName("acteur");
@@ -88,22 +85,20 @@ public class OpenAPIImpl extends AbstractOpenAPIImpl {
 		});
 	}
 	
-	private static final String PATH_ACTOR_GET = PATH_ACTOR+"/obtenir";
-	
+	public static final String OPERATION_GET = "obtenir";
 	@GET
-	@Path(PATH_ACTOR_GET)
+	@Path(OPERATION_GET)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
-	@Tag(name = TAG_ACTOR)
-	@Operation(description = "Obtenir un acteur",operationId = "obtenir_acteur")
+	@Operation(description = "Obtenir les informations d'un acteur",operationId = "obtenir_acteur")
 	@APIResponses(value = {
-			@APIResponse(responseCode = "200",description = "Acteur obtenu", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			@APIResponse(responseCode = "200",description = "Informations de l'acteur obtenues", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 			,@APIResponse(responseCode = "400",description = "Nom d'utilisateur obligatoire", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(responseCode = "404",description = "Nom d'utilisateur inconnu", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 	})	
-	public Response getActor(
-			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = "nom_utilisateur",required = true)
-			@QueryParam("nom_utilisateur") String code) {		
+	public Response get(
+			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = PARAMETER_USER_NAME,required = true)
+			@QueryParam(PARAMETER_USER_NAME) String code) {		
 		if(StringHelper.isBlank(code))
 			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
 		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments().setQuery(new Query()
@@ -113,26 +108,48 @@ public class OpenAPIImpl extends AbstractOpenAPIImpl {
 		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(MappingHelper.getSource(actor, ActorDto.class)));
 	}
 	
-	private static final String PATH_ACTOR_EXISTS = PATH_ACTOR+"/exister";
-	
+	public static final String OPERATION_GET_ELECTRONIC_MAIL_ADDRESS = "creer";
 	@GET
-	@Path(PATH_ACTOR_EXISTS)
-	@Consumes({MediaType.APPLICATION_JSON})
+	@Path(OPERATION_GET_ELECTRONIC_MAIL_ADDRESS)
 	@Produces({ MediaType.TEXT_PLAIN})
-	@Tag(name = TAG_ACTOR)
-	@Operation(description = "Vérifier l'existence d'un acteur",operationId = "verifier_existence_acteur")
+	@Operation(description = "Obtenir l'adresse électronique d'un acteur",operationId = "obtenir_adresse_electronique")
 	@APIResponses(value = {
-			@APIResponse(responseCode = "200",description = "Existence de l'acteur vérifiée", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			@APIResponse(responseCode = "200",description = "Adresse électronique de l'acteur", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(responseCode = "400",description = "Nom d'utilisateur obligatoire", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(responseCode = "404",description = "Nom d'utilisateur inconnu", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 	})
-	public Response isActorExists(
-			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = "nom_utilisateur",required = true)
-			@QueryParam("nom_utilisateur") String code) {
+	public Response getElectronicMailAddress(
+			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = PARAMETER_USER_NAME,required = true)
+			@QueryParam(PARAMETER_USER_NAME) String code) {		
 		if(StringHelper.isBlank(code))
 			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
-		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments().setQuery(new Query()
-				.setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)).addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_CODE,code));
-		System.out.println("OpenAPIImpl.isActorExists() ::: "+actor);
-		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(actor == null ? Boolean.FALSE : Boolean.TRUE));
+		String electronicMailAddress = ActorQuerier.getInstance().readElectronicMailAddressByCode(code);
+		if(StringHelper.isBlank(electronicMailAddress))
+			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();
+		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(electronicMailAddress));
 	}
+	
+	public static final String OPERATION_CHECK_EXISTENCE = "verifier_existence";
+	@GET
+	@Path(OPERATION_CHECK_EXISTENCE)
+	@Produces({ MediaType.TEXT_PLAIN})
+	@Operation(description = "Vérifier l'existence d'un acteur",operationId = "verifier_existence_acteur")
+	@APIResponses(value = {
+			@APIResponse(responseCode = "200",description = "Acteur existe", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(responseCode = "400",description = "Nom d'utilisateur obligatoire", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(responseCode = "404",description = "Nom d'utilisateur inconnu", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+	})
+	public Response checkExistense(
+			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = PARAMETER_USER_NAME,required = true)
+			@QueryParam(PARAMETER_USER_NAME) String code) {
+		if(StringHelper.isBlank(code))
+			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
+		if(!Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Actor.class, code)))
+			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();
+		return Response.ok().build();
+	}
+	
+	/**/
+	
+	public static final String PARAMETER_USER_NAME = "nom_utilisateur";
 }

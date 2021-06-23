@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.NoResultException;
+
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -24,6 +26,7 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
@@ -103,6 +106,8 @@ public interface ActorQuerier extends Querier {
 	
 	Actor instantiateOneToBeCreatedByPublic();
 	
+	String readElectronicMailAddressByCode(String code);
+	
 	//Collection<Actor> readMany(QueryExecutorArguments arguments);
 	//Long count(QueryExecutorArguments arguments);
 	Actor readOne(QueryExecutorArguments arguments);
@@ -111,6 +116,20 @@ public interface ActorQuerier extends Querier {
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ActorQuerier,Serializable {
+		
+		@Override
+		public String readElectronicMailAddressByCode(String code) {
+			if(StringHelper.isBlank(code))
+				return null;
+			try {
+				return (String) EntityManagerGetter.getInstance().get()
+						.createQuery(String.format("SELECT t.identity.%s FROM Actor t WHERE t.code = :code",Identity.FIELD_ELECTRONIC_MAIL_ADDRESS))
+						.setParameter("code", code)
+						.getSingleResult();
+			} catch (NoResultException exception) {
+				return null;
+			}
+		}
 		
 		@Override
 		public Actor instantiateOneToBeCreatedByPublic() {

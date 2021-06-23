@@ -1,71 +1,84 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl.integration;
 
+import static io.restassured.RestAssured.config;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.Charset;
 
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.InSequence;
-import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class OpenAPIActeurIT extends AbstractIT {
+import ci.gouv.dgbf.system.actor.server.representation.impl.openapi.ActorOpenAPIImpl;
+import io.restassured.RestAssured;
+import io.restassured.config.EncoderConfig;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
-    @Test @InSequence(1) @RunAsClient
-    public void create(@ArquillianResource URL url) throws Exception {
-    	String data = "nom=komenan&prenoms=yao&email=abc@mail.com";
-    	URI uri = URI.create(url.toString()+"api/open/acteur/creer");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/x-www-form-urlencoded")
-    			.POST(BodyPublishers.ofString(data)).build();    	
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(201);
+public class OpenAPIActeurIT extends AbstractClientIT {
+
+	@BeforeClass
+	public static void listenBeforeClass() {
+		RestAssured.basePath = "test/api/open/acteur";
+		RestAssured.config = config().encoderConfig(EncoderConfig.encoderConfig().defaultCharsetForContentType(Charset.forName("UTF-8"), ContentType.URLENC));
+	}
+	
+    @Test @InSequence(1)
+    public void create() {  	
+    	given().contentType(ContentType.URLENC)
+    	.formParam("nom", "komenan").formParam("prenoms", "yao").formParam("email", "abc@mail.com").when().post(ActorOpenAPIImpl.OPERATION_CREATE).then().statusCode(201);
     }
 
-    @Test @InSequence(2) @RunAsClient
-    public void create_required(@ArquillianResource URL url) throws Exception {
-    	String data = "";
-    	URI uri = URI.create(url.toString()+"api/open/acteur/creer");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/x-www-form-urlencoded")
-    			.POST(BodyPublishers.ofString(data)).build();    	
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(400);
+    @Test @InSequence(2)
+    public void create_required() throws Exception {
+    	given().when().post(ActorOpenAPIImpl.OPERATION_CREATE).then().statusCode(400);
     }
     
-    @Test @InSequence(3) @RunAsClient
-    public void get(@ArquillianResource URL url) throws Exception {
-    	URI uri = URI.create(url.toString()+"api/open/acteur/obtenir?nom_utilisateur=abc@mail.com");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/json").GET().build();
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(200);
+    @Test @InSequence(3)
+    public void get_() {
+    	given().log().all().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "abc@mail.com").when().get(ActorOpenAPIImpl.OPERATION_GET).then().statusCode(200);
     }
     
-    @Test @InSequence(4) @RunAsClient
-    public void get_required(@ArquillianResource URL url) throws Exception {
-    	URI uri = URI.create(url.toString()+"api/open/acteur/obtenir");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/json").GET().build();
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(400);
+    @Test @InSequence(4)
+    public void get_required() {
+    	given().when().get(ActorOpenAPIImpl.OPERATION_GET).then().statusCode(400);
     }
     
-    @Test @InSequence(5) @RunAsClient
-    public void get_notfound(@ArquillianResource URL url) throws Exception {
-    	URI uri = URI.create(url.toString()+"api/open/acteur/obtenir?nom_utilisateur=xyz");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/json").GET().build();
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(404);
+    @Test @InSequence(5)
+    public void get_notfound() {
+    	given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "xxx").when().get(ActorOpenAPIImpl.OPERATION_GET).then().statusCode(404);
     }
     
-    @Test @InSequence(6) @RunAsClient
-    public void exists(@ArquillianResource URL url) throws Exception {
-    	URI uri = URI.create(url.toString()+"api/open/acteur/exister?nom_utilisateur=abc@mail.com");
-    	HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Content-Type", "application/json").GET().build();
-    	HttpResponse<?> response = HttpClient.newHttpClient().send(request, BodyHandlers.discarding());
-    	assertThat(response.statusCode()).isEqualTo(200);
+    @Test @InSequence(6)
+    public void getElectronicMailAddress() {
+    	Response response = given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "christian").when().get(ActorOpenAPIImpl.OPERATION_GET_ELECTRONIC_MAIL_ADDRESS);
+    	response.then().statusCode(200);
+    	assertThat(response.getBody().asString()).isEqualTo("kycdev@gmail.com");
+    }
+    
+    @Test @InSequence(7)
+    public void getElectronicMailAddress_required() {
+    	given().when().get(ActorOpenAPIImpl.OPERATION_GET_ELECTRONIC_MAIL_ADDRESS).then().statusCode(400);
+    }
+    
+    @Test @InSequence(8)
+    public void getElectronicMailAddress_notfound() {
+    	given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "xxx").when().get(ActorOpenAPIImpl.OPERATION_GET_ELECTRONIC_MAIL_ADDRESS).then().statusCode(404);
+    }
+    
+    @Test @InSequence(9)
+    public void checkExistence_200() {
+    	given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "abc@mail.com").when().get(ActorOpenAPIImpl.OPERATION_CHECK_EXISTENCE).then().statusCode(200);
+    }
+    
+    @Test @InSequence(10)
+    public void checkExistence_400() {
+    	given().when().get(ActorOpenAPIImpl.OPERATION_CHECK_EXISTENCE).then().statusCode(400);
+    }
+    
+    @Test @InSequence(11)
+    public void checkExistence_404() {
+    	given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "xxx").when().get(ActorOpenAPIImpl.OPERATION_CHECK_EXISTENCE).then().statusCode(404);
     }
 }

@@ -1,6 +1,9 @@
 --------------------------------------------------------
 --  File created - Wednesday-March-24-2021   
 --------------------------------------------------------
+Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('1','Komenan','Yao Christian','kycdev@gmail.com');
+Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('1','christian','1');
+
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('SECTION','SECTION','Section',1);
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('CATEGORIE_ACTIVITE','CATEGORIE_ACTIVITE','Catégorie Activité',3);
 Insert into TYPE_DOMAINE (IDENTIFIANT,CODE,LIBELLE,NUMERO_ORDRE) values ('UA','UA','Unité administrative',5);

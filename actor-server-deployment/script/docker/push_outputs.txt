@@ -37,3 +37,55 @@ c529fe867c71: Layer already exists
 f1b5933fe4b5: Layer already exists
 1cf47915e87a: Pushed
 v0.0.0-202106221942: digest: sha256:70819424d0e7a695d5aeaf16454ef9d9afb224d5e73e479599355041d854cb61 size: 1377
+Publishing with time stamp : v0.0.0-202106231140 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+dbfdb2c4e13b: Preparing
+c529fe867c71: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+c529fe867c71: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+f1b5933fe4b5: Layer already exists
+dbfdb2c4e13b: Pushed
+v0.0.0-202106231140: digest: sha256:39e864a4c58e9952b09522ee5a1f9db19eadaf805daaa72759d3b35e83a71fe9 size: 1377
+Publishing with time stamp : v0.0.0-202106231653 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+49f721c0787b: Preparing
+c529fe867c71: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+c529fe867c71: Layer already exists
+49f721c0787b: Pushed
+v0.0.0-202106231653: digest: sha256:6cad17563536f7aea0ed1b78b49ee8e7dccb247dc2d0ac1fe2087622fe5751b8 size: 1377
+Publishing with time stamp : v0.0.0-202106231715 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+1222834dc0bc: Preparing
+c529fe867c71: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+c529fe867c71: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+1222834dc0bc: Pushed
+v0.0.0-202106231715: digest: sha256:4925b27907f093408b07721d3c9d4692db821cc20dc87232f73ee613f90958b5 size: 1377
+Publishing with time stamp : v0.0.0-202106231723 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+7baaa48fd9ed: Preparing
+c529fe867c71: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+f1b5933fe4b5: Layer already exists
+c529fe867c71: Layer already exists
+7baaa48fd9ed: Pushed
+v0.0.0-202106231723: digest: sha256:a7ea0cad2068268d32c94d2b79a1a17f073b6e7c9d0c5b1e3d6efe004b985585 size: 1377
