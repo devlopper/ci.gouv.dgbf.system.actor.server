@@ -37,7 +37,7 @@ public class OpenAPIActeurIT extends AbstractClientIT {
     
     @Test @InSequence(3)
     public void get_() {
-    	given().log().all().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "abc@mail.com").when().get(ActorOpenAPIImpl.OPERATION_GET).then().statusCode(200);
+    	given().queryParam(ActorOpenAPIImpl.PARAMETER_USER_NAME, "abc@mail.com").when().get(ActorOpenAPIImpl.OPERATION_GET).then().statusCode(200);
     }
     
     @Test @InSequence(4)
