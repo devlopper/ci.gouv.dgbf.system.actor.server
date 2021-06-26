@@ -10,17 +10,21 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.server.hibernate.AbstractAuditIdentifiedByStringReader;
+import org.cyk.utility.persistence.server.hibernate.entity.AbstractAuditIdentifiedByString;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHoldersReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
@@ -28,7 +32,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsString
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.server.TransientFieldsProcessorImpl {
+public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.server.hibernate.TransientFieldsProcessorImpl {
 
 	@Override
 	protected void __process__(Class<?> klass,Collection<?> objects,Filter filter, Collection<String> fieldsNames) {
@@ -42,6 +46,18 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processAdministrativeUnits(CollectionHelper.cast(AdministrativeUnit.class, objects),fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
+	}
+	
+	/**/
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <T extends AbstractAuditIdentifiedByString> AbstractAuditIdentifiedByStringReader<T> getAuditsRecordsReader(Class<T> klass) {
+		if(AssignmentsAudit.class.equals(klass))
+			return (AbstractAuditIdentifiedByStringReader<T>) new AssignmentsAuditReader();
+		if(ScopeFunctionAudit.class.equals(klass))
+			return (AbstractAuditIdentifiedByStringReader<T>) new ScopeFunctionAuditReader();
+		return super.getAuditsRecordsReader(klass);
 	}
 	
 	/**/

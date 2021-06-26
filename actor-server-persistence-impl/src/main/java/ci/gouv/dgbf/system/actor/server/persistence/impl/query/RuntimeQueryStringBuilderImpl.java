@@ -13,7 +13,6 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Arguments;
-import org.cyk.utility.persistence.server.query.string.RuntimeQueryStringBuilder;
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
@@ -25,7 +24,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class RuntimeQueryStringBuilderImpl extends RuntimeQueryStringBuilder.AbstractImpl implements Serializable {
+public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.server.hibernate.RuntimeQueryStringBuilderImpl implements Serializable {
 		
 	@Override
 	protected void setProjection(QueryExecutorArguments arguments, Arguments builderArguments) {

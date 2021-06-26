@@ -3,12 +3,12 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 import java.io.Serializable;
 
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsNativeReader;
+import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsByRevisionsNumbersNativeReader;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Arguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 
-public class AssignmentsAuditsRecordsReader extends AbstractAuditsRecordsNativeReader<Assignments> implements Serializable {
+public class AssignmentsAuditsRecordsReader extends AbstractAuditsRecordsByRevisionsNumbersNativeReader<Assignments> implements Serializable {
 	
 	@Override
 	protected void __set__(Assignments assignments, Object[] array, Integer i) {

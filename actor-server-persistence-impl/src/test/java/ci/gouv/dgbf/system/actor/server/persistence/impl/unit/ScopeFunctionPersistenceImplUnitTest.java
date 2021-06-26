@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -166,8 +168,8 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertRequestScopeFunctionGranted("3", Boolean.FALSE);
 	}
 	
-	@Test
-	public void create() {
+	//@Test
+	public void audit_byInstance() {
 		String identifier = "sfId01";
 		ScopeFunction scopeFunction = null;
 		scopeFunction = EntityReader.getInstance().readOneDynamically(ScopeFunction.class, new QueryExecutorArguments()
@@ -201,5 +203,43 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 0).getName()).isEqualTo("New Name");
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getCode()).isEqualTo("sf01");
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getName()).isEqualTo("mysf 01");
+	}
+	
+	//@Test
+	public void audit_byDates(){
+		List<LocalDateTime> dateTimes = new ArrayList<>();
+		String identifier = "sfId01";
+		addPause(dateTimes);
+		assertAudit(ScopeFunction.class,null,null,0);
+		
+		ScopeFunction data = new ScopeFunction();		
+		data.setIdentifier(identifier);
+		data.setCode("sf01");
+		data.setName("mysf 01");
+		data.setScope(EntityFinder.getInstance().find(Scope.class, "O3001"));
+		data.setFunction(EntityFinder.getInstance().find(Function.class, "ORD"));
+		data.setDocumentNumber(1);
+		addPause(dateTimes);
+		EntityCreator.getInstance().createOneInTransaction(data);
+		data = EntityFinder.getInstance().find(ScopeFunction.class,identifier);
+		
+		assertThat(data).isNotNull();
+		assertAudit(ScopeFunction.class,null,null,1);
+		
+		data.setCode("code01");
+		addPause(dateTimes);
+		EntityUpdater.getInstance().updateOneInTransaction(data);
+		assertAudit(ScopeFunction.class,null,null,2);
+		
+		data.setCode("code 01");
+		addPause(dateTimes);
+		EntityUpdater.getInstance().updateOneInTransaction(data);
+		addPause(dateTimes);
+		assertAudit(ScopeFunction.class,null,null,3);
+		
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(4),3);
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(3),2);
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(2),1);
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(1),0);
 	}
 }

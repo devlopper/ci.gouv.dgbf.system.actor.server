@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -123,7 +125,7 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void create(){
+	public void auditsByInstances(){
 		String identifier = "AFF01";
 		Collection<Assignments> histories = null;
 		histories = AuditReader.getInstance().readByIdentifier(Assignments.class, identifier);
@@ -154,4 +156,36 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolderAsString()).isEqualTo("O3000");
 	}
 	
+	@Test
+	public void auditsByDates(){
+		String identifier = "AFF01";
+		List<LocalDateTime> dateTimes = new ArrayList<>();		
+		addPause(dateTimes);
+		assertAudit(Assignments.class,null,null,0);
+		
+		Assignments data = new Assignments().setIdentifier(identifier);
+		data.setExecutionImputation(EntityFinder.getInstance().find(ExecutionImputation.class, "2021130010100034266B70FF1A84632B0981B585E11CE7F"));
+		addPause(dateTimes);
+		EntityCreator.getInstance().createOneInTransaction(data);
+		data = EntityFinder.getInstance().find(Assignments.class,identifier);
+		
+		assertThat(data).isNotNull();
+		assertAudit(Assignments.class,null,null,1);
+		
+		data.setCreditManagerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "x001"));
+		addPause(dateTimes);
+		EntityUpdater.getInstance().updateOneInTransaction(data);
+		assertAudit(Assignments.class,null,null,2);
+		
+		data.setCreditManagerHolder(null);
+		addPause(dateTimes);
+		EntityUpdater.getInstance().updateOneInTransaction(data);
+		addPause(dateTimes);
+		assertAudit(Assignments.class,null,null,3);
+		
+		assertAudit(Assignments.class,dateTimes.get(0),dateTimes.get(4),3);
+		assertAudit(Assignments.class,dateTimes.get(0),dateTimes.get(3),2);
+		assertAudit(Assignments.class,dateTimes.get(0),dateTimes.get(2),1);
+		assertAudit(Assignments.class,dateTimes.get(0),dateTimes.get(1),0);
+	}
 }

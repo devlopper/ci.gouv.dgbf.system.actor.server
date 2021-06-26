@@ -30,7 +30,8 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
@@ -49,6 +50,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
@@ -115,6 +117,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
@@ -133,6 +136,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
@@ -203,7 +207,8 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
@@ -222,6 +227,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
@@ -295,7 +301,8 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
-    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
@@ -314,6 +321,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>

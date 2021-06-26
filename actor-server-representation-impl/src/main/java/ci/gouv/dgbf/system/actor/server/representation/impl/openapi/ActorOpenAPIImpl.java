@@ -48,7 +48,7 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements Serializabl
 	@Produces({ MediaType.TEXT_PLAIN})
 	@Operation(description = "Créer un acteur",operationId = "creer_acteur")
 	@APIResponses(value = {
-			@APIResponse(description = "Acteur créé",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			@APIResponse(description = "Acteur créé",responseCode = "201", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(description = "Erreur lors de la création de l'acteur",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})	
 	public Response create(

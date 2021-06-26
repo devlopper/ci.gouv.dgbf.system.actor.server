@@ -38,10 +38,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Assignments.TABLE_NAME)
 @AttributeOverrides(value= {
-		@AttributeOverride(name = Assignments.FIELD___AUDIT_WHO__,column = @Column(name=Assignments.COLUMN_AUDIT_ACTOR))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHAT__,column = @Column(name=Assignments.COLUMN_AUDIT_ACTION))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name=Assignments.COLUMN_AUDIT_DATE))
-		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name=Assignments.COLUMN_AUDIT_FUNCTIONALITY))
+		@AttributeOverride(name = Assignments.FIELD___AUDIT_WHO__,column = @Column(name=Assignments.COLUMN___AUDIT_WHO__))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHAT__,column = @Column(name=Assignments.COLUMN___AUDIT_WHAT__))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_WHEN__,column = @Column(name=Assignments.COLUMN___AUDIT_WHEN__))
+		,@AttributeOverride(name = Assignments.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name=Assignments.COLUMN___AUDIT_FUNCTIONALITY__))
 })
 @NamedStoredProcedureQueries(value = {
 	@NamedStoredProcedureQuery(
@@ -259,6 +259,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 		);
 	
 	public static final String TABLE_NAME = "AFFECTATIONS";
+	public static final String AUDIT_TABLE_NAME = TABLE_NAME+"_AUD";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CLEAN = "P_EFFACER_AFFECTATIONS";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT = "P_IMPORTER_AFFECTATIONS";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_IMPORT_NEWS = "P_IMPORTER_AFFECTATIONS_NVL";
@@ -282,10 +283,10 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String COLUMN_ACCOUNTING_HOLDER = "CPT";
 	public static final String COLUMN_ACCOUNTING_ASSISTANT = "A"+COLUMN_ACCOUNTING_HOLDER;
 	
-	public static final String COLUMN_AUDIT_ACTOR = "AUDIT_ACTEUR";
-	public static final String COLUMN_AUDIT_FUNCTIONALITY = "AUDIT_FONCTIONALITE";
-	public static final String COLUMN_AUDIT_ACTION = "AUDIT_ACTION";
-	public static final String COLUMN_AUDIT_DATE = "AUDIT_DATE";
+	public static final String COLUMN___AUDIT_WHO__ = "AUDIT_ACTEUR";
+	public static final String COLUMN___AUDIT_FUNCTIONALITY__ = "AUDIT_FONCTIONALITE";
+	public static final String COLUMN___AUDIT_WHAT__ = "AUDIT_ACTION";
+	public static final String COLUMN___AUDIT_WHEN__ = "AUDIT_DATE";
 	
 	public static final List<String> COLUMNS_SCOPE_FUNCTIONS_HOLDERS = List.of(
 			COLUMN_CREDIT_MANAGER_HOLDER,COLUMN_AUTHORIZING_OFFICER_HOLDER,COLUMN_FINANCIAL_CONTROLLER_HOLDER,COLUMN_ACCOUNTING_HOLDER);

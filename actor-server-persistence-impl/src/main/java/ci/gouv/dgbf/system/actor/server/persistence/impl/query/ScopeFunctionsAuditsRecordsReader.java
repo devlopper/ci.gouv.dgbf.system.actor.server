@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsNativeReader;
+import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsByRevisionsNumbersNativeReader;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class ScopeFunctionsAuditsRecordsReader extends AbstractAuditsRecordsNativeReader<ScopeFunction> implements Serializable {
+public class ScopeFunctionsAuditsRecordsReader extends AbstractAuditsRecordsByRevisionsNumbersNativeReader<ScopeFunction> implements Serializable {
 	
 	@Override
 	protected void __set__(ScopeFunction scopeFunction, Object[] array, Integer i) {
