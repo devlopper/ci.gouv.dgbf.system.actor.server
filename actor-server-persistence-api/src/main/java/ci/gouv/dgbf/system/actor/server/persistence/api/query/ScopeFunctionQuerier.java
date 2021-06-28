@@ -38,6 +38,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(ScopeFunction.class,QueryName.COUNT_DYNAMIC);
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(ScopeFunction.class,QueryName.READ_DYNAMIC_ONE);
 	
+	String QUERY_IDENTIFIER_READ_AUDIT = QueryIdentifierBuilder.getInstance().build(ScopeFunction.class,QueryName.READ_AUDIT);
+	String QUERY_IDENTIFIER_COUNT_AUDIT = QueryIdentifierBuilder.getInstance().build(ScopeFunction.class,QueryName.COUNT_AUDIT);
+	
 	String PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "budgetSpecializationUnitIdentifier";
 	String PARAMETER_NAME_PARENTS_IDENTIFIERS = "parentsIdentifiers";
 	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";

@@ -191,6 +191,9 @@ public interface AssignmentsQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.COUNT_DYNAMIC);
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.READ_DYNAMIC_ONE);
 	
+	String QUERY_IDENTIFIER_READ_AUDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.READ_AUDIT);
+	String QUERY_IDENTIFIER_COUNT_AUDIT = QueryIdentifierBuilder.getInstance().build(Assignments.class,QueryName.COUNT_AUDIT);
+	
 	String FLAG_APPLY_MODEL = "applyModel";
 	String FLAG_READ_HOLDERS = "readHolders";
 	

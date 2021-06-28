@@ -12,6 +12,7 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.marker.AuditableWhoDoneWhatWhen;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.audit.Arguments;
 import org.cyk.utility.persistence.server.audit.AuditReader;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -28,10 +29,9 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 		if(queryExecutorArguments == null)
 			queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.addProcessableTransientFieldsNames(ScopeFunction.FIELD___AUDIT_WHEN_AS_STRING__);
-		Collection<T> audits = AuditReader.getInstance().read(klass,new AuditReader.Arguments<T>().setQueryExecutorArguments(queryExecutorArguments)
+		Collection<T> audits = AuditReader.getInstance().read(klass,new Arguments<T>().setQueryExecutorArguments(queryExecutorArguments)
 				.setFromDate(fromDate).setToDate(toDate).setIsReadableByDates(Boolean.TRUE));
 		
-		System.out.println("AbstractUnitTestMemory.assertAudit() : "+fromDate+" - "+toDate+" : "+expectedCount);	
 		if(CollectionHelper.isNotEmpty(audits))
 			audits.forEach(audit -> {
 				System.out.println(audit.get__auditWhenAsString__());

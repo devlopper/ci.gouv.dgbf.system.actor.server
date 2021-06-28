@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.persistence.server.audit.Arguments;
 import org.cyk.utility.persistence.server.audit.AuditIdentity;
 import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsByRevisionsNumbersNativeReader;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsRecordsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.IdentityIdentifierAsCodeNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeFunctionsAuditsRecordsReader;
@@ -34,5 +36,14 @@ public class AuditReaderImpl extends org.cyk.utility.persistence.server.hibernat
 		if(ScopeFunction.class.equals(klass))
 			return (AbstractAuditsRecordsByRevisionsNumbersNativeReader<T>) new ScopeFunctionsAuditsRecordsReader();
 		return super.getAuditsRecordsByRevisionsNumbersNativeReader(klass, arguments, identifier, numbers);
+	}
+	
+	@Override
+	protected void copyAuditToEntity(Class<?> entityClass, Object audit, Object entity,Collection<String> fieldsNames) {
+		if(entity instanceof ScopeFunction) {
+			((ScopeFunction)entity).setCode( ((ScopeFunctionAudit)audit).getCode());
+			((ScopeFunction)entity).setName( ((ScopeFunctionAudit)audit).getName());
+		}else
+			super.copyAuditToEntity(entityClass, audit, entity, fieldsNames);
 	}
 }

@@ -116,6 +116,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>		
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>	
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
@@ -171,7 +172,7 @@
 		  	<property name="javax.persistence.jdbc.password" value="acteur" />  
 		  	<property name="hibernate.hbm2ddl.auto" value="validate" />
 		  	<property name="hibernate.show_sql" value = "false" />
-			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="false"/>
 			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>		
 		</properties>

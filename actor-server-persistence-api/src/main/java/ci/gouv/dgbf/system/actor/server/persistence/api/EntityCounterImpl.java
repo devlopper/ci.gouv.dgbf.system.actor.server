@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.api;
 
 import java.io.Serializable;
 
-import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 
@@ -36,7 +35,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
-public class EntityCounterImpl extends EntityCounter.AbstractImpl implements Serializable {
+public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.EntityCounterImpl implements Serializable {
 
 	@Override
 	public Long count(Class<?> tupleClass, QueryExecutorArguments arguments) {

@@ -18,6 +18,8 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.audit.AuditCounter;
+import org.cyk.utility.persistence.server.audit.AuditReader;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
@@ -40,6 +42,9 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<ScopeFunction> readMany(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_AUDIT.equals(arguments.getQuery().getIdentifier()))
+			return AuditReader.getInstance().read(ScopeFunction.class,new org.cyk.utility.persistence.server.audit.Arguments<ScopeFunction>()
+					.setQueryExecutorArguments(arguments).setIsReadableByDates(Boolean.TRUE));
 		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 			return DynamicManyExecutor.getInstance().read(ScopeFunction.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -64,6 +69,9 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Long count(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_COUNT_AUDIT.equals(arguments.getQuery().getIdentifier()))
+			return AuditCounter.getInstance().count(ScopeFunction.class,new org.cyk.utility.persistence.server.audit.Arguments<ScopeFunction>()
+					.setQueryExecutorArguments(arguments).setIsReadableByDates(Boolean.TRUE));
 		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 			return DynamicManyExecutor.getInstance().count(ScopeFunction.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
