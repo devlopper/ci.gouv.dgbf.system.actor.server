@@ -11,11 +11,12 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.marker.AuditableWhoDoneWhatWhen;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.server.audit.Arguments;
-import org.cyk.utility.persistence.server.audit.AuditReader;
-
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryName;
 
 public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
@@ -26,17 +27,17 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	}
 	
 	protected static <T extends AuditableWhoDoneWhatWhen> void assertAudit(Class<T> klass,LocalDateTime fromDate,LocalDateTime toDate,QueryExecutorArguments queryExecutorArguments,Integer expectedCount) {
-		if(queryExecutorArguments == null)
+		if(queryExecutorArguments == null) {
 			queryExecutorArguments = new QueryExecutorArguments();
-		queryExecutorArguments.addProcessableTransientFieldsNames(ScopeFunction.FIELD___AUDIT_WHEN_AS_STRING__);
-		Collection<T> audits = AuditReader.getInstance().read(klass,new Arguments<T>().setQueryExecutorArguments(queryExecutorArguments)
-				.setFromDate(fromDate).setToDate(toDate).setIsReadableByDates(Boolean.TRUE));
+			queryExecutorArguments.addProjectionsFromStrings("identifier","__auditRevision__");
+			queryExecutorArguments.setQuery(new Query().setIdentifier(QueryIdentifierBuilder.getInstance().build(klass, QueryName.READ_AUDIT)));
+		}
+		if(fromDate != null)
+			queryExecutorArguments.addFilterField(Querier.PARAMETER_NAME_FROM_DATE, fromDate);
+		if(toDate != null)
+			queryExecutorArguments.addFilterField(Querier.PARAMETER_NAME_TO_DATE, toDate);
 		
-		if(CollectionHelper.isNotEmpty(audits))
-			audits.forEach(audit -> {
-				System.out.println(audit.get__auditWhenAsString__());
-			});
-					
+		Collection<T> audits = EntityReader.getInstance().readMany(klass, queryExecutorArguments);		
 		assertThat(CollectionHelper.getSize(audits)).isEqualTo(expectedCount);
 		if(CollectionHelper.isEmpty(audits))
 			return;

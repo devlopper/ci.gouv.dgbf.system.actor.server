@@ -15,8 +15,10 @@ import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 
@@ -72,4 +74,25 @@ public class PersistenceImplUnitTestAuditDev extends AbstractUnitTestLive {
 		//assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 0).getName()).isEqualTo("mysf 01");
 	}
 	
+	@Test
+	public void assignments_byDates(){
+		Collection<Assignments> audits = EntityReader.getInstance().readMany(Assignments.class, new QueryExecutorArguments()
+				.setIsProcessableAsAuditByDates(Boolean.TRUE)
+				.addProjectionsFromStrings(Assignments.FIELD_IDENTIFIER
+						,Assignments.FIELD_CREDIT_MANAGER_HOLDER_AS_STRING
+						,AssignmentsAudit.FIELD___AUDIT_REVISION__,Assignments.FIELD___AUDIT_FUNCTIONALITY__
+						,Assignments.FIELD___AUDIT_WHAT__,Assignments.FIELD___AUDIT_WHO__)
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_AUDIT))
+				.setSortOrders(Map.of(Assignments.FIELD___AUDIT_WHEN__,SortOrder.DESCENDING))
+				);
+		
+		assertThat(audits).isNotNull();
+		assertThat(audits).hasSize(2);
+		
+		assertThat(CollectionHelper.getElementAt(audits, 0).getSectionAsString()).isNotNull();
+		assertThat(CollectionHelper.getElementAt(audits, 0).getCreditManagerHolderAsString()).isNotNull();
+		
+		assertThat(EntityCounter.getInstance().count(Assignments.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_COUNT_AUDIT)))).isEqualTo(2l);
+	}
 }

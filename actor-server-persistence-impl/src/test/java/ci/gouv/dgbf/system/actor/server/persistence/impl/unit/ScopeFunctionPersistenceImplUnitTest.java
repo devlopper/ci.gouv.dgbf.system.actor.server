@@ -168,9 +168,9 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertRequestScopeFunctionGranted("3", Boolean.FALSE);
 	}
 	
-	//@Test
+	@Test
 	public void audit_byInstance() {
-		String identifier = "sfId01";
+		String identifier = "sfId01_abi";
 		ScopeFunction scopeFunction = null;
 		scopeFunction = EntityReader.getInstance().readOneDynamically(ScopeFunction.class, new QueryExecutorArguments()
 				.addFilterFieldsValues(Querier.PARAMETER_NAME_IDENTIFIER,identifier).addProcessableTransientFieldsNames(AuditableWhoDoneWhatWhen.FIELD___AUDIT_RECORDS__));
@@ -205,11 +205,10 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertThat(CollectionHelper.getElementAt(scopeFunction.get__auditRecords__(), 1).getName()).isEqualTo("mysf 01");
 	}
 	
-	//@Test
+	@Test
 	public void audit_byDates(){
 		List<LocalDateTime> dateTimes = new ArrayList<>();
 		String identifier = "sfId01";
-		addPause(dateTimes);
 		assertAudit(ScopeFunction.class,null,null,0);
 		
 		ScopeFunction data = new ScopeFunction();		
@@ -226,20 +225,24 @@ public class ScopeFunctionPersistenceImplUnitTest extends AbstractUnitTestMemory
 		assertThat(data).isNotNull();
 		assertAudit(ScopeFunction.class,null,null,1);
 		
-		data.setCode("code01");
+		data.setCode("code01").set__auditWhen__(null);
 		addPause(dateTimes);
 		EntityUpdater.getInstance().updateOneInTransaction(data);
 		assertAudit(ScopeFunction.class,null,null,2);
 		
-		data.setCode("code 01");
+		data.setCode("code 01").set__auditWhen__(null);
 		addPause(dateTimes);
 		EntityUpdater.getInstance().updateOneInTransaction(data);
-		addPause(dateTimes);
-		assertAudit(ScopeFunction.class,null,null,3);
 		
-		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(4),3);
-		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(3),2);
-		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(2),1);
-		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(1),0);
+		addPause(dateTimes);
+		
+		assertAudit(ScopeFunction.class,null,null,3);
+		addPause(dateTimes);
+		
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(4),3);		
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(3),3);
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(2),2);
+		assertAudit(ScopeFunction.class,dateTimes.get(0),dateTimes.get(1),1);
+		assertAudit(ScopeFunction.class,dateTimes.get(3),dateTimes.get(4),0);
 	}
 }

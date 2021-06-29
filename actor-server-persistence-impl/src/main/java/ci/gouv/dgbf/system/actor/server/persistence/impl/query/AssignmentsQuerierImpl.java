@@ -19,6 +19,8 @@ import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.audit.AuditCounter;
+import org.cyk.utility.persistence.server.audit.AuditReader;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
@@ -56,6 +58,9 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	
 	@Override
 	public Collection<Assignments> readMany(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_AUDIT.equals(arguments.getQuery().getIdentifier()))
+			return AuditReader.getInstance().read(Assignments.class,new org.cyk.utility.persistence.server.audit.Arguments<Assignments>()
+					.setQueryExecutorArguments(arguments).setIsReadableByDates(Boolean.TRUE));
 		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 			return DynamicManyExecutor.getInstance().read(Assignments.class,arguments.setQuery(null));
 		if(QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
@@ -83,6 +88,9 @@ public class AssignmentsQuerierImpl extends AssignmentsQuerier.AbstractImpl impl
 	
 	@Override
 	public Long count(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_COUNT_AUDIT.equals(arguments.getQuery().getIdentifier()))
+			return AuditCounter.getInstance().count(Assignments.class,new org.cyk.utility.persistence.server.audit.Arguments<Assignments>()
+					.setQueryExecutorArguments(arguments).setIsReadableByDates(Boolean.TRUE));
 		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 			return DynamicManyExecutor.getInstance().count(Assignments.class,arguments.setQuery(null));
 		if(QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))

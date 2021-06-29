@@ -5,5 +5,5 @@ import org.cyk.utility.persistence.server.hibernate.AbstractAuditIdentifiedByStr
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 
 public class ScopeFunctionAuditReader extends AbstractAuditIdentifiedByStringReader<ScopeFunctionAudit> {
-	
+
 }

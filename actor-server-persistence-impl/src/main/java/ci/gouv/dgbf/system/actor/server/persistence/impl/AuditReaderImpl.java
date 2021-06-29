@@ -10,6 +10,7 @@ import org.cyk.utility.persistence.server.audit.AuditIdentity;
 import org.cyk.utility.persistence.server.hibernate.AbstractAuditsRecordsByRevisionsNumbersNativeReader;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAuditsRecordsReader;
@@ -43,6 +44,23 @@ public class AuditReaderImpl extends org.cyk.utility.persistence.server.hibernat
 		if(entity instanceof ScopeFunction) {
 			((ScopeFunction)entity).setCode( ((ScopeFunctionAudit)audit).getCode());
 			((ScopeFunction)entity).setName( ((ScopeFunctionAudit)audit).getName());
+		}else if(entity instanceof Assignments) {
+			((Assignments)entity).setCreditManagerHolderAsString(((AssignmentsAudit)audit).getCreditManagerHolderAsString());
+			((Assignments)entity).setCreditManagerAssistantAsString(((AssignmentsAudit)audit).getCreditManagerAssistantAsString());
+			((Assignments)entity).setAuthorizingOfficerHolderAsString(((AssignmentsAudit)audit).getAuthorizingOfficerHolderAsString());
+			((Assignments)entity).setAuthorizingOfficerAssistantAsString(((AssignmentsAudit)audit).getAuthorizingOfficerAssistantAsString());
+			((Assignments)entity).setFinancialControllerHolderAsString(((AssignmentsAudit)audit).getFinancialControllerHolderAsString());
+			((Assignments)entity).setFinancialControllerAssistantAsString(((AssignmentsAudit)audit).getFinancialControllerAssistantAsString());
+			((Assignments)entity).setAccountingHolderAsString(((AssignmentsAudit)audit).getAccountingHolderAsString());
+			((Assignments)entity).setAccountingAssistantAsString(((AssignmentsAudit)audit).getAccountingAssistantAsString());
+			
+			((Assignments)entity).setSectionAsString(((AssignmentsAudit)audit).getSectionAsString());
+			((Assignments)entity).setAdministrativeUnitAsString(((AssignmentsAudit)audit).getAdministrativeUnitAsString());
+			((Assignments)entity).setBudgetSpecializationUnitAsString(((AssignmentsAudit)audit).getBudgetSpecializationUnitAsString());
+			((Assignments)entity).setActionAsString(((AssignmentsAudit)audit).getActionAsString());
+			((Assignments)entity).setActivityAsString(((AssignmentsAudit)audit).getActivityAsString());
+			((Assignments)entity).setExpenditureNatureAsString(((AssignmentsAudit)audit).getExpenditureNatureAsString());
+			((Assignments)entity).setEconomicNatureAsString(((AssignmentsAudit)audit).getEconomicNatureAsString());
 		}else
 			super.copyAuditToEntity(entityClass, audit, entity, fieldsNames);
 	}
