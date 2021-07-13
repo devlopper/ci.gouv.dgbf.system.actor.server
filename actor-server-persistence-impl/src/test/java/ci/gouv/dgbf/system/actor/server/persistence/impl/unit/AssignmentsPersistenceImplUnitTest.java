@@ -124,7 +124,7 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
 	}
 	
-	@Test
+	//@Test
 	public void auditsByInstances(){
 		String identifier = "AFF01";
 		Collection<Assignments> histories = null;
@@ -156,7 +156,7 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(CollectionHelper.getElementAt(histories, 0).getCreditManagerHolderAsString()).isEqualTo("O3000");
 	}
 	
-	@Test
+	//@Test
 	public void auditsByDates(){
 		String identifier = "AFF01";
 		List<LocalDateTime> dateTimes = new ArrayList<>();		

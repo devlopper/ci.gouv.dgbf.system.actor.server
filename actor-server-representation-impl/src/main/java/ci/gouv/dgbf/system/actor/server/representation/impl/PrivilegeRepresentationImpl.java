@@ -45,9 +45,9 @@ public class PrivilegeRepresentationImpl extends AbstractRepresentationEntityImp
 		arguments.setRepresentationEntityClass(PrivilegeDto.class);
 		arguments.getQueryExecutorArguments().setQueryIdentifier(PrivilegeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE)
 		.addFilterField(PrivilegeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);
-		arguments.setListener(new Arguments.Listener.AbstractImpl() {
+		arguments.setListener(new Arguments.Listener.AbstractImpl<PrivilegeDto,Privilege>() {
 			@Override
-			public void processPersistenceEntities(Collection<?> persistenceEntities) {
+			public void processPersistenceEntities(Collection<Privilege> persistenceEntities) {
 				super.processPersistenceEntities(persistenceEntities);
 				if(CollectionHelper.isEmpty(persistenceEntities))
 					return;
@@ -60,7 +60,7 @@ public class PrivilegeRepresentationImpl extends AbstractRepresentationEntityImp
 			}
 			
 			@Override
-			public void processRepresentationEntities(Collection<?> representationEntities) {
+			public void processRepresentationEntities(Collection<PrivilegeDto> representationEntities) {
 				super.processRepresentationEntities(representationEntities);
 				if(CollectionHelper.isEmpty(representationEntities))
 					return;

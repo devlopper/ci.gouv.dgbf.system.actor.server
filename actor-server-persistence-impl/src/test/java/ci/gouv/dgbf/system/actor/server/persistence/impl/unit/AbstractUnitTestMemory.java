@@ -27,6 +27,7 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	}
 	
 	protected static <T extends AuditableWhoDoneWhatWhen> void assertAudit(Class<T> klass,LocalDateTime fromDate,LocalDateTime toDate,QueryExecutorArguments queryExecutorArguments,Integer expectedCount) {
+		//System.out.println("AbstractUnitTestMemory.assertAudit() "+fromDate+" - "+toDate+" : "+expectedCount);
 		if(queryExecutorArguments == null) {
 			queryExecutorArguments = new QueryExecutorArguments();
 			queryExecutorArguments.addProjectionsFromStrings("identifier","__auditRevision__");

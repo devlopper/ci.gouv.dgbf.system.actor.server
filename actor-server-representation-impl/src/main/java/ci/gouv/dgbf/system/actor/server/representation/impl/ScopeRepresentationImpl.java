@@ -72,9 +72,9 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 		Arguments arguments = new Arguments().setQueryExecutorArguments(new QueryExecutorArguments.Dto());
 		arguments.setRepresentationEntityClass(ScopeDto.class);
 		arguments.getQueryExecutorArguments().setQueryIdentifier(queryIdentifier).addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);
-		arguments.setListener(new Arguments.Listener.AbstractImpl() {
+		arguments.setListener(new Arguments.Listener.AbstractImpl<ScopeDto,Scope>() {
 			@Override
-			public void processPersistenceEntities(Collection<?> persistenceEntities) {
+			public void processPersistenceEntities(Collection<Scope> persistenceEntities) {
 				super.processPersistenceEntities(persistenceEntities);
 				if(CollectionHelper.isEmpty(persistenceEntities))
 					return;
