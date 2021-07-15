@@ -8,6 +8,7 @@ import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -18,10 +19,13 @@ import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predic
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.server.hibernate.RuntimeQueryStringBuilderImpl implements Serializable {
@@ -144,8 +148,35 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 						isNull("t", Assignments.FIELD_CREDIT_MANAGER_HOLDER),isNull("t", Assignments.FIELD_AUTHORIZING_OFFICER_HOLDER)
 						,isNull("t", Assignments.FIELD_FINANCIAL_CONTROLLER_HOLDER),isNull("t", Assignments.FIELD_ACCOUNTING_HOLDER)
 				)));			
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Scope.class))
+			populatePredicateScope(arguments, builderArguments, predicate, filter);
+	}
+	
+	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(Boolean.TRUE.equals(CollectionHelper.contains(arguments.getFlags(), ScopeQuerier.FLAG_VISIBLE))) {
+			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, arguments);
+			filter.addFieldContains(ScopeQuerier.PARAMETER_NAME_CODE, arguments);
+			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_NAME, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+			String scopeTypeCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
+			if(ScopeType.CODE_SECTION.equals(scopeTypeCode))
+				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleSection(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,ScopeQuerier.PARAMETER_NAME_CODE
+						,ScopeQuerier.PARAMETER_NAME_NAME));
+			else if(ScopeType.CODE_UA.equals(scopeTypeCode))
+				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,ScopeQuerier.PARAMETER_NAME_CODE
+						,ScopeQuerier.PARAMETER_NAME_NAME));
+			else if(ScopeType.CODE_USB.equals(scopeTypeCode))
+				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleBudgetSpecializationUnit(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,ScopeQuerier.PARAMETER_NAME_CODE
+						,ScopeQuerier.PARAMETER_NAME_NAME));
+			else if(ScopeType.CODE_ACTION.equals(scopeTypeCode))
+				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleAction(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,ScopeQuerier.PARAMETER_NAME_CODE
+						,ScopeQuerier.PARAMETER_NAME_NAME));
+			else if(ScopeType.CODE_ACTIVITE.equals(scopeTypeCode))
+				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleActivity(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,ScopeQuerier.PARAMETER_NAME_CODE
+						,ScopeQuerier.PARAMETER_NAME_NAME));
 		}
 	}
+	
+	/**/
 	
 	@Override
 	protected void setOrder(QueryExecutorArguments arguments, Arguments builderArguments) {

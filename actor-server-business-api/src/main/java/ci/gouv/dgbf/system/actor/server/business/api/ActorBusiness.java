@@ -41,11 +41,7 @@ public interface ActorBusiness extends BusinessEntity<Actor> {
 	String CREATE_FROM_PUBLIC = "Actor.createByPublic";
 	@Transactional
 	void createByPublic(Actor actor);
-	/*
-	String CREATE_FROM_PUBLIC_REQUERANT_OF_CELIOPE = "Actor.createRequerantOfCeliopeByPublic";
-	@Transactional
-	void createRequerantOfCeliopeByPublic(Actor actor);
-	*/
+	
 	String CREATE_PRIVILEGES_FROM_FUNCTIONS = "Actor.createPrivilegesFromFunctions";
 	String CREATE_PROFILES = "Actor.createProfiles";
 	String DELETE_PROFILES = "Actor.deleteProfiles";

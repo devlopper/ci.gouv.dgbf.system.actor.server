@@ -7,10 +7,10 @@ import static org.cyk.utility.persistence.query.Language.Order.asc;
 import static org.cyk.utility.persistence.query.Language.Order.order;
 import static org.cyk.utility.persistence.query.Language.Select.select;
 import static org.cyk.utility.persistence.query.Language.Where.and;
-import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.exists;
 import static org.cyk.utility.persistence.query.Language.Where.like;
 import static org.cyk.utility.persistence.query.Language.Where.not;
+import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
@@ -22,8 +22,11 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.From;
 import org.cyk.utility.persistence.query.Language.Order;
@@ -32,15 +35,15 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
-public interface ScopeQuerier extends Querier {
+public interface ScopeQuerier extends Querier.CodableAndNamable<Scope> {
 
 	String PARAMETER_NAME_TYPE = "type";
 	String PARAMETER_NAME_TYPE_CODE = "typeCode";
@@ -63,7 +66,12 @@ public interface ScopeQuerier extends Querier {
 	String PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME = 4;
-	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
+	
+	String FLAG_VISIBLE = "Scope.visible";
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Scope.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Scope.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Scope.class, QueryName.COUNT_DYNAMIC);
 	
 	/* read where filter order by type code ascending by code ascending */
 	String QUERY_NAME_READ_WHERE_FILTER = "readWhereFilter";
@@ -276,9 +284,60 @@ public interface ScopeQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance()
 			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER);
 	Long countWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments);
+	
 	/**/
 	
-	public static abstract class AbstractImpl extends Querier.AbstractImpl implements ScopeQuerier,Serializable {
+	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Scope> implements ScopeQuerier,Serializable {
+		
+		@Override
+		protected Class<Scope> getKlass() {
+			return Scope.class;
+		}
+		
+		@Override
+		public Scope readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(Scope.class,arguments.setQuery(null));
+			return super.readOne(arguments);
+		}
+		
+		@Override
+		public Collection<Scope> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(Scope.class,arguments.setQuery(null));
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereTypeIsUAAndFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereTypeIsUSBAndFilter(arguments);			
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
+				return readWhereFilterNotAssociated(arguments);			
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);			
+			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return readWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			return super.readMany(arguments);
+		}
+		
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(Scope.class,arguments.setQuery(null));
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereTypeIsUAAndFilter(arguments);
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_USB_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereTypeIsUSBAndFilter(arguments);			
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
+				return countWhereFilterNotAssociated(arguments);			
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);		
+			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+				return countWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			return super.count(arguments);
+		}
 		
 		@Override
 		public Collection<Scope> readWhereFilter(QueryExecutorArguments arguments) {

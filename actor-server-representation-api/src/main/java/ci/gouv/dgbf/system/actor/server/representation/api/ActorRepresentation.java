@@ -73,7 +73,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_GET_PROFILE_INFORMATIONS_BY_CODE)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Obtenir les informations de profile d'un compte utilisateur")
-	Response getProfileInformationsByCode(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
+	Response getProfileInformationsByCode(@QueryParam(PARAMETER_USER_NAME)String code);
 	
 	@POST
 	@Path(PATH_IMPORT_FROM_KEYCLOAK)
@@ -97,7 +97,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	@Path(PATH_SEND_UPDATE_PASSWORD_EMAIL)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	//@Operation(description = "Envoyer un mail de mise à jour du mot de passe")
-	Response sendUpdatePasswordEmail(@QueryParam(QUERY_PARAMETER_NAME_USER_NAME)String code);
+	Response sendUpdatePasswordEmail(@QueryParam(PARAMETER_USER_NAME)String code);
 	
 	String PATH = "actor";
 	String PATH_GET_ONE_TO_BE_CREATED_BY_PUBLIC = "getonetobecreatedbypublic";
@@ -114,7 +114,14 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_CREATE_BY_PUBLIC = "createbypublic";
 	String PATH_SAVE_PROFILE = "saveProfile";
 	
-	String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
+	//String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
+	String PARAMETER_USER_NAME = "nom_utilisateur";
+	String DESCRIPTION_USER_NAME = "Nom d'utilisateur";
+	String EXAMPLE_USER_NAME = "komenan";
+	
+	String PARAMETER_FIRST_NAME = "nom";
+	String PARAMETER_LAST_NAMES = "prenoms";
+	String PARAMETER_ELECTRONIC_MAIL_ADDRESS = "email";
 	
 	String TAG = "Acteurs";
 	

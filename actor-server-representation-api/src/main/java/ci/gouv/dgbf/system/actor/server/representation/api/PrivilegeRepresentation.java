@@ -17,13 +17,13 @@ public interface PrivilegeRepresentation extends RepresentationEntity<PrivilegeD
 	@Path(PATH_GET_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
 	//@Operation(description = "Obtenir les privilèges d'un compte utilisateur")
-	Response getByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
+	Response getByActorCode(@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)String actorCode);
 	
 	@GET
 	@Path(PATH_GET_FOR_SERVICE_MANAGER_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
 	//@Operation(description = "Obtenir les privilèges d'un compte utilisateur pour la gestion des services")
-	Response getForServiceManagerByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
+	Response getForServiceManagerByActorCode(@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)String actorCode);
 	
 	String PATH = "privilege";
 	String PATH_GET_BY_ACTOR_CODE = "privileges-par-acteur";

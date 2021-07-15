@@ -8,12 +8,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.rest.RequestProcessor;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.representation.Arguments;
 import org.cyk.utility.representation.EntityReader;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
+import ci.gouv.dgbf.system.actor.server.business.api.ScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
@@ -85,5 +87,47 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 			}
 		});
 		return EntityReader.getInstance().read(arguments);
-	} 
+	}
+	
+	public static Response getVisibleSections(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						responseBuilderArguments.setEntity(__inject__(ScopeBusiness.class).getVisibleSections(actorCode));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getVisibleAdministrativeUnits(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						responseBuilderArguments.setEntity(__inject__(ScopeBusiness.class).getVisibleAdministrativeUnits(actorCode));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getVisibleBudgetSpecializationUnits(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						responseBuilderArguments.setEntity(__inject__(ScopeBusiness.class).getVisibleBudgetSpecializationUnits(actorCode));
+					}
+				};
+			}
+		});
+	}
 }

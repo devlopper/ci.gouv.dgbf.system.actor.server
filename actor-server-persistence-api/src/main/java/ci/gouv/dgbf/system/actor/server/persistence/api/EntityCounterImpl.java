@@ -52,6 +52,9 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return ScopeOfTypeImputationQuerier.getInstance().count(arguments);
 		
+		if(Boolean.TRUE.equals(ScopeQuerier.getInstance().isOwner(arguments)))
+			return ScopeQuerier.getInstance().count(arguments);
+		
 		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 			return ClusterQuerier.getInstance().count(arguments);
 		
@@ -68,22 +71,6 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 			return AssignmentsQuerier.getInstance().count(arguments);
 		
 		if(arguments != null && arguments.getQuery() != null) {
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereTypeIsUAAndFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_USB_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereTypeIsUSBAndFilter(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereFilterNotAssociated(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return ScopeQuerier.getInstance().countWhereCodeOrNameLikeByTypeIdentifier(arguments);
-			
 			if(ActorQuerier.QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return ActorQuerier.getInstance().countWhereFilter(arguments);
 			

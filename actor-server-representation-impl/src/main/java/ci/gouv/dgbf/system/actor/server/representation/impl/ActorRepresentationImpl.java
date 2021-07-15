@@ -18,6 +18,12 @@ import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
@@ -240,4 +246,51 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 
 	/**/
 
+	public static Response create(String firstName,String lastNames,String electronicMailAddress,String civilityIdentifier,String groupIdentifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						Actor actor = new Actor();
+						actor.setFirstName(firstName).setLastNames(lastNames).setElectronicMailAddress(electronicMailAddress).setCivilityFromIdentifier(civilityIdentifier)
+							.setGroupFromIdentifier(groupIdentifier).setEmailSendableAfterCreation(Boolean.TRUE);
+						__inject__(ActorBusiness.class).create(actor);
+						responseBuilderArguments.setStatus(Response.Status.CREATED);
+						return new TransactionResult().incrementNumberOfCreation(1l).setTupleName("acteur");
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response get(String code) {		
+		if(StringHelper.isBlank(code))
+			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
+		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments().setQuery(new Query()
+				.setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)).addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_CODE,code)
+				.addProcessableTransientFieldsNames(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
+						,Actor.FIELD_PROFILES_CODES));
+		if(actor == null)
+			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();
+		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(MappingHelper.getSource(actor, ActorDto.class)));
+	}
+	
+	public static Response getElectronicMailAddress(String code) {		
+		if(StringHelper.isBlank(code))
+			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
+		String electronicMailAddress = ActorQuerier.getInstance().readElectronicMailAddressByCode(code);
+		if(StringHelper.isBlank(electronicMailAddress))
+			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();
+		return ResponseBuilder.getInstance().build(new ResponseBuilder.Arguments().setEntity(electronicMailAddress));
+	}
+	
+	public static Response checkExistense(String code) {
+		if(StringHelper.isBlank(code))
+			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
+		if(!Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Actor.class, code)))
+			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();
+		return Response.ok().build();
+	}
 }

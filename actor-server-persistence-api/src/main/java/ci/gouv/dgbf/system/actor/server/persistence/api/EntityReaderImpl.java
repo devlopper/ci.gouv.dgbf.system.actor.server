@@ -45,6 +45,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -82,6 +83,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			*/
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Scope.class)))
+				return (T) ScopeQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(LocalityQuerier.getInstance().isOwner(arguments)))
 				return (T) LocalityQuerier.getInstance().readOne(arguments);
@@ -193,6 +197,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Locality.class)))
 			return (Collection<T>) LocalityQuerier.getInstance().readMany(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Scope.class)))
+			return (Collection<T>) ScopeQuerier.getInstance().readMany(arguments);
+		
 		if(arguments != null && arguments.getQuery() != null) {
 			if(Boolean.TRUE.equals(ScopeTypeFunctionQuerier.QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier())))
 				return (Collection<T>) ScopeTypeFunctionQuerier.getInstance().read();
@@ -206,22 +213,6 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			if(PrivilegeQuerier.QUERY_IDENTIFIER_READ_VISIBLE_BY_ACTOR_CODE.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) PrivilegeQuerier.getInstance().readVisibleByActorCode((String)arguments.getFilterFieldValue(PrivilegeQuerier.PARAMETER_NAME_ACTOR_CODE));
 			
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_UA_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereTypeIsUAAndFilter(arguments);
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_USB_AND_FILTER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereTypeIsUSBAndFilter(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_NOT_ASSOCIATED.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereFilterNotAssociated(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_AND_NOT_ASSOCIATED_TO_FUNCTION_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);
-			
-			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) ScopeQuerier.getInstance().readWhereCodeOrNameLikeByTypeIdentifier(arguments);
-			
 			if(AccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) AccountRequestQuerier.getInstance().readWhereFilter(arguments);
 			
@@ -234,16 +225,6 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
-			/*
-			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForUI(arguments);
-			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) AssignmentsQuerier.getInstance().readFullyAssignedWhereFilterForUI(arguments);
-			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_NOT_FULLY_ASSIGNED_WHERE_FILTER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) AssignmentsQuerier.getInstance().readNotFullyAssignedWhereFilterForUI(arguments);
-			if(AssignmentsQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_EDIT.equals(arguments.getQuery().getIdentifier()))
-				return (Collection<T>) AssignmentsQuerier.getInstance().readWhereFilterForEdit(arguments);
-			*/
 		}
 		return super.readMany(tupleClass, arguments);
 	}

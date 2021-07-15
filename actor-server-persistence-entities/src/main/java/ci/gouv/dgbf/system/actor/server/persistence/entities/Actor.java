@@ -102,6 +102,18 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 		return (Actor) super.setCode(code);
 	}
 	
+	public Collection<String> getProfilesCodes(Boolean injectIfNull) {
+		if(profilesCodes == null && Boolean.TRUE.equals(injectIfNull))
+			profilesCodes = new ArrayList<>();
+		return profilesCodes;
+	}
+	
+	public Collection<Profile> getProfiles(Boolean injectIfNull) {
+		if(profiles == null && Boolean.TRUE.equals(injectIfNull))
+			profiles = new ArrayList<>();
+		return profiles;
+	}
+	
 	public Collection<Function> getFunctions(Boolean injectIfNull) {
 		if(functions == null && Boolean.TRUE.equals(injectIfNull))
 			functions = new ArrayList<>();
@@ -220,9 +232,14 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_PROFILES = "profiles";
+	public static final String FIELD_PROFILES_CODES = "profilesCodes";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
+	
+	public static final String FIELDS_PROFILE = "fields.profile";
+	public static final String FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
+		= "registrationNumberFirstNameElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSection";
 	
 	public static final String TABLE_NAME = "ACTEUR";
 	
