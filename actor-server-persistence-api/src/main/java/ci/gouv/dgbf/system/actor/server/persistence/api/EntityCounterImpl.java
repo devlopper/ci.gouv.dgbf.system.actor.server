@@ -27,12 +27,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputat
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.EntityCounterImpl implements Serializable {
@@ -52,7 +55,10 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return ScopeOfTypeImputationQuerier.getInstance().count(arguments);
 		
-		if(Boolean.TRUE.equals(ScopeQuerier.getInstance().isOwner(arguments)))
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ScopeType.class)))
+			return ScopeTypeQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Scope.class)))
 			return ScopeQuerier.getInstance().count(arguments);
 		
 		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))

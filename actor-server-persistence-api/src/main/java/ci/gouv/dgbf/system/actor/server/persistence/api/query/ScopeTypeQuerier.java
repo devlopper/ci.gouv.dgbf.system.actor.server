@@ -4,15 +4,18 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
-import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.annotation.Queries;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -33,6 +36,10 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 	String QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QUERY_NAME_READ_ORDER_BY_ORDER_NUMBER);
 	Collection<ScopeType> readOrderByOrderNumberAscending();
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QueryName.COUNT_DYNAMIC);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeType> implements ScopeTypeQuerier,Serializable {	
@@ -44,6 +51,27 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 		@Override
 		public Collection<ScopeType> readOrderByOrderNumberAscending() {
 			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
+		}
+		
+		@Override
+		public ScopeType readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(ScopeType.class,arguments.setQuery(null));
+			return super.readOne(arguments);
+		}
+		
+		@Override
+		public Collection<ScopeType> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(ScopeType.class,arguments.setQuery(null));
+			return super.readMany(arguments);
+		}
+		
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(ScopeType.class,arguments.setQuery(null));
+			return super.count(arguments);
 		}
 	}
 	

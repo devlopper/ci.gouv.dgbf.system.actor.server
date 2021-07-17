@@ -65,9 +65,13 @@ public interface ScopeQuerier extends Querier.CodableAndNamable<Scope> {
 	String PARAMETER_NAME_CATEGORY_CODE_NAME = "categoryCodeName";
 	String PARAMETER_NAME_ECONOMIC_NATURE_CODE_NAME = "economicNatureCodeName";
 	
+	String PARAMETER_NAME_VISIBLE = "visible";
+	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_TYPE_NAME = 4;
 	
 	String FLAG_VISIBLE = "Scope.visible";
+	String FLAG_INVISIBLE = "Scope.invisible";
+	String FLAG_LIST = "Scope.list";
 	
 	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Scope.class, QueryName.READ_DYNAMIC);	
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Scope.class, QueryName.READ_DYNAMIC_ONE);

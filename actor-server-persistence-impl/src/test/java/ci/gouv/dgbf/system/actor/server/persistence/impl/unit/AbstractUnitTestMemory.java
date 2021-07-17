@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,17 +102,55 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 				, expectedAdministrativeUnitCodeName, expectedSectionCodeName, expectedAdministrativeUnitFunction, expectedProfilesCodes);
 	}
 	
-	protected static void assertVisibleScopesCodes(String actorCode,String scopeTypeCode,String code,String name,String[] expectedCodes) {
-		Collection<Scope> scopes = EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
+	/* Scope */
+	
+	protected static Collection<Scope> readScopes(String typeCode,String code,String name,Boolean visible,String actorCode,Boolean processFieldVisible) {
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-				.addFlags(ScopeQuerier.FLAG_VISIBLE)
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeTypeCode
-						,ScopeQuerier.PARAMETER_NAME_CODE,code,ScopeQuerier.PARAMETER_NAME_NAME,name));
+				.addFilterFieldsValues(
+						ScopeQuerier.PARAMETER_NAME_TYPE_CODE, typeCode
+						,ScopeQuerier.PARAMETER_NAME_CODE,code
+						,ScopeQuerier.PARAMETER_NAME_NAME,name
+						,ScopeQuerier.PARAMETER_NAME_VISIBLE, visible
+						,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode						
+					);
+		if(Boolean.TRUE.equals(processFieldVisible))
+			queryExecutorArguments.addProcessableTransientFieldsNames(Scope.FIELD_VISIBLE);
+		return EntityReader.getInstance().readMany(Scope.class,queryExecutorArguments);
+	}
+	
+	protected static void assertScopesCodes(Collection<Scope> scopes,String[] expectedCodes) {
 		if(scopes == null) {
 			assertThat(expectedCodes).isNull();
 		}else {
 			assertThat(scopes.stream().map(scope -> scope.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
 		}
+	}
+	
+	protected static void assertScopesCodes(String typeCode,String code,String name,Boolean visible,String actorCode,String[] expectedCodes) {
+		assertScopesCodes(readScopes(typeCode, code, name, visible, actorCode, null),expectedCodes);
+	}
+	
+	protected static void assertScopesVisibles(Collection<Scope> scopes,Boolean[] expectedVisibles) {
+		if(scopes == null) {
+			assertThat(expectedVisibles).isNull();
+		}else {
+			assertThat(scopes.stream().map(scope -> scope.getVisible()).collect(Collectors.toList())).as("visibles are incorrects").containsExactly(expectedVisibles);
+		}
+	}
+	
+	protected static void assertScopesVisibles(String typeCode,String code,String name,Boolean visible,String actorCode,Boolean[] expectedVisibles) {
+		assertScopesVisibles(readScopes(typeCode, code, name, visible, actorCode, Boolean.TRUE),expectedVisibles);
+	}
+	
+	/**/
+	
+	protected static void assertVisibleScopesCodes(String actorCode,String scopeTypeCode,String code,String name,String[] expectedCodes) {
+		assertScopesCodes(EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFlags(ScopeQuerier.FLAG_VISIBLE)
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeTypeCode
+						,ScopeQuerier.PARAMETER_NAME_CODE,code,ScopeQuerier.PARAMETER_NAME_NAME,name)),expectedCodes);
 	}
 	
 	protected static void assertVisibleSectionsCodes(String actorCode,String code,String name,String[] expectedCodes) {
@@ -132,5 +171,25 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	
 	protected static void assertVisibleActivitiesCodes(String actorCode,String code,String name,String[] expectedCodes) {
 		assertVisibleScopesCodes(actorCode, ScopeType.CODE_ACTIVITE,code,name, expectedCodes);
+	}
+	
+	/**/
+	
+	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
+			,Object[] filteredCode,Object[] filteredName,Object[] filteredActor){	
+		String[] expectedCodes = new String[expectedCodesAndVisibes.length];
+		Boolean[] expectedVisibles = new Boolean[expectedCodesAndVisibes.length];
+		for(Integer index = 0; index < expectedCodesAndVisibes.length; index = index + 1) {
+			expectedCodes[index] = (String) expectedCodesAndVisibes[index][0];
+			expectedVisibles[index] = (Boolean) expectedCodesAndVisibes[index][1];
+		}
+		assertScopesCodes(typeCode, null, null, null,null,expectedCodes);
+		assertScopesVisibles(typeCode,null,null,null,null, expectedVisibles);
+		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes);
+		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes);	
+		if(filteredCode != null)
+			assertScopesCodes(typeCode, (String)filteredCode[0], null, null,null,(String[]) filteredCode[1]);
+		if(filteredCode != null)
+			assertScopesCodes(typeCode, null,(String)filteredName[0], null,null,(String[]) filteredName[1]);
 	}
 }

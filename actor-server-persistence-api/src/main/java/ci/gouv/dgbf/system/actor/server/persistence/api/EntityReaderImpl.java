@@ -35,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputat
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -47,6 +48,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.EntityReaderImpl implements Serializable {
@@ -83,6 +85,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			*/
 			if(FunctionQuerier.QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ScopeType.class)))
+				return (T) ScopeTypeQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Scope.class)))
 				return (T) ScopeQuerier.getInstance().readOne(arguments);
@@ -196,6 +201,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Locality.class)))
 			return (Collection<T>) LocalityQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ScopeType.class)))
+			return (Collection<T>) ScopeTypeQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Scope.class)))
 			return (Collection<T>) ScopeQuerier.getInstance().readMany(arguments);

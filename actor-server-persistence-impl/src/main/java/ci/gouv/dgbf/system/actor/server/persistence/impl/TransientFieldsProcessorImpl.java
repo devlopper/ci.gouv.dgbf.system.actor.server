@@ -16,6 +16,7 @@ import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -24,6 +25,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
@@ -33,6 +35,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHolder
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.server.hibernate.TransientFieldsProcessorImpl {
@@ -49,6 +52,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processAdministrativeUnits(CollectionHelper.cast(AdministrativeUnit.class, objects),fieldsNames);
 		else if(Actor.class.equals(klass))
 			processActors(CollectionHelper.cast(Actor.class, objects),fieldsNames);
+		else if(Scope.class.equals(klass))
+			processScopes(CollectionHelper.cast(Scope.class, objects),filter,fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
 	}
@@ -66,6 +71,15 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	}
 	
 	/**/
+	public void processScopes(Collection<Scope> scopes,Filter filter,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(Scope.FIELD_VISIBLE.equals(fieldName))
+				new ScopeVisiblesReader().setScopeTypeCode(filter == null ? null : (String)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE))
+				//.setNot((Boolean)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE))
+				.readThenSet(scopes, null);
+		}
+	}
+	
 	public void processActors(Collection<Actor> actors,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
 			if(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION.equals(fieldName))
