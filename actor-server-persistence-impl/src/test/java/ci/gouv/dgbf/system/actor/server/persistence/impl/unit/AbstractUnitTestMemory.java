@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -148,9 +147,8 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	protected static void assertVisibleScopesCodes(String actorCode,String scopeTypeCode,String code,String name,String[] expectedCodes) {
 		assertScopesCodes(EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-				.addFlags(ScopeQuerier.FLAG_VISIBLE)
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeTypeCode
-						,ScopeQuerier.PARAMETER_NAME_CODE,code,ScopeQuerier.PARAMETER_NAME_NAME,name)),expectedCodes);
+						,ScopeQuerier.PARAMETER_NAME_CODE,code,ScopeQuerier.PARAMETER_NAME_NAME,name,ScopeQuerier.PARAMETER_NAME_VISIBLE,Boolean.TRUE)),expectedCodes);
 	}
 	
 	protected static void assertVisibleSectionsCodes(String actorCode,String code,String name,String[] expectedCodes) {
@@ -176,7 +174,9 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 	/**/
 	
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
-			,Object[] filteredCode,Object[] filteredName,Object[] filteredActor){	
+			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor){	
+		assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes);
+		/*
 		String[] expectedCodes = new String[expectedCodesAndVisibes.length];
 		Boolean[] expectedVisibles = new Boolean[expectedCodesAndVisibes.length];
 		for(Integer index = 0; index < expectedCodesAndVisibes.length; index = index + 1) {
@@ -185,11 +185,36 @@ public abstract class AbstractUnitTestMemory extends AbstractUnitTest {
 		}
 		assertScopesCodes(typeCode, null, null, null,null,expectedCodes);
 		assertScopesVisibles(typeCode,null,null,null,null, expectedVisibles);
+		*/
 		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes);
 		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes);	
 		if(filteredCode != null)
 			assertScopesCodes(typeCode, (String)filteredCode[0], null, null,null,(String[]) filteredCode[1]);
 		if(filteredCode != null)
 			assertScopesCodes(typeCode, null,(String)filteredName[0], null,null,(String[]) filteredName[1]);
+		
+		if(expectedCodesAndVisibesByActor != null) {
+			for(Integer index = 0; index < expectedCodesAndVisibesByActor.length; index = index + 1)
+				assertScopesCodesAndVisibes(typeCode, (String)expectedCodesAndVisibesByActor[index][0],(Object[][])expectedCodesAndVisibesByActor[index][1]);
+		}
+		
+		if(expectedVisiblesCodesByActor != null)
+			for(Object[] array : expectedVisiblesCodesByActor)
+				assertScopesCodes(typeCode, null,null, Boolean.TRUE,(String)array[0],(String[]) array[1]);
+		if(expectedNotVisiblesCodesByActor != null)
+			for(Object[] array : expectedNotVisiblesCodesByActor)
+				assertScopesCodes(typeCode, null,null, Boolean.FALSE,(String)array[0],(String[]) array[1]);
+	}
+	
+	protected static void assertScopesCodesAndVisibes(String typeCode,String actorCode,Object[][] expectedCodesAndVisibes) {
+		Collection<Scope> scopes = readScopes(typeCode, null, null, null, actorCode, Boolean.TRUE);
+		String[] expectedCodes = new String[expectedCodesAndVisibes.length];
+		Boolean[] expectedVisibles = new Boolean[expectedCodesAndVisibes.length];
+		for(Integer index = 0; index < expectedCodesAndVisibes.length; index = index + 1) {
+			expectedCodes[index] = (String) expectedCodesAndVisibes[index][0];
+			expectedVisibles[index] = (Boolean) expectedCodesAndVisibes[index][1];
+		}
+		assertScopesCodes(scopes,expectedCodes);
+		assertScopesVisibles(scopes, expectedVisibles);
 	}
 }

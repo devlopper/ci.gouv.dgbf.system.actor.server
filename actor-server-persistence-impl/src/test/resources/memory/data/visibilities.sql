@@ -24,6 +24,8 @@ Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('s11','s11','
 
 Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('ua01','ua01','ua 01','s02');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('ua01','ua01','ua 01','UA');
+Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('ua02','ua02','ua 02','s02');
+Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('ua02','ua02','ua 02','UA');
 Insert into VM_APP_UNITE_ADMINISTRATIVE (IDENTIFIANT,CODE,LIBELLE,SECTION) values ('ua10','ua10','ua 10','s11');
 Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('ua10','ua10','ua 10','UA');
 
@@ -52,6 +54,10 @@ Insert into VM_APP_DOMAINE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('ac03','ac03'
 
 Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('1','komenan','christian','kycdev@gmail.com');
 Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('1','christian','1');
+Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('2','rffim_s01','rffim_s01','rffim_s01');
+Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('2','rffim_s01','2');
+Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('3','gc_ua02','gc_ua02','gc_ua02');
+Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('3','gc_ua02','3');
 
 Insert into TYPE_PROFILE (IDENTIFIANT,CODE,LIBELLE) values ('1','TP0','Type Profile 0');
 Insert into PROFILE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('1','P00','Profile 0','1');
@@ -63,8 +69,11 @@ Insert into ACTEUR_PROFILE (IDENTIFIANT,ACTEUR,PROFILE) values ('2','1','3');
 
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('10','1','s01'); -- s01
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('11','1','s10'); -- s10
+Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('12','2','s01');
 
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('20','1','ua01'); -- s02
+Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('21','3','ua02');
+
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('30','1','usb01'); -- s03
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('40','1','a01'); -- s04
 

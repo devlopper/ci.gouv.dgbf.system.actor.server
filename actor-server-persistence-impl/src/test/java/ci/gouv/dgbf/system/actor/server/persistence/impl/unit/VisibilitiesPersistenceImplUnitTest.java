@@ -32,6 +32,15 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 	}
 	
 	@Test
+	public void scopes(){
+		sections();
+		administrativeUnits();
+		budgetSpecializationUnits();
+		actions();
+		activities();
+	}
+	
+	@Test
 	public void sections(){
 		String typeCode = ScopeType.CODE_SECTION;
 		assertScopes(typeCode
@@ -40,19 +49,23 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 			, new String[] {"s11"}
 			, new Object[] {"s02",new String[] {"s02"}}
 			, new Object[] {"3",new String[] {"s03"}}
-			, null);
+			, new Object[][] { {"rffim_s01",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10"}} }
+			, new Object[][] { {"christian",new String[] {"s11"}} }
+			);
 	}
 	
 	@Test
 	public void administrativeUnits(){
 		String typeCode = ScopeType.CODE_UA;
 		assertScopes(typeCode
-				, new Object[][] {{"ua01",Boolean.TRUE},{"ua10",null}}
-				, new String[] {"ua01"}
+				, new Object[][] {{"ua01",Boolean.TRUE},{"ua02",Boolean.TRUE},{"ua10",null}}
+				, new String[] {"ua01","ua02"}
 				, new String[] {"ua10"}
 				, new Object[] {"01",new String[] {"ua01"}}
 				, new Object[] {"10",new String[] {"ua10"}}
-				, null);
+				, new Object[][] { {"gc_ua02",new Object[][] {{"ua01",null},{"ua02",Boolean.TRUE},{"ua10",null}}} }
+				,null,null);
 	}
 	
 	@Test
@@ -64,7 +77,7 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 				, new String[] {"usb04"}
 				, new Object[] {"01",new String[] {"usb01"}}
 				, new Object[] {"4",new String[] {"usb04"}}
-				, null);
+				, null,null,null);
 	}
 	
 	@Test
@@ -76,7 +89,7 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 				, new String[] {"a03"}
 				, new Object[] {"01",new String[] {"a01"}}
 				, new Object[] {"2",new String[] {"a02"}}
-				, null);
+				, null,null,null);
 	}
 	
 	@Test
@@ -88,11 +101,11 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 				, new String[] {"ac03"}
 				, new Object[] {"01",new String[] {"ac01"}}
 				, new Object[] {"ac",new String[] {"ac01","ac02","ac03"}}
-				, null);
+				, null,null,null);
 	}
 	
 	@Test
-	public void visibleSectionsByActor(){		
+	public void visibleSectionsByActor(){
 		assertVisibleSectionsCodes("christian",null,null,new String[] {"s01","s02","s03","s04","s05","s10"});
 		assertVisibleSectionsCodes("christian","0",null,new String[] {"s01","s02","s03","s04","s05","s10"});
 		assertVisibleSectionsCodes("christian","1",null,new String[] {"s01","s10"});

@@ -7,14 +7,11 @@ import static org.cyk.utility.persistence.query.Language.Where.isNull;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
-import java.util.Collection;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.LikeStringBuilder;
@@ -30,7 +27,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.server.hibernate.RuntimeQueryStringBuilderImpl implements Serializable {
@@ -159,25 +155,14 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 	
 	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		String scopeTypeCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
-		if(Boolean.TRUE.equals(CollectionHelper.contains(arguments.getFlags(), ScopeQuerier.FLAG_VISIBLE))) {
-			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, arguments);
-			if(ScopeType.CODE_SECTION.equals(scopeTypeCode))
-				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleSection(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
-			else if(ScopeType.CODE_UA.equals(scopeTypeCode))
-				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
-			else if(ScopeType.CODE_USB.equals(scopeTypeCode))
-				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleBudgetSpecializationUnit(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
-			else if(ScopeType.CODE_ACTION.equals(scopeTypeCode))
-				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleAction(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
-			else if(ScopeType.CODE_ACTIVITE.equals(scopeTypeCode))
-				predicate.add(ScopeQueryStringBuilder.Predicate.hasVisibleActivity(":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
-		}else {
-			if(StringHelper.isNotBlank(scopeTypeCode)) {
-				predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
-				filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
-			}			
+		String actorCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE);
+		String actorCodeParameterName = null;
+		if(StringHelper.isNotBlank(actorCode))
+			actorCodeParameterName = ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE;
+		if(StringHelper.isNotBlank(scopeTypeCode)) {
+			predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
+			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
 		}
-		
 		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_CODE) != null) {
 			predicate.add(LikeStringBuilder.getInstance().build("t", Scope.FIELD_CODE, ScopeQuerier.PARAMETER_NAME_CODE));
 			filter.addFieldContains(ScopeQuerier.PARAMETER_NAME_CODE, arguments);
@@ -186,22 +171,11 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(LikeStringBuilder.getInstance().build("t", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_NAME,ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_NAME, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		}
-		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) != null) {
-			String visible = null;
-			if(ScopeType.CODE_SECTION.equals(scopeTypeCode))
-				visible = ScopeQueryStringBuilder.Predicate.hasVisibleSection(null);
-			else if(ScopeType.CODE_UA.equals(scopeTypeCode))
-				visible = ScopeQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(null);
-			else if(ScopeType.CODE_USB.equals(scopeTypeCode))
-				visible = ScopeQueryStringBuilder.Predicate.hasVisibleBudgetSpecializationUnit(null);
-			else if(ScopeType.CODE_ACTION.equals(scopeTypeCode))
-				visible = ScopeQueryStringBuilder.Predicate.hasVisibleAction(null);
-			else if(ScopeType.CODE_ACTIVITE.equals(scopeTypeCode))
-				visible = ScopeQueryStringBuilder.Predicate.hasVisibleActivity(null);
-			
-			if(!Boolean.TRUE.equals(ValueHelper.defaultToIfNull(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE), Boolean.TRUE)))
-				visible = Language.Where.not(visible);
-			predicate.add(visible);
+		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) != null) {			
+			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, actorCodeParameterName
+					,!Boolean.TRUE.equals(ValueHelper.defaultToIfNull(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE), Boolean.TRUE))));
+			if(StringHelper.isNotBlank(actorCode))
+				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);			
 		}
 	}
 	

@@ -6,25 +6,18 @@ import static org.cyk.utility.persistence.query.Language.From.from;
 import static org.cyk.utility.persistence.query.Language.Select.select;
 import static org.cyk.utility.persistence.query.Language.Where.and;
 import static org.cyk.utility.persistence.query.Language.Where.exists;
-import static org.cyk.utility.persistence.query.Language.Where.like;
 import static org.cyk.utility.persistence.query.Language.Where.not;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
 
-import java.util.Collection;
-
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.Language;
 
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public interface ScopeQueryStringBuilder {
@@ -127,11 +120,30 @@ public interface ScopeQueryStringBuilder {
 			return String.format(IS_TYPE_CODE_FORMAT, code);
 		}
 		
-		static String filter(String parameterNameCode,String parameterNameName) {
-			return and(
-				like("t", Scope.FIELD_CODE, parameterNameCode),
-				like("t", Scope.FIELD_NAME, parameterNameName, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
-			);
+		String TYPE_CODE_EQUALS = "t.type.code = :typeCode";
+		static String typeCodeEquals() {
+			return TYPE_CODE_EQUALS;
+		}
+		
+		static String scopeVisible(String typeCode,String parameterNameActorCode,Boolean negate) {
+			String string = null;
+			if(ScopeType.CODE_SECTION.equals(typeCode))
+				string = hasVisibleSection(parameterNameActorCode);
+			else if(ScopeType.CODE_UA.equals(typeCode))
+				string = hasVisibleAdministrativeUnit(parameterNameActorCode);
+			else if(ScopeType.CODE_USB.equals(typeCode))
+				string = hasVisibleBudgetSpecializationUnit(parameterNameActorCode);
+			else if(ScopeType.CODE_ACTION.equals(typeCode))
+				string = hasVisibleAction(parameterNameActorCode);
+			else if(ScopeType.CODE_ACTIVITE.equals(typeCode))
+				string = hasVisibleActivity(parameterNameActorCode);
+			
+			if(Boolean.TRUE.equals(negate))
+				string = Language.Where.not(string);
+			
+			if(StringHelper.isBlank(string))
+				throw new RuntimeException(String.format("Visible predicate of scope type <<%s>> not yet implemented", typeCode));
+			return string;
 		}
 		
 		/* Section */
@@ -150,8 +162,6 @@ public interface ScopeQueryStringBuilder {
 				));
 		}
 		
-		/* Administrative Unit */
-		
 		static String hasVisibleAdministrativeUnit(String parameterNameActorCode) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_UA),
@@ -161,8 +171,6 @@ public interface ScopeQueryStringBuilder {
 					))
 				));
 		}
-		
-		/* Budget Specialization Unit */
 		
 		static String hasVisibleBudgetSpecializationUnit(String parameterNameActorCode) {
 			return parenthesis(and(
@@ -177,8 +185,6 @@ public interface ScopeQueryStringBuilder {
 				));
 		}
 		
-		/* Activity */
-		
 		static String hasVisibleAction(String parameterNameActorCode) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_ACTION),	
@@ -192,8 +198,6 @@ public interface ScopeQueryStringBuilder {
 				));
 		}
 		
-		/* Activity */
-		
 		static String hasVisibleActivity(String parameterNameActorCode) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_ACTIVITE),	
@@ -206,22 +210,6 @@ public interface ScopeQueryStringBuilder {
 						,childVisible(Imputation.class,"activity",parameterNameActorCode)
 					))
 				));
-		}
-		
-		/**/
-		
-		public static interface Arguments {
-			static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Collection<Class<?>> classes) {
-				for(Class<?> klass : classes) {
-					String variableName = StringHelper.getVariableNameFrom(klass.getSimpleName()+"CodeName");
-					filter.addFieldsContains(arguments,variableName);
-					filter.addFieldContainsStringOrWords(variableName, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);	
-				}
-			}
-			
-			static void addParentCodeNameContains(QueryExecutorArguments arguments,Filter filter,Class<?>...classes) {
-				addParentCodeNameContains(arguments, filter, CollectionHelper.listOf(classes));
-			}
 		}
 	}
 }
