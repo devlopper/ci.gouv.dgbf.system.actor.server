@@ -17,6 +17,7 @@ public class ScopeDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private ActorDto actor;
 	private String actorIdentifier;
 	private ScopeDto section;
+	private Boolean visible;
 	private String sectionAsString,actionAsString,budgetSpecializationUnitAsString,activityAsString,activityCategoryAsString;
 	
 	@Override
