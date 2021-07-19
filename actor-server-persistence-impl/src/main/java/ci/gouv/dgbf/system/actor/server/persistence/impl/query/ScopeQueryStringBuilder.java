@@ -127,7 +127,13 @@ public interface ScopeQueryStringBuilder {
 		
 		static String scopeVisible(String typeCode,String parameterNameActorCode,Boolean negate) {
 			String string = null;
-			if(ScopeType.CODE_SECTION.equals(typeCode))
+			if(StringHelper.isBlank(typeCode))
+				string = parenthesis(or(
+						hasVisibleSection(parameterNameActorCode),hasVisibleAdministrativeUnit(parameterNameActorCode)
+						,hasVisibleBudgetSpecializationUnit(parameterNameActorCode),hasVisibleAction(parameterNameActorCode),hasVisibleActivity(parameterNameActorCode)
+						,hasVisibleBudgetCategory(parameterNameActorCode)
+					));
+			else if(ScopeType.CODE_SECTION.equals(typeCode))
 				string = hasVisibleSection(parameterNameActorCode);
 			else if(ScopeType.CODE_UA.equals(typeCode))
 				string = hasVisibleAdministrativeUnit(parameterNameActorCode);
@@ -137,6 +143,8 @@ public interface ScopeQueryStringBuilder {
 				string = hasVisibleAction(parameterNameActorCode);
 			else if(ScopeType.CODE_ACTIVITE.equals(typeCode))
 				string = hasVisibleActivity(parameterNameActorCode);
+			else if(ScopeType.CODE_CATEGORIE_BUDGET.equals(typeCode))
+				string = hasVisibleBudgetCategory(parameterNameActorCode);
 			
 			if(Boolean.TRUE.equals(negate))
 				string = Language.Where.not(string);
@@ -146,7 +154,25 @@ public interface ScopeQueryStringBuilder {
 			return string;
 		}
 		
-		/* Section */
+		static String hasVisibleBudgetCategory(String parameterNameActorCode) {
+			return parenthesis(and(
+					isTypeCode(ScopeType.CODE_CATEGORIE_BUDGET),				
+					parenthesis(or(
+						selfVisible(parameterNameActorCode)
+					))
+				));
+		}
+		
+		static String hasVisibleActivityCategory(String parameterNameActorCode) {
+			return parenthesis(and(
+					isTypeCode(ScopeType.CODE_CATEGORIE_ACTIVITE),				
+					parenthesis(or(
+						selfVisible(parameterNameActorCode)
+						,childVisible(Activity.class,"activityCategory",parameterNameActorCode)
+						,childVisible(Imputation.class,"activityCategory",parameterNameActorCode)
+					))
+				));
+		}
 		
 		static String hasVisibleSection(String parameterNameActorCode) {
 			return parenthesis(and(

@@ -1,9 +1,12 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
 import java.io.Serializable;
+import java.util.Collection;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.Querier;
+import org.cyk.utility.persistence.server.Helper;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -15,6 +18,8 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public abstract class AbstractScopeVisiblesReader extends AbstractScopeReaderImpl implements Serializable {
 
+	protected Boolean stringify;
+	
 	@Override
 	protected String getQueryValue() {
 		QueryStringBuilder.Arguments arguments = new QueryStringBuilder.Arguments();
@@ -27,8 +32,18 @@ public abstract class AbstractScopeVisiblesReader extends AbstractScopeReaderImp
 	protected abstract String getVisiblePredicate();
 	
 	@Override
+	public void set(Collection<Scope> scopes, Collection<Object[]> arrays) {
+		super.set(scopes, arrays);
+		if(CollectionHelper.isNotEmpty(scopes)) {
+			if(Boolean.TRUE.equals(stringify))
+				scopes.forEach(scope -> {
+					scope.setVisibleAsString(Helper.ifTrueYesElseNo(scope.getVisible()));
+				});
+		}
+	}
+	
+	@Override
 	protected void __set__(Scope scope, Object[] array) {
-		//Integer index = 1;
 		scope.setVisible(Boolean.TRUE);
 	}
 	

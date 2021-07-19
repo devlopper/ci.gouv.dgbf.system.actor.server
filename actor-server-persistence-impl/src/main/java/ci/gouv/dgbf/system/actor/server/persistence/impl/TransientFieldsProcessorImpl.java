@@ -9,7 +9,6 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
-import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.server.hibernate.AbstractAuditIdentifiedByStringReader;
 import org.cyk.utility.persistence.server.hibernate.entity.AbstractAuditIdentifiedByString;
@@ -17,7 +16,6 @@ import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -74,11 +72,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	/**/
 	public void processScopes(Collection<Scope> scopes,Filter filter,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
-			if(Scope.FIELD_VISIBLE.equals(fieldName)) {
-				Boolean visible = ValueHelper.defaultToIfNull((Boolean) filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE),Boolean.TRUE);
-				new ScopeVisiblesReader().setTypeCode((String)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE))
-				.setActorCode((String)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE))
-				.setNegate(!visible).readThenSet(scopes, null);
+			if(Scope.FIELD_VISIBLE.equals(fieldName) || Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName)) {
+				new ScopeVisiblesReader(filter).setStringify(Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName)).readThenSet(scopes, null);
 			}
 		}
 	}

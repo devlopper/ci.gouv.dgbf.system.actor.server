@@ -31,7 +31,8 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ScopeType type;
 	
 	@Transient private Scope section;
-	@Transient private String sectionAsString,administrativeUnitAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString;
+	@Transient private String sectionAsString,administrativeUnitAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString
+		,visibleAsString;
 	@Transient private Boolean visible;
 	
 	@Override
@@ -70,6 +71,8 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_ACTIVITY_AS_STRING = "activityAsString";
 	public static final String FIELD_ACTIVITY_CATEGORY_AS_STRING = "activityCategoryAsString";
 	public static final String FIELD_VISIBLE = "visible";
+	public static final String FIELD_VISIBLE_AS_STRING = "visibleAsString";
+	public static final String FIELDS_VISIBLE_AND_VISIBLE_AS_STRING = "visibleAndVisibleAsString";
 	
 	public static final String COLUMN_TYPE = "type";
 	

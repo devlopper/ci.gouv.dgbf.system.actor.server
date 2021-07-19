@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueConverter;
+import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import lombok.Getter;
@@ -18,6 +21,19 @@ public class ScopeVisiblesReader extends AbstractScopeVisiblesReader implements 
 
 	private String typeCode,actorCode;
 	private Boolean negate;
+	
+	public ScopeVisiblesReader(Filter filter) {
+		if(filter != null) {
+			Object visibleObject = filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE);
+			if(visibleObject instanceof String)
+				visibleObject = visibleObject.equals("true");
+			Boolean visible = ValueConverter.getInstance().convertToBoolean(visibleObject); 
+			visible = ValueHelper.defaultToIfNull(visible,Boolean.TRUE);
+			typeCode = (String)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
+			actorCode = (String)filter.getFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE);
+			negate = !visible;	
+		}		
+	}
 	
 	@Override
 	protected String getVisiblePredicate() {

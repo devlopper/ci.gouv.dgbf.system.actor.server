@@ -18,7 +18,7 @@ public class ScopeDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private String actorIdentifier;
 	private ScopeDto section;
 	private Boolean visible;
-	private String sectionAsString,actionAsString,budgetSpecializationUnitAsString,activityAsString,activityCategoryAsString;
+	private String sectionAsString,actionAsString,budgetSpecializationUnitAsString,activityAsString,activityCategoryAsString,visibleAsString;
 	
 	@Override
 	public ScopeDto set__deletable__(Boolean __deletable__) {

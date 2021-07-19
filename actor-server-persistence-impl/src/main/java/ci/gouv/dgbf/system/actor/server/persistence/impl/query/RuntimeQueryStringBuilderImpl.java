@@ -159,7 +159,7 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		String actorCodeParameterName = null;
 		if(StringHelper.isNotBlank(actorCode))
 			actorCodeParameterName = ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE;
-		if(StringHelper.isNotBlank(scopeTypeCode)) {
+		if(StringHelper.isNotBlank(scopeTypeCode)/* && arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) == null*/) {
 			predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
 		}
@@ -171,9 +171,11 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(LikeStringBuilder.getInstance().build("t", Scope.FIELD_NAME, ScopeQuerier.PARAMETER_NAME_NAME,ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME));
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_NAME, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		}
-		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) != null) {			
-			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, actorCodeParameterName
-					,!Boolean.TRUE.equals(ValueHelper.defaultToIfNull(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE), Boolean.TRUE))));
+		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) != null) {
+			Object visibleObject = arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE);
+			if(visibleObject instanceof String)
+				visibleObject = Boolean.TRUE.toString().equalsIgnoreCase(visibleObject.toString());
+			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, actorCodeParameterName,!ValueHelper.defaultToIfNull((Boolean)visibleObject, Boolean.TRUE)));
 			if(StringHelper.isNotBlank(actorCode))
 				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);			
 		}
