@@ -32,7 +32,7 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@Transient private Scope section;
 	@Transient private String sectionAsString,administrativeUnitAsString,budgetSpecializationUnitAsString,actionAsString,activityAsString,activityCategoryAsString
-		,visibleAsString;
+		,visibleAsString,typeAsString;
 	@Transient private Boolean visible;
 	
 	@Override

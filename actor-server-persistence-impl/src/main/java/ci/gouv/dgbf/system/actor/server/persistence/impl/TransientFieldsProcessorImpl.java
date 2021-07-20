@@ -72,9 +72,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	/**/
 	public void processScopes(Collection<Scope> scopes,Filter filter,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
-			if(Scope.FIELD_VISIBLE.equals(fieldName) || Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName)) {
+			if(Scope.FIELD_VISIBLE.equals(fieldName) || Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName))
 				new ScopeVisiblesReader(filter).setStringify(Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName)).readThenSet(scopes, null);
-			}
 		}
 	}
 	

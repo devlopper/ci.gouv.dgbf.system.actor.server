@@ -103,32 +103,4 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 				, new Object[] {"ac",new String[] {"ac01","ac02","ac03"}}
 				, null,null,null);
 	}
-	
-	@Test
-	public void visibleSectionsByActor(){
-		assertVisibleSectionsCodes("christian",null,null,new String[] {"s01","s02","s03","s04","s05","s10"});
-		assertVisibleSectionsCodes("christian","0",null,new String[] {"s01","s02","s03","s04","s05","s10"});
-		assertVisibleSectionsCodes("christian","1",null,new String[] {"s01","s10"});
-	}
-	
-	@Test
-	public void visibleAdministrativeUnitsByActor(){		
-		assertVisibleAdministrativeUnitsCodes("christian", null,null,new String[] {"ua01"});
-	}
-	
-	@Test
-	public void visibleBudgetSpecializationUnitByActor(){		
-		assertVisibleBudgetSpecializationUnitsCodes("christian", null,null,new String[] {"usb01","usb02","usb03"});
-	}
-	
-	@Test
-	public void visibleActionsByActor(){		
-		assertVisibleActionsCodes("christian", null,null,new String[] {"a01","a02"});
-	}
-	
-	@Test
-	public void visibleActivitiesByActor(){		
-		assertVisibleActivitiesCodes("christian", null,null,new String[] {"ac01","ac02"});
-		assertVisibleActivitiesCodes("christian", null,"2",new String[] {"ac02"});
-	}
 }

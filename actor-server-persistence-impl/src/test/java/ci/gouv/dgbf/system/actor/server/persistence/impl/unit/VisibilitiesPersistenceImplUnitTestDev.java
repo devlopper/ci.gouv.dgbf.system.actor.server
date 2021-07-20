@@ -11,11 +11,17 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 	protected String getPersistenceUnitName() {
 		return "dev";
 	}
+	
+	@Override
+	protected void __listenBefore__() {
+		super.__listenBefore__();
+		EXCAT = Boolean.FALSE;
+	}
 
-	//@Test
+	@Test
 	public void scopes(){
 		sections();
-		//administrativeUnits();
+		administrativeUnits();
 		//budgetSpecializationUnits();
 		//actions();
 		//activities();
@@ -33,25 +39,22 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 			, new Object[][] { {"christian",new Object[][] {{"101",Boolean.TRUE}}} }
 			, new Object[][] { {"christian",new String[] {"101"}} }
 			, new Object[][] { {"christian",null} }
-			);
-		assertScopesCodes(ScopeType.CODE_SECTION, null, null, null, null, new String[] {"101"});
-		assertScopesCodes(ScopeType.CODE_SECTION, null, null, Boolean.TRUE, null, new String[] {"101"});
-		assertScopesCodes(ScopeType.CODE_SECTION, null, null, Boolean.FALSE, null, null);
+			);	
 	}
-	/*
+	
 	@Test
 	public void administrativeUnits(){
 		String typeCode = ScopeType.CODE_UA;
 		assertScopes(typeCode
-				, new Object[][] {{"ua01",Boolean.TRUE},{"ua02",Boolean.TRUE},{"ua10",null}}
-				, new String[] {"ua01","ua02"}
-				, new String[] {"ua10"}
-				, new Object[] {"01",new String[] {"ua01"}}
-				, new Object[] {"10",new String[] {"ua10"}}
-				, new Object[][] { {"gc_ua02",new Object[][] {{"ua01",null},{"ua02",Boolean.TRUE},{"ua10",null}}} }
+				, new Object[][] {{"13010222",Boolean.TRUE},{"11010022",null}}
+				, new String[] {"13010222"}
+				, new String[] {"11010022"}
+				, new Object[] {"13010222",new String[] {"13010222"}}
+				, new Object[] {"DTI",new String[] {"13010222"}}
+				, new Object[][] { {"christian",new Object[][] {{"11010022",null},{"13010222",Boolean.TRUE}}} }
 				,null,null);
 	}
-	
+	/*
 	@Test
 	public void budgetSpecializationUnits(){
 		String typeCode = ScopeType.CODE_USB;

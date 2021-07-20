@@ -29,10 +29,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.server.AbstractUnitTest {
-
+	
+	protected static Boolean EXCAT = Boolean.TRUE;
+	
 	@Override
 	protected void callInitialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
@@ -148,87 +149,90 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		return EntityReader.getInstance().readMany(Scope.class,queryExecutorArguments);
 	}
 	
-	protected static void assertScopesCodes(Collection<Scope> scopes,String[] expectedCodes) {
+	protected static void assertScopesCodes(Collection<Scope> scopes,String[] expectedCodes,Boolean exact) {
 		if(scopes == null) {
 			assertThat(expectedCodes).isNull();
-		}else {
-			assertThat(scopes.stream().map(scope -> scope.getCode()).collect(Collectors.toList())).contains(expectedCodes);
-			//assertThat(scopes.stream().map(scope -> scope.getCode()).collect(Collectors.toList())).containsExactly(expectedCodes);
+		}else {			
+			Collection<String> codes = scopes.stream().map(scope -> scope.getCode()).collect(Collectors.toList());
+			assertThat(expectedCodes).as("expected scopes codes list is null. found "+codes).isNotNull();
+			String message = "scopes codes are incorrects";
+			if(Boolean.TRUE.equals(exact))
+				assertThat(codes).as(message).containsExactly(expectedCodes);
+			else
+				assertThat(codes).as(message).contains(expectedCodes);
 		}
+	}
+	
+	protected static void assertScopesCodes(Collection<Scope> scopes,String[] expectedCodes) {
+		assertScopesCodes(scopes, expectedCodes, EXCAT);
+	}
+	
+	protected static void assertScopesCodes(String typeCode,String code,String name,Boolean visible,String actorCode,String[] expectedCodes,Boolean exact) {
+		assertScopesCodes(readScopes(typeCode, code, name, visible, actorCode, null),expectedCodes,exact);
 	}
 	
 	protected static void assertScopesCodes(String typeCode,String code,String name,Boolean visible,String actorCode,String[] expectedCodes) {
-		assertScopesCodes(readScopes(typeCode, code, name, visible, actorCode, null),expectedCodes);
+		assertScopesCodes(readScopes(typeCode, code, name, visible, actorCode, null),expectedCodes,EXCAT);
 	}
 	
-	protected static void assertScopesVisibles(Collection<Scope> scopes,Boolean[] expectedVisibles) {
+	protected static void assertScopesVisibles(Collection<Scope> scopes,Boolean[] expectedVisibles,Boolean exact) {
 		if(scopes == null) {
 			assertThat(expectedVisibles).isNull();
 		}else {
-			assertThat(scopes.stream().map(scope -> scope.getVisible()).collect(Collectors.toList())).as("visibles are incorrects").contains(expectedVisibles);
-			//assertThat(scopes.stream().map(scope -> scope.getVisible()).collect(Collectors.toList())).as("visibles are incorrects").containsExactly(expectedVisibles);
+			Collection<Boolean> visibles = scopes.stream().map(scope -> scope.getVisible()).collect(Collectors.toList());
+			String message = "visibles are incorrects";
+			if(Boolean.TRUE.equals(exact))
+				assertThat(visibles).as(message).containsExactly(expectedVisibles);
+			else
+				assertThat(visibles).as(message).contains(expectedVisibles);
 		}
 	}
 	
+	protected static void assertScopesVisibles(Collection<Scope> scopes,Boolean[] expectedVisibles) {
+		assertScopesVisibles(scopes, expectedVisibles, EXCAT);
+	}
+	
+	protected static void assertScopesVisibles(String typeCode,String code,String name,Boolean visible,String actorCode,Boolean[] expectedVisibles,Boolean exact) {
+		assertScopesVisibles(readScopes(typeCode, code, name, visible, actorCode, Boolean.TRUE),expectedVisibles,exact);
+	}
+	
 	protected static void assertScopesVisibles(String typeCode,String code,String name,Boolean visible,String actorCode,Boolean[] expectedVisibles) {
-		assertScopesVisibles(readScopes(typeCode, code, name, visible, actorCode, Boolean.TRUE),expectedVisibles);
-	}
-	
-	/**/
-	
-	protected static void assertVisibleScopesCodes(String actorCode,String scopeTypeCode,String code,String name,String[] expectedCodes) {
-		assertScopesCodes(EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments()
-				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode,ScopeQuerier.PARAMETER_NAME_TYPE_CODE, scopeTypeCode
-						,ScopeQuerier.PARAMETER_NAME_CODE,code,ScopeQuerier.PARAMETER_NAME_NAME,name,ScopeQuerier.PARAMETER_NAME_VISIBLE,Boolean.TRUE)),expectedCodes);
-	}
-	
-	protected static void assertVisibleSectionsCodes(String actorCode,String code,String name,String[] expectedCodes) {
-		assertVisibleScopesCodes(actorCode, ScopeType.CODE_SECTION,code,name, expectedCodes);
-	}
-	
-	protected static void assertVisibleAdministrativeUnitsCodes(String actorCode,String code,String name,String[] expectedCodes) {
-		assertVisibleScopesCodes(actorCode, ScopeType.CODE_UA,code,name, expectedCodes);
-	}
-	
-	protected static void assertVisibleBudgetSpecializationUnitsCodes(String actorCode,String code,String name,String[] expectedCodes) {
-		assertVisibleScopesCodes(actorCode, ScopeType.CODE_USB,code,name, expectedCodes);
-	}
-	
-	protected static void assertVisibleActionsCodes(String actorCode,String code,String name,String[] expectedCodes) {
-		assertVisibleScopesCodes(actorCode, ScopeType.CODE_ACTION,code,name, expectedCodes);
-	}
-	
-	protected static void assertVisibleActivitiesCodes(String actorCode,String code,String name,String[] expectedCodes) {
-		assertVisibleScopesCodes(actorCode, ScopeType.CODE_ACTIVITE,code,name, expectedCodes);
+		assertScopesVisibles(readScopes(typeCode, code, name, visible, actorCode, Boolean.TRUE),expectedVisibles,EXCAT);
 	}
 	
 	/**/
 	
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
-			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor){	
-		assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes);
-		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes);
-		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes);	
+			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor
+			,Boolean exact){	
+		assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes,exact);
+		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes,exact);
+		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes,exact);	
 		if(filteredCode != null)
-			assertScopesCodes(typeCode, (String)filteredCode[0], null, null,null,(String[]) filteredCode[1]);
+			assertScopesCodes(typeCode, (String)filteredCode[0], null, null,null,(String[]) filteredCode[1],exact);
 		if(filteredCode != null)
-			assertScopesCodes(typeCode, null,(String)filteredName[0], null,null,(String[]) filteredName[1]);
+			assertScopesCodes(typeCode, null,(String)filteredName[0], null,null,(String[]) filteredName[1],exact);
 		
 		if(expectedCodesAndVisibesByActor != null) {
 			for(Integer index = 0; index < expectedCodesAndVisibesByActor.length; index = index + 1)
-				assertScopesCodesAndVisibes(typeCode, (String)expectedCodesAndVisibesByActor[index][0],(Object[][])expectedCodesAndVisibesByActor[index][1]);
+				assertScopesCodesAndVisibes(typeCode, (String)expectedCodesAndVisibesByActor[index][0],(Object[][])expectedCodesAndVisibesByActor[index][1],exact);
 		}
 		
 		if(expectedVisiblesCodesByActor != null)
 			for(Object[] array : expectedVisiblesCodesByActor)
-				assertScopesCodes(typeCode, null,null, Boolean.TRUE,(String)array[0],(String[]) array[1]);
+				assertScopesCodes(typeCode, null,null, Boolean.TRUE,(String)array[0],(String[]) array[1],exact);
 		if(expectedNotVisiblesCodesByActor != null)
 			for(Object[] array : expectedNotVisiblesCodesByActor)
-				assertScopesCodes(typeCode, null,null, Boolean.FALSE,(String)array[0],(String[]) array[1]);
+				assertScopesCodes(typeCode, null,null, Boolean.FALSE,(String)array[0],(String[]) array[1],exact);
 	}
 	
-	protected static void assertScopesCodesAndVisibes(String typeCode,String actorCode,Object[][] expectedCodesAndVisibes) {
+	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
+			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor){	
+		assertScopes(typeCode, expectedCodesAndVisibes, expectedVisiblesCodes, expectedNotVisiblesCodes, filteredCode, filteredName, expectedCodesAndVisibesByActor
+				, expectedVisiblesCodesByActor, expectedNotVisiblesCodesByActor, EXCAT);
+	}
+	
+	protected static void assertScopesCodesAndVisibes(String typeCode,String actorCode,Object[][] expectedCodesAndVisibes,Boolean exact) {
 		Collection<Scope> scopes = readScopes(typeCode, null, null, null, actorCode, Boolean.TRUE);
 		String[] expectedCodes = new String[expectedCodesAndVisibes.length];
 		Boolean[] expectedVisibles = new Boolean[expectedCodesAndVisibes.length];
@@ -236,7 +240,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 			expectedCodes[index] = (String) expectedCodesAndVisibes[index][0];
 			expectedVisibles[index] = (Boolean) expectedCodesAndVisibes[index][1];
 		}
-		assertScopesCodes(scopes,expectedCodes);
-		assertScopesVisibles(scopes, expectedVisibles);
+		assertScopesCodes(scopes,expectedCodes,exact);
+		assertScopesVisibles(scopes, expectedVisibles,exact);
 	}
 }
