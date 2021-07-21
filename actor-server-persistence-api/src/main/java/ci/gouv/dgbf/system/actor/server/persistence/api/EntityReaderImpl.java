@@ -231,6 +231,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			if(ActorQuerier.QUERY_IDENTIFIER_READ_WITH_ALL_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) ActorQuerier.getInstance().readWithAllWhereFilter(arguments);
 			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Actor.class)))
+				return (Collection<T>) ActorQuerier.getInstance().readMany(arguments);
+			
 			if(RejectedAccountRequestQuerier.QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 				return (Collection<T>) RejectedAccountRequestQuerier.getInstance().readWhereFilter(arguments);
 		}

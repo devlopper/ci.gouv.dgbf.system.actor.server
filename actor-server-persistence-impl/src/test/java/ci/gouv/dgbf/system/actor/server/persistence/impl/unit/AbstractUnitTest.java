@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.ArithmeticOperator;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.marker.AuditableWhoDoneWhatWhen;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Field;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -104,6 +107,56 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	
 	protected static void addPause(List<LocalDateTime> dateTimes) {
 		addPause(dateTimes, 100);
+	}
+	
+	/* Actors */
+	
+	protected static Collection<Actor> readActors(String code,String firstName,String lastNames,String[] transientsFieldsNames) {
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		if(StringHelper.isNotBlank(code))
+			queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_CODE).setValue(code).setArithmeticOperator(ArithmeticOperator.LIKE));
+		if(StringHelper.isNotBlank(firstName))
+			queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_FIRST_NAME).setValue(firstName).setArithmeticOperator(ArithmeticOperator.LIKE));
+		if(StringHelper.isNotBlank(lastNames))
+			queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_LAST_NAMES).setValue(lastNames).setArithmeticOperator(ArithmeticOperator.LIKE));
+		if(transientsFieldsNames != null)
+			queryExecutorArguments.addProcessableTransientFieldsNames(transientsFieldsNames);
+		return EntityReader.getInstance().readMany(Actor.class,queryExecutorArguments);
+	}
+	
+	protected static void assertActors(Collection<Actor> actors,Object[][] expectedArrays,Boolean exact) {
+		if(CollectionHelper.isEmpty(actors))
+			assertThat(expectedArrays).isNull();
+		else {
+			for(Actor actor : actors) {
+				Object[] expectedArray = null;
+				for(Object[] array : expectedArrays) {
+					if(array[0].equals(actor.getIdentifier())) {
+						expectedArray = array;
+						break;
+					}
+				}
+				if(expectedArray == null && !Boolean.TRUE.equals(exact))
+					continue;
+				assertThat(actor).isNotNull();
+				assertThat(expectedArray).as("expected array must not be null for actor "+actor.getIdentifier()).isNotNull();
+				Integer index = 1;
+				assertThat(actor.getCivilityAsString()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getFirstName()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getLastNames()).isEqualTo(expectedArray[index++]);		
+				assertThat(actor.getGroupAsString()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getElectronicMailAddress()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getAdministrativeUnitAsString()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getSectionAsString()).isEqualTo(expectedArray[index++]);
+				assertThat(actor.getAdministrativeFunction()).isEqualTo(expectedArray[index++]);		
+				//assertThat(actor.getProfilesCodes()).containsExactly((Collection<String>)expectedArray[index++]);
+			}
+		}
+	}
+	
+	protected static void assertActors(String code,String firstName,String lastNames,String[] transientsFieldsNames,Object[][] expectedArrays,Boolean exact) {
+		assertActors(readActors(code, firstName, lastNames, transientsFieldsNames), expectedArrays, exact);
 	}
 	
 	protected static void assertReadDynamicOne(QueryExecutorArguments queryExecutorArguments,String expectedCivility,String expectedFirstName,String expectedLastNames

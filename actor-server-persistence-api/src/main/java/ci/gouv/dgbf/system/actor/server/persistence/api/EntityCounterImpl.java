@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeFunctionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.SectionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ServiceQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
@@ -114,6 +115,10 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 			if(Boolean.TRUE.equals(ExecutionImputationQuerier.getInstance().isOwner(arguments)))
 				return ExecutionImputationQuerier.getInstance().count(arguments);
 		}
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Actor.class)))
+			return ActorQuerier.getInstance().count(arguments);
+		
 		return super.count(tupleClass, arguments);
 	}
 }

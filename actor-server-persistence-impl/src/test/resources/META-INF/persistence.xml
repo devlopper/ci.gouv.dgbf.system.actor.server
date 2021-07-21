@@ -166,6 +166,94 @@
 		</properties>
 	</persistence-unit>
 	
+	<persistence-unit name="actors" transaction-type="RESOURCE_LOCAL">
+		<!-- Read -->
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Service</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Menu</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.PrivilegeType</class>
+		
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Action</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Activity</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActivityCategory</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Locality</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ExpenditureNature</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.EconomicNature</class>
+		
+    	<!-- Transaction -->
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Function</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FunctionType</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction</class>	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit</class>	
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType</class>	
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Profile</class>			
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Identity</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountRequest</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RejectedAccountRequest</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Civility</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationForm</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute</class>	
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Request</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AccountingService</class>
+    	
+    	<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+			<property name="javax.persistence.sql-load-script-source" value="memory/data/actors.sql" />
+			<property name="hibernate.hbm2ddl.charset_name" value="UTF-8" />
+			<!--
+			<property name="javax.persistence.jdbc.driver" value="fr.ms.log4jdbc.Driver" />
+		    <property name="javax.persistence.jdbc.url" value="jdbc:log4jdbc:h2:mem:test" />
+		    -->
+			
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+		    <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+		    
+		   	<property name="javax.persistence.jdbc.user" value="sa" />
+		  	<property name="javax.persistence.jdbc.password" value="" />  
+		  	<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+		  	<property name="hibernate.show_sql" value = "false" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="false"/>
+			<property name="hibernate.physical_naming_strategy" value="org.cyk.utility.persistence.server.hibernate.PhysicalNamingStrategyStandardImpl"/>
+		</properties>
+	</persistence-unit>
+	
 	<persistence-unit name="dev" transaction-type="RESOURCE_LOCAL">
 		<!-- Read -->
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Module</class>

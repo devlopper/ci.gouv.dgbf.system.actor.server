@@ -81,26 +81,12 @@ public interface ScopeQueryStringBuilder {
 		/* It has a visible parent */
 		
 		static String parentVisible(String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName,String parameterNameActorCode) {
-			/*
-			String selectFrom = jpql(select("p.identifier"),from("ActorScope p,Scope s,"+parentTupleName+" "+parentVariableName));
-			String p1 = and("p.scope = s",parentVariableName+" = s",StringHelper.isBlank(parameterNameActorCode) ? null : "p.actor.code = "+parameterNameActorCode);
-			*/
-			
 			String selectFrom = jpql(
 					select("p.identifier")
 					,from("ActorScope p JOIN Scope s ON p.scope = s")
 					,"JOIN "+parentTupleName+" "+parentVariableName+" ON "+parentVariableName+" = s"
 			);
 			String p1 = StringHelper.isBlank(parameterNameActorCode) ? null : "p.actor.code = "+parameterNameActorCode;
-			
-			/*
-			String selectFrom = jpql(
-					select("actorScope.identifier")
-					,from("ActorScope actorScope JOIN Scope scopeParent ON actorScope.scope = scopeParent")
-					,"JOIN "+parentTupleName+" "+parentVariableName+" ON "+parentVariableName+" = scopeParent"
-			);
-			String p1 = (StringHelper.isBlank(parameterNameActorCode) ? "" : " "+where(StringHelper.isBlank(parameterNameActorCode) ? null : "actorScope.actor.code = "+parameterNameActorCode));
-			*/
 			String p2 = exists(
 					select(variableName)
 					,from(tupleName+" "+variableName)
@@ -116,7 +102,6 @@ public interface ScopeQueryStringBuilder {
 								)
 					))
 			);
-			//System.out.println("ScopeQueryStringBuilder.Predicate.parentVisible() ::: "+jpql(exists(and(p1,p2))));
 			return jpql(exists(selectFrom+" WHERE "+(p1 == null ? "" : p1+" AND ")+p2));
 		}
 		
