@@ -7,14 +7,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.business.server.EntitySaver;
+import org.cyk.utility.business.server.EntitySaver.Arguments;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
@@ -41,6 +47,63 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScope, ActorScopePersistence> implements ActorScopeBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actors identifiers", actorsIdentifiers);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopes identifiers", scopesIdentifiers);
+		Collection<Actor> actors = EntityFinder.getInstance().findMany(Actor.class, actorsIdentifiers);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actors", actors);
+		Collection<Scope> scopes = EntityFinder.getInstance().findMany(Scope.class, scopesIdentifiers);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scopes", scopes);		
+		
+		Arguments<ActorScope> arguments = new Arguments<>();
+		arguments.getPersistenceArguments(Boolean.TRUE).setEntityManager(entityManager);
+		actors.forEach(actor -> {
+			visible(actor, scopes, arguments);
+		});
+		if(arguments.getPersistenceArguments() == null || (CollectionHelper.isEmpty(arguments.getPersistenceArguments().getCreatables()) && 
+				CollectionHelper.isEmpty(arguments.getPersistenceArguments().getUpdatables())))
+			return null;
+		TransactionResult transactionResult = new TransactionResult().setName("rendre visible <<"+scopes+">> à <<"+actors+">>").setTupleName("domaine");
+		transactionResult.incrementNumberOfCreation(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getCreatables())));
+		transactionResult.incrementNumberOfUpdate(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getUpdatables())));
+		EntitySaver.getInstance().save(ActorScope.class,arguments);
+		transactionResult.log(ActorScopeBusinessImpl.class);
+		return transactionResult;
+	}
+	
+	private static void visible(Actor actor,Collection<Scope> scopes,Arguments<ActorScope> arguments) {
+		scopes.forEach(scope -> {
+			visible(actor, scope, arguments);
+		});
+	}
+	
+	private static void visible(Actor actor,Scope scope,Arguments<ActorScope> arguments) {
+		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(), scope.getCode());
+		if(actorScope == null) {
+			arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(scope));
+			return;
+		}
+		if(actorScope.getVisible() == null || actorScope.getVisible())
+			throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actor.getCode()+","+scope.getCode()+")");				
+		actorScope.setVisible(null);// make it visible
+		arguments.getPersistenceArguments(Boolean.TRUE).getUpdatables(Boolean.TRUE).add(actorScope);
+	}
+	
+	@Override @Transactional
+	public void createByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean visible) {
+		visible(actorsIdentifiers, scopesIdentifiers, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static void deleteByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean visible,EntityManager entityManager) {
+		
+	}
+	
+	@Override @Transactional
+	public void deleteByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	protected void __listenExecuteCreateBefore__(ActorScope actorScope, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(actorScope, properties, function);

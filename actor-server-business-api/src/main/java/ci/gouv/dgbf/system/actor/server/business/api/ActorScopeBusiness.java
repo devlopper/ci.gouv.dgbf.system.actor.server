@@ -30,6 +30,14 @@ public interface ActorScopeBusiness extends BusinessEntity<ActorScope> {
 	@Transactional
 	void deleteByActorIdentifierByScopesIdentifiers(String actorIdentifier,String...scopesIdentifiers);
 	
+	String CREATE_BY_ACTORS_IDENTIFIERS_BY_SCOPES_IDENTIFIERS = "ActorScope.createByActorsIdentifiersByScopesIdentifiers";
+	@Transactional
+	void createByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean visible);
+	
+	String DELETE_BY_ACTORS_IDENTIFIERS_BY_SCOPES_IDENTIFIERS = "ActorScope.deleteByActorsIdentifiersByScopesIdentifiers";
+	@Transactional
+	void deleteByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers);
+	
 	/**/
 	
 	String CREATE_BY_ACTOR_BY_SCOPES = "ActorScope.createByActorByScopes";
