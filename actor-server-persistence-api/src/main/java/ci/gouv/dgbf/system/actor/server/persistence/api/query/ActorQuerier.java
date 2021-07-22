@@ -60,6 +60,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 
 public interface ActorQuerier extends Querier {
 
+	String FLAG_SEARCH = "Actor.flag.search";
+	
+	String PARAMETER_NAME_SEARCH = "search";
+	
 	String PARAMETER_NAME_FIRST_NAME = "firstName";
 	String PARAMETER_NAME_LAST_NAMES = "lastNames";
 	

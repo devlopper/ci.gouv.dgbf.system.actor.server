@@ -23,40 +23,25 @@ public class ActorPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	public void actors(){
 		assertActors(null, null, null
 		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
+		, null
 		, new Object[][] { 
-			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-			,{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null}
-			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
+			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
+			,{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null,null}
+			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
+		}, Boolean.TRUE);
+		
+		assertActors(null, null, null
+		, new String[] {Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS}
+		, null
+		, new Object[][] { 
+			{"1",null,null,null,null, "kycdev@gmail.com", null, null, null,"Komenan Yao Christian"}
+			,{"2",null,null,null,null, "admin@mail.com", null, null, null,"Admin Administrateur"}
+			,{"3",null,null,null,null, "kycdev@gmail02.com", null, null, null,"Komenan Yao Christian"}
 		}, Boolean.TRUE);
 	}
 	
 	@Test
-	public void actors_filterByCodeLike(){
-		assertActors("c", null, null
-		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
-		, new Object[][] { 
-			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-		}, Boolean.TRUE);
-		
-		assertActors("a", null, null
-				, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
-				, new Object[][] { 
-					{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-					,{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null}
-					,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-				}, Boolean.TRUE);
-		
-		assertActors("ad", null, null
-				, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
-				, new Object[][] { 
-				{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null}
-				}, Boolean.TRUE);
-		
-	}
-	
-	@Test
-	public void actors_filterByCodeEqual(){
+	public void actors_findByCode(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_CODE).setValue("christian"));
@@ -64,33 +49,31 @@ public class ActorPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION);
 		Collection<Actor> actors = EntityReader.getInstance().readMany(Actor.class, queryExecutorArguments);
 		assertActors(actors, new Object[][] { 
-			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
+			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
 		}, Boolean.TRUE);
 	}
 	
 	@Test
-	public void actors_filterByFirstNameLike(){
-		assertActors(null, "k", null
+	public void actors_search(){
+		assertSearchActors("chris"
 		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
 		, new Object[][] { 
-			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
+			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
+			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
 		}, Boolean.TRUE);
 		
-		assertActors(null, "a", null
-				, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
-				, new Object[][] { 
-					{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-					,{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null}
-					,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service"}
-				}, Boolean.TRUE);
+		assertSearchActors("a"
+		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
+		, new Object[][] { 
+			{"1","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
+			,{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null,null}
+			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
+		}, Boolean.TRUE);
 		
-		assertActors(null, "ad", null
-				, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
-				, new Object[][] { 
-				{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null}
-				}, Boolean.TRUE);
-		
+		assertSearchActors("Administrateur"
+		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
+		, new Object[][] { 
+		{"2","Monsieur","Admin","Administrateur",null, "admin@mail.com", null, null, null,null}
+		}, Boolean.TRUE);		
 	}
-	
 }

@@ -111,7 +111,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	
 	/* Actors */
 	
-	protected static Collection<Actor> readActors(String code,String firstName,String lastNames,String[] transientsFieldsNames) {
+	protected static Collection<Actor> readActors(String code,String firstName,String lastNames,String[] transientsFieldsNames,String[] flags) {
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		if(StringHelper.isNotBlank(code))
@@ -120,6 +120,18 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 			queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_FIRST_NAME).setValue(firstName).setArithmeticOperator(ArithmeticOperator.LIKE));
 		if(StringHelper.isNotBlank(lastNames))
 			queryExecutorArguments.getFilter(Boolean.TRUE).addFields(new Field().setName(ActorQuerier.PARAMETER_NAME_LAST_NAMES).setValue(lastNames).setArithmeticOperator(ArithmeticOperator.LIKE));
+		if(transientsFieldsNames != null)
+			queryExecutorArguments.addProcessableTransientFieldsNames(transientsFieldsNames);
+		if(flags != null)
+			queryExecutorArguments.addFlags(flags);
+		return EntityReader.getInstance().readMany(Actor.class,queryExecutorArguments);
+	}
+	
+	protected static Collection<Actor> searchActors(String search,String[] transientsFieldsNames) {
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).addFlags(ActorQuerier.FLAG_SEARCH);
+		if(StringHelper.isNotBlank(search))
+			queryExecutorArguments.addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_SEARCH,search);
 		if(transientsFieldsNames != null)
 			queryExecutorArguments.addProcessableTransientFieldsNames(transientsFieldsNames);
 		return EntityReader.getInstance().readMany(Actor.class,queryExecutorArguments);
@@ -144,19 +156,26 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 				Integer index = 1;
 				assertThat(actor.getCivilityAsString()).isEqualTo(expectedArray[index++]);
 				assertThat(actor.getFirstName()).isEqualTo(expectedArray[index++]);
-				assertThat(actor.getLastNames()).isEqualTo(expectedArray[index++]);		
+				assertThat(actor.getLastNames()).isEqualTo(expectedArray[index++]);	
 				assertThat(actor.getGroupAsString()).isEqualTo(expectedArray[index++]);
 				assertThat(actor.getElectronicMailAddress()).isEqualTo(expectedArray[index++]);
 				assertThat(actor.getAdministrativeUnitAsString()).isEqualTo(expectedArray[index++]);
 				assertThat(actor.getSectionAsString()).isEqualTo(expectedArray[index++]);
-				assertThat(actor.getAdministrativeFunction()).isEqualTo(expectedArray[index++]);		
+				assertThat(actor.getAdministrativeFunction()).isEqualTo(expectedArray[index++]);
+				
+				assertThat(actor.getNames()).isEqualTo(expectedArray[index++]);		
+				
 				//assertThat(actor.getProfilesCodes()).containsExactly((Collection<String>)expectedArray[index++]);
 			}
 		}
 	}
 	
-	protected static void assertActors(String code,String firstName,String lastNames,String[] transientsFieldsNames,Object[][] expectedArrays,Boolean exact) {
-		assertActors(readActors(code, firstName, lastNames, transientsFieldsNames), expectedArrays, exact);
+	protected static void assertActors(String code,String firstName,String lastNames,String[] transientsFieldsNames,String[] flags,Object[][] expectedArrays,Boolean exact) {
+		assertActors(readActors(code, firstName, lastNames, transientsFieldsNames,flags), expectedArrays, exact);
+	}
+	
+	protected static void assertSearchActors(String search,String[] transientsFieldsNames,Object[][] expectedArrays,Boolean exact) {
+		assertActors(searchActors(search, transientsFieldsNames), expectedArrays, exact);
 	}
 	
 	protected static void assertReadDynamicOne(QueryExecutorArguments queryExecutorArguments,String expectedCivility,String expectedFirstName,String expectedLastNames

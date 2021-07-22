@@ -238,6 +238,8 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	
 	public static final String FIELDS_PROFILE = "fields.profile";
+	public static final String FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS
+	= "codeNamesElectronicMailAddress";
 	public static final String FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
 		= "registrationNumberFirstNameElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSection";
 	

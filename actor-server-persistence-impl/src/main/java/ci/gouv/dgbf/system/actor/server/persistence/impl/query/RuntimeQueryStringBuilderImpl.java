@@ -8,6 +8,7 @@ import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -15,6 +16,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.LikeStringBuilder;
+import org.cyk.utility.persistence.server.query.string.LikeStringValueBuilder;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Arguments;
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
@@ -98,10 +100,27 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
 	}
 	
+	public static final String ACTOR_PREDICATE_SEARCH = or(
+			LikeStringBuilder.getInstance().build("t",Actor.FIELD_CODE, ActorQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_FIRST_NAME,ActorQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_LAST_NAMES,ActorQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,ActorQuerier.PARAMETER_NAME_SEARCH)
+	);
 	protected void populatePredicateActor(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ActorQuerier.PARAMETER_NAME_CODE);
-		addIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ActorQuerier.PARAMETER_NAME_FIRST_NAME,"t.identity");
-		addIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ActorQuerier.PARAMETER_NAME_LAST_NAMES,"t.identity");
+		if(CollectionHelper.contains(arguments.getFlags(),ActorQuerier.FLAG_SEARCH)) {
+			predicate.add(ACTOR_PREDICATE_SEARCH);
+			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
+			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+			/*			
+			Predicate __predicate__ = new Predicate().setSeparatorAsOr();
+			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_CODE);
+			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_FIRST_NAME, "t.identity");
+			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_LAST_NAMES, "t.identity");
+			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, "t.identity");
+			predicate.add(__predicate__.concatenate());
+			*/
+		}
 	}
 	
 	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
