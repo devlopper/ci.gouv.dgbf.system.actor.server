@@ -321,6 +321,10 @@ public interface ScopeQuerier extends Querier.CodableAndNamable<Scope> {
 				return readWhereCodeOrNameLikeAndNotAssociatedToFunctionByTypeIdentifier(arguments);			
 			if(ScopeQuerier.QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return readWhereCodeOrNameLikeByTypeIdentifier(arguments);
+			/*if(ScopeQuerier.QUERY_IDENTIFIER_READ_BY_CODES_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
+				return readByCodesByTypesCodes((Collection<String>)arguments.getFilterFieldValue(PARAMETER_NAME_CODES)
+						, (Collection<String>)arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
+			*/
 			return super.readMany(arguments);
 		}
 		

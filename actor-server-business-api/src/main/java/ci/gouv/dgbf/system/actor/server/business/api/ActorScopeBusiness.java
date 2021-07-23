@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -30,9 +31,13 @@ public interface ActorScopeBusiness extends BusinessEntity<ActorScope> {
 	@Transactional
 	void deleteByActorIdentifierByScopesIdentifiers(String actorIdentifier,String...scopesIdentifiers);
 	
-	String CREATE_BY_ACTORS_IDENTIFIERS_BY_SCOPES_IDENTIFIERS = "ActorScope.createByActorsIdentifiersByScopesIdentifiers";
+	String VISIBLE = "ActorScope.visible";
 	@Transactional
-	void createByActorsIdentifiersByScopesIdentifiers(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean visible);
+	TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers);
+	
+	String UNVISIBLE = "ActorScope.unvisible";
+	@Transactional
+	TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers);
 	
 	String DELETE_BY_ACTORS_IDENTIFIERS_BY_SCOPES_IDENTIFIERS = "ActorScope.deleteByActorsIdentifiersByScopesIdentifiers";
 	@Transactional

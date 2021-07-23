@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringImpl;
 
@@ -19,4 +20,6 @@ public class ActorScopeDto extends AbstractIdentifiableSystemScalarStringImpl im
 	private String actorAsString;
 	private String scopeAsString;
 
+	private List<String> actorsIdentifiers;
+	private List<String> scopesIdentifiers;
 }

@@ -44,7 +44,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void makeItVisible_section_unexisting() {
+	public void visible_section_unexisting() {
 		String typeCode = ScopeType.CODE_SECTION;
 		assertScopes(typeCode
 			, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
@@ -75,7 +75,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void makeItVisible_section_existing_notVisible() {
+	public void visible_section_existing_notVisible() {
 		String typeCode = ScopeType.CODE_SECTION;
 		assertScopes(typeCode
 			, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
@@ -106,7 +106,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void makeItVisible_section_existing_visible() {		
+	public void visible_section_existing_visible() {		
 		Assertions.assertThrows(Exception.class, () -> {
 			new Transaction.AbstractImpl() {
 				@Override
@@ -115,5 +115,60 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 				}
 			}.run();
 		});
+	}
+	
+	@Test
+	public void unvisible_section_unexisting() {		
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("sXX"), entityManager);
+				}
+			}.run();
+		});
+	}
+	
+	//@Test
+	public void unvisible_section_existing_notVisible() {
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"), entityManager);
+				}
+			}.run();
+		});
+	}
+	
+	@Test
+	public void unvisible_section_existing_visible() {
+		String typeCode = ScopeType.CODE_SECTION;
+		assertScopes(typeCode
+			, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+			, new String[] {"s01"}
+			, new String[] {"s02","s03","s04","s05","s10","s11"}
+			, new Object[][] { {"christian",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, new Object[][] { {"christian",new String[] {"s01"}} }
+			, new Object[][] { {"christian",new String[] {"s02","s03","s04","s05","s10","s11"}} }
+			,Boolean.TRUE);
+		Long count = DynamicManyExecutor.getInstance().count(ActorScope.class);
+		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s01"), entityManager);
+			}
+		}.run();
+		
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScope.class)).isEqualTo(count-1);
+		assertScopes(typeCode
+			, new Object[][] {{"s01",null},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+			, null
+			, new String[] {"s01","s02","s03","s04","s05","s10","s11"}
+			, new Object[][] { {"christian",new Object[][] {{"s01",null},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, new Object[][] { {"christian",null} }
+			, new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10","s11"}} }
+			,Boolean.TRUE);
 	}
 }

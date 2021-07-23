@@ -61,7 +61,7 @@ Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('3','gc_ua02',
 
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('10','1','s01'); -- s01
 Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE,VISIBLE) values ('11','1','s03',false);
--- Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('11','1','s10'); -- s10
+--Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE,VISIBLE) values ('12','1','s04'); -- s10
 -- Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('12','2','s01');
 -- 
 -- Insert into ACTEUR_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('20','1','ua01'); -- s02

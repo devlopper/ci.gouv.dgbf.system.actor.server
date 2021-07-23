@@ -11,10 +11,12 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.rest.ResponseBuilder;
 import org.cyk.utility.__kernel__.runnable.Runner;
+import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
@@ -29,6 +31,36 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityImpl<ActorScopeDto> implements ActorScopeRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response visible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ActorScopeBusiness.class).visible(actorsIdentifiers, scopesIdentifiers);
+					}
+				};
+			}			
+		});
+	}
+	
+	@Override
+	public Response unvisible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ActorScopeBusiness.class).unvisible(actorsIdentifiers, scopesIdentifiers);
+					}
+				};
+			}			
+		});
+	}
+	
 	@Override
 	public Response createByActorsByScopes(Collection<ActorDto> actors, Collection<ScopeDto> scopes) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
