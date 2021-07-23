@@ -145,7 +145,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
 	}
 	
-	@Override
+	@Override @Transactional
 	public TransactionResult unvisible(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers) {
 		return unvisible(actorsIdentifiers, scopesIdentifiers, EntityManagerGetter.getInstance().get());
 	}
@@ -254,9 +254,9 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			if(actorScope == null)
 				EntityCreator.getInstance().createOne(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE),entityManager);
 			else {
-				if(listener == null || Boolean.TRUE.equals(listener.isDeletable(actorScope)))
+				if(listener == null || Boolean.TRUE.equals(listener.isDeletable(actorScope))) {
 					EntityDeletor.getInstance().deleteOne(actorScope, entityManager);
-				else
+				}else
 					EntityUpdater.getInstance().updateOne(actorScope.setVisible(Boolean.FALSE), entityManager);
 			}
 		}
