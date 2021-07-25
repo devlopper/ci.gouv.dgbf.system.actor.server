@@ -129,16 +129,66 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		});
 	}
 	
+	@Test
+	public void unvisible_section_existing_notVisible_joinExist() {
+		String typeCode = ScopeType.CODE_SECTION;
+		assertScopes(typeCode
+			, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+			, new String[] {"s01"}
+			, new String[] {"s02","s03","s04","s05","s10","s11"}
+			, new Object[][] { {"christian",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, new Object[][] { {"christian",new String[] {"s01"}} }
+			, new Object[][] { {"christian",new String[] {"s02","s03","s04","s05","s10","s11"}} }
+			,Boolean.TRUE);
+		Long count = DynamicManyExecutor.getInstance().count(ActorScope.class);
+		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"), entityManager);
+			}
+		}.run();
+		
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScope.class)).isEqualTo(count-1);
+		assertScopes(typeCode
+				, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+				, new String[] {"s01"}
+				, new String[] {"s02","s03","s04","s05","s10","s11"}
+				, new Object[][] { {"christian",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+				, new Object[][] { {"christian",new String[] {"s01"}} }
+				, new Object[][] { {"christian",new String[] {"s02","s03","s04","s05","s10","s11"}} }
+				,Boolean.TRUE);
+	}
+	
 	//@Test
-	public void unvisible_section_existing_notVisible() {
-		Assertions.assertThrows(Exception.class, () -> {
-			new Transaction.AbstractImpl() {
-				@Override
-				protected void __run__(EntityManager entityManager) {
-					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"), entityManager);
-				}
-			}.run();
-		});
+	public void unvisible_section_existing_notVisible_joinNotExist() {
+		String typeCode = ScopeType.CODE_SECTION;
+		assertScopes(typeCode
+			, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+			, new String[] {"s01"}
+			, new String[] {"s02","s03","s04","s05","s10","s11"}
+			, new Object[][] { {"christian",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, new Object[][] { {"christian",new String[] {"s01"}} }
+			, new Object[][] { {"christian",new String[] {"s02","s03","s04","s05","s10","s11"}} }
+			,Boolean.TRUE);
+		Long count = DynamicManyExecutor.getInstance().count(ActorScope.class);
+		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s04"), entityManager);
+			}
+		}.run();
+		
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScope.class)).isEqualTo(count+1);
+		assertScopes(typeCode
+				, new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}
+				, new String[] {"s01"}
+				, new String[] {"s02","s03","s04","s05","s10","s11"}
+				, new Object[][] { {"christian",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+				, new Object[][] { {"christian",new String[] {"s01"}} }
+				, new Object[][] { {"christian",new String[] {"s02","s03","s04","s05","s10","s11"}} }
+				,Boolean.TRUE);
 	}
 	
 	@Test

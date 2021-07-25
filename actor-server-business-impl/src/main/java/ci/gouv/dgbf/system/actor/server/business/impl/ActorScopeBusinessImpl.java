@@ -21,10 +21,7 @@ import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.EntitySaver;
 import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.persistence.EntityManagerGetter;
-import org.cyk.utility.persistence.query.EntityCreator;
-import org.cyk.utility.persistence.query.EntityDeletor;
 import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.query.EntityUpdater;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -100,6 +97,7 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	
 	@SuppressWarnings("unchecked")
 	public static TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,EntityManager entityManager) {
+		LogHelper.logInfo(String.format("unvisible actors <<%s>> from scopes <<%s>>",actorsIdentifiers,scopesIdentifiers), ActorScopeBusinessImpl.class);
 		Object[] objects = prepareVisible(actorsIdentifiers, scopesIdentifiers, Boolean.TRUE, entityManager);		
 		Collection<Actor> actors = (Collection<Actor>) objects[0];
 		Collection<Scope> scopes = (Collection<Scope>) objects[1];
@@ -108,12 +106,8 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		actors.forEach(actor -> {
 			unvisible(actor, scopes, arguments,entityManager);
 		});
-		if(arguments.getPersistenceArguments() == null || (
-				CollectionHelper.isEmpty(arguments.getPersistenceArguments().getCreatables())
-			&& CollectionHelper.isEmpty(arguments.getPersistenceArguments().getUpdatables())
-			&& CollectionHelper.isEmpty(arguments.getPersistenceArguments().getDeletables()))
-		)
-			return null;
+		if(arguments.isPersistenceCreatableAndUpdatablesAndDeletablesEmpty())
+			throw new RuntimeException(String.format("Il n'existe aucune visibilité à traiter pour les acteurs <<%s>> et les domaines <<%s>>", actorsIdentifiers,scopesIdentifiers));
 		TransactionResult transactionResult = new TransactionResult().setName("rendre invisible <<"+scopes+">> à <<"+actors+">>").setTupleName("domaine");
 		transactionResult.incrementNumberOfCreation(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getCreatables())));
 		transactionResult.incrementNumberOfUpdate(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getUpdatables())));
@@ -126,23 +120,23 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	public static void unvisible(Actor actor,Collection<Scope> scopes,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		Collection<Scope> sections = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_SECTION)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(sections))
-			deleteSections(actor,sections.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
-		
-		Collection<Scope> budgetSpecializationUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_USB)).collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(budgetSpecializationUnits))
-			deleteBudgetSpecializationUnits(actor,budgetSpecializationUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
-		
-		Collection<Scope> activities = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_ACTIVITE)).collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(activities))
-			deleteActivities(actor,activities.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
-		
-		Collection<Scope> imputations = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_IMPUTATION)).collect(Collectors.toList());
-		if(CollectionHelper.isNotEmpty(imputations))
-			deleteImputations(actor,imputations.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
+			deleteSections(actor,sections.stream().map(x -> x.getCode()).collect(Collectors.toList()),arguments,entityManager);
 		
 		Collection<Scope> administrativeUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_UA)).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(administrativeUnits))
-			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()),entityManager);
+			deleteAdministrativeUnits(actor,administrativeUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()),arguments,entityManager);
+		
+		Collection<Scope> budgetSpecializationUnits = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_USB)).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(budgetSpecializationUnits))
+			deleteBudgetSpecializationUnits(actor,budgetSpecializationUnits.stream().map(x -> x.getCode()).collect(Collectors.toList()),arguments,entityManager);
+		
+		Collection<Scope> activities = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_ACTIVITE)).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(activities))
+			deleteActivities(actor,activities.stream().map(x -> x.getCode()).collect(Collectors.toList()),arguments,entityManager);
+		
+		Collection<Scope> imputations = scopes.stream().filter(scope -> scope.getType().getCode().equals(ScopeType.CODE_IMPUTATION)).collect(Collectors.toList());
+		if(CollectionHelper.isNotEmpty(imputations))
+			deleteImputations(actor,imputations.stream().map(x -> x.getCode()).collect(Collectors.toList()),arguments,entityManager);		
 	}
 	
 	@Override @Transactional
@@ -164,15 +158,15 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	
 	/* Delete */
 	
-	private static void deleteSections(Actor actor,Collection<String> sectionsCodes,EntityManager entityManager) {
+	private static void deleteSections(Actor actor,Collection<String> sectionsCodes,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {BudgetSpecializationUnit.class,ScopeType.CODE_USB,null});
 		childrenInfos.add(new Object[] {Activity.class,ScopeType.CODE_ACTIVITE,null});
 		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
-		delete(actor, ScopeType.CODE_USB, sectionsCodes, childrenInfos,null,entityManager);
+		delete(actor, ScopeType.CODE_USB, sectionsCodes, childrenInfos,null,arguments,entityManager);
 	}
 	
-	private static void deleteAdministrativeUnits(Actor actor,Collection<String> administrativeUnitsCodes,EntityManager entityManager) {
+	private static void deleteAdministrativeUnits(Actor actor,Collection<String> administrativeUnitsCodes,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		delete(actor, ScopeType.CODE_UA, administrativeUnitsCodes, null,new DeleteListener.AbstractImpl<AdministrativeUnit>() {			
 			@Override
 			protected Class<AdministrativeUnit> getKlass() {
@@ -193,10 +187,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 					return Boolean.TRUE;		
 				return Boolean.FALSE;
 			}*/
-		},entityManager);
+		},arguments,entityManager);
 	}
 	
-	private static void deleteBudgetSpecializationUnits(Actor actor,Collection<String> budgetSpecializationUnitsCodes,EntityManager entityManager) {
+	private static void deleteBudgetSpecializationUnits(Actor actor,Collection<String> budgetSpecializationUnitsCodes,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {Activity.class,ScopeType.CODE_ACTIVITE,null});
 		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
@@ -223,10 +217,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			}
 			*/
 			
-		},entityManager);
+		},arguments,entityManager);
 	}
 	
-	private static void deleteActivities(Actor actor,Collection<String> activitiesCodes,EntityManager entityManager) {
+	private static void deleteActivities(Actor actor,Collection<String> activitiesCodes,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		Collection<Object[]> childrenInfos = new ArrayList<>();
 		childrenInfos.add(new Object[] {Imputation.class,ScopeType.CODE_IMPUTATION,null});
 		delete(actor, ScopeType.CODE_ACTIVITE, activitiesCodes, childrenInfos,new DeleteListener.AbstractImpl<Activity>() {
@@ -239,25 +233,28 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			protected Collection<String> getParentsFieldsNames(Activity activity) {
 				return List.of(Activity.FIELD_BUDGET_SPECIALIZATION_UNIT,Activity.FIELD_SECTION);
 			}		
-		},entityManager);
+		},arguments,entityManager);
 	}
 	
-	private static void deleteImputations(Actor actor,Collection<String> imputationsCodes,EntityManager entityManager) {
-		delete(actor, ScopeType.CODE_IMPUTATION, imputationsCodes, null,null,entityManager);
+	private static void deleteImputations(Actor actor,Collection<String> imputationsCodes,Arguments<ActorScope> arguments,EntityManager entityManager) {
+		delete(actor, ScopeType.CODE_IMPUTATION, imputationsCodes, null,null,arguments,entityManager);
 	}
 	
-	private static void delete(Actor actor,String typeCode,Collection<String> codes,Collection<Object[]> childrenInfos,DeleteListener<?> listener,EntityManager entityManager) {
+	private static void delete(Actor actor,String typeCode,Collection<String> codes,Collection<Object[]> childrenInfos,DeleteListener<?> listener,Arguments<ActorScope> arguments,EntityManager entityManager) {
 		if(actor == null || CollectionHelper.isEmpty(codes))
 			return;
 		for(String code : codes) {
 			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),code);
 			if(actorScope == null)
-				EntityCreator.getInstance().createOne(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE),entityManager);
+				arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE));
+				//EntityCreator.getInstance().createOne(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE),entityManager);
 			else {
 				if(listener == null || Boolean.TRUE.equals(listener.isDeletable(actorScope))) {
-					EntityDeletor.getInstance().deleteOne(actorScope, entityManager);
+					arguments.getPersistenceArguments(Boolean.TRUE).getDeletables(Boolean.TRUE).add(actorScope);
+					//EntityDeletor.getInstance().deleteOne(actorScope, entityManager);
 				}else
-					EntityUpdater.getInstance().updateOne(actorScope.setVisible(Boolean.FALSE), entityManager);
+					arguments.getPersistenceArguments(Boolean.TRUE).getUpdatables(Boolean.TRUE).add(actorScope.setVisible(Boolean.FALSE));
+					//EntityUpdater.getInstance().updateOne(actorScope.setVisible(Boolean.FALSE), entityManager);
 			}
 		}
 		
@@ -288,7 +285,8 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 						if(ScopeType.CODE_USB.equals(typeCode) && !identifiers.contains(activity.getBudgetSpecializationUnit().getIdentifier()))
 							continue;
 					}
-					EntityDeletor.getInstance().deleteOne(child, entityManager);
+					arguments.getPersistenceArguments(Boolean.TRUE).getDeletables(Boolean.TRUE).add(child);
+					//EntityDeletor.getInstance().deleteOne(child, entityManager);
 				}				
 			}		
 		}
