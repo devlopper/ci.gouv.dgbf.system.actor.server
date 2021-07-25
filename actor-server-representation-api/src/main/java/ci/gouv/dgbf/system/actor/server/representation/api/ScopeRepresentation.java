@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.server.representation.RepresentationEntity;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeDto;
 
 @Path(ScopeRepresentation.PATH)
@@ -65,4 +66,20 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String PATH_GET_LINES_BY_ACTOR_CODE = "lignes-par-acteur";
 	
 	String TAG = "Domaines";
+	
+	String PARAMETER_TYPE_CODE = "code_type";
+	String DESCRIPTION_TYPE_CODE = "Code du type de domaine";
+	String EXAMPLE_TYPE_CODE = ScopeType.CODE_SECTION;
+	
+	String PARAMETER_PAGEABLE = "paginer";
+	String DESCRIPTION_PAGEABLE = "Activer la pagination";
+	String EXAMPLE_PAGEABLE = "true";
+	
+	String PARAMETER_FIRST_TUPLE_INDEX = "index";
+	String DESCRIPTION_FIRST_TUPLE_INDEX = "index du premier élément";
+	String EXAMPLE_FIRST_TUPLE_INDEX = "0";
+	
+	String PARAMETER_NUMBER_OF_TUPLES = "nombre";
+	String DESCRIPTION_NUMBER_OF_TUPLES = "Nombre d'élément";
+	String EXAMPLE_NUMBER_OF_TUPLES = "5";
 }

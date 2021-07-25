@@ -1,12 +1,16 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -87,6 +91,33 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 			}
 		});
 		return EntityReader.getInstance().read(arguments);
+	}
+	
+	/**/
+	
+	public static Response getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getByTypeCodeByActorCode(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples);
+						if(scopes == null)
+							scopes = new ArrayList<>();
+						Collection<Map<String,String>> maps = new ArrayList<>();
+						scopes.forEach(scope -> {
+							Map<String,String> map = new LinkedHashMap<>();
+							map.put("identifiant", StringUtils.substringAfter(scope.getIdentifier(), typeCode));
+							map.put("code", scope.getCode());
+							map.put("libelle", scope.getName());
+							maps.add(map);
+						});
+						responseBuilderArguments.setEntity(maps);
+					}
+				};
+			}
+		});
 	}
 	
 	public static Response getVisibleSections(String actorCode) {

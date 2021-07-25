@@ -33,6 +33,10 @@ public class Action extends AbstractIdentifiableSystemScalarStringIdentifiableBu
 	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_SPECIALIZATION_UNIT) private BudgetSpecializationUnit budgetSpecializationUnit;
 	@Column(name = COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME) private String budgetSpecializationUnitCodeName;
 	
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_CATEGORY) private BudgetCategory budgetCategory;
+	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER) private String budgetCategoryIdentifier;
+	@Column(name = COLUMN_BUDGET_CATEGORY_CODE_NAME) private String budgetCategoryCodeName;
+	
 	@Override
 	public Action setIdentifier(String identifier) {
 		return (Action) super.setIdentifier(identifier);
@@ -72,7 +76,10 @@ public class Action extends AbstractIdentifiableSystemScalarStringIdentifiableBu
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT = "budgetSpecializationUnit";
-	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";
+	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "budgetSpecializationUnitCodeName";	
+	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
+	public static final String FIELD_BUDGET_CATEGORY_IDENTIFIER = "budgetCategoryIdentifier";
+	public static final String FIELD_BUDGET_CATEGORY_CODE_NAME = "budgetCategoryCodeName";
 	
 	public static final String TABLE_NAME = "VM_APP_ACTION";
 	
@@ -80,4 +87,7 @@ public class Action extends AbstractIdentifiableSystemScalarStringIdentifiableBu
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT = "USB";
 	public static final String COLUMN_BUDGET_SPECIALIZATION_UNIT_CODE_NAME = "USB_CODE_LIBELLE";
+	public static final String COLUMN_BUDGET_CATEGORY = "CATEGORIE_BUDGET";
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET_IDENTIFIANT";
+	public static final String COLUMN_BUDGET_CATEGORY_CODE_NAME = "CATEGORIE_BUDGET_CODE_LIBELLE";
 }

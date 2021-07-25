@@ -64,4 +64,8 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String CODE_SERVICE_ORD = "SERVICE_ORD";
 	public static final String CODE_SERVICE_CF = "SERVICE_CF";
 	public static final String CODE_SERVICE_CPT = "SERVICE_CPT";
+	
+	public static enum Code {
+		CATEGORIE_BUDGET,AB,CATEGORIE_ACTIVITE,SECTION,UA,USB,ACTION,ACTIVITE,IMPUTATION
+	}
 }

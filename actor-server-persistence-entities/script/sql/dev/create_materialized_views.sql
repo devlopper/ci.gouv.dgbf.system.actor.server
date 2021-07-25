@@ -79,9 +79,12 @@ DROP MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_USB;
 CREATE MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_USB
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'USB'||usb.uuid AS "IDENTIFIANT",usb.usb_code AS "CODE",usb.usb_liblg AS "LIBELLE"
-    ,'SECTION'||s.uuid AS "SECTION",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
-FROM SIIBC_CPP.usb usb,SIIBC_CA.section_budgetaire s
-WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED';
+    ,'SECTION'||s.uuid AS "SECTION",'SECTION'||s.uuid AS "SECTION_IDENTIFIANT",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_IDENTIFIANT"
+    ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_CODE_LIBELLE"
+FROM SIIBC_CPP.usb usb,SIIBC_CPP.categorie_budget cb,SIIBC_CA.section_budgetaire s
+WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED' AND usb.usb_cbud_id = cb.uuid AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_USB_K_SECTION ON VM_APP_USB (SECTION ASC);
@@ -91,10 +94,13 @@ DROP MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_ACTION;
 CREATE MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_ACTION
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'ACTION'||a.uuid AS "IDENTIFIANT",a.adp_code AS "CODE",a.adp_liblg AS "LIBELLE"
-    ,'SECTION'||s.uuid AS "SECTION",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
-    ,'USB'||usb.uuid AS "USB",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
-FROM SIIBC_CPP.action a,SIIBC_CPP.usb usb,SIIBC_CA.section_budgetaire s
-WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id;
+    ,'SECTION'||s.uuid AS "SECTION",'SECTION'||s.uuid AS "SECTION_IDENTIFIANT",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
+    ,'USB'||usb.uuid AS "USB",'USB'||usb.uuid AS "USB_IDENTIFIANT",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_BUDGET"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_BUDGET_IDENTIFIANT"
+    ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_BUDGET_CODE_LIBELLE"
+FROM SIIBC_CPP.action a,SIIBC_CPP.usb usb,SIIBC_CPP.categorie_budget cb,SIIBC_CA.section_budgetaire s
+WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id AND usb.usb_cbud_id = cb.uuid AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_ACTION_K_SECTION ON VM_APP_ACTION (SECTION ASC);

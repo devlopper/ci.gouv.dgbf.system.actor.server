@@ -8,12 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +27,13 @@ import lombok.experimental.Accessors;
 public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
+	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
+	@Column(name = COLUMN_SECTION_IDENTIFIER) private String sectionIdentifier;
 	@Column(name = COLUMN_SECTION_CODE_NAME) private String sectionCodeName;
-	@Transient private String sectionIdentifier;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_CATEGORY) private BudgetCategory category;
+	@Column(name = COLUMN_CATEGORY_IDENTIFIER) private String categoryIdentifier;
+	@Column(name = COLUMN_CATEGORY_CODE_NAME) private String categoryCodeName;
 	
 	@Override
 	public BudgetSpecializationUnit setIdentifier(String identifier) {
@@ -64,9 +66,16 @@ public class BudgetSpecializationUnit extends AbstractIdentifiableSystemScalarSt
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE_NAME = "sectionCodeName";
+	public static final String FIELD_CATEGORY = "category";
+	public static final String FIELD_CATEGORY_IDENTIFIER = "categoryIdentifier";
+	public static final String FIELD_CATEGORY_CODE_NAME = "categoryCodeName";
 	
 	public static final String COLUMN_SECTION = "SECTION";
+	public static final String COLUMN_SECTION_IDENTIFIER = "SECTION_IDENTIFIANT";
 	public static final String COLUMN_SECTION_CODE_NAME = "SECTION_CODE_LIBELLE";
+	public static final String COLUMN_CATEGORY = "CATEGORIE";
+	public static final String COLUMN_CATEGORY_IDENTIFIER = "CATEGORIE_IDENTIFIANT";
+	public static final String COLUMN_CATEGORY_CODE_NAME = "CATEGORIE_CODE_LIBELLE";
 	
 	public static final String TABLE_NAME = "VM_APP_USB";
 }
