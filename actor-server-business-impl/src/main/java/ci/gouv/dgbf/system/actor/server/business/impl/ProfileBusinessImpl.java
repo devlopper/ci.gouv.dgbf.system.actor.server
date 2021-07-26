@@ -11,12 +11,14 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.security.keycloak.server.Role;
-import org.cyk.utility.security.keycloak.server.RoleManager;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
+import org.cyk.utility.security.keycloak.server.Role;
+import org.cyk.utility.security.keycloak.server.RoleManager;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
@@ -28,11 +30,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
 
 @ApplicationScoped
 public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, ProfilePersistence> implements ProfileBusiness,Serializable {
@@ -177,6 +181,17 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		if(CollectionHelper.isEmpty(profiles))
 			return;
 		RoleManager.getInstance().saveByNames(profiles.stream().map(x -> x.getCode()).collect(Collectors.toList()));
+	}
+	
+	@Override
+	public Collection<String> getCodesByActorCode(String actorCode) {
+		CodeExecutor.getInstance().throwExceptionIfNotExist(Actor.class, actorCode);
+		String identifier = (String) EntityManagerGetter.getInstance().get().createQuery("SELECT t.identifier FROM Actor t WHERE t.code = :code")
+				.setParameter("code", actorCode).getSingleResult();
+		Collection<Object[]> arrays = new ActorProfilesCodesReader().readByIdentifiers(List.of(identifier), null);
+		if(CollectionHelper.isEmpty(arrays))
+			return null;
+		return arrays.stream().map(array -> (String)array[1]).collect(Collectors.toList());
 	}
 	
 	@Override

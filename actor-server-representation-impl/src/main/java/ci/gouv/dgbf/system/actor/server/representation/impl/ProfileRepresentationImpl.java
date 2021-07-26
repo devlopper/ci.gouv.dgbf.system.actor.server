@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.representation.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
@@ -84,6 +85,23 @@ public class ProfileRepresentationImpl extends AbstractRepresentationEntityImpl<
 					@Override
 					public void run() {
 						__inject__(ProfileBusiness.class).exportToKeycloakRoles();
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getCodesByActorCode(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<String> codes = __inject__(ProfileBusiness.class).getCodesByActorCode(actorCode);
+						if(codes == null)
+							codes = new ArrayList<>();
+						responseBuilderArguments.setEntity(Map.of("codes",codes));
 					}
 				};
 			}

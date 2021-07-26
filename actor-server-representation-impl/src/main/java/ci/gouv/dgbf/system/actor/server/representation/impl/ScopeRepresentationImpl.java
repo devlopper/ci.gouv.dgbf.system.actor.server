@@ -1,17 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.CollectionOfMapsStringStringBuilder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -95,15 +92,21 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 	
 	/**/
 	
-	public static Response getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples) {
+	public static Response getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {
 					@Override
 					public void run() {
-						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getByTypeCodeByActorCode(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples);
-						if(scopes == null)
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getByTypeCodeByActorCode(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples
+								,removeTypeCodeFromIdentifier);
+						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
+								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
+										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME);
+						//CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments);
+						/*if(scopes == null)
 							scopes = new ArrayList<>();
 						Collection<Map<String,String>> maps = new ArrayList<>();
 						scopes.forEach(scope -> {
@@ -113,7 +116,8 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 							map.put("libelle", scope.getName());
 							maps.add(map);
 						});
-						responseBuilderArguments.setEntity(maps);
+						*/
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
 					}
 				};
 			}

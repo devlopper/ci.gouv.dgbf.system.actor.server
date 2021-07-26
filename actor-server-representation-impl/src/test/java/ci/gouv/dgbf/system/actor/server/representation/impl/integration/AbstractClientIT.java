@@ -59,6 +59,19 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		}		
     }
 	
+	protected void assertGetProfilesCodes(String code,Integer expectedCode,String...expectedCodes) {
+		RequestSpecification requestSpecification = given().when();
+		if(StringHelper.isNotBlank(code))
+			requestSpecification.queryParam(ActorRepresentation.PARAMETER_USER_NAME, code);
+		Response response = requestSpecification.get(ActorOpenAPI.OPERATION_GET_PROFILES_CODES);
+		ValidatableResponse validatableResponse = response.then().statusCode(expectedCode);
+		if(expectedCode == 200) {
+			validatableResponse
+			.body("codes", hasItems(expectedCodes))
+			;
+		}		
+    }
+	
 	protected void assertCheckExistence(String code,Integer expectedCode,String expectedElectronicMailAddress) {
 		RequestSpecification requestSpecification = given().when();
 		if(StringHelper.isNotBlank(code))

@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.ws.rs.core.Response;
 
 import ci.gouv.dgbf.system.actor.server.representation.impl.ActorRepresentationImpl;
+import ci.gouv.dgbf.system.actor.server.representation.impl.ProfileRepresentationImpl;
+import ci.gouv.dgbf.system.actor.server.representation.impl.ScopeRepresentationImpl;
 
 public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAPI,Serializable {
 
@@ -26,5 +28,15 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAP
 	@Override
 	public Response checkExistense(String code) {
 		return ActorRepresentationImpl.checkExistense(code);
+	}
+	
+	@Override
+	public Response getScopes(String typeCode, String actorCode, Boolean pageable, Integer firstTupleIndex,Integer numberOfTuples) {
+		return ScopeRepresentationImpl.getByTypeCodeByActorCode(typeCode, actorCode, Boolean.TRUE, pageable, firstTupleIndex, numberOfTuples, Boolean.TRUE);
+	}
+	
+	@Override
+	public Response getProfilesCodes(String actorCode) {
+		return ProfileRepresentationImpl.getCodesByActorCode(actorCode);
 	}
 }

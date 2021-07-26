@@ -75,4 +75,9 @@ public class ActorOpenAPIIT extends AbstractClientIT {
     public void checkExistence_404() {
     	assertCheckExistence("xxx", 404, null);
     }
+    
+    @Test @InSequence(12)
+    public void getProfilesCodes() {
+    	assertGetProfilesCodes("christian", 200, "P00","P02");
+    }
 }

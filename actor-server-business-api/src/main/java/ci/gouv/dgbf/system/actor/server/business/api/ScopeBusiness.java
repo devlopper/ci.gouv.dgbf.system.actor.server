@@ -14,5 +14,5 @@ public interface ScopeBusiness extends BusinessEntity<Scope> {
 	
 	Collection<Scope> getVisibleBudgetSpecializationUnits(String actorCode);
 	
-	Collection<Scope> getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples);
+	Collection<Scope> getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
 }

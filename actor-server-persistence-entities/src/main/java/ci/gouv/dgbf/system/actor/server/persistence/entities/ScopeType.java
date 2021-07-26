@@ -65,7 +65,6 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String CODE_SERVICE_CF = "SERVICE_CF";
 	public static final String CODE_SERVICE_CPT = "SERVICE_CPT";
 	
-	public static enum Code {
-		CATEGORIE_BUDGET,AB,CATEGORIE_ACTIVITE,SECTION,UA,USB,ACTION,ACTIVITE,IMPUTATION
-	}
+	public static final String[] CODES = new String[]{ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION
+			,ScopeType.CODE_UA,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION};
 }

@@ -26,6 +26,8 @@ public interface ProfileBusiness extends BusinessEntity<Profile> {
 	@Transactional
 	void exportToKeycloakRoles();
 	
+	Collection<String> getCodesByActorCode(String actorCode);
+	
 	String CREATE_PRIVILEGES = "Profile.createPrivileges";
 	String DELETE_PRIVILEGES = "Profile.deletePrivileges";
 	String SAVE_PRIVILEGES = "Profile.savePrivileges";

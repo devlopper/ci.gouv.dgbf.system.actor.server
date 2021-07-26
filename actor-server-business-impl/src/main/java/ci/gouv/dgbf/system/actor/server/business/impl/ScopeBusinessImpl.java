@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
@@ -29,14 +30,12 @@ public class ScopeBusinessImpl extends AbstractBusinessEntityImpl<Scope, ScopePe
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Collection<Scope> getByTypeCodeByActorCode(String typeCode, String actorCode, Boolean visible,Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("type code", actorCode);
-		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actor code", actorCode);
-		ThrowableHelper.throwIllegalArgumentExceptionIfNull("visilbe", actorCode);
-		if(!CodeExecutor.getInstance().exists(ScopeType.class, typeCode))
-			throw new RuntimeException(String.format("Code type de domaine <<%s>> inconnu", typeCode));
-		if(!CodeExecutor.getInstance().exists(Actor.class, actorCode))
-			throw new RuntimeException(String.format("Nom d'utilisateur <<%s>> inconnu", actorCode));
+	public Collection<Scope> getByTypeCodeByActorCode(String typeCode, String actorCode, Boolean visible,Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		CodeExecutor.getInstance().throwExceptionIfNotExist(ScopeType.class, typeCode);
+		CodeExecutor.getInstance().throwExceptionIfNotExist(Actor.class, actorCode);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("visilbe", visible);
+		
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments();
 		queryExecutorArguments.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
 		queryExecutorArguments.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_CODE,typeCode,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE,actorCode
@@ -51,7 +50,14 @@ public class ScopeBusinessImpl extends AbstractBusinessEntityImpl<Scope, ScopePe
 			queryExecutorArguments.setFirstTupleIndex(firstTupleIndex);
 			queryExecutorArguments.setNumberOfTuples(numberOfTuples);
 		}
-		return EntityReader.getInstance().readMany(Scope.class, queryExecutorArguments);
+		Collection<Scope> scopes = EntityReader.getInstance().readMany(Scope.class, queryExecutorArguments);
+		if(CollectionHelper.isEmpty(scopes))
+			return null;
+		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
+			scopes.forEach(scope -> {
+				scope.setIdentifier(StringUtils.substringAfter(scope.getIdentifier(), typeCode));
+			});
+		return scopes;
 	}
 	
 	@Override

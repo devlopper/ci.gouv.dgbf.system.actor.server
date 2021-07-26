@@ -33,8 +33,6 @@ public interface VisibilityOpenAPI extends OpenAPI {
 	@Operation(description = "Obtenir les domaines visibles",operationId = "obtenir_domaines_visibles")
 	@APIResponses(value = {
 			@APIResponse(description = "Domaines visibles obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
-			//,@APIResponse(description = "Le code du type de domaine est inconnu",responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN))
-			//,@APIResponse(description = "Le nom d'utilisateur est inconnu",responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(description = "Erreur lors de l'obtention des domaines visibles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
 	public Response get(
@@ -58,10 +56,4 @@ public interface VisibilityOpenAPI extends OpenAPI {
 			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
 			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
-	
-	/**/
-	
-	public static enum TypeCode {
-		SECTION
-	}
 }
