@@ -112,23 +112,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(ACTOR_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
-			/*			
-			Predicate __predicate__ = new Predicate().setSeparatorAsOr();
-			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_CODE);
-			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_FIRST_NAME, "t.identity");
-			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_LAST_NAMES, "t.identity");
-			addLikeIfFilterHasFieldWithPath(arguments, builderArguments, __predicate__, filter, ActorQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, "t.identity");
-			predicate.add(__predicate__.concatenate());
-			*/
 		}
 	}
 	
 	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		String scopeTypeCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 		String actorCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE);
-		String actorCodeParameterName = null;
-		if(StringHelper.isNotBlank(actorCode))
-			actorCodeParameterName = ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE;
+		//String actorCodeParameterName = null;
+		//if(StringHelper.isNotBlank(actorCode))
+		//	actorCodeParameterName = ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE;
 		if(StringHelper.isNotBlank(scopeTypeCode)/* && arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) == null*/) {
 			predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
@@ -145,7 +137,7 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			Object visibleObject = arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE);
 			if(visibleObject instanceof String)
 				visibleObject = Boolean.TRUE.toString().equalsIgnoreCase(visibleObject.toString());
-			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, actorCodeParameterName,!ValueHelper.defaultToIfNull((Boolean)visibleObject, Boolean.TRUE)));
+			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, StringHelper.isNotBlank(actorCode),!ValueHelper.defaultToIfNull((Boolean)visibleObject, Boolean.TRUE)));
 			if(StringHelper.isNotBlank(actorCode))
 				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);			
 		}

@@ -1,3 +1,7 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Classification administrative - CA                                                                                                                                --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- Section
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_SECTION;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_SECTION
@@ -7,30 +11,110 @@ FROM CA.section_budgetaire s,CA.gouvernement g
 WHERE s.gouv_id = g.uuid AND g.gouv_statut = 'ENABLED' AND g.gouv_utilise = 1 AND s.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_SECTION ADD CONSTRAINT VM_APP_SECTION_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_SECTION ADD CONSTRAINT VM_APP_SECTION_UK_CODE UNIQUE (CODE);
+
+-- Unité administrative
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_UNITE_ADMINISTRATIVE;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_UNITE_ADMINISTRATIVE
+REFRESH ON COMMIT COMPLETE AS
+SELECT 'UA'||ua.uuid AS "IDENTIFIANT",ua.ua_code AS "CODE",ua.ua_liblg AS "LIBELLE"
+-- Section
+    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION"
+    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION_IDENTIFIANT"
+    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE s.secb_code||' '||s.secb_libelle END AS "SECTION_CODE_LIBELLE"
+-- Localité
+    ,CASE WHEN l.uuid IS NULL OR l.entitystatus <> 'COMMITTED' THEN NULL ELSE 'LOCALITE'||l.uuid END AS "LOCALITE"
+FROM CA.unite_administrative ua,CA.section_budgetaire s,CA.localite l
+WHERE 
+    s.uuid (+) = ua.ua_secb_id AND l.uuid (+) = ua.ua_loc_id
+    --AND s.entitystatus = 'COMMITTED'
+    --AND g.uuid = s.gouv_id 
+    --AND g.gouv_statut = 'ENABLED' 
+    --AND g.gouv_utilise = 1
+    ;
+ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_PK PRIMARY KEY (IDENTIFIANT);
+ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_UK_CODE UNIQUE (CODE);
+CREATE INDEX VM_APP_UA_K_SECTION ON VM_APP_UNITE_ADMINISTRATIVE (SECTION ASC);
+
+-- Localité
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_LOCALITE;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_LOCALITE
+REFRESH NEXT SYSDATE + 1/48 COMPLETE AS
+SELECT 'LOCALITE'||l.uuid AS "IDENTIFIANT",l.loc_code AS "CODE",l.loc_lib AS "LIBELLE"
+,CASE WHEN LENGTH(l.loc_code) = 2 AND (LOWER(l.loc_lib) LIKE 'region%' OR LOWER(l.loc_lib) LIKE 'région%') THEN 'REGION' 
+WHEN LENGTH(l.loc_code) = 4 THEN 'DEPARTEMENT' ELSE 'SOUS_PREFECTURE' END AS "TYPE"
+,(CASE WHEN LENGTH(l.loc_code) = 2 AND (LOWER(l.loc_lib) LIKE 'region%' OR LOWER(l.loc_lib) LIKE 'région%') THEN NULL 
+WHEN LENGTH(l.loc_code) >=4  THEN (SELECT 'LOCALITE'||p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
+--WHEN LENGTH(l.loc_code) = 4 THEN (SELECT 'LOCALITE'||p.uuid FROM SIIBC_CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,2))
+--WHEN LENGTH(l.loc_code) = 6 THEN (SELECT 'LOCALITE'||p.uuid FROM SIIBC_CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,4))
+ELSE NULL END) AS "PARENT"
+-- Département
+,(CASE WHEN LENGTH(l.loc_code) = 6 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
+ELSE NULL END) AS "DEPARTEMENT_IDENTIFIANT"
+,(CASE WHEN LENGTH(l.loc_code) = 6 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
+ELSE NULL END) AS "DEPARTEMENT_CODE_LIBELLE"
+-- Région
+,(CASE WHEN LENGTH(l.loc_code) = 4 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
+WHEN LENGTH(l.loc_code) = 6 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-4))
+ELSE NULL END) AS "REGION_IDENTIFIANT"
+,(CASE WHEN LENGTH(l.loc_code) = 4 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
+WHEN LENGTH(l.loc_code) = 6 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-4))
+ELSE NULL END) AS "REGION_CODE_LIBELLE"
+FROM CA.localite l WHERE l.entitystatus = 'COMMITTED';
+ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_PK PRIMARY KEY (IDENTIFIANT);
+ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_UK_CODE UNIQUE (CODE);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Classification par programme - CPP                                                                                                                                --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Catégorie de budget
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_CAT_BUDGET;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_CAT_BUDGET
+REFRESH ON COMMIT COMPLETE AS
+SELECT 'CATEGORIE_BUDGET'||cb.uuid AS "IDENTIFIANT",cb.cbud_code AS "CODE",cb.cbud_liblg AS "LIBELLE"
+FROM CPP.CATEGORIE_BUDGET cb
+WHERE cb.entitystatus = 'COMMITTED';
+ALTER TABLE VM_APP_CAT_BUDGET ADD CONSTRAINT VM_APP_CAT_BUDGET_PK PRIMARY KEY (IDENTIFIANT);
+ALTER TABLE VM_APP_CAT_BUDGET ADD CONSTRAINT VM_APP_CAT_BUDGET_UK_CODE UNIQUE (CODE);
+
 -- Unité de spécialisation du budget
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_USB;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_USB
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'USB'||usb.uuid AS "IDENTIFIANT",usb.usb_code AS "CODE",usb.usb_liblg AS "LIBELLE"
-    ,'SECTION'||s.uuid AS "SECTION",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
-FROM CPP.usb usb,CA.section_budgetaire s
-WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED';
+    ,'SECTION'||s.uuid AS "SECTION",'SECTION'||s.uuid AS "SECTION_IDENTIFIANT",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_IDENTIFIANT"
+    ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_CODE_LIBELLE"
+FROM CPP.usb usb,CPP.categorie_budget cb,CA.section_budgetaire s
+WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED' AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_UK_CODE UNIQUE (CODE);
+CREATE INDEX VM_APP_USB_K_CATEGORIE ON VM_APP_USB (CATEGORIE ASC);
 CREATE INDEX VM_APP_USB_K_SECTION ON VM_APP_USB (SECTION ASC);
+
 -- Action
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_ACTION;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_ACTION
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'ACTION'||a.uuid AS "IDENTIFIANT",a.adp_code AS "CODE",a.adp_liblg AS "LIBELLE"
-    ,'SECTION'||s.uuid AS "SECTION",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
-    ,'USB'||usb.uuid AS "USB",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
-FROM CPP.action a,CPP.usb usb,CA.section_budgetaire s
-WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id;
+    ,'SECTION'||s.uuid AS "SECTION",'SECTION'||s.uuid AS "SECTION_IDENTIFIANT",s.secb_code||' '||s.secb_libelle AS "SECTION_CODE_LIBELLE"
+    ,'USB'||usb.uuid AS "USB",'USB'||usb.uuid AS "USB_IDENTIFIANT",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_BUDGET"
+    ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_BUDGET_IDENTIFIANT"
+    ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_BUDGET_CODE_LIBELLE"
+FROM CPP.action a,CPP.usb usb,CPP.categorie_budget cb,CA.section_budgetaire s
+WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_UK_CODE UNIQUE (CODE);
+CREATE INDEX VM_APP_ACTION_K_CB ON VM_APP_ACTION (CATEGORIE_BUDGET ASC);
 CREATE INDEX VM_APP_ACTION_K_SECTION ON VM_APP_ACTION (SECTION ASC);
 CREATE INDEX VM_APP_ACTION_K_USB ON VM_APP_ACTION (USB ASC);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Activité de service - ADS                                                                                                                                         --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- Catégorie Activité
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_CATEG_ATV;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_CATEG_ATV
@@ -40,6 +124,7 @@ FROM ADS.categorie_activite ca;
 ALTER TABLE VM_APP_CATEG_ATV ADD CONSTRAINT VM_APP_CATEG_ATV_UK_ID UNIQUE (IDENTIFIANT);
 --ALTER TABLE VM_APP_CATEG_ATV ADD CONSTRAINT VM_APP_CATEG_ATV_PK PRIMARY KEY (IDENTIFIANT);
 --ALTER TABLE VM_APP_CATEG_ATV ADD CONSTRAINT VM_APP_CATEG_ATV_UK_CODE UNIQUE (CODE);
+
 -- Activité
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_ACTIVITE;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_ACTIVITE
@@ -63,6 +148,11 @@ CREATE INDEX VM_APP_ACTIVITE_K_USB ON VM_APP_ACTIVITE (USB ASC);
 CREATE INDEX VM_APP_ACTIVITE_K_ACTION ON VM_APP_ACTIVITE (ACTION ASC);
 CREATE INDEX VM_APP_ACTIVITE_K_ND ON VM_APP_ACTIVITE (NATURE_DEPENSE ASC);
 CREATE INDEX VM_APP_ACTIVITE_K_UA ON VM_APP_ACTIVITE (UA ASC);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Budgétisation - BUDGET                                                                                                                                         --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- Imputation
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_IMPUTATION;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_IMPUTATION
@@ -130,109 +220,18 @@ CREATE INDEX VM_APP_IMPUTATION_K_ACTION ON VM_APP_IMPUTATION (ACTION ASC);
 CREATE INDEX VM_APP_IMPUTATION_K_ACTIVITE ON VM_APP_IMPUTATION (ACTIVITE ASC);
 CREATE INDEX VM_APP_IMPUTATION_K_NEC ON VM_APP_IMPUTATION (NATURE_ECONOMIQUE ASC);
 CREATE INDEX VM_APP_IMPUTATION_K_UA ON VM_APP_IMPUTATION (UA ASC);
--- Unité administrative
-DROP MATERIALIZED VIEW "ACTEUR".VM_APP_UNITE_ADMINISTRATIVE;
-CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_UNITE_ADMINISTRATIVE
-REFRESH ON COMMIT COMPLETE AS
-SELECT 'UA'||ua.uuid AS "IDENTIFIANT",ua.ua_code AS "CODE",ua.ua_liblg AS "LIBELLE"
--- Section
-    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION"
-    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION_IDENTIFIANT"
-    ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE s.secb_code||' '||s.secb_libelle END AS "SECTION_CODE_LIBELLE"
--- Localité
-    ,CASE WHEN l.uuid IS NULL OR l.entitystatus <> 'COMMITTED' THEN NULL ELSE 'LOCALITE'||l.uuid END AS "LOCALITE"
-FROM CA.unite_administrative ua,CA.section_budgetaire s,CA.localite l
-WHERE 
-    s.uuid (+) = ua.ua_secb_id AND l.uuid (+) = ua.ua_loc_id
-    --AND s.entitystatus = 'COMMITTED'
-    --AND g.uuid = s.gouv_id 
-    --AND g.gouv_statut = 'ENABLED' 
-    --AND g.gouv_utilise = 1
-    ;
-ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_PK PRIMARY KEY (IDENTIFIANT);
-ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_UK_CODE UNIQUE (CODE);
-CREATE INDEX VM_APP_UA_K_SECTION ON VM_APP_UNITE_ADMINISTRATIVE (SECTION ASC);
--- Localité
-DROP MATERIALIZED VIEW "ACTEUR".VM_APP_LOCALITE;
-CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_LOCALITE
-REFRESH NEXT SYSDATE + 1/48 COMPLETE AS
-SELECT 'LOCALITE'||l.uuid AS "IDENTIFIANT",l.loc_code AS "CODE",l.loc_lib AS "LIBELLE"
-,CASE WHEN LENGTH(l.loc_code) = 2 AND (LOWER(l.loc_lib) LIKE 'region%' OR LOWER(l.loc_lib) LIKE 'région%') THEN 'REGION' 
-WHEN LENGTH(l.loc_code) = 4 THEN 'DEPARTEMENT' ELSE 'SOUS_PREFECTURE' END AS "TYPE"
-,(CASE WHEN LENGTH(l.loc_code) = 2 AND (LOWER(l.loc_lib) LIKE 'region%' OR LOWER(l.loc_lib) LIKE 'région%') THEN NULL 
-WHEN LENGTH(l.loc_code) >=4  THEN (SELECT 'LOCALITE'||p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
---WHEN LENGTH(l.loc_code) = 4 THEN (SELECT 'LOCALITE'||p.uuid FROM SIIBC_CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,2))
---WHEN LENGTH(l.loc_code) = 6 THEN (SELECT 'LOCALITE'||p.uuid FROM SIIBC_CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,4))
-ELSE NULL END) AS "PARENT"
--- Département
-,(CASE WHEN LENGTH(l.loc_code) = 6 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
-ELSE NULL END) AS "DEPARTEMENT_IDENTIFIANT"
-,(CASE WHEN LENGTH(l.loc_code) = 6 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
-ELSE NULL END) AS "DEPARTEMENT_CODE_LIBELLE"
--- Région
-,(CASE WHEN LENGTH(l.loc_code) = 4 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
-WHEN LENGTH(l.loc_code) = 6 THEN 'LOCALITE'||(SELECT p.uuid FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-4))
-ELSE NULL END) AS "REGION_IDENTIFIANT"
-,(CASE WHEN LENGTH(l.loc_code) = 4 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
-WHEN LENGTH(l.loc_code) = 6 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-4))
-ELSE NULL END) AS "REGION_CODE_LIBELLE"
-FROM CA.localite l WHERE l.entitystatus = 'COMMITTED';
-ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_PK PRIMARY KEY (IDENTIFIANT);
-ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_UK_CODE UNIQUE (CODE);
--- Domaine
-DROP MATERIALIZED VIEW "ACTEUR".VM_APP_DOMAINE;
-CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_DOMAINE
-TABLESPACE USERS
---REFRESH ON COMMIT 
-REFRESH NEXT SYSDATE + 1/24
-COMPLETE
-AS
-SELECT identifiant,code,libelle,'SECTION' AS "TYPE" FROM ACTEUR.VM_APP_SECTION
-UNION ALL SELECT identifiant,code,libelle,'USB' AS "TYPE" FROM ACTEUR.VM_APP_USB
-UNION ALL SELECT identifiant,code,libelle,'ACTION' AS "TYPE" FROM ACTEUR.VM_APP_ACTION
-UNION ALL SELECT identifiant,code,libelle,'CATEGORIE_ACTIVITE' AS "TYPE" FROM ACTEUR.VM_APP_CATEG_ATV
-UNION ALL SELECT identifiant,code,libelle,'ACTIVITE' AS "TYPE" FROM ACTEUR.VM_APP_ACTIVITE
-UNION ALL SELECT identifiant,code,libelle,'IMPUTATION' AS "TYPE" FROM ACTEUR.VM_APP_IMPUTATION
-UNION ALL SELECT identifiant,code,libelle,'UA' AS "TYPE" FROM ACTEUR.VM_APP_UNITE_ADMINISTRATIVE
-UNION ALL SELECT identifiant,code,libelle,'LOCALITE' AS "TYPE" FROM ACTEUR.VM_APP_LOCALITE
-UNION ALL SELECT identifiant,code,libelle,'SERVICE_ORD' AS "TYPE" FROM ACTEUR.SERVICE_ORD
-UNION ALL SELECT identifiant,code,libelle,'SERVICE_CF' AS "TYPE" FROM ACTEUR.SERVICE_CF
-UNION ALL SELECT identifiant,code,libelle,'SERVICE_CPT' AS "TYPE" FROM ACTEUR.SERVICE_CPT
-;
-ALTER TABLE VM_APP_DOMAINE ADD CONSTRAINT VM_APP_DOMAINE_PK PRIMARY KEY (IDENTIFIANT);
---ALTER TABLE VM_APP_DOMAINE ADD CONSTRAINT VM_APP_DOMAINE_UK_CODE UNIQUE (CODE);
-CREATE INDEX VM_APP_DOMAINE_K_TYPE ON VM_APP_DOMAINE (TYPE ASC);
--- Nature de dépense
-DROP MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_DEPENSE;
-CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_DEPENSE
-REFRESH ON COMMIT 
-COMPLETE
-AS
-SELECT 
-    t.uuid AS "IDENTIFIANT"
-    ,t.ndep_code AS "CODE"
-    ,t.ndep_libct AS "LIBELLE"
-FROM 
-    NEC.nature_depense t;
---ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_PK PRIMARY KEY (IDENTIFIANT);
-ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_UK_CODE UNIQUE (CODE);
--- Nature économique
-DROP MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_ECONOMIQUE;
-CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_ECONOMIQUE
-REFRESH ON COMMIT 
-COMPLETE
-AS
-SELECT n.uuid AS "IDENTIFIANT",n.nat_code AS "CODE",n.nat_liblg AS "LIBELLE"
-FROM NEC.nature_economique n,NEC.TABLE_REFERENTIEL tref,NEC.VERSION_REFERENTIEL vref
-WHERE n.nat_tref = tref.uuid (+) AND tref.tref_vers_id = vref.uuid AND vref.VERS_CODE='312' AND n.nat_imputable=1 AND n.nat_nat is null;
---ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_PK PRIMARY KEY (IDENTIFIANT);
-ALTER TABLE VM_APP_NATURE_ECONOMIQUE ADD CONSTRAINT VM_APP_NATURE_ECO_UK_CODE UNIQUE (CODE);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Portail - PRT                                                                                                                                --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- Module
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_MODULE;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_MODULE
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'MODULE'||t.id AS "IDENTIFIANT",t.id AS "CODE",t.name AS "LIBELLE"
 FROM PRT.msvc_module t;
+
 -- Service
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_SERVICE;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_SERVICE
@@ -302,6 +301,66 @@ ALTER TABLE VM_APP_PRIVILEGE ADD CONSTRAINT VM_APP_PRVLG_PK PRIMARY KEY (IDENTIF
 --ALTER TABLE VM_APP_PRIVILEGE ADD CONSTRAINT VM_APP_PRVLG_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_PRVLG_K_PARENT ON VM_APP_PRIVILEGE (PARENT ASC);
 CREATE INDEX VM_APP_PRVLG_K_TYPE ON VM_APP_PRIVILEGE (TYPE ASC);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Classification économique - NEC                                                                                                                                   --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Nature de dépense
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_DEPENSE;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_DEPENSE
+REFRESH ON COMMIT 
+COMPLETE
+AS
+SELECT 
+    t.uuid AS "IDENTIFIANT"
+    ,t.ndep_code AS "CODE"
+    ,t.ndep_libct AS "LIBELLE"
+FROM 
+    NEC.nature_depense t;
+--ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_PK PRIMARY KEY (IDENTIFIANT);
+ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_UK_CODE UNIQUE (CODE);
+-- Nature économique
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_ECONOMIQUE;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_NATURE_ECONOMIQUE
+REFRESH ON COMMIT 
+COMPLETE
+AS
+SELECT n.uuid AS "IDENTIFIANT",n.nat_code AS "CODE",n.nat_liblg AS "LIBELLE"
+FROM NEC.nature_economique n,NEC.TABLE_REFERENTIEL tref,NEC.VERSION_REFERENTIEL vref
+WHERE n.nat_tref = tref.uuid (+) AND tref.tref_vers_id = vref.uuid AND vref.VERS_CODE='312' AND n.nat_imputable=1 AND n.nat_nat is null;
+--ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_PK PRIMARY KEY (IDENTIFIANT);
+ALTER TABLE VM_APP_NATURE_ECONOMIQUE ADD CONSTRAINT VM_APP_NATURE_ECO_UK_CODE UNIQUE (CODE);
+
+
+-- Domaine
+DROP MATERIALIZED VIEW "ACTEUR".VM_APP_DOMAINE;
+CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_DOMAINE
+TABLESPACE USERS
+--REFRESH ON COMMIT 
+REFRESH NEXT SYSDATE + 1/24
+COMPLETE
+AS
+SELECT identifiant,code,libelle,'SECTION' AS "TYPE" FROM ACTEUR.VM_APP_SECTION
+UNION ALL SELECT identifiant,code,libelle,'USB' AS "TYPE" FROM ACTEUR.VM_APP_USB
+UNION ALL SELECT identifiant,code,libelle,'ACTION' AS "TYPE" FROM ACTEUR.VM_APP_ACTION
+UNION ALL SELECT identifiant,code,libelle,'CATEGORIE_ACTIVITE' AS "TYPE" FROM ACTEUR.VM_APP_CATEG_ATV
+UNION ALL SELECT identifiant,code,libelle,'ACTIVITE' AS "TYPE" FROM ACTEUR.VM_APP_ACTIVITE
+UNION ALL SELECT identifiant,code,libelle,'IMPUTATION' AS "TYPE" FROM ACTEUR.VM_APP_IMPUTATION
+UNION ALL SELECT identifiant,code,libelle,'UA' AS "TYPE" FROM ACTEUR.VM_APP_UNITE_ADMINISTRATIVE
+UNION ALL SELECT identifiant,code,libelle,'LOCALITE' AS "TYPE" FROM ACTEUR.VM_APP_LOCALITE
+UNION ALL SELECT identifiant,code,libelle,'SERVICE_ORD' AS "TYPE" FROM ACTEUR.SERVICE_ORD
+UNION ALL SELECT identifiant,code,libelle,'SERVICE_CF' AS "TYPE" FROM ACTEUR.SERVICE_CF
+UNION ALL SELECT identifiant,code,libelle,'SERVICE_CPT' AS "TYPE" FROM ACTEUR.SERVICE_CPT
+;
+ALTER TABLE VM_APP_DOMAINE ADD CONSTRAINT VM_APP_DOMAINE_PK PRIMARY KEY (IDENTIFIANT);
+--ALTER TABLE VM_APP_DOMAINE ADD CONSTRAINT VM_APP_DOMAINE_UK_CODE UNIQUE (CODE);
+CREATE INDEX VM_APP_DOMAINE_K_TYPE ON VM_APP_DOMAINE (TYPE ASC);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Exécution - BIDF                                                                                                                                                  --
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- Imputation Execution
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_EX_IMPUTATION;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_EX_IMPUTATION

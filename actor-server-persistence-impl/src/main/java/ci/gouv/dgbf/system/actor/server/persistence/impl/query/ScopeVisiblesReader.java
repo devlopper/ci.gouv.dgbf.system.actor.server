@@ -37,7 +37,7 @@ public class ScopeVisiblesReader extends AbstractScopeVisiblesReader implements 
 	
 	@Override
 	protected String getVisiblePredicate() {
-		return ScopeQueryStringBuilder.Predicate.scopeVisible(typeCode, StringHelper.isBlank(actorCode) ? null : ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, negate);
+		return ScopeQueryStringBuilder.Predicate.scopeVisible(typeCode, StringHelper.isNotBlank(actorCode), negate);
 	}
 
 	@Override

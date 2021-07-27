@@ -129,7 +129,7 @@ public interface ActorOpenAPI extends OpenAPI {
 			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
-	public static final String OPERATION_GET_PROFILES_CODES = "obtenir_profiles_codes";
+	public static final String OPERATION_GET_PROFILES_CODES = "obtenir_codes_profiles";
 	@GET
 	@Path(OPERATION_GET_PROFILES_CODES)
 	@Produces({ MediaType.APPLICATION_JSON})
