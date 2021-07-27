@@ -27,6 +27,10 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	@Transactional
 	TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode);
 	
+	String DERIVE_VALUES_BY_IDENTIFIERS = "Assignments.deriveValuesByIdentifiers";
+	@Transactional
+	TransactionResult deriveValuesByIdentifiers(Collection<String> identifiers,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode);
+	
 	String SAVE_SCOPE_FUNCTIONS = "Assignments.saveScopeFunctions";
 	@Transactional
 	TransactionResult saveScopeFunctions(Collection<Assignments> collection);
@@ -54,6 +58,10 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	String IMPORT_NEWS = "Assignments.importNews";
 	@Transactional
 	void importNews(String actorCode);
+	
+	String IMPORT_NEWS_AND_DERIVE_VALUES_BY_IDENTIFIERS = "Assignments.importNewsAndDeriveValuesByIdentifiersAndExport";
+	@Transactional
+	TransactionResult importNewsAndDeriveValuesByIdentifiersAndExport(Collection<String> identifiers,String actorCode);
 	
 	String EXPORT = "Assignments.export";
 	@Transactional

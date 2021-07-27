@@ -124,45 +124,66 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return transactionResult;
 	}
 
-	@Override
-	@Transactional
-	public TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable,String actorCode) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("affectations", collection);
+	/* Derive values */
+	
+	public static TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable,String actorCode,EntityManager entityManager) {
 		TransactionResult transactionResult = new TransactionResult().setName("Dérivation des postes").setTupleName("Affectations");
-		
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("affectations", collection);
 		//2 - get scopes functions to assign
 		Long numberOfScopeFunctions = ScopeFunctionQuerier.getInstance().count();
-		LogHelper.logInfo(String.format("%s poste(s)",numberOfScopeFunctions), getClass());
+		LogHelper.logInfo(String.format("%s poste(s)",numberOfScopeFunctions), AssignmentsBusinessImpl.class);
 		if(NumberHelper.isEqualToZero(numberOfScopeFunctions))
 			return null;
-		LogHelper.logInfo(String.format("Chargement de %s poste(s) en mémoire...",numberOfScopeFunctions), getClass());
+		
+		LogHelper.logInfo(String.format("Chargement de %s poste(s) en mémoire...",numberOfScopeFunctions), AssignmentsBusinessImpl.class);
 		Collection<ScopeFunction> scopeFunctions = ScopeFunctionQuerier.getInstance().readAllWithReferencesOnly(new QueryExecutorArguments());
-		LogHelper.logInfo(String.format("%s poste(s) chargé(s)",scopeFunctions.size()), getClass());
+		LogHelper.logInfo(String.format("%s poste(s) chargé(s)",scopeFunctions.size()), AssignmentsBusinessImpl.class);
 		
 		//3 - get authorizing officer services to assign
 		Long numberOfAuthorizingOfficerServices = AuthorizingOfficerServiceQuerier.getInstance().countAll();
-		LogHelper.logInfo(String.format("Chargement de %s service(s) d'ordonnateur(s) en mémoire...",numberOfAuthorizingOfficerServices), getClass());
+		LogHelper.logInfo(String.format("Chargement de %s service(s) d'ordonnateur(s) en mémoire...",numberOfAuthorizingOfficerServices), AssignmentsBusinessImpl.class);
 		Collection<AuthorizingOfficerService> authorizingOfficerServices = AuthorizingOfficerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
-		LogHelper.logInfo(String.format("%s service(s) d'ordonnateur(s) chargé(s)",authorizingOfficerServices.size()), getClass());
+		LogHelper.logInfo(String.format("%s service(s) d'ordonnateur(s) chargé(s)",CollectionHelper.getSize(authorizingOfficerServices)), AssignmentsBusinessImpl.class);
 		
 		//4 - get financial controller services to assign
 		Long numberOfFinancialControllerServices = FinancialControllerServiceQuerier.getInstance().countAll();
-		LogHelper.logInfo(String.format("Chargement de %s service(s) de controleur(s) financier(s) en mémoire...",numberOfFinancialControllerServices), getClass());
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de controleur(s) financier(s) en mémoire...",numberOfFinancialControllerServices), AssignmentsBusinessImpl.class);
 		Collection<FinancialControllerService> financialControllerServices = FinancialControllerServiceQuerier.getInstance().readAllForAssignmentsInitialization();
-		LogHelper.logInfo(String.format("%s service(s) de controleur(s) financier(s) chargé(s)",financialControllerServices.size()), getClass());
+		LogHelper.logInfo(String.format("%s service(s) de controleur(s) financier(s) chargé(s)",CollectionHelper.getSize(financialControllerServices)), AssignmentsBusinessImpl.class);
 		
 		//5 - get accounting services to assign
 		Long numberOfAccountingServices = AccountingServiceQuerier.getInstance().countAll();
-		LogHelper.logInfo(String.format("Chargement de %s service(s) de comptable(s) en mémoire...",numberOfAccountingServices), getClass());
+		LogHelper.logInfo(String.format("Chargement de %s service(s) de comptable(s) en mémoire...",numberOfAccountingServices), AssignmentsBusinessImpl.class);
 		Collection<AccountingService> accountingServices = AccountingServiceQuerier.getInstance().readAllForAssignmentsInitialization();
-		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",accountingServices.size()), getClass());
+		LogHelper.logInfo(String.format("%s service(s) de comptable(s) chargé(s)",CollectionHelper.getSize(accountingServices)), AssignmentsBusinessImpl.class);
 		
-		deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
-		__persistence__.updateMany(collection);
+		collection = deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		if(CollectionHelper.isEmpty(collection))
+			return null;
+		org.cyk.utility.persistence.query.EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, collection), entityManager);
 		transactionResult.setNumberOfUpdateFromSavables(collection);
-		transactionResult.log(getClass());
+		transactionResult.log(AssignmentsBusinessImpl.class);
 		return transactionResult;
 	}
+	
+	@Override @Transactional
+	public TransactionResult deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable,String actorCode) {
+		return deriveValues(collection, holdersSettable, assistantsSettable, overridable, actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static TransactionResult deriveValuesByIdentifiers(Collection<String> identifiers, Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable, String actorCode,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("assignments identifiers", identifiers);
+		Collection<Assignments> assignments = EntityFinder.getInstance().findMany(Assignments.class, identifiers);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("assignments", identifiers);
+		return deriveValues(assignments, holdersSettable, assistantsSettable, overridable, actorCode, entityManager);
+	}
+	
+	@Override @Transactional
+	public TransactionResult deriveValuesByIdentifiers(Collection<String> identifiers, Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable, String actorCode) {
+		return deriveValuesByIdentifiers(identifiers, holdersSettable, assistantsSettable, overridable, actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	/* Derive all values */
 	
 	@Override
 	public TransactionResult deriveAllValues(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode) {
@@ -227,7 +248,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,queryExecutorArguments.getFirstTupleIndex(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
 		if(CollectionHelper.isEmpty(collection))
 			return;
-		deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		collection = deriveValues(collection,holdersSettable,assistantsSettable,overridable,actorCode,"dérivation", scopeFunctions, authorizingOfficerServices, financialControllerServices, accountingServices);
+		if(CollectionHelper.isEmpty(collection))
+			return;
 		t = System.currentTimeMillis();
 		QueryExecutorArguments updaterQueryExecutorArguments = new QueryExecutorArguments();
 		updaterQueryExecutorArguments.addObjects(CollectionHelper.cast(Object.class, collection));
@@ -239,19 +262,27 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		collection = null;
 	}
 	
-	private void deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,String functionality,Collection<ScopeFunction> scopeFunctions
+	private static Collection<Assignments> deriveValues(Collection<Assignments> collection,Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,String functionality,Collection<ScopeFunction> scopeFunctions
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<FinancialControllerService> financialControllerServices
 			,Collection<AccountingService> accountingServices) {
 		if(CollectionHelper.isEmpty(collection))
-			return;
+			return null;
 		Long t = System.currentTimeMillis();
-		LogHelper.logInfo(String.format("\tDerivation des valeurs de %s ligne(s) d'affectation(s)",collection.size()), getClass());
-		collection.parallelStream().forEach(assignments -> {
+		Collection<Assignments> processables = collection.parallelStream().filter(assignments -> assignments.getExecutionImputation() != null).collect(Collectors.toList());		
+		if(processables.size() < collection.size()) {
+			LogHelper.logWarning(String.format("Les affections suivantes n'ont pas de lien avec des lignes budgétaires : <<%s>>", collection.parallelStream()
+					.filter(assignments -> assignments.getExecutionImputation() == null).map(x -> x.getIdentifier())
+					.collect(Collectors.toList()))
+					, AssignmentsBusinessImpl.class);
+		}
+		//LogHelper.logInfo(String.format("\tDerivation des valeurs de %s ligne(s) d'affectation(s)",processables.size()), AssignmentsBusinessImpl.class);
+		processables.forEach(assignments -> {
 			assignments.set__auditWho__(actorCode);
 			assignments.set__auditFunctionality__(functionality);
 			setScopeFunctions(assignments,holdersSettable,assistantsSettable,overridable, scopeFunctions,authorizingOfficerServices,financialControllerServices,accountingServices);		
 		});
-		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) dérivée(s) en %s",collection.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), getClass());
+		LogHelper.logInfo(String.format("\t%s ligne(s) d'affectation(s) dérivée(s) en %s",processables.size(),TimeHelper.formatDuration(System.currentTimeMillis() - t)), AssignmentsBusinessImpl.class);
+		return processables;
 	}
 	
 	private void initialize(Boolean holdersSettable,Boolean assistantsSettable,Boolean overridable,String actorCode,Collection<ScopeFunction> scopeFunctions,Collection<AuthorizingOfficerService> authorizingOfficerServices
@@ -351,16 +382,20 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	
 	private static ScopeFunction findAuthorizingOfficerServiceHolderScopeFunction(String managerCode,String localityCode,String budgetSpecializationUnitCode
 			,Collection<AuthorizingOfficerService> authorizingOfficerServices,Collection<ScopeFunction> scopeFunctions) {
+		if(authorizingOfficerServices == null)
+			return null;
 		if(StringHelper.isBlank(managerCode))
 			return null;
 		if(managerCode.startsWith("1")) {
-			//Find Délégué
+			//Find Délégué			
 			for(AuthorizingOfficerService authorizingOfficerService : authorizingOfficerServices) {
 				if(authorizingOfficerService.getBudgetSpecializationUnitCode().equals(budgetSpecializationUnitCode) 
 						&& StringHelper.isBlank(authorizingOfficerService.getLocalityCode())) {
-					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) && scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
+					for(ScopeFunction scopeFunction : scopeFunctions) {
+						if(scopeFunction.getFunctionAsString().equals(Function.CODE_AUTHORIZING_OFFICER_HOLDER) 
+								&& scopeFunction.getScopeIdentifier().equals(authorizingOfficerService.getIdentifier()))
 							return scopeFunction;
+					}
 					break;
 				}
 			}
@@ -412,7 +447,9 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	
 	private static ScopeFunction findFinancialControllerServiceHolderScopeFunction(String managerCode,String sectionCode,String localityCode
 			,Collection<FinancialControllerService> financialControllerServices,Collection<ScopeFunction> scopeFunctions) {
-		if(sectionCode.startsWith("1")) {
+		if(CollectionHelper.isEmpty(financialControllerServices))
+			return null;
+		if(sectionCode != null && sectionCode.startsWith("1")) {
 			//Find institution's financial controller service
 			for(FinancialControllerService financialControllerService : financialControllerServices) {
 				if(financialControllerService.getCode().equals(FinancialControllerService.CODE_INSTITUTIONS)) {
@@ -423,16 +460,17 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				}
 			}
 		}else {
-			if(managerCode.startsWith("1")) {
+			if(managerCode != null && managerCode.startsWith("1")) {
 				//Find section's financial controller service
 				for(FinancialControllerService financialControllerService : financialControllerServices) {
 					if(StringHelper.isBlank(financialControllerService.getLocalityCode()) && StringHelper.isNotBlank(sectionCode) 
 							&& sectionCode.equals(financialControllerService.getSectionCode()) ) {
-						for(ScopeFunction scopeFunction : scopeFunctions)
+						for(ScopeFunction scopeFunction : scopeFunctions) {
 							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) 
-									&& scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())							 ) {
+									&& scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())) {
 								return scopeFunction;
 							}
+						}
 						break;
 					}
 				}
@@ -453,7 +491,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 							&& sectionCode.equals(financialControllerService.getSectionCode()) ) {
 						for(ScopeFunction scopeFunction : scopeFunctions)
 							if(scopeFunction.getFunctionAsString().equals(Function.CODE_FINANCIAL_CONTROLLER_HOLDER) 
-									&& scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())							 ) {
+									&& scopeFunction.getScopeIdentifier().equals(financialControllerService.getIdentifier())) {
 								return scopeFunction;
 							}
 						break;
@@ -481,7 +519,8 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	
 	private static ScopeFunction findAccountingServiceHolderScopeFunction(String managerCode,String sectionCode,String localityCode
 			,Collection<AccountingService> accountingServices,Collection<ScopeFunction> scopeFunctions) {
-		
+		if(CollectionHelper.isEmpty(accountingServices))
+			return null;
 		if(managerCode.startsWith("1")) {
 			
 		}else {
@@ -784,10 +823,26 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 				,EntityLifeCycleListener.Event.UPDATE.getValue(), new Date());
 	}
 	
+	public static void importNews(String actorCode,EntityManager entityManager) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),entityManager);
+	}
+	
 	@Override @Transactional
 	public void importNews(String actorCode) {
-		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
-		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),EntityManagerGetter.getInstance().get());
+		importNews(actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static TransactionResult importNewsAndDeriveValuesByIdentifiers(Collection<String> identifiers,String actorCode,EntityManager entityManager) {
+		importNews(actorCode,entityManager);
+		return deriveValuesByIdentifiers(identifiers, Boolean.TRUE, Boolean.TRUE, null, actorCode, entityManager);
+	}
+	
+	@Override @Transactional
+	public TransactionResult importNewsAndDeriveValuesByIdentifiersAndExport(Collection<String> identifiers,String actorCode) {
+		TransactionResult transactionResult = importNewsAndDeriveValuesByIdentifiers(identifiers, actorCode,EntityManagerGetter.getInstance().get());
+		exportAsynchronously(actorCode);
+		return transactionResult;
 	}
 	
 	@Override @Transactional

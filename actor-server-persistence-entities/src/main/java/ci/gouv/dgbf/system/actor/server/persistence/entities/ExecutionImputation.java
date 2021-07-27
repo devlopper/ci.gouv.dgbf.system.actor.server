@@ -36,91 +36,43 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	
 	/*Gestionnaire de crédits*/
 	
-	//@Column(table = VIEW_NAME,name = "GC_A_IDENTIFIANT")
-	@Transient
-	private String creditManagerHolderScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "GC_P_IDENTIFIANT")
-	@Transient
-	private String creditManagerHolderScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "GC_P_CODE_LIBELLE")
-	@Transient
-	private String creditManagerHolderScopeFunctionCodeName;
+	@Transient private String creditManagerHolderScopeFunctionExecutionImputationIdentifier;
+	@Transient private String creditManagerHolderScopeFunctionIdentifier;
+	@Transient private String creditManagerHolderScopeFunctionCodeName;
 	
-	//@Column(table = VIEW_NAME,name = "AGC_A_IDENTIFIANT")
-	@Transient
-	private String creditManagerAssistantScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "AGC_P_IDENTIFIANT")
-	@Transient
-	private String creditManagerAssistantScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "AGC_P_CODE_LIBELLE")
-	@Transient
-	private String creditManagerAssistantScopeFunctionCodeName;
+	@Transient private String creditManagerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Transient private String creditManagerAssistantScopeFunctionIdentifier;
+	@Transient private String creditManagerAssistantScopeFunctionCodeName;
 	
 	/*Ordonnateur*/
 	
-	//@Column(table = VIEW_NAME,name = "ORD_A_IDENTIFIANT")
-	@Transient
-	private String authorizingOfficerHolderScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "ORD_P_IDENTIFIANT")
-	@Transient
-	private String authorizingOfficerHolderScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "ORD_P_CODE_LIBELLE")
-	@Transient
-	private String authorizingOfficerHolderScopeFunctionCodeName;
+	@Transient private String authorizingOfficerHolderScopeFunctionExecutionImputationIdentifier;
+	@Transient private String authorizingOfficerHolderScopeFunctionIdentifier;
+	@Transient private String authorizingOfficerHolderScopeFunctionCodeName;
 	
-	//@Column(table = VIEW_NAME,name = "AORD_A_IDENTIFIANT")
-	@Transient
-	private String authorizingOfficerAssistantScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "AORD_P_IDENTIFIANT")
-	@Transient
-	private String authorizingOfficerAssistantScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "AORD_P_CODE_LIBELLE")
-	@Transient
-	private String authorizingOfficerAssistantScopeFunctionCodeName;
+	@Transient private String authorizingOfficerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Transient private String authorizingOfficerAssistantScopeFunctionIdentifier;
+	@Transient private String authorizingOfficerAssistantScopeFunctionCodeName;
 	
 	/*Contrôleur financier*/
 	
-	//@Column(table = VIEW_NAME,name = "CF_A_IDENTIFIANT")
-	@Transient
-	private String financialControllerHolderScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "CF_P_IDENTIFIANT")
-	@Transient
-	private String financialControllerHolderScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "CF_P_CODE_LIBELLE")
-	@Transient
-	private String financialControllerHolderScopeFunctionCodeName;
+	@Transient private String financialControllerHolderScopeFunctionExecutionImputationIdentifier;
+	@Transient private String financialControllerHolderScopeFunctionIdentifier;
+	@Transient private String financialControllerHolderScopeFunctionCodeName;
 	
-	//@Column(table = VIEW_NAME,name = "ACF_A_IDENTIFIANT")
-	@Transient
-	private String financialControllerAssistantScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "ACF_P_IDENTIFIANT")
-	@Transient
-	private String financialControllerAssistantScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "ACF_P_CODE_LIBELLE")
-	@Transient
-	private String financialControllerAssistantScopeFunctionCodeName;
+	@Transient private String financialControllerAssistantScopeFunctionExecutionImputationIdentifier;
+	@Transient private String financialControllerAssistantScopeFunctionIdentifier;
+	@Transient private String financialControllerAssistantScopeFunctionCodeName;
 	
 	/*Comptable*/
 	
-	//@Column(table = VIEW_NAME,name = "CPT_A_IDENTIFIANT")
-	@Transient
-	private String accountingHolderScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "CPT_P_IDENTIFIANT")
-	@Transient
-	private String accountingHolderScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "CPT_P_CODE_LIBELLE")
-	@Transient
-	private String accountingHolderScopeFunctionCodeName;
+	@Transient private String accountingHolderScopeFunctionExecutionImputationIdentifier;
+	@Transient private String accountingHolderScopeFunctionIdentifier;
+	@Transient private String accountingHolderScopeFunctionCodeName;
 	
-	//@Column(table = VIEW_NAME,name = "ACPT_A_IDENTIFIANT")
-	@Transient
-	private String accountingAssistantScopeFunctionExecutionImputationIdentifier;
-	//@Column(table = VIEW_NAME,name = "ACPT_P_IDENTIFIANT")
-	@Transient
-	private String accountingAssistantScopeFunctionIdentifier;
-	//@Column(table = VIEW_NAME,name = "ACPT_P_CODE_LIBELLE")
-	@Transient
-	private String accountingAssistantScopeFunctionCodeName;
+	@Transient private String accountingAssistantScopeFunctionExecutionImputationIdentifier;
+	@Transient private String accountingAssistantScopeFunctionIdentifier;
+	@Transient private String accountingAssistantScopeFunctionCodeName;
 	
 	@Transient private ExecutionImputationScopeFunction creditManager;
 	@Transient private ExecutionImputationScopeFunction authorizingOfficer;

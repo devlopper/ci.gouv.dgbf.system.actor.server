@@ -18,7 +18,6 @@ import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -91,7 +90,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 
 	/* Imputation */
 	//@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-	@ManyToOne @JoinColumn(name=COLUMN_EXECUTION_IMPUTATION) @NotNull private ExecutionImputation executionImputation;
+	@ManyToOne @JoinColumn(name=COLUMN_EXECUTION_IMPUTATION) private ExecutionImputation executionImputation;
 	
 	@Transient private String sectionAsString;
 	@Transient private String budgetSpecializationUnitAsString;
