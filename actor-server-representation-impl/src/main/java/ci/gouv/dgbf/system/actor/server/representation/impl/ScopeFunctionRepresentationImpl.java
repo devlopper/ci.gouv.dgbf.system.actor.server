@@ -12,9 +12,11 @@ import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
@@ -269,6 +271,22 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 					@Override
 					public void run() {
 						__inject__(ScopeFunctionBusiness.class).deleteHoldersAndAssistantsByHoldersFunctionsIdentifiers(holdersFunctionsIdentifiers);
+					}
+				};
+			}
+		});
+	}
+	
+	/**/
+	
+	public static Response createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode, String scopeIdentifier,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ScopeFunctionBusiness.class).createByScopeTypeCodeByScopeIdentifier(scopeTypeCode, scopeTypeCode+scopeIdentifier,actorCode);
 					}
 				};
 			}

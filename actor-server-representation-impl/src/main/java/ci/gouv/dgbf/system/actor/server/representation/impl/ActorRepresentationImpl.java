@@ -270,7 +270,7 @@ public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<Ac
 			return Response.status(Status.BAD_REQUEST).entity("Nom d'utilisateur obligatoire").build();
 		Actor actor = EntityReader.getInstance().readOne(Actor.class, new QueryExecutorArguments().setQuery(new Query()
 				.setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)).addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_CODE,code)
-				.addProcessableTransientFieldsNames(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
+				.addProcessableTransientFieldsNames(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
 						,Actor.FIELD_PROFILES_CODES));
 		if(actor == null)
 			return Response.status(Status.NOT_FOUND).entity("Nom d'utilisateur inconnu").build();

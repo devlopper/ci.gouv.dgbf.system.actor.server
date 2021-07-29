@@ -199,7 +199,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 			,String expectedGroup,String expectedElectronicMailAddress,String expectedAdministrativeUnitCodeName,String expectedSectionCodeName
 			,String expectedAdministrativeUnitFunction,String[] expectedProfilesCodes) {
 		assertReadDynamicOne(new QueryExecutorArguments().setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE))
-				.addFilterField(ActorQuerier.PARAMETER_NAME_CODE,code).addProcessableTransientFieldsNames(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
+				.addFilterField(ActorQuerier.PARAMETER_NAME_CODE,code).addProcessableTransientFieldsNames(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
 						,Actor.FIELD_PROFILES_CODES), expectedCivility, expectedFirstName, expectedLastNames, expectedGroup, expectedElectronicMailAddress
 				, expectedAdministrativeUnitCodeName, expectedSectionCodeName, expectedAdministrativeUnitFunction, expectedProfilesCodes);
 	}

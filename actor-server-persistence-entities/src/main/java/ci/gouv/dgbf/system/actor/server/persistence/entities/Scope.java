@@ -60,7 +60,7 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@Override
 	public String toString() {
-		return name;
+		return code+" "+name;
 	}
 	
 	public static final String FIELD_TYPE = "type";

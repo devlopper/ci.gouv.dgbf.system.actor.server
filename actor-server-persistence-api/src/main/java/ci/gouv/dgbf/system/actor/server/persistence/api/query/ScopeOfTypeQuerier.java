@@ -34,7 +34,7 @@ public interface ScopeOfTypeQuerier extends Querier {
 	String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 	String PARAMETER_NAME_ACTOR_CODE_NULLABLE = PARAMETER_NAME_ACTOR_CODE+"Nullable";
 	
-	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
+	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = CodableAndNamable.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME;
 	
 	Class<?> getKlass();
 	

@@ -1,18 +1,24 @@
 package ci.gouv.dgbf.system.actor.server.business.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.test.business.server.Transaction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.business.impl.ActorScopeBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.AssignmentsBusinessImpl;
+import ci.gouv.dgbf.system.actor.server.business.impl.ScopeFunctionBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +43,37 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "assignments";
+	}
+	
+	@Test
+	public void createByScopeTypeCodeByScopeIdentifier() {
+		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DBE", "test", entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+	}
+		
+	@Test
+	public void createByScopeTypeCodeByScopeIdentifier_sameMultiple() {
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DTI", "test", entityManager);
+				}
+			}.run();
+			assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DTI", "test", entityManager);
+				}
+			}.run();
+		});
 	}
 	
 	@Test

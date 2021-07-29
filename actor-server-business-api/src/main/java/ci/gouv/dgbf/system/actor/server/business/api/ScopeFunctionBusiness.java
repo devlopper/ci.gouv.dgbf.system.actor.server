@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
@@ -11,6 +12,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 
+	@Transactional
+	TransactionResult createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode,String scopeIdentifier,String actorCode);
+	
 	String CREATE_MANY = "ScopeFunction.createMany";
 	
 	String DERIVE_ALL = "ScopeFunction.deriveAll";

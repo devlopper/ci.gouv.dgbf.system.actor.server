@@ -24,6 +24,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.business.server.NativeQueryStringExecutor;
@@ -58,6 +59,125 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeFunction, ScopeFunctionPersistence> implements ScopeFunctionBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private static void throwExceptionIfScopeFunctionExist(Scope scope,String functionCode,EntityManager entityManager) {
+		Long count = ScopeFunctionQuerier.getInstance().countByScopeIdentifierByFunctionCode(scope.getIdentifier(), functionCode);
+		if(NumberHelper.isGreaterThanZero(count))
+			throw new RuntimeException(String.format("Le domaine <<%s>> a déja %s <<%s>>.", scope,count,functionCode));		
+	}
+	
+	public static TransactionResult createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode, String scopeIdentifier,String actorCode,EntityManager entityManager) {
+		TransactionResult transactionResult = new TransactionResult().setName(String.format("création de poste | %s , %s",scopeTypeCode,scopeIdentifier))
+				.setTupleName("poste");
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("code type de domaine", scopeTypeCode);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("identifiant domaine", scopeIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("nom d'utilisateur", actorCode);
+		Scope scope = EntityFinder.getInstance().find(Scope.class, scopeIdentifier);
+		if(scope == null)
+			throw new RuntimeException(String.format("Le domaine <<%s>> n'existe pas", scopeIdentifier));
+		if(ScopeType.CODE_UA.equals(scopeTypeCode))
+			throwExceptionIfScopeFunctionExist(scope, Function.CODE_CREDIT_MANAGER_HOLDER, entityManager);
+		else if(ScopeType.CODE_USB.equals(scopeTypeCode))
+			throwExceptionIfScopeFunctionExist(scope, Function.CODE_AUTHORIZING_OFFICER_HOLDER, entityManager);		
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope);
+		scopeFunction.set__auditWho__(actorCode);
+		if(scopeFunction.getScope() == null)
+			throw new RuntimeException(String.format("<<%s>> identifié <<%s>> n'existe pas",scopeTypeCode, scopeIdentifier));
+		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
+			transactionResult.setTupleName("gestionnaire de crédit");
+			//scopeFunction.setCode(__inject__(ScopeFunctionPersistence.class).computeCreditManagerHolderCode(scopeIdentifier));
+			scopeFunction.setName(__inject__(ScopeFunctionPersistence.class).computeCreditManagerHolderName(scopeIdentifier));
+			scopeFunction.setFunction(CodeExecutor.getInstance().getOne(Function.class, Function.CODE_CREDIT_MANAGER_HOLDER));
+		}else if(ScopeType.CODE_USB.equals(scopeTypeCode)) {
+			transactionResult.setTupleName("ordonnateur délégué");
+			scopeFunction.setFunction(CodeExecutor.getInstance().getOne(Function.class, Function.CODE_AUTHORIZING_OFFICER_HOLDER));
+		}
+		if(scopeFunction.getFunction() == null)
+			throw new RuntimeException(String.format("Détermination de la fonction du type de domaine <<%s>> n'est pas encore implémenté", scopeTypeCode));
+		create(List.of(scopeFunction), entityManager);
+		transactionResult.incrementNumberOfCreation(2l);
+		transactionResult.log(ScopeFunctionBusinessImpl.class);
+		return transactionResult;
+	}
+	
+	@Override @Transactional
+	public TransactionResult createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode, String scopeIdentifier,String actorCode) {
+		return createByScopeTypeCodeByScopeIdentifier(scopeTypeCode, scopeIdentifier,actorCode,EntityManagerGetter.getInstance().get());
+	}
+	
+	public static void create(Collection<ScopeFunction> scopeFunctions, EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", scopeFunctions);		
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier()))
+				continue;
+			if(scopeFunction.getScope() == null)
+				throwablesMessages.add("Le domaine est obligatoire");
+			if(scopeFunction.getFunction() == null)
+				throwablesMessages.add("La fonction est obligatoire");
+		}
+		throwablesMessages.throwIfNotEmpty();
+		//add assistants where possible
+		Collection<ScopeFunction> allScopeFunctions = new ArrayList<>(scopeFunctions);
+		for(ScopeFunction scopeFunction : scopeFunctions) {
+			if(scopeFunction.getScope() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				if(scopeFunction.getParent() == null)
+					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+				if(scopeFunction.getParent() != null)
+					scopeFunction.setScope(scopeFunction.getParent().getScope());
+			}
+			if(scopeFunction.getFunction() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				if(scopeFunction.getParent() == null)
+					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+				if(scopeFunction.getParent() != null)
+					scopeFunction.setFunctionFromIdentifier(Function.formatAssistantIdentifier(scopeFunction.getParent().getFunction().getIdentifier()));
+			}
+			if(scopeFunction.getParent() == null && StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+				scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+			}
+			if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
+				Function assistant = FunctionQuerier.getInstance().readByCode(Function.formatAssistantCode(scopeFunction.getFunction().getCode()));
+				if(assistant == null)
+					continue;
+				if(allScopeFunctions == null)
+					allScopeFunctions = new ArrayList<>();
+				ScopeFunction assistantScopeFunction = new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE)
+						.setParent(scopeFunction)
+						.setCodePrefix(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
+						.setName(scopeFunction.getName());
+				if(StringHelper.isNotBlank(scopeFunction.getName()))
+					assistantScopeFunction.setName("Assistant "+scopeFunction.getName());
+				
+				allScopeFunctions.add(assistantScopeFunction);
+			}else if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())) {
+				if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
+					scopeFunction.setParent(EntityFinder.getInstance().find(ScopeFunction.class, scopeFunction.getParentIdentifier()));
+					if(scopeFunction.getParent() != null) {
+						scopeFunction.getParent().setChildrenCount(NumberHelper.get(Byte.class,
+								ScopeFunctionQuerier.getInstance().countByParentsIdentifiers(List.of(scopeFunction.getParent().getIdentifier()))));
+					}
+				}
+			}
+		}
+		allScopeFunctions.forEach(scopeFunction -> {
+			__listenExecuteCreateOrUpdateBefore__(scopeFunction);
+			scopeFunction.setIdentifier(scopeFunction.getCode());
+		});
+		Collection<String> existingCodes = CodeExecutor.getInstance().getExisting(ScopeFunction.class, FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions));
+		if(CollectionHelper.isNotEmpty(existingCodes))
+			throw new RuntimeException("Les codes suivants existe déjà : "+existingCodes);
+		//EntityManager entityManager = EntityManagerGetter.getInstance().get();
+		org.cyk.utility.persistence.query.EntityCreator.getInstance().createMany(allScopeFunctions,entityManager);
+		//__persistence__.createMany(allScopeFunctions);
+		for(ScopeFunction scopeFunction : allScopeFunctions)
+			if(scopeFunction.getParent() != null) {
+				scopeFunction.setParentIdentifier(scopeFunction.getParent().getIdentifier());
+				org.cyk.utility.persistence.query.EntityUpdater.getInstance().updateMany(entityManager, scopeFunction);
+				//__persistence__.update(scopeFunction);
+			}
+	}
+	
+	/**/
+	
 	@Override
 	protected void __listenExecuteCreateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(scopeFunction, properties, function);
@@ -70,7 +190,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		__listenExecuteCreateOrUpdateBefore__(scopeFunction);
 	}
 	
-	private void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
+	private static void __listenExecuteCreateOrUpdateBefore__(ScopeFunction scopeFunction) {
 		scopeFunction.setNumberOfActor(ScopeFunctionPersistence.computeNumberOfActor(scopeFunction.getShared()));
 		if(StringHelper.isBlank(scopeFunction.getIdentifier()) /*&& StringHelper.isBlank(scopeFunction.getCode()) && StringHelper.isBlank(scopeFunction.getName())*/) {
 			__codify__(List.of(scopeFunction));
@@ -297,7 +417,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	}
 	*/
 	
-	private void __codify__(String scopeTypeCode,String functionCode,String codePrefix,Collection<ScopeFunction> pScopeFunctions,String codeScript,String nameScript) {
+	private static void __codify__(String scopeTypeCode,String functionCode,String codePrefix,Collection<ScopeFunction> pScopeFunctions,String codeScript,String nameScript) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scopeFunctions", pScopeFunctions);
 		Collection<ScopeFunction> scopeFunctions = pScopeFunctions.stream().filter(x -> x.getCodificationDate() == null).collect(Collectors.toList());
 		if(CollectionHelper.isEmpty(scopeFunctions))
@@ -321,7 +441,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			documentNumber = documentNumber + 1;
 		
 		LogHelper.logInfo(String.format("%s|%s|%s - Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
-				,orderNumber,documentNumber), getClass());
+				,orderNumber,documentNumber), ScopeFunctionBusinessImpl.class);
 		
 		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {
 			if(documentNumber == null)
@@ -376,7 +496,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				}
 			}			
 		}
-		LogHelper.logInfo(String.format("Numéro document à partir de %s", documentNumber), getClass());
+		LogHelper.logInfo(String.format("Numéro document à partir de %s", documentNumber), ScopeFunctionBusinessImpl.class);
 		LocalDateTime codificationDate = LocalDateTime.now();
 		for(ScopeFunction scopeFunction : scopeFunctions) {
 			scopeFunction.setOrderNumber(orderNumber++);
@@ -392,7 +512,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				map.put(code, value);
 		}
 		if(MapHelper.isNotEmpty(map)) {
-			LogHelper.logInfo(String.format("%s duplicate(s) found",map.size()), getClass());
+			LogHelper.logInfo(String.format("%s duplicate(s) found",map.size()), ScopeFunctionBusinessImpl.class);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("Doublons trouvés\r\n");
 			for(Map.Entry<String,Collection<ScopeFunction>> entry : map.entrySet())
@@ -401,7 +521,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		}
 	}
 	
-	private void __codify__(Collection<ScopeFunction> scopeFunctions) {
+	private static void __codify__(Collection<ScopeFunction> scopeFunctions) {
 		if(CollectionHelper.isEmpty(scopeFunctions))
 			return;
 		Collection<ScopeType> scopeTypes = scopeFunctions.stream().map(x -> x.getScope().getType()).collect(Collectors.toList());

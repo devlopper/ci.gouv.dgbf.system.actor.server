@@ -90,6 +90,14 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	}
 	
 	@Override
+	public Long countByScopeIdentifierByFunctionCode(String scopeIdentifier, String functionCode) {
+		return EntityManagerGetter.getInstance().get()
+				.createQuery("SELECT count(t.identifier) FROM ScopeFunction t WHERE t.scope.identifier = :scopeIdentifier"
+				+ " AND t.function.code = :functionCode",Long.class).setParameter("scopeIdentifier", scopeIdentifier)
+				.setParameter("functionCode", functionCode).getSingleResult();
+	}
+	
+	@Override
 	public Collection<ScopeFunction> read() {
 		return super.read(ScopeFunction.class, QueryExecutorArguments.instantiate(ScopeFunction.class, QueryName.READ));
 	}

@@ -169,6 +169,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<Object[]> readActorsCodes(Collection<ScopeFunction> scopeFunctions);
 	Collection<Object[]> readActorsCodes(ScopeFunction...scopeFunctions);
 	
+	Long countByScopeIdentifierByFunctionCode(String scopeIdentifier,String functionCode);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeFunction> implements ScopeFunctionQuerier,Serializable {	

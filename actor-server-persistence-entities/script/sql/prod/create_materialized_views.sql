@@ -87,7 +87,7 @@ SELECT 'USB'||usb.uuid AS "IDENTIFIANT",usb.usb_code AS "CODE",usb.usb_liblg AS 
     ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_IDENTIFIANT"
     ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_CODE_LIBELLE"
 FROM CPP.usb usb,CPP.categorie_budget cb,CA.section_budgetaire s
-WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED' AND cb.entitystatus = 'COMMITTED';
+WHERE s.uuid = usb.usb_secb_id AND s.entitystatus = 'COMMITTED' AND cb.entitystatus = 'COMMITTED' AND usb.usb_cbud_id = cb.uuid AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_USB ADD CONSTRAINT VM_APP_USB_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_USB_K_CATEGORIE ON VM_APP_USB (CATEGORIE ASC);
@@ -104,7 +104,7 @@ SELECT 'ACTION'||a.uuid AS "IDENTIFIANT",a.adp_code AS "CODE",a.adp_liblg AS "LI
     ,'CATEGORIE_BUDGET'||usb.usb_cbud_id AS "CATEGORIE_BUDGET_IDENTIFIANT"
     ,cb.cbud_code||' '||cb.cbud_liblg AS "CATEGORIE_BUDGET_CODE_LIBELLE"
 FROM CPP.action a,CPP.usb usb,CPP.categorie_budget cb,CA.section_budgetaire s
-WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id AND cb.entitystatus = 'COMMITTED';
+WHERE a.adp_usb_id = usb.uuid AND s.uuid = usb.usb_secb_id AND cb.entitystatus = 'COMMITTED' AND usb.usb_cbud_id = cb.uuid AND cb.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_ACTION ADD CONSTRAINT VM_APP_ACTION_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_ACTION_K_CB ON VM_APP_ACTION (CATEGORIE_BUDGET ASC);

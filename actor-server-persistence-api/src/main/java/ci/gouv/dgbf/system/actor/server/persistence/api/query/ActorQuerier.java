@@ -30,8 +30,6 @@ import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
-import org.cyk.utility.persistence.query.Language.From;
-import org.cyk.utility.persistence.query.Language.Order;
 import org.cyk.utility.persistence.query.Language.Select;
 import org.cyk.utility.persistence.query.Language.Where;
 import org.cyk.utility.persistence.query.Querier;
@@ -355,7 +353,7 @@ public interface ActorQuerier extends Querier {
 	/**/
 	
 	/* Read All 01 */
-	String QUERY_NAME_READ_ALL_01 = "read.all.01";
+	/*String QUERY_NAME_READ_ALL_01 = "read.all.01";
 	String QUERY_IDENTIFIER_READ_ALL_01 = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_ALL_01);
 	Map<String,Integer> QUERY_VALUE_READ_ALL_01_TUPLE_FIELDS_NAMES_INDEXES = MapHelper.instantiateStringIntegerByStrings(Actor.FIELD_IDENTIFIER
 			,Actor.FIELD_NAMES,Actor.FIELD_ELECTRONIC_MAIL_ADDRESS);
@@ -366,7 +364,7 @@ public interface ActorQuerier extends Querier {
 	String QUERY_NAME_COUNT_ALL_01 = "count.all.01";
 	String QUERY_IDENTIFIER_COUNT_ALL_01 = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_COUNT_ALL_01);
 	String QUERY_VALUE_COUNT_ALL_01 = "SELECT COUNT(t.identifier) FROM Actor t";
-	
+	*/
 	/* Read by string */
 	String QUERY_NAME_READ_BY_STRING = "readByString";
 	String QUERY_IDENTIFIER_READ_BY_STRING = QueryIdentifierBuilder.getInstance().build(Actor.class, QUERY_NAME_READ_BY_STRING);
@@ -479,7 +477,7 @@ public interface ActorQuerier extends Querier {
 						, jpql(getReadForEditSelect(),getReadForEditFrom(),where(Where.equals("a", PARAMETER_NAME_IDENTIFIER))) )
 					.setTupleFieldsNamesIndexesFromFieldsNames(getReadForEditTupleFieldsNames())
 			);
-		
+		/*
 		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_ALL_01
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_ALL_01
@@ -491,7 +489,7 @@ public interface ActorQuerier extends Querier {
 				,Query.FIELD_VALUE,QUERY_VALUE_COUNT_ALL_01
 				)
 			);
-		
+		*/
 		QueryManager.getInstance().register(Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_STRING
 				,Query.FIELD_TUPLE_CLASS,Actor.class,Query.FIELD_RESULT_CLASS,Actor.class
 				,Query.FIELD_VALUE,QUERY_VALUE_READ_BY_STRING

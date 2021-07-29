@@ -6,9 +6,9 @@ import java.util.Collection;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.annotation.Queries;
-import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
@@ -45,12 +45,12 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeType> implements ScopeTypeQuerier,Serializable {	
 		@Override
 		public Collection<ScopeType> readOrderByCodeAscending() {
-			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
+			return QueryExecutor.getInstance().executeReadMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING);
 		}
 		
 		@Override
 		public Collection<ScopeType> readOrderByOrderNumberAscending() {
-			return EntityReader.getInstance().readMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
+			return QueryExecutor.getInstance().executeReadMany(ScopeType.class, QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING);
 		}
 		
 		@Override
@@ -64,6 +64,10 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 		public Collection<ScopeType> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 				return DynamicManyExecutor.getInstance().read(ScopeType.class,arguments.setQuery(null));
+			if(QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING.equals(arguments.getQuery().getIdentifier()))
+				return readOrderByCodeAscending();
+			if(QUERY_IDENTIFIER_READ_ORDER_BY_ORDER_NUMBER_ASCENDING.equals(arguments.getQuery().getIdentifier()))
+				return readOrderByOrderNumberAscending();
 			return super.readMany(arguments);
 		}
 		
@@ -72,6 +76,11 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
 				return DynamicManyExecutor.getInstance().count(ScopeType.class,arguments.setQuery(null));
 			return super.count(arguments);
+		}
+		
+		@Override
+		protected Class<ScopeType> getKlass() {
+			return ScopeType.class;
 		}
 	}
 	
