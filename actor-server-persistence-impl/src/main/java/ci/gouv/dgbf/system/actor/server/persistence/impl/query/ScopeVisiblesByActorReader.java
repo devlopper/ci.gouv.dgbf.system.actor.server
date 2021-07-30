@@ -16,7 +16,7 @@ public class ScopeVisiblesByActorReader extends AbstractScopeVisiblesReader impl
 
 	@Override
 	protected String getVisiblePredicate() {
-		return ScopeQueryStringBuilder.Predicate.scopeVisible(null, Boolean.TRUE, null);
+		return ScopeQueryStringBuilder.Predicate.scopeVisible(null, Boolean.TRUE,Boolean.TRUE, null);
 	}
 	
 	@Override

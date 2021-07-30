@@ -299,7 +299,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		
 		if(expectedVisibleByActorsCodes != null)
 			for(Object[] array : expectedVisibleByActorsCodes)
-				;//assertScopeVisibleBy((String)array[0],typeCode,(String[])array[1]);
+				assertScopeVisibleBy((String)array[0],typeCode,(String[])array[1]);
 	}
 	
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes

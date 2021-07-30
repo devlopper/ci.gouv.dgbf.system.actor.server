@@ -12,6 +12,7 @@ import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
@@ -20,6 +21,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface ScopeQueryStringBuilder {
 	
@@ -29,65 +31,60 @@ public interface ScopeQueryStringBuilder {
 		String ACTOR_SCOPE_VARIABLE_NAME = "v";
 		String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 		
+		static String actor(Boolean parameterable,String variableName,Boolean joinable) {
+			return Boolean.TRUE.equals(parameterable) 
+					? variableName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE 
+					: (Boolean.TRUE.equals(joinable) ? variableName+".actor = "+PARENT_VARIABLE_NAME : null);
+		}
+		
 		String VISIBLE_FORMAT = "(%1$s.visible IS NULL OR %1$s.visible = true)";
 		static String visible() {
 			return String.format(VISIBLE_FORMAT, ACTOR_SCOPE_VARIABLE_NAME);
 		}
 		
-		String ACTOR_FORMAT = "%s.actor%s = %s";
-		static String actor(Boolean parameterable) {
-			return String.format(ACTOR_FORMAT, ACTOR_SCOPE_VARIABLE_NAME
-				,Boolean.TRUE.equals(parameterable) ? ".code" : ConstantEmpty.STRING
-				,Boolean.TRUE.equals(parameterable) ? ":"+PARAMETER_NAME_ACTOR_CODE : PARENT_VARIABLE_NAME);
-		}
-		
 		static String visibleBy(Boolean actorable,Boolean parameterable,String parentFieldName) {
-			return and(Boolean.TRUE.equals(actorable) ? actor(parameterable) : null
-					, ACTOR_SCOPE_VARIABLE_NAME+"."+parentFieldName+" = t",visible());
+			return and(
+				/* Join */FieldHelper.join(ACTOR_SCOPE_VARIABLE_NAME,parentFieldName)+" = t"
+				/* Filter by actor code*/,actor(actorable, ACTOR_SCOPE_VARIABLE_NAME,null) 
+				,visible()
+			);
 		}
 		
-		static String selfVisible(Boolean actorable) {
-			return exists(select("v.identifier"),from("ActorScope v"),where(visibleBy(actorable,Boolean.TRUE,"scope")));
-		}
-		
-		static String selfVisible() {
-			return selfVisible(Boolean.TRUE);
+		static String selfVisible(Boolean actorable,Boolean parameterable,String parentFieldName) {
+			return exists(select("v.identifier"),from("ActorScope v"),where(visibleBy(actorable,parameterable,parentFieldName)));
 		}
 		
 		/* It has a visible child */
 		
-		static String childVisible(String tupleName,String variableName,String fieldName,Boolean actorable) {
+		static String childVisible(Boolean actorable,Boolean parameterable,Class<?> klass,String parentFieldName) {
+			String tupleName = klass.getSimpleName();
+			String variableName = StringHelper.getVariableNameFrom(tupleName);
 			return 
-				exists(
-					select("actorScope.identifier")
-					,from("ActorScope actorScope")
-					,"JOIN Scope scopeChild ON actorScope.scope = scopeChild"
-					,"JOIN "+tupleName+" "+variableName+" ON "+variableName+" = scopeChild"
-					,where(and(variableName+"."+fieldName+" = t",actorable == null || !actorable ? null : "actorScope.actor.code = :"+PARAMETER_NAME_ACTOR_CODE))
-				);
+					exists(
+						select("_as.identifier")
+						,from("ActorScope _as")
+						,"JOIN Scope child ON _as.scope = child"
+						,"JOIN "+tupleName+" "+variableName+" ON "+variableName+" = child"
+						,where(and(
+								/* Join */variableName+"."+parentFieldName+" = t"
+								,/* Filter by actor code */Boolean.TRUE.equals(actorable) ? actor(parameterable, "_as", Boolean.TRUE) : null
+								))
+					);
 		}
 		
-		static String childVisible(String tupleName,String variableName,String fieldName) {
-			return childVisible(tupleName, variableName, fieldName, Boolean.TRUE);
-		}
-		
-		static String childVisible(Class<?> klass,String fieldName,Boolean actorable) {
-			return childVisible(klass.getSimpleName(), StringHelper.getVariableNameFrom(klass.getSimpleName()), fieldName,actorable);
-		}
-		
-		static String childVisible(Class<?> klass,String fieldName) {
-			return childVisible(klass, fieldName,Boolean.TRUE);
+		static String childVisible(Boolean actorable,Boolean parameterable,Class<?> klass,Class<?> parent) {
+			return childVisible(actorable,parameterable, klass, StringHelper.getVariableNameFrom(parent.getSimpleName()));
 		}
 		
 		/* It has a visible parent */
 		
-		static String parentVisible(String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName,Boolean actorable) {
+		static String parentVisible(Boolean actorable,Boolean parameterable,String parentTupleName,String parentVariableName,String tupleName,String variableName,String fieldName) {
 			String selectFrom = jpql(
 					select("p.identifier")
 					,from("ActorScope p JOIN Scope s ON p.scope = s")
 					,"JOIN "+parentTupleName+" "+parentVariableName+" ON "+parentVariableName+" = s"
 			);
-			String p1 = actorable == null || !actorable ? null : "p.actor.code = :"+PARAMETER_NAME_ACTOR_CODE;
+			String p1 = Boolean.TRUE.equals(actorable) ? actor(parameterable, "p", null) : null;
 			String p2 = exists(
 					select(variableName)
 					,from(tupleName+" "+variableName)
@@ -96,23 +93,21 @@ public interface ScopeQueryStringBuilder {
 							,not(
 									exists(select("p"+tupleName+" ")+from("ActorScope p"+tupleName+" ")
 										+ where(and("p"+tupleName+".scope = t"
-												,actorable == null || !actorable ? null : "p"+tupleName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE
+												,Boolean.TRUE.equals(actorable) ? actor(parameterable, "p"+tupleName, null) : null
 												,"p"+tupleName+".visible IS NOT NULL","p"+tupleName+".visible = false"
 												))
 										)
 								)
 					))
 			);
-			return jpql(exists(selectFrom+" WHERE "+(p1 == null ? "" : p1+" AND ")+p2));
+			return jpql(exists(selectFrom+" WHERE "+(p1 == null ? ConstantEmpty.STRING : p1+" AND ")+p2));
 		}
 		
-		static String parentVisible(String parentTupleName,String tupleName,Boolean actorable) {
+		static String parentVisible(Boolean actorable,Boolean parameterable,Class<?> klass,Class<?> child) {
+			String parentTupleName = klass.getSimpleName();
 			String variableName = StringHelper.getVariableNameFrom(parentTupleName);
-			return parentVisible(parentTupleName, variableName, tupleName, StringHelper.getVariableNameFrom(tupleName), variableName,actorable);
-		}
-		
-		static String parentVisible(String parentTupleName,String tupleName) {
-			return parentVisible(parentTupleName, tupleName, Boolean.TRUE);
+			String childTupleName = child.getSimpleName();
+			return parentVisible(actorable,parameterable,parentTupleName, variableName, childTupleName, StringHelper.getVariableNameFrom(childTupleName), variableName);
 		}
 		
 		String IS_TYPE_CODE_FORMAT = "t.type.code = '%s'";
@@ -125,26 +120,26 @@ public interface ScopeQueryStringBuilder {
 			return TYPE_CODE_EQUALS;
 		}
 		
-		static String scopeVisible(String typeCode,Boolean actorable,Boolean negate) {
+		static String scopeVisible(String typeCode,Boolean actorable,Boolean parameterable,Boolean negate) {
 			String string = null;
 			if(StringHelper.isBlank(typeCode))
 				string = parenthesis(or(
-						hasVisibleSection(actorable,negate),hasVisibleAdministrativeUnit(actorable,negate)
-						,hasVisibleBudgetSpecializationUnit(actorable,negate),hasVisibleAction(actorable,negate),hasVisibleActivity(actorable,negate)
-						,hasVisibleBudgetCategory(actorable,negate)
+						hasVisibleSection(actorable,parameterable,negate),hasVisibleAdministrativeUnit(actorable,parameterable,negate)
+						,hasVisibleBudgetSpecializationUnit(actorable,parameterable,negate),hasVisibleAction(actorable,parameterable,negate)
+						,hasVisibleActivity(actorable,parameterable,negate),hasVisibleBudgetCategory(actorable,parameterable,negate)
 					));
 			else if(ScopeType.CODE_SECTION.equals(typeCode))
-				string = hasVisibleSection(actorable,negate);
+				string = hasVisibleSection(actorable,parameterable,negate);
 			else if(ScopeType.CODE_UA.equals(typeCode))
-				string = hasVisibleAdministrativeUnit(actorable,negate);
+				string = hasVisibleAdministrativeUnit(actorable,parameterable,negate);
 			else if(ScopeType.CODE_USB.equals(typeCode))
-				string = hasVisibleBudgetSpecializationUnit(actorable,negate);
+				string = hasVisibleBudgetSpecializationUnit(actorable,parameterable,negate);
 			else if(ScopeType.CODE_ACTION.equals(typeCode))
-				string = hasVisibleAction(actorable,negate);
+				string = hasVisibleAction(actorable,parameterable,negate);
 			else if(ScopeType.CODE_ACTIVITE.equals(typeCode))
-				string = hasVisibleActivity(actorable,negate);
+				string = hasVisibleActivity(actorable,parameterable,negate);
 			else if(ScopeType.CODE_CATEGORIE_BUDGET.equals(typeCode))
-				string = hasVisibleBudgetCategory(actorable,negate);
+				string = hasVisibleBudgetCategory(actorable,parameterable,negate);
 			
 			//if(Boolean.TRUE.equals(negate))
 			//	string = Language.Where.not(string);
@@ -154,86 +149,86 @@ public interface ScopeQueryStringBuilder {
 			return string;
 		}
 		
-		static String hasVisibleBudgetCategory(Boolean actorable,Boolean negate) {
+		static String hasVisibleBudgetCategory(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_CATEGORIE_BUDGET),				
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
+						selfVisible(actorable,parameterable,"scope")
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleActivityCategory(Boolean actorable,Boolean negate) {
+		static String hasVisibleActivityCategory(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_CATEGORIE_ACTIVITE),				
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,childVisible(Activity.class,"activityCategory",actorable)
-						,childVisible(Imputation.class,"activityCategory",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,childVisible(actorable,parameterable,Activity.class,"activityCategory")
+						,childVisible(actorable,parameterable,Imputation.class,"activityCategory")
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleSection(Boolean actorable,Boolean negate) {
+		static String hasVisibleSection(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_SECTION),				
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,childVisible(AdministrativeUnit.class,"section",actorable)
-						,childVisible(BudgetSpecializationUnit.class,"section",actorable)
-						,childVisible(Action.class,"section",actorable)
-						,childVisible(Activity.class,"section",actorable)
-						,childVisible(Imputation.class,"section",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,childVisible(actorable,parameterable,AdministrativeUnit.class,Section.class)
+						,childVisible(actorable,parameterable,BudgetSpecializationUnit.class,Section.class)
+						,childVisible(actorable,parameterable,Action.class,Section.class)
+						,childVisible(actorable,parameterable,Activity.class,Section.class)
+						,childVisible(actorable,parameterable,Imputation.class,Section.class)
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleAdministrativeUnit(Boolean actorable,Boolean negate) {
+		static String hasVisibleAdministrativeUnit(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_UA),
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,parentVisible("Section", "AdministrativeUnit",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,parentVisible(actorable,parameterable,Section.class, AdministrativeUnit.class)
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleBudgetSpecializationUnit(Boolean actorable,Boolean negate) {
+		static String hasVisibleBudgetSpecializationUnit(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_USB),	
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,parentVisible("Section", "BudgetSpecializationUnit",actorable)
-						,childVisible(Action.class,"budgetSpecializationUnit",actorable)
-						,childVisible(Activity.class,"budgetSpecializationUnit",actorable)
-						,childVisible(Imputation.class,"budgetSpecializationUnit",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,parentVisible(actorable,parameterable,Section.class, BudgetSpecializationUnit.class)
+						,childVisible(actorable,parameterable,Action.class,BudgetSpecializationUnit.class)
+						,childVisible(actorable,parameterable,Activity.class,BudgetSpecializationUnit.class)
+						,childVisible(actorable,parameterable,Imputation.class,BudgetSpecializationUnit.class)
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleAction(Boolean actorable,Boolean negate) {
+		static String hasVisibleAction(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_ACTION),	
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,parentVisible("Section", "Action",actorable)
-						,parentVisible("BudgetSpecializationUnit", "Action",actorable)
-						,childVisible(Activity.class,"action",actorable)
-						,childVisible(Imputation.class,"action",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,parentVisible(actorable,parameterable,Section.class, Action.class)
+						,parentVisible(actorable,parameterable,BudgetSpecializationUnit.class, Action.class)
+						,childVisible(actorable,parameterable,Activity.class,Action.class)
+						,childVisible(actorable,parameterable,Imputation.class,Action.class)
 					)),negate)
 				));
 		}
 		
-		static String hasVisibleActivity(Boolean actorable,Boolean negate) {
+		static String hasVisibleActivity(Boolean actorable,Boolean parameterable,Boolean negate) {
 			return parenthesis(and(
 					isTypeCode(ScopeType.CODE_ACTIVITE),	
 					notIfTrue(parenthesis(or(
-						selfVisible(actorable)
-						,parentVisible("Section", "Activity",actorable)
-						,parentVisible("AdministrativeUnit", "Activity",actorable)
-						,parentVisible("BudgetSpecializationUnit", "Activity",actorable)
-						,parentVisible("Action", "Activity",actorable)
-						,childVisible(Imputation.class,"activity",actorable)
+						selfVisible(actorable,parameterable,"scope")
+						,parentVisible(actorable,parameterable,Section.class, Activity.class)
+						,parentVisible(actorable,parameterable,AdministrativeUnit.class, Activity.class)
+						,parentVisible(actorable,parameterable,BudgetSpecializationUnit.class, Activity.class)
+						,parentVisible(actorable,parameterable,Action.class, Activity.class)
+						,childVisible(actorable,parameterable,Imputation.class,Activity.class)
 					)),negate)
 				));
 		}

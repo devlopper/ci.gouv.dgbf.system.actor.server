@@ -11,7 +11,7 @@ public abstract class AbstractScopeVisiblesByTypeCodeReader extends AbstractScop
 
 	@Override
 	protected String getVisiblePredicate() {
-		return ScopeQueryStringBuilder.Predicate.scopeVisible(getTypeCode(), null, null);
+		return ScopeQueryStringBuilder.Predicate.scopeVisible(getTypeCode(), null, null,null);
 	}
 	
 	protected abstract String getTypeCode();
