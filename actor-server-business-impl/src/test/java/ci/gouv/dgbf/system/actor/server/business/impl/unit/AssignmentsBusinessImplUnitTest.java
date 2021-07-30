@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import ci.gouv.dgbf.system.actor.server.business.impl.ActorScopeBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.AssignmentsBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.ScopeFunctionBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;

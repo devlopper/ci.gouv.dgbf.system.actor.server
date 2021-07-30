@@ -112,15 +112,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(ACTOR_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}else if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER) != null) {
+			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE), null
+					,null));
 		}
 	}
 	
 	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		String scopeTypeCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 		String actorCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE);
-		//String actorCodeParameterName = null;
-		//if(StringHelper.isNotBlank(actorCode))
-		//	actorCodeParameterName = ":"+ScopeQuerier.PARAMETER_NAME_ACTOR_CODE;
 		if(StringHelper.isNotBlank(scopeTypeCode)/* && arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) == null*/) {
 			predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
@@ -134,10 +134,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			filter.addFieldContainsStringOrWords(ScopeQuerier.PARAMETER_NAME_NAME, ScopeQuerier.NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		}
 		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) != null) {
+			/*
 			Object visibleObject = arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE);
 			if(visibleObject instanceof String)
 				visibleObject = Boolean.TRUE.toString().equalsIgnoreCase(visibleObject.toString());
 			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, StringHelper.isNotBlank(actorCode),!ValueHelper.defaultToIfNull((Boolean)visibleObject, Boolean.TRUE)));
+			*/
+			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, StringHelper.isNotBlank(actorCode)
+					,!arguments.getFilterFieldValueAsBoolean(Boolean.TRUE,ScopeQuerier.PARAMETER_NAME_VISIBLE)));
+			
 			if(StringHelper.isNotBlank(actorCode))
 				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);			
 		}

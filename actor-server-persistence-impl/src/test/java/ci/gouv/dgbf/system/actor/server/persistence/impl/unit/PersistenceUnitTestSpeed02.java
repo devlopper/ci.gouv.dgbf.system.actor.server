@@ -17,7 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public class PersistenceUnitTest extends AbstractUnitTestMemory {
+public class PersistenceUnitTestSpeed02 extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 	
 	@Test

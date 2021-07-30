@@ -39,7 +39,7 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 			, new Object[][] { {"christian",new Object[][] {{"101",Boolean.TRUE}}} }
 			, new Object[][] { {"christian",new String[] {"101"}} }
 			, new Object[][] { {"christian",null} }
-			);	
+			, (Object[][])null);	
 	}
 	
 	@Test
@@ -52,7 +52,7 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 				, new Object[] {"13010222",new String[] {"13010222"}}
 				, new Object[] {"DTI",new String[] {"13010222"}}
 				, new Object[][] { {"christian",new Object[][] {{"11010022",null},{"13010222",Boolean.TRUE}}} }
-				,null,null);
+				,null,null,(Object[][])null);
 	}
 	/*
 	@Test

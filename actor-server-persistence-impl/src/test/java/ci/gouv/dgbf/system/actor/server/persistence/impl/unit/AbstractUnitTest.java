@@ -275,8 +275,8 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	/**/
 	
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
-			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor
-			,Boolean exact){	
+			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor
+			,Object[][] expectedNotVisiblesCodesByActor,Object[][] expectedVisibleByActorsCodes,Boolean exact){	
 		assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes,exact);
 		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes,exact);
 		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes,exact);	
@@ -296,12 +296,17 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		if(expectedNotVisiblesCodesByActor != null)
 			for(Object[] array : expectedNotVisiblesCodesByActor)
 				assertScopesCodes(typeCode, null,null, Boolean.FALSE,(String)array[0],(String[]) array[1],exact);
+		
+		if(expectedVisibleByActorsCodes != null)
+			for(Object[] array : expectedVisibleByActorsCodes)
+				;//assertScopeVisibleBy((String)array[0],typeCode,(String[])array[1]);
 	}
 	
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
-			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor,Object[][] expectedNotVisiblesCodesByActor){	
+			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor
+			,Object[][] expectedNotVisiblesCodesByActor,Object[][] expectedVisibleByActorsCodes){
 		assertScopes(typeCode, expectedCodesAndVisibes, expectedVisiblesCodes, expectedNotVisiblesCodes, filteredCode, filteredName, expectedCodesAndVisibesByActor
-				, expectedVisiblesCodesByActor, expectedNotVisiblesCodesByActor, EXCAT);
+				, expectedVisiblesCodesByActor, expectedNotVisiblesCodesByActor, expectedVisibleByActorsCodes,EXCAT);
 	}
 	
 	protected static void assertScopesCodesAndVisibes(String typeCode,String actorCode,Object[][] expectedCodesAndVisibes,Boolean exact) {
@@ -314,5 +319,16 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		}
 		assertScopesCodes(scopes,expectedCodes,exact);
 		assertScopesVisibles(scopes, expectedVisibles,exact);
+	}
+
+	protected static void assertScopeVisibleBy(String identifier,String typeCode,String...actorsCodes) {
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterFieldsValues(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER, identifier,ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE, typeCode);
+		Collection<Actor> actors = EntityReader.getInstance().readMany(Actor.class,queryExecutorArguments);
+		if(actorsCodes == null)
+			assertThat(actors).isNull();
+		else
+			assertThat(actors.stream().map(actor -> actor.getCode()).collect(Collectors.toList())).containsExactly(actorsCodes);
 	}
 }

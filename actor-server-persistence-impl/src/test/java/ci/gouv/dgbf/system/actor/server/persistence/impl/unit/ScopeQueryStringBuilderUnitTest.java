@@ -16,9 +16,20 @@ public class ScopeQueryStringBuilderUnitTest extends org.cyk.utility.test.Abstra
 	}
 	
 	@Test
+	public void actor_parameter(){		
+		assertThat(ScopeQueryStringBuilder.Predicate.actor(Boolean.TRUE)).isEqualTo("v.actor.code = :actorCode");
+	}
+	
+	@Test
+	public void actor_variable(){		
+		assertThat(ScopeQueryStringBuilder.Predicate.actor(null)).isEqualTo("v.actor = t");
+	}
+	
+	@Test
 	public void visibleBy(){
-		assertThat(ScopeQueryStringBuilder.Predicate.visibleBy(null)).isEqualTo("v.scope = t AND (v.visible IS NULL OR v.visible = true)");
-		assertThat(ScopeQueryStringBuilder.Predicate.visibleBy(true)).isEqualTo("v.actor.code = :actorCode AND v.scope = t AND (v.visible IS NULL OR v.visible = true)");
+		assertThat(ScopeQueryStringBuilder.Predicate.visibleBy(null,null,"scope")).isEqualTo("v.scope = t AND (v.visible IS NULL OR v.visible = true)");
+		assertThat(ScopeQueryStringBuilder.Predicate.visibleBy(false,null,"actor")).isEqualTo("v.actor = t AND (v.visible IS NULL OR v.visible = true)");
+		assertThat(ScopeQueryStringBuilder.Predicate.visibleBy(true,true,"scope")).isEqualTo("v.actor.code = :actorCode AND v.scope = t AND (v.visible IS NULL OR v.visible = true)");
 	}
 	
 	@Test

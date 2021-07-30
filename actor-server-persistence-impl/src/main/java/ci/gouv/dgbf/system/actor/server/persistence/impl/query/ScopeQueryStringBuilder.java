@@ -11,6 +11,7 @@ import static org.cyk.utility.persistence.query.Language.Where.notIfTrue;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
 
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
@@ -24,29 +25,29 @@ public interface ScopeQueryStringBuilder {
 	
 	public static interface Predicate {
 				
+		String PARENT_VARIABLE_NAME = "t";
 		String ACTOR_SCOPE_VARIABLE_NAME = "v";
 		String PARAMETER_NAME_ACTOR_CODE = "actorCode";
 		
 		String VISIBLE_FORMAT = "(%1$s.visible IS NULL OR %1$s.visible = true)";
-		static String visible(String variableName) {
-			return String.format(VISIBLE_FORMAT, variableName);
-		}
-		
 		static String visible() {
-			return visible(ACTOR_SCOPE_VARIABLE_NAME);
+			return String.format(VISIBLE_FORMAT, ACTOR_SCOPE_VARIABLE_NAME);
 		}
 		
-		static String visibleBy(Boolean actorable,String variableName) {
-			return and(actorable == null || !actorable ? null : variableName+".actor.code = :"+PARAMETER_NAME_ACTOR_CODE
-					,variableName+".scope = t",visible(variableName));
+		String ACTOR_FORMAT = "%s.actor%s = %s";
+		static String actor(Boolean parameterable) {
+			return String.format(ACTOR_FORMAT, ACTOR_SCOPE_VARIABLE_NAME
+				,Boolean.TRUE.equals(parameterable) ? ".code" : ConstantEmpty.STRING
+				,Boolean.TRUE.equals(parameterable) ? ":"+PARAMETER_NAME_ACTOR_CODE : PARENT_VARIABLE_NAME);
 		}
 		
-		static String visibleBy(Boolean actorable) {
-			return visibleBy(actorable, ACTOR_SCOPE_VARIABLE_NAME);
+		static String visibleBy(Boolean actorable,Boolean parameterable,String parentFieldName) {
+			return and(Boolean.TRUE.equals(actorable) ? actor(parameterable) : null
+					, ACTOR_SCOPE_VARIABLE_NAME+"."+parentFieldName+" = t",visible());
 		}
 		
 		static String selfVisible(Boolean actorable) {
-			return exists(select("v.identifier"),from("ActorScope v"),where(visibleBy(actorable)));
+			return exists(select("v.identifier"),from("ActorScope v"),where(visibleBy(actorable,Boolean.TRUE,"scope")));
 		}
 		
 		static String selfVisible() {

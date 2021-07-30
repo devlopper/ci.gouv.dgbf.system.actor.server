@@ -52,55 +52,55 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 			, new Object[][] { {"rffim_s01",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
 			, new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10"}} }
 			, new Object[][] { {"christian",new String[] {"s11"}} }
-			);
+			, new Object[][] { {"s01",new String[] {"christiann"} } });
 	}
 	
 	@Test
 	public void administrativeUnits(){
 		String typeCode = ScopeType.CODE_UA;
 		assertScopes(typeCode
-				, new Object[][] {{"ua01",Boolean.TRUE},{"ua02",Boolean.TRUE},{"ua10",null}}
-				, new String[] {"ua01","ua02"}
-				, new String[] {"ua10"}
-				, new Object[] {"01",new String[] {"ua01"}}
-				, new Object[] {"10",new String[] {"ua10"}}
-				, new Object[][] { {"gc_ua02",new Object[][] {{"ua01",null},{"ua02",Boolean.TRUE},{"ua10",null}}} }
-				,null,null);
+			, new Object[][] {{"ua01",Boolean.TRUE},{"ua02",Boolean.TRUE},{"ua10",null}}
+			, new String[] {"ua01","ua02"}
+			, new String[] {"ua10"}
+			, new Object[] {"01",new String[] {"ua01"}}
+			, new Object[] {"10",new String[] {"ua10"}}
+			, new Object[][] { {"gc_ua02",new Object[][] {{"ua01",null},{"ua02",Boolean.TRUE},{"ua10",null}}} }
+			,null,null, (Object[][])null);
 	}
 	
 	@Test
 	public void budgetSpecializationUnits(){
 		String typeCode = ScopeType.CODE_USB;
 		assertScopes(typeCode
-				, new Object[][] {{"usb01",Boolean.TRUE},{"usb02",Boolean.TRUE},{"usb03",Boolean.TRUE},{"usb04",null}}
-				, new String[] {"usb01","usb02","usb03"}
-				, new String[] {"usb04"}
-				, new Object[] {"01",new String[] {"usb01"}}
-				, new Object[] {"4",new String[] {"usb04"}}
-				, null,null,null);
+			, new Object[][] {{"usb01",Boolean.TRUE},{"usb02",Boolean.TRUE},{"usb03",Boolean.TRUE},{"usb04",null}}
+			, new String[] {"usb01","usb02","usb03"}
+			, new String[] {"usb04"}
+			, new Object[] {"01",new String[] {"usb01"}}
+			, new Object[] {"4",new String[] {"usb04"}}
+			, null,null,null, (Object[][])null);
 	}
 	
 	@Test
 	public void actions(){
 		String typeCode = ScopeType.CODE_ACTION;
 		assertScopes(typeCode
-				, new Object[][] {{"a01",Boolean.TRUE},{"a02",Boolean.TRUE},{"a03",null}}
-				, new String[] {"a01","a02"}
-				, new String[] {"a03"}
-				, new Object[] {"01",new String[] {"a01"}}
-				, new Object[] {"2",new String[] {"a02"}}
-				, null,null,null);
+			, new Object[][] {{"a01",Boolean.TRUE},{"a02",Boolean.TRUE},{"a03",null}}
+			, new String[] {"a01","a02"}
+			, new String[] {"a03"}
+			, new Object[] {"01",new String[] {"a01"}}
+			, new Object[] {"2",new String[] {"a02"}}
+			, null,null,null, (Object[][])null);
 	}
 	
 	@Test
 	public void activities(){
 		String typeCode = ScopeType.CODE_ACTIVITE;
 		assertScopes(typeCode
-				, new Object[][] {{"ac01",Boolean.TRUE},{"ac02",Boolean.TRUE},{"ac03",null}}
-				, new String[] {"ac01","ac02"}
-				, new String[] {"ac03"}
-				, new Object[] {"01",new String[] {"ac01"}}
-				, new Object[] {"ac",new String[] {"ac01","ac02","ac03"}}
-				, null,null,null);
+			, new Object[][] {{"ac01",Boolean.TRUE},{"ac02",Boolean.TRUE},{"ac03",null}}
+			, new String[] {"ac01","ac02"}
+			, new String[] {"ac03"}
+			, new Object[] {"01",new String[] {"ac01"}}
+			, new Object[] {"ac",new String[] {"ac01","ac02","ac03"}}
+			, null,null,null, (Object[][])null);
 	}
 }
