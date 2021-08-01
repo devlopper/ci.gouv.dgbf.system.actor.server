@@ -52,7 +52,7 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 			, new Object[][] { {"rffim_s01",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
 			, new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10"}} }
 			, new Object[][] { {"christian",new String[] {"s11"}} }
-			, new Object[][] { {"s01",new String[] {"christiann"} } });
+			, new Object[][] { {"s01",new String[] {"christian","rffim_s01"} } });
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 			, new Object[] {"01",new String[] {"ua01"}}
 			, new Object[] {"10",new String[] {"ua10"}}
 			, new Object[][] { {"gc_ua02",new Object[][] {{"ua01",null},{"ua02",Boolean.TRUE},{"ua10",null}}} }
-			,null,null, (Object[][])null);
+			,null,null, new Object[][] { {"ua01",new String[] {"christian"} },{"ua02",new String[] {"gc_ua02"} } });
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 			, new String[] {"usb04"}
 			, new Object[] {"01",new String[] {"usb01"}}
 			, new Object[] {"4",new String[] {"usb04"}}
-			, null,null,null, (Object[][])null);
+			, null,null,null, new Object[][] { {"usb01",new String[] {"christian"} }/*,{"usb02",new String[] {"gc_ua02"} },{"usb03",new String[] {"gc_ua02"} }*/ });
 	}
 	
 	@Test

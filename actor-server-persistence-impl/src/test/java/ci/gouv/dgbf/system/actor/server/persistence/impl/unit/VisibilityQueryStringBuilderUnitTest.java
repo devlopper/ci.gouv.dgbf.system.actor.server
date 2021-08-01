@@ -15,12 +15,12 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 
 	@Test
 	public void join(){		
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class, null, "v",null)).isEqualTo("v.actor = t");
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class, false, "v",null)).isEqualTo("v.actor = t");
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class, true, "v",null)).isEqualTo("v.actor = t AND v.scope.identifier = :scopeIdentifier");		
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class, null, "v",null)).isEqualTo("v.scope = t");
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class, false, "v",null)).isEqualTo("v.scope = t");
-		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class, true, "v",null)).isEqualTo("v.scope = t AND v.actor.code = :actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class,"t",null, null, "v",null)).isEqualTo("v.actor = t");
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class,"t",null, false, "v",null)).isEqualTo("v.actor = t");
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Actor.class,"t",null, true, "v",null)).isEqualTo("v.actor = t AND v.scope.identifier = :scopeIdentifier");		
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class,"t",null, null, "v",null)).isEqualTo("v.scope = t");
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class,"t",null, false, "v",null)).isEqualTo("v.scope = t");
+		assertThat(VisibilityQueryStringBuilder.Predicate.join(Scope.class,"t",null, true, "v",null)).isEqualTo("v.scope = t AND v.actor.code = :actorCode");
 	}
 	
 	@Test
@@ -70,12 +70,12 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void selfVisible() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,null)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND (v.visible IS NULL OR v.visible = true))");
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,false)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND (v.visible IS NULL OR v.visible = true))");
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,true)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND v.scope.identifier = :scopeIdentifier AND (v.visible IS NULL OR v.visible = true))");
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,null)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,false)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
-		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,true)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND v.actor.code = :actorCode AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,"t",null,null)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,"t",null,false)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Actor.class,"t",null,true)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.actor = t AND v.scope.identifier = :scopeIdentifier AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,"t",null,null)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,"t",null,false)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
+		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(Scope.class,"t",null,true)).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND v.actor.code = :actorCode AND (v.visible IS NULL OR v.visible = true))");
 		
 		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(null,null,"scope")).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
 		assertThat(VisibilityQueryStringBuilder.Predicate.selfVisible(null,false,"scope")).isEqualTo("EXISTS(SELECT v.identifier FROM ActorScope v WHERE v.scope = t AND (v.visible IS NULL OR v.visible = true))");
@@ -92,11 +92,11 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void childVisible() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,null,AdministrativeUnit.class,Section.class))
+		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,"t",null,null,AdministrativeUnit.class,Section.class))
 		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
 				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t)");
 		
-		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,Boolean.TRUE,AdministrativeUnit.class,Section.class))
+		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,"t",null,Boolean.TRUE,AdministrativeUnit.class,Section.class))
 		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
 				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t AND _as.actor.code = :actorCode)");
 		
@@ -111,12 +111,12 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void parentVisible() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.parentVisible(Scope.class,null,Section.class,AdministrativeUnit.class))
+		assertThat(VisibilityQueryStringBuilder.Predicate.parentVisible(Scope.class,"t",null,null,Section.class,AdministrativeUnit.class))
 		.isEqualTo("EXISTS(SELECT p.identifier FROM ActorScope p JOIN Scope s ON p.scope = s JOIN Section section ON section = s WHERE EXISTS(SELECT administrativeUnit FROM"
 				+ " AdministrativeUnit administrativeUnit WHERE administrativeUnit = t AND administrativeUnit.section = section AND NOT (EXISTS(SELECT pAdministrativeUnit FROM"
 				+ " ActorScope pAdministrativeUnit WHERE pAdministrativeUnit.scope = t AND pAdministrativeUnit.visible IS NOT NULL AND pAdministrativeUnit.visible = false))))");
 		
-		assertThat(VisibilityQueryStringBuilder.Predicate.parentVisible(Scope.class,Boolean.TRUE,Section.class,AdministrativeUnit.class))
+		assertThat(VisibilityQueryStringBuilder.Predicate.parentVisible(Scope.class,"t",null,Boolean.TRUE,Section.class,AdministrativeUnit.class))
 		.isEqualTo("EXISTS(SELECT p.identifier FROM ActorScope p JOIN Scope s ON p.scope = s JOIN Section section ON section = s WHERE p.actor.code = :actorCode AND "
 				+ "EXISTS(SELECT administrativeUnit FROM AdministrativeUnit administrativeUnit WHERE administrativeUnit = t AND administrativeUnit.section = section AND NOT "
 				+ "(EXISTS(SELECT pAdministrativeUnit FROM ActorScope pAdministrativeUnit WHERE pAdministrativeUnit.scope = t AND pAdministrativeUnit.actor.code = :actorCode "
@@ -136,25 +136,25 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void scope_section() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,null,null)).doesNotContain(":actorCode");
-		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,Boolean.TRUE,null)).contains(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,null,null)).doesNotContain(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,Boolean.TRUE,null)).contains(":actorCode");
 	}
 	
 	@Test
 	public void scope_section_negate() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,null,true)).doesNotContain(":actorCode");
-		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,true,true)).contains(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,null,true)).doesNotContain(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,true,true)).contains(":actorCode");
 	}
 	
 	@Test
 	public void sections() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleSection(null,null)).doesNotContain(":actorCode");
-		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleSection(true,null)).contains(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleSection(Scope.class,"t",null,null,null)).doesNotContain(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleSection(Scope.class,"t",null,true,null)).contains(":actorCode");
 	}
 	
 	@Test
 	public void administrativeUnits() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(null,null)).doesNotContain(":actorCode");
-		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(true,null)).contains(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(Scope.class,"t",null,null,null)).doesNotContain(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleAdministrativeUnit(Scope.class,"t",null,true,null)).contains(":actorCode");
 	}
 }

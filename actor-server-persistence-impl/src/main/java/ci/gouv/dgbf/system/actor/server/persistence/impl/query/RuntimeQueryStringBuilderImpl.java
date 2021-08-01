@@ -113,9 +113,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
 		}else if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER) != null) {
-			String visible = VisibilityQueryStringBuilder.Predicate.scopeVisible((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE)
-					, Boolean.FALSE,null);
-			predicate.ands("t.type.code = :"+ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER/*,visible*/);
+			String visible = VisibilityQueryStringBuilder.Predicate.actorView((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE)
+					,"tt","t", Boolean.TRUE,null);
+			predicate.add(String.format("EXISTS(SELECT tt FROM Scope tt WHERE %s)", visible));
+			filter.addField("scopeIdentifier", arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER));
 		}
 	}
 	
@@ -141,7 +142,7 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 				visibleObject = Boolean.TRUE.toString().equalsIgnoreCase(visibleObject.toString());
 			predicate.add(ScopeQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, StringHelper.isNotBlank(actorCode),!ValueHelper.defaultToIfNull((Boolean)visibleObject, Boolean.TRUE)));
 			*/
-			predicate.add(VisibilityQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode, StringHelper.isNotBlank(actorCode)
+			predicate.add(VisibilityQueryStringBuilder.Predicate.scopeVisible(scopeTypeCode,"t",null, StringHelper.isNotBlank(actorCode)
 					,!arguments.getFilterFieldValueAsBoolean(Boolean.TRUE,ScopeQuerier.PARAMETER_NAME_VISIBLE)));
 			
 			if(StringHelper.isNotBlank(actorCode))
