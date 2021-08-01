@@ -16,7 +16,7 @@ public abstract class AbstractScopeVisiblesByTypeCodeByActorCodeReader extends A
 
 	@Override
 	protected String getVisiblePredicate() {
-		return VisibilityQueryStringBuilder.Predicate.scopeVisible(getTypeCode(), true, null,null);
+		return null;//VisibilityQueryStringBuilder.Predicate.scopeVisible(getTypeCode(), true, null,null);
 	}
 	
 	protected abstract String getTypeCode();
