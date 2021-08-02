@@ -10,7 +10,9 @@ import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory {
@@ -21,6 +23,22 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 		return "visibilities";
 	}
 
+	@Test
+	public void scopes_section(){	
+		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"SECTION")).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("s01","s02","s03","s04","s05","s10","s11");
+	}
+	
+	@Test
+	public void scopes_administrativeUnit(){	
+		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"UA")).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("ua01","ua02","ua10");
+	}
+	
 	@Test
 	public void scopeTypes(){	
 		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()

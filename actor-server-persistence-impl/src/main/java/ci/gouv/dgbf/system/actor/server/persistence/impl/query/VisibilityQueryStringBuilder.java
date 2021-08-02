@@ -558,7 +558,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleBudgetCategory(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_CATEGORIE_BUDGET),				
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_CATEGORIE_BUDGET),
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName,some)
 					)),negate)
@@ -567,7 +567,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleActivityCategory(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_CATEGORIE_ACTIVITE),				
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_CATEGORIE_ACTIVITE),
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName,some)
 						,childVisible(klass,klassVariableName,mainVariableName,some,Activity.class,ActivityCategory.class)
@@ -578,7 +578,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleSection(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_SECTION),				
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_SECTION),
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName, some)
 						,childVisible(klass,klassVariableName,mainVariableName,some,AdministrativeUnit.class,Section.class)
@@ -592,7 +592,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleAdministrativeUnit(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_UA),
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_UA),
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName, some)
 						,parentVisible(klass,klassVariableName,mainVariableName,some,Section.class, AdministrativeUnit.class)
@@ -602,7 +602,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleBudgetSpecializationUnit(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_USB),	
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_USB),	
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName, some)
 						,parentVisible(klass,klassVariableName,mainVariableName,some,Section.class, BudgetSpecializationUnit.class)
@@ -615,7 +615,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleAction(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_ACTION),	
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_ACTION),	
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName, some)
 						,parentVisible(klass,klassVariableName,mainVariableName,some,Section.class, Action.class)
@@ -628,7 +628,7 @@ public interface VisibilityQueryStringBuilder {
 		
 		static String hasVisibleActivity(Class<?> klass,String klassVariableName,String mainVariableName,Boolean some,Boolean negate) {
 			return parenthesis(and(
-					isTypeCode(klassVariableName,ScopeType.CODE_ACTIVITE),	
+					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_ACTIVITE),	
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName, some)
 						,parentVisible(klass,klassVariableName,mainVariableName,some,Section.class, Activity.class)

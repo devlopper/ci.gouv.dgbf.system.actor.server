@@ -100,15 +100,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
 	}
 	
-	public static final String ACTOR_PREDICATE_SEARCH = or(
+	public static final String ACTOR_PREDICATE_SEARCH = parenthesis(or(
 			LikeStringBuilder.getInstance().build("t",Actor.FIELD_CODE, ActorQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_FIRST_NAME,ActorQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_LAST_NAMES,ActorQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t.identity", Actor.FIELD_ELECTRONIC_MAIL_ADDRESS,ActorQuerier.PARAMETER_NAME_SEARCH)
-	);
+	));
 	protected void populatePredicateActor(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ActorQuerier.PARAMETER_NAME_CODE);
-		if(CollectionHelper.contains(arguments.getFlags(),ActorQuerier.FLAG_SEARCH)) {
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH) != null) {
 			predicate.add(ACTOR_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
@@ -118,18 +118,22 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("EXISTS(SELECT tt FROM Scope tt WHERE %s)", visible));
 			filter.addField("scopeIdentifier", arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER));
 		}else if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER) != null) {
-			predicate.add(String.format("EXISTS(SELECT ap FROM ActorProfile ap WHERE ap.profile.identifier = :%s)", ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER));
+			predicate.add(String.format("EXISTS(SELECT ap FROM ActorProfile ap WHERE ap.actor = t AND ap.profile.identifier = :%s)", ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER));
 			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, arguments);
 		}
 	}
 	
-	public static final String SCOPE_PREDICATE_SEARCH = or(
+	public static final String SCOPE_PREDICATE_SEARCH = parenthesis(or(
 			LikeStringBuilder.getInstance().build("t",Scope.FIELD_CODE, ScopeQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t", Scope.FIELD_NAME,ScopeQuerier.PARAMETER_NAME_SEARCH)
-	);
+	));
 	protected void populatePredicateScope(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		String scopeTypeCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 		String actorCode = (String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE);
+		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER) != null) {
+			predicate.add(String.format("t.type.identifier = :%s", ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER));
+			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, arguments);
+		}
 		if(StringHelper.isNotBlank(scopeTypeCode)/* && arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_VISIBLE) == null*/) {
 			predicate.add("t.type.code = :"+ScopeQuerier.PARAMETER_NAME_TYPE_CODE);
 			filter.addFieldEquals(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, arguments);
