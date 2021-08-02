@@ -131,10 +131,10 @@ CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_ACTIVITE
 REFRESH ON COMMIT COMPLETE AS
 SELECT 'ACTIVITE'||a.ads_id AS "IDENTIFIANT",a.ads_code AS "CODE",a.ads_liblg AS "LIBELLE"
     ,'CATEGORIE_ACTIVITE'||c.catv_id AS "CATEGORIE",c.catv_code||' '||c.catv_liblg AS "CATEGORIE_CODE_LIBELLE"
-    ,'ACTION'||action.uuid AS "ACTION",action.adp_code||' '||action.adp_liblg AS "ACTION_CODE_LIBELLE"
-    ,'USB'||usb.uuid AS "USB",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
-    ,'SECTION'||section.uuid AS "SECTION",section.secb_code||' '||section.secb_libelle AS "SECTION_CODE_LIBELLE"
-    ,nd.uuid AS "NATURE_DEPENSE",nd.ndep_code||' '||nd.ndep_libct AS "NATURE_DEPENSE_CODE_LIBELLE"
+    ,CASE WHEN action.uuid IS NULL THEN NULL ELSE 'ACTION'||action.uuid END AS "ACTION",action.adp_code||' '||action.adp_liblg AS "ACTION_CODE_LIBELLE"
+    ,CASE WHEN usb.uuid IS NULL THEN NULL ELSE 'USB'||usb.uuid END AS "USB",usb.usb_code||' '||usb.usb_liblg AS "USB_CODE_LIBELLE"
+    ,CASE WHEN section.uuid IS NULL THEN NULL ELSE 'SECTION'||section.uuid END AS "SECTION",section.secb_code||' '||section.secb_libelle AS "SECTION_CODE_LIBELLE"
+    ,CASE WHEN nd.uuid IS NULL THEN NULL ELSE nd.uuid END AS "NATURE_DEPENSE",nd.ndep_code||' '||nd.ndep_libct AS "NATURE_DEPENSE_CODE_LIBELLE"
     ,CASE WHEN ua.uuid IS NULL THEN NULL ELSE 'UA'||ua.uuid END AS "UA"
     ,CASE WHEN ua.ua_code IS NULL THEN NULL ELSE ua.ua_code||' '||ua.ua_liblg END AS "UA_CODE_LIBELLE"
 FROM ADS.activite_de_service a,ADS.categorie_activite c,CPP.action action,CPP.usb usb,CA.section_budgetaire section
