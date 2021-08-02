@@ -68,6 +68,8 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
+	String PARAMETER_NAME_PROFILE_IDENTIFIER = "profileIdentifier";
+	String PARAMETER_NAME_PROFILES_IDENTIFIERS = "profilesIdentifiers";
 	String PARAMETER_NAME_PROFILE_CODE = "profileCode";
 	String PARAMETER_NAME_PROFILE_CODE_NULLABLE = PARAMETER_NAME_PROFILE_CODE+"Nullable";
 	String PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER = "visibleScopeIdentifier";

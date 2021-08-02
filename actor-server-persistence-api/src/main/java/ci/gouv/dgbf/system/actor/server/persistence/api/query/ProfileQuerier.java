@@ -17,16 +17,19 @@ import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.Where;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.annotation.Queries;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Menu;
@@ -45,6 +48,10 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
 	String PARAMETER_NAME_SERVICES_IDENTIFIERS = "servicesIdentifiers";
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.COUNT_DYNAMIC);
 	
 	/* read order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, "readWhereTypeIsSystemeOrderByCodeAscending");
@@ -88,6 +95,48 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Profile> implements ProfileQuerier,Serializable {
+		@SuppressWarnings("unchecked")
+		@Override
+		public Collection<Profile> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(Profile.class,arguments.setQuery(null));
+			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
+				return read();
+			if(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
+				return readWhereTypeIsSystemeOrderByCodeAscending();
+			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
+				return readByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
+			if(QUERY_IDENTIFIER_READ_BY_ACTORS_CODES.equals(arguments.getQuery().getIdentifier()))
+				return readByActorsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_ACTORS_CODES));
+			if(QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
+				return readByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
+			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
+				return readByTypesCodesByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES)
+						,(Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
+			if(QUERY_IDENTIFIER_READ_BY_SERVICES_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
+				return readByServicesIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SERVICES_IDENTIFIERS));
+			return super.readMany(arguments);
+		}
+		
+		@Override
+		public Profile readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(Profile.class,arguments.setQuery(null));
+			return super.readOne(arguments);
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(Profile.class,arguments.setQuery(null));
+			if(QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
+				return countWhereTypeIsSystemeOrderByCodeAscending();	
+			if(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
+				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));	
+			return super.count(arguments);
+		}
+		
 		@Override
 		public Collection<Profile> readWhereTypeIsSystemeOrderByCodeAscending() {
 			return QueryExecutor.getInstance().executeReadMany(Profile.class, QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME);
@@ -185,37 +234,6 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 			if(ArrayHelper.isEmpty(menus))
 				return null;
 			return readByMenus(CollectionHelper.listOf(menus));
-		}
-		
-		@SuppressWarnings("unchecked")
-		@Override
-		public Collection<Profile> readMany(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_READ.equals(arguments.getQuery().getIdentifier()))
-				return read();
-			if(QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
-				return readWhereTypeIsSystemeOrderByCodeAscending();
-			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
-				return readByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
-			if(QUERY_IDENTIFIER_READ_BY_ACTORS_CODES.equals(arguments.getQuery().getIdentifier()))
-				return readByActorsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_ACTORS_CODES));
-			if(QUERY_IDENTIFIER_READ_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
-				return readByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
-			if(QUERY_IDENTIFIER_READ_BY_TYPES_CODES_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
-				return readByTypesCodesByFunctionsCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES)
-						,(Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTIONS_CODES));
-			if(QUERY_IDENTIFIER_READ_BY_SERVICES_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
-				return readByServicesIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SERVICES_IDENTIFIERS));
-			return super.readMany(arguments);
-		}
-		
-		@SuppressWarnings("unchecked")
-		@Override
-		public Long count(QueryExecutorArguments arguments) {
-			if(QUERY_IDENTIFIER_COUNT_WHERE_TYPE_IS_SYSTEME.equals(arguments.getQuery().getIdentifier()))
-				return countWhereTypeIsSystemeOrderByCodeAscending();	
-			if(QUERY_IDENTIFIER_COUNT_BY_TYPES_CODES.equals(arguments.getQuery().getIdentifier()))
-				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));	
-			return super.count(arguments);
 		}
 		
 		@Override

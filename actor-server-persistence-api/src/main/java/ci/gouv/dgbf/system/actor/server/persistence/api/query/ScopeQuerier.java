@@ -45,6 +45,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
 public interface ScopeQuerier extends Querier.CodableAndNamable<Scope> {
 
+	String FLAG_SEARCH = "Scope.flag.search";
+	
+	String PARAMETER_NAME_SEARCH = "search";
+	
 	String PARAMETER_NAME_TYPE = "type";
 	String PARAMETER_NAME_TYPE_CODE = "typeCode";
 	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";

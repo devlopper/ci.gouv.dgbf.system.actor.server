@@ -43,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
@@ -121,6 +122,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Assignments.class)))
 				return (T) AssignmentsQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Profile.class)))
+				return (T) ProfileQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -163,7 +167,7 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		if(Boolean.TRUE.equals(FunctionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) FunctionQuerier.getInstance().readMany(arguments);
 		
-		if(Boolean.TRUE.equals(ProfileQuerier.getInstance().isOwner(arguments)))
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Profile.class)))
 			return (Collection<T>) ProfileQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
