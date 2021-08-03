@@ -18,7 +18,7 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 		EXCAT = Boolean.FALSE;
 	}
 
-	@Test
+	//@Test
 	public void scopes(){
 		sections();
 		administrativeUnits();
@@ -39,7 +39,7 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 			, new Object[][] { {"christian",new Object[][] {{"101",Boolean.TRUE}}} }
 			, new Object[][] { {"christian",new String[] {"101"}} }
 			, new Object[][] { {"christian",null} }
-			, (Object[][])null);	
+			, new Object[][] { {"SECTION01172e2c-7eb0-41a3-8d18-4c786e933ff7",new String[] {"christian","yaoconstant"} } });	
 	}
 	
 	@Test
@@ -52,21 +52,24 @@ public class VisibilitiesPersistenceImplUnitTestDev extends AbstractUnitTestLive
 				, new Object[] {"13010222",new String[] {"13010222"}}
 				, new Object[] {"DTI",new String[] {"13010222"}}
 				, new Object[][] { {"christian",new Object[][] {{"11010022",null},{"13010222",Boolean.TRUE}}} }
-				,null,null,(Object[][])null);
+				, null,null
+				, new Object[][] { {"UAd3bd3790-929c-4a71-a657-69dac6532e48",new String[] {"christian","gribts"} } });
 	}
-	/*
+	
 	@Test
 	public void budgetSpecializationUnits(){
 		String typeCode = ScopeType.CODE_USB;
 		assertScopes(typeCode
-				, new Object[][] {{"usb01",Boolean.TRUE},{"usb02",Boolean.TRUE},{"usb03",Boolean.TRUE},{"usb04",null}}
-				, new String[] {"usb01","usb02","usb03"}
-				, new String[] {"usb04"}
-				, new Object[] {"01",new String[] {"usb01"}}
-				, new Object[] {"4",new String[] {"usb04"}}
-				, null,null,null);
+				, new Object[][] {{"22082",Boolean.TRUE},{"22086",null}}
+				, new String[] {"22082"}
+				, new String[] {"22086"}
+				, new Object[] {"22082",new String[] {"22082"}}
+				, new Object[] {"Sport",new String[] {"22082"}}
+				, new Object[][] { {"christian",new Object[][] {{"22082",Boolean.TRUE}}} }
+				, null,null
+				, new Object[][] { {"USB447de493-7bde-4960-af33-f1559c72a004",new String[] {"christian","gribts"} } });
 	}
-	
+	/*
 	@Test
 	public void actions(){
 		String typeCode = ScopeType.CODE_ACTION;

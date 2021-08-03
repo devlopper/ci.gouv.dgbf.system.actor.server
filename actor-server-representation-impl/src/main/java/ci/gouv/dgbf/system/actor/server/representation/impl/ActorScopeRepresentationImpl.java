@@ -39,7 +39,7 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeBusiness.class).visible(actorsIdentifiers, scopesIdentifiers);
+						return __inject__(ActorScopeBusiness.class).visible(actorsIdentifiers, scopesIdentifiers,actorCode);
 					}
 				};
 			}			
@@ -54,7 +54,7 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeBusiness.class).unvisible(actorsIdentifiers, scopesIdentifiers);
+						return __inject__(ActorScopeBusiness.class).unvisible(actorsIdentifiers, scopesIdentifiers,actorCode);
 					}
 				};
 			}			

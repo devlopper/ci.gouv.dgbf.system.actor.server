@@ -462,7 +462,7 @@ public interface VisibilityQueryStringBuilder {
 					select(variableName)
 					,from(tupleName+" "+variableName)
 					,where(and(
-							variableName+" = t",variableName+"."+fieldName+" = "+fieldName
+							variableName+" = "+klassVariableName,variableName+"."+fieldName+" = "+fieldName
 							,not(
 								exists(select("p"+tupleName+" ")+from("ActorScope p"+tupleName+" ")
 									+ where(and(join(klass,klassVariableName,mainVariableName,some, "p"+tupleName, null),visible("p"+tupleName, Boolean.TRUE)))

@@ -277,12 +277,12 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	protected static void assertScopes(String typeCode,Object[][] expectedCodesAndVisibes,String[] expectedVisiblesCodes,String[] expectedNotVisiblesCodes
 			,Object[] filteredCode,Object[] filteredName,Object[][] expectedCodesAndVisibesByActor,Object[][] expectedVisiblesCodesByActor
 			,Object[][] expectedNotVisiblesCodesByActor,Object[][] expectedVisibleByActorsCodes,Boolean exact){	
-		assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes,exact);
+		/*assertScopesCodesAndVisibes(typeCode, null,expectedCodesAndVisibes,exact);
 		assertScopesCodes(typeCode, null, null, Boolean.TRUE,null,expectedVisiblesCodes,exact);
 		assertScopesCodes(typeCode, null, null, Boolean.FALSE,null,expectedNotVisiblesCodes,exact);	
 		if(filteredCode != null)
 			assertScopesCodes(typeCode, (String)filteredCode[0], null, null,null,(String[]) filteredCode[1],exact);
-		if(filteredCode != null)
+		if(filteredName != null)
 			assertScopesCodes(typeCode, null,(String)filteredName[0], null,null,(String[]) filteredName[1],exact);
 		
 		if(expectedCodesAndVisibesByActor != null) {
@@ -296,7 +296,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		if(expectedNotVisiblesCodesByActor != null)
 			for(Object[] array : expectedNotVisiblesCodesByActor)
 				assertScopesCodes(typeCode, null,null, Boolean.FALSE,(String)array[0],(String[]) array[1],exact);
-		
+		*/
 		if(expectedVisibleByActorsCodes != null)
 			for(Object[] array : expectedVisibleByActorsCodes)
 				assertScopeVisibleBy((String)array[0],typeCode,(String[])array[1]);
@@ -328,7 +328,12 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		Collection<Actor> actors = EntityReader.getInstance().readMany(Actor.class,queryExecutorArguments);
 		if(actorsCodes == null)
 			assertThat(actors).isNull();
-		else
-			assertThat(actors.stream().map(actor -> actor.getCode()).collect(Collectors.toList())).containsExactly(actorsCodes);
+		else {
+			assertThat(actors).as(String.format("Il n'y pas d'acteur voyant %s %s", typeCode,identifier)).isNotNull();
+			if(Boolean.TRUE.equals(EXCAT))
+				assertThat(actors.stream().map(actor -> actor.getCode()).collect(Collectors.toList())).containsExactly(actorsCodes);
+			else
+				assertThat(actors.stream().map(actor -> actor.getCode()).collect(Collectors.toList())).contains(actorsCodes);
+		}
 	}
 }

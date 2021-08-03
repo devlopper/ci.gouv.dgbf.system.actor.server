@@ -112,12 +112,14 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(ACTOR_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ActorQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
-		}else if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER) != null) {
+		}
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER) != null) {
 			String visible = VisibilityQueryStringBuilder.Predicate.actorView((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE)
 					,"tt","t", Boolean.TRUE,null);
 			predicate.add(String.format("EXISTS(SELECT tt FROM Scope tt WHERE %s)", visible));
 			filter.addField("scopeIdentifier", arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER));
-		}else if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER) != null) {
+		}
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER) != null) {
 			predicate.add(String.format("EXISTS(SELECT ap FROM ActorProfile ap WHERE ap.actor = t AND ap.profile.identifier = :%s)", ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER));
 			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, arguments);
 		}
