@@ -47,6 +47,7 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	
 	private ArrayList<ProfileDto> profiles;
 	private ArrayList<String> profilesCodes;
+	private String profilesCodesAsString;
 	private ArrayList<FunctionDto> functions;
 	private ArrayList<String> functionsCodes;
 	private ArrayList<PrivilegeDto> privileges;

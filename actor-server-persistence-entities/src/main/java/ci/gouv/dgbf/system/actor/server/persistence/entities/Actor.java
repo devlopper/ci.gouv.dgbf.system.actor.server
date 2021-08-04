@@ -81,6 +81,7 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	
 	@Transient private Collection<Profile> profiles;
 	@Transient private Collection<String> profilesCodes;
+	@Transient private String profilesCodesAsString;
 	@Transient private Collection<Function> functions;
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<Privilege> visibleModules;
@@ -233,12 +234,15 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String FIELD_FUNCTIONS = "functions";
 	public static final String FIELD_PROFILES = "profiles";
 	public static final String FIELD_PROFILES_CODES = "profilesCodes";
+	public static final String FIELD_PROFILES_CODES_AS_STRING = "profilesCodesAsString";
 	public static final String FIELD_ACT_OF_APPOINTMENT_REFERENCE = "actOfAppointmentReference";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATORY = "actOfAppointmentSignatory";
 	public static final String FIELD_ACT_OF_APPOINTMENT_SIGNATURE_DATE = "actOfAppointmentSignatureDate";
 	
 	public static final String FIELDS_PROFILE = "fields.profile";
 	public static final String FIELDS_CODE_FIRST_NAME_LAST_NAMES = "codeFirstNameLastNames";
+	public static final String FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT = "codeFirstNameLastNamesSectionAdministrativeUnit";
+	public static final String FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION = "codeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunction";
 	public static final String FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS = "codeNamesElectronicMailAddress";
 	public static final String FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION
 		= "registrationNumberFirstNameLastNamesElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSection";
