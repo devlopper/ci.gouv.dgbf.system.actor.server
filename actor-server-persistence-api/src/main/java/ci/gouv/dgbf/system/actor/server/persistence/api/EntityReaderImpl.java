@@ -50,6 +50,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.EntityReaderImpl implements Serializable {
@@ -104,6 +105,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			
 			if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 				return (T) ClusterQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Section.class)))
+				return (T) SectionQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
 				return (T) RequestTypeQuerier.getInstance().readOne(arguments);

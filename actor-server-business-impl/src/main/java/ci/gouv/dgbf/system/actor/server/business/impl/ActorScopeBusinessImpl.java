@@ -22,6 +22,7 @@ import org.cyk.utility.business.server.EntitySaver;
 import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -51,14 +52,14 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	/* visible */
 	
 	@SuppressWarnings("unchecked")
-	public static TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode,EntityManager entityManager) {
+	public static TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode,EntityManager entityManager) {
 		Object[] objects = prepareVisible(actorsIdentifiers, scopesIdentifiers, Boolean.TRUE, entityManager);		
 		Collection<Actor> actors = (Collection<Actor>) objects[0];
 		Collection<Scope> scopes = (Collection<Scope>) objects[1];
 		Arguments<ActorScope> arguments = new Arguments<>();
 		arguments.getPersistenceArguments(Boolean.TRUE).setEntityManager(entityManager);
 		actors.forEach(actor -> {
-			visible(actor, scopes,actorCode, arguments);
+			visible(actor, scopes,ignoreExisting,actorCode, arguments);
 		});
 		if(arguments.getPersistenceArguments() == null || (CollectionHelper.isEmpty(arguments.getPersistenceArguments().getCreatables()) && 
 				CollectionHelper.isEmpty(arguments.getPersistenceArguments().getUpdatables())))
@@ -71,33 +72,36 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		return transactionResult;
 	}
 	
-	private static void visible(Actor actor,Collection<Scope> scopes,String actorCode,Arguments<ActorScope> arguments) {
+	private static void visible(Actor actor,Collection<Scope> scopes,Boolean ignoreExisting,String actorCode,Arguments<ActorScope> arguments) {
 		scopes.forEach(scope -> {
-			visible(actor, scope,actorCode, arguments);
+			visible(actor, scope,ignoreExisting,actorCode, arguments);
 		});
 	}
 	
-	private static void visible(Actor actor,Scope scope,String actorCode,Arguments<ActorScope> arguments) {
+	private static void visible(Actor actor,Scope scope,Boolean ignoreExisting,String actorCode,Arguments<ActorScope> arguments) {
 		ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(), scope.getCode());
 		if(actorScope == null) {
 			arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(scope));
 			return;
 		}
-		if(actorScope.getVisible() == null || actorScope.getVisible())
-			throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actor.getCode()+","+scope.getCode()+")");				
+		if(actorScope.getVisible() == null || actorScope.getVisible()) {
+			if(Boolean.TRUE.equals(ignoreExisting))
+				return;
+			throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actor.getCode()+","+scope.getCode()+")");
+		}
 		actorScope.setVisible(null);// make it visible
 		arguments.getPersistenceArguments(Boolean.TRUE).getUpdatables(Boolean.TRUE).add(actorScope);
 	}
 	
 	@Override @Transactional
-	public TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode) {
-		return visible(actorsIdentifiers, scopesIdentifiers,actorCode, EntityManagerGetter.getInstance().get());
+	public TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode) {
+		return visible(actorsIdentifiers, scopesIdentifiers,ignoreExisting,actorCode, EntityManagerGetter.getInstance().get());
 	}
 	
 	/* unvisible */
 	
 	@SuppressWarnings("unchecked")
-	public static TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode,EntityManager entityManager) {
+	public static TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode,EntityManager entityManager) {
 		LogHelper.logInfo(String.format("unvisible actors <<%s>> from scopes <<%s>>",actorsIdentifiers,scopesIdentifiers), ActorScopeBusinessImpl.class);
 		Object[] objects = prepareVisible(actorsIdentifiers, scopesIdentifiers, Boolean.TRUE, entityManager);		
 		Collection<Actor> actors = (Collection<Actor>) objects[0];
@@ -107,8 +111,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		actors.forEach(actor -> {
 			unvisible(actor, scopes,actorCode, arguments,entityManager);
 		});
-		if(arguments.isPersistenceCreatableAndUpdatablesAndDeletablesEmpty())
+		
+		if(arguments.isPersistenceCreatableAndUpdatablesAndDeletablesEmpty() && !Boolean.TRUE.equals(ignoreExisting)) {
 			throw new RuntimeException(String.format("Il n'existe aucune visibilité à traiter pour les acteurs <<%s>> et les domaines <<%s>>", actorsIdentifiers,scopesIdentifiers));
+		}
 		TransactionResult transactionResult = new TransactionResult().setName("rendre invisible <<"+scopes+">> à <<"+actors+">>").setTupleName("domaine");
 		transactionResult.incrementNumberOfCreation(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getCreatables())));
 		transactionResult.incrementNumberOfUpdate(NumberHelper.getLong(CollectionHelper.getSize(arguments.getPersistenceArguments().getUpdatables())));
@@ -153,8 +159,8 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 	}
 	
 	@Override @Transactional
-	public TransactionResult unvisible(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers,String actorCode) {
-		return unvisible(actorsIdentifiers, scopesIdentifiers,actorCode, EntityManagerGetter.getInstance().get());
+	public TransactionResult unvisible(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode) {
+		return unvisible(actorsIdentifiers, scopesIdentifiers,ignoreExisting,actorCode, EntityManagerGetter.getInstance().get());
 	}
 	
 	/**/
@@ -271,10 +277,10 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			return;
 		for(String code : codes) {
 			ActorScope actorScope = ActorScopeQuerier.getInstance().readByActorCodeByScopeCode(actor.getCode(),code);
-			if(actorScope == null)
-				arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE));
+			if(actorScope == null) {
+				arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(CodeExecutor.getInstance().getOne(Scope.class, code)).setVisible(Boolean.FALSE));
 				//EntityCreator.getInstance().createOne(new ActorScope().setActor(actor).setScope(__inject__(ScopePersistence.class).readByBusinessIdentifier(code)).setVisible(Boolean.FALSE),entityManager);
-			else {
+			}else {
 				if(listener == null || Boolean.TRUE.equals(listener.isDeletable(actorScope))) {
 					arguments.getPersistenceArguments(Boolean.TRUE).getDeletables(Boolean.TRUE).add(actorScope);
 					//EntityDeletor.getInstance().deleteOne(actorScope, entityManager);

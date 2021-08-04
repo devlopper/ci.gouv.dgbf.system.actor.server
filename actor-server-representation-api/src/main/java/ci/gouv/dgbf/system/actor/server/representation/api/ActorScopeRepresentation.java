@@ -24,13 +24,15 @@ public interface ActorScopeRepresentation extends RepresentationEntity<ActorScop
 	@Path(PATH_VISIBLE)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON })
-	Response visible(@QueryParam("actors") List<String> actorsIdentifiers,@QueryParam("scopes") List<String> scopesIdentifiers,@QueryParam("code") String actorCode);
+	Response visible(@QueryParam("actors") List<String> actorsIdentifiers,@QueryParam("scopes") List<String> scopesIdentifiers
+			,@QueryParam("ignoreexisting") Boolean ignoreExisting,@QueryParam("code") String actorCode);
 	
 	@POST
 	@Path(PATH_UNVISIBLE)
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON })
-	Response unvisible(@QueryParam("actors") List<String> actorsIdentifiers,@QueryParam("scopes") List<String> scopesIdentifiers,@QueryParam("code") String actorCode);
+	Response unvisible(@QueryParam("actors") List<String> actorsIdentifiers,@QueryParam("scopes") List<String> scopesIdentifiers
+			,@QueryParam("ignoreexisting") Boolean ignoreExisting,@QueryParam("code") String actorCode);
 	
 	@POST
 	@Path(PATH_CREATE_BY_ACTORS_CODES_BY_SCOPES_CODES)

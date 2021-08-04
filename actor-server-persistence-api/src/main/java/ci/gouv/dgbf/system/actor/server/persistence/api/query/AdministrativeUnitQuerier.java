@@ -19,6 +19,7 @@ import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
 import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
@@ -27,6 +28,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<AdministrativeUnit> {
 
+	String PARAMETER_NAME_SEARCH = "search";
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, QueryName.COUNT_DYNAMIC);
+	
 	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
 	
@@ -63,6 +70,8 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 
 		@Override
 		public AdministrativeUnit readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(AdministrativeUnit.class,arguments.setQuery(null));
 			if(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readByIdentifierWithCodesNamesForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_IDENTIFIER));
 			return super.readOne(arguments);
@@ -71,6 +80,8 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<AdministrativeUnit> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(AdministrativeUnit.class,arguments.setQuery(null));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER))
 				return readBySectionIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI))
@@ -91,6 +102,8 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		@SuppressWarnings("unchecked")
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(AdministrativeUnit.class,arguments.setQuery(null));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_BY_SECTIONS_IDENTIFIERS))
 				return countBySectionsIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER))

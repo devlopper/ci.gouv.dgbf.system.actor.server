@@ -17,6 +17,7 @@ public class ActorScopeDto extends AbstractIdentifiableSystemScalarStringImpl im
 	private ActorDto actor;
 	private ScopeDto scope;
 	private Boolean visible;
+	private Boolean ignoreExisting;
 	private String actorAsString;
 	private String scopeAsString;
 

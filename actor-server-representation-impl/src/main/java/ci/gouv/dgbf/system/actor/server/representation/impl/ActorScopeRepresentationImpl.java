@@ -32,14 +32,14 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Response visible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,String actorCode) {
+	public Response visible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeBusiness.class).visible(actorsIdentifiers, scopesIdentifiers,actorCode);
+						return __inject__(ActorScopeBusiness.class).visible(actorsIdentifiers, scopesIdentifiers,ignoreExisting,actorCode);
 					}
 				};
 			}			
@@ -47,14 +47,14 @@ public class ActorScopeRepresentationImpl extends AbstractRepresentationEntityIm
 	}
 	
 	@Override
-	public Response unvisible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,String actorCode) {
+	public Response unvisible(List<String> actorsIdentifiers, List<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeBusiness.class).unvisible(actorsIdentifiers, scopesIdentifiers,actorCode);
+						return __inject__(ActorScopeBusiness.class).unvisible(actorsIdentifiers, scopesIdentifiers,ignoreExisting,actorCode);
 					}
 				};
 			}			

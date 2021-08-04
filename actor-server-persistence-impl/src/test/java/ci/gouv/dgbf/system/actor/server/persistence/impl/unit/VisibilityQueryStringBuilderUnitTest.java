@@ -136,7 +136,7 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void actor_section() {
-		assertThat(VisibilityQueryStringBuilder.Predicate.actorView(ScopeType.CODE_SECTION, "t", null, null, null)).doesNotContain("SECTION");
+		assertThat(VisibilityQueryStringBuilder.Predicate.actorView(ScopeType.CODE_SECTION, "t", null, null, null)).contains("SECTION");
 		
 	}
 	

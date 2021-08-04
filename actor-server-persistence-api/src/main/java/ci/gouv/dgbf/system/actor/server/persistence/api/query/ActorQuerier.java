@@ -65,6 +65,8 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_FIRST_NAME = "firstName";
 	String PARAMETER_NAME_LAST_NAMES = "lastNames";
 	
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
@@ -72,6 +74,8 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_PROFILES_IDENTIFIERS = "profilesIdentifiers";
 	String PARAMETER_NAME_PROFILE_CODE = "profileCode";
 	String PARAMETER_NAME_PROFILE_CODE_NULLABLE = PARAMETER_NAME_PROFILE_CODE+"Nullable";
+	
+	String PARAMETER_NAME_SCOPE_VISIBLE = "scopeVisible";
 	String PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER = "visibleScopeIdentifier";
 	String PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE = "visibleScopeTypeCode";
 	

@@ -21,12 +21,15 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Argume
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
@@ -79,7 +82,21 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 				builderArguments.getTuple().addJoins(JoinStringBuilder.getInstance().build(new JoinStringBuilder.Arguments()
 						.setMasterVariableName("t").setMasterFieldName(fieldName).setTupleName("ScopeFunction")));
 			}
-		}		
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Actor.class)) {
+			builderArguments.getTuple(Boolean.TRUE).add("Actor t");
+			if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER) != null || 
+					arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+				builderArguments.getTuple().addJoins("LEFT JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = t.identity.administrativeUnit");
+				if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+					builderArguments.getTuple().addJoins("LEFT JOIN Section section ON section = administrativeUnit.section");
+				}
+			}			
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(AdministrativeUnit.class)) {
+			builderArguments.getTuple(Boolean.TRUE).add("AdministrativeUnit t");
+			if(arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN Section section ON section = t.section");
+			}			
+		}
 	}
 	
 	@Override
@@ -89,6 +106,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateActor(arguments, builderArguments, predicate, filter);
 		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Locality.class)) {
 			populatePredicateLocality(arguments, builderArguments, predicate, filter);
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(AdministrativeUnit.class)) {
+			populatePredicateAdministrativeUnit(arguments, builderArguments, predicate, filter);
 		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Assignments.class)) {
 			populatePredicateAssignments(arguments, builderArguments, predicate, filter);
 		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Scope.class))
@@ -98,6 +117,22 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_TYPE);
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
+	}
+	
+	public static final String ADMINISTRATIVE_UNIT_PREDICATE_SEARCH = parenthesis(or(
+			LikeStringBuilder.getInstance().build("t",AdministrativeUnit.FIELD_CODE, AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", AdministrativeUnit.FIELD_NAME,AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH)
+	));
+	protected void populatePredicateAdministrativeUnit(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH) != null) {
+			predicate.add(ADMINISTRATIVE_UNIT_PREDICATE_SEARCH);
+			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH),"");
+			filter.addField(AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}
+		if(arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+			predicate.add(String.format("section.identifier = :%s", AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
+			filter.addFieldEquals(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
+		}
 	}
 	
 	public static final String ACTOR_PREDICATE_SEARCH = parenthesis(or(
@@ -115,13 +150,21 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		}
 		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER) != null) {
 			String visible = VisibilityQueryStringBuilder.Predicate.actorView((String)arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_TYPE_CODE)
-					,"tt","t", Boolean.TRUE,null);
+					,"tt","t", Boolean.TRUE,!arguments.getFilterFieldValueAsBoolean(Boolean.TRUE,ActorQuerier.PARAMETER_NAME_SCOPE_VISIBLE));
 			predicate.add(String.format("EXISTS(SELECT tt FROM Scope tt WHERE %s)", visible));
 			filter.addField("scopeIdentifier", arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_VISIBLE_SCOPE_IDENTIFIER));
 		}
 		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER) != null) {
 			predicate.add(String.format("EXISTS(SELECT ap FROM ActorProfile ap WHERE ap.actor = t AND ap.profile.identifier = :%s)", ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER));
 			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_PROFILE_IDENTIFIER, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER) != null) {
+			predicate.add(String.format("administrativeUnit.identifier = :%s", ActorQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER));
+			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+			predicate.add(String.format("section.identifier = :%s", ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
+			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
 		}
 	}
 	
@@ -239,6 +282,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("i", ExecutionImputation.FIELD_SECTION_CODE,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE
 					,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_ACTION_CODE,ExecutionImputation.FIELD_ACTIVITY_CODE
 					,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE);
+		}else if(arguments.getQuery().getIdentifier().equals(ActorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
+			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t.identity",Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES);
+		}else if(arguments.getQuery().getIdentifier().equals(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
+			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",AdministrativeUnit.FIELD_CODE);
 		}
 	}
 	

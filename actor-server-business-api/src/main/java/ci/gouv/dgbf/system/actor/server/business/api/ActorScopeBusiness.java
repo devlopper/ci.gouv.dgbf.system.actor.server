@@ -33,11 +33,11 @@ public interface ActorScopeBusiness extends BusinessEntity<ActorScope> {
 	
 	String VISIBLE = "ActorScope.visible";
 	@Transactional
-	TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode);
+	TransactionResult visible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode);
 	
 	String UNVISIBLE = "ActorScope.unvisible";
 	@Transactional
-	TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode);
+	TransactionResult unvisible(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,Boolean ignoreExisting,String actorCode);
 	
 	String DELETE_BY_ACTORS_IDENTIFIERS_BY_SCOPES_IDENTIFIERS = "ActorScope.deleteByActorsIdentifiersByScopesIdentifiers";
 	@Transactional

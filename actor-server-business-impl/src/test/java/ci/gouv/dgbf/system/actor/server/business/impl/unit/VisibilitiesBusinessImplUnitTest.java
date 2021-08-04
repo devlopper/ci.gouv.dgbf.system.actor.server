@@ -59,7 +59,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ActorScopeBusinessImpl.visible(List.of("1"), List.of("s02"),"test", entityManager);
+				ActorScopeBusinessImpl.visible(List.of("1"), List.of("s02"),null,"test", entityManager);
 			}
 		}.run();
 		
@@ -90,7 +90,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ActorScopeBusinessImpl.visible(List.of("1"), List.of("s03"),"test", entityManager);
+				ActorScopeBusinessImpl.visible(List.of("1"), List.of("s03"),null,"test", entityManager);
 			}
 		}.run();
 		
@@ -111,10 +111,20 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ActorScopeBusinessImpl.visible(List.of("1"), List.of("s01"),"test", entityManager);
+					ActorScopeBusinessImpl.visible(List.of("1"), List.of("s01"),null,"test", entityManager);
 				}
 			}.run();
 		});
+	}
+	
+	@Test
+	public void visible_section_existing_visible_ignore() {		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorScopeBusinessImpl.visible(List.of("1"), List.of("s01"),Boolean.TRUE,"test", entityManager);
+			}
+		}.run();
 	}
 	
 	@Test
@@ -123,10 +133,32 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("sXX"),"test", entityManager);
+					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("sXX"),null,"test", entityManager);
 				}
 			}.run();
 		});
+	}
+	
+	/*@Test
+	public void unvisible_section_unvisible() {		
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"),null,"test", entityManager);
+				}
+			}.run();
+		});
+	}*/
+	
+	@Test
+	public void unvisible_section_unvisible_ignore() {				
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s02"),null,"test", entityManager);
+			}
+		}.run();		
 	}
 	
 	@Test
@@ -145,7 +177,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"),"test", entityManager);
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s03"),null,"test", entityManager);
 			}
 		}.run();
 		
@@ -176,7 +208,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s04"),"test", entityManager);
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s04"),null,"test", entityManager);
 			}
 		}.run();
 		
@@ -207,7 +239,7 @@ public class VisibilitiesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s01"),"test", entityManager);
+				ActorScopeBusinessImpl.unvisible(List.of("1"), List.of("s01"),null,"test", entityManager);
 			}
 		}.run();
 		

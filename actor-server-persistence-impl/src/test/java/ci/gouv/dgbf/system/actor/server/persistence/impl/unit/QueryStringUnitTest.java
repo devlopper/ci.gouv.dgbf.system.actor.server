@@ -14,7 +14,7 @@ public class QueryStringUnitTest extends AbstractWeldUnitTest {
 	@Test
 	public void actor_predicate_search(){
 		assertThat(RuntimeQueryStringBuilderImpl.ACTOR_PREDICATE_SEARCH)
-		.isEqualTo("LOWER(t.code) LIKE LOWER(:search) OR LOWER(t.identity.firstName) LIKE LOWER(:search) OR LOWER(t.identity.lastNames) LIKE LOWER(:search) OR LOWER(t.identity.electronicMailAddress) LIKE LOWER(:search)");
+		.isEqualTo("(LOWER(t.code) LIKE LOWER(:search) OR LOWER(t.identity.firstName) LIKE LOWER(:search) OR LOWER(t.identity.lastNames) LIKE LOWER(:search) OR LOWER(t.identity.electronicMailAddress) LIKE LOWER(:search))");
 	}
 	
 	@Test

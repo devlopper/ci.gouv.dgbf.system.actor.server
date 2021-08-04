@@ -37,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.EntityCounterImpl implements Serializable {
@@ -55,6 +56,9 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 			return ScopeOfTypeActivityQuerier.getInstance().count(arguments);
 		if(ScopeOfTypeImputationQuerier.isProcessable(arguments))
 			return ScopeOfTypeImputationQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Section.class)))
+			return SectionQuerier.getInstance().count(arguments);
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ScopeType.class)))
 			return ScopeTypeQuerier.getInstance().count(arguments);
