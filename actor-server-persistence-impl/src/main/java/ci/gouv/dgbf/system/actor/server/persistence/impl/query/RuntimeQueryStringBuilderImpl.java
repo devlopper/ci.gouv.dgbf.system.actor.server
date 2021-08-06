@@ -21,11 +21,13 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Argume
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
@@ -112,6 +114,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateAssignments(arguments, builderArguments, predicate, filter);
 		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Scope.class))
 			populatePredicateScope(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(ActorScopeRequest.class))
+			populatePredicateActorScopeRequest(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
@@ -207,6 +211,31 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(SCOPE_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ScopeQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}
+	}
+	
+	protected void populatePredicateActorScopeRequest(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.actor.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS));
+			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.scope.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS));
+			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS, arguments);
+		}
+		Boolean processed = arguments.getFilterFieldValueAsBoolean(null,ActorScopeRequestQuerier.PARAMETER_NAME_PROCESSED);
+		if(processed != null) {
+			if(processed) {
+				Boolean granted = arguments.getFilterFieldValueAsBoolean(null,ActorScopeRequestQuerier.PARAMETER_NAME_GRANTED);
+				if(granted == null) {
+					predicate.add("t.granted IS NOT NULL");
+				}else {
+					predicate.add(String.format("t.granted = :%s", ActorScopeRequestQuerier.PARAMETER_NAME_GRANTED));
+					filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_GRANTED, arguments);
+				}				
+			}else {
+				predicate.add("t.granted IS NULL");
+			}		
 		}
 	}
 	

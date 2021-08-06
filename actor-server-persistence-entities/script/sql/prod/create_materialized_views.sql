@@ -328,10 +328,10 @@ COMPLETE
 AS
 SELECT n.uuid AS "IDENTIFIANT",n.nat_code AS "CODE",n.nat_liblg AS "LIBELLE"
 FROM NEC.nature_economique n,NEC.TABLE_REFERENTIEL tref,NEC.VERSION_REFERENTIEL vref
-WHERE n.nat_tref = tref.uuid (+) AND tref.tref_vers_id = vref.uuid AND vref.VERS_CODE='312' AND n.nat_imputable=1 AND n.nat_nat is null;
+WHERE n.nat_tref = tref.uuid (+) AND tref.tref_vers_id = vref.uuid AND vref.VERS_CODE='312' AND n.nat_imputable=1 
+AND LENGTH(n.nat_code) = 6  /*AND n.nat_nat is null*/;
 --ALTER TABLE VM_APP_NATURE_DEPENSE ADD CONSTRAINT VM_APP_NATURE_DEPENSE_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_NATURE_ECONOMIQUE ADD CONSTRAINT VM_APP_NATURE_ECO_UK_CODE UNIQUE (CODE);
-
 
 -- Domaine
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_DOMAINE;
