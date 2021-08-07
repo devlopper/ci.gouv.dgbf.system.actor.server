@@ -101,6 +101,23 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 	
 	/**/
 	
+	public static TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests, String actorCode,EntityManager entityManager) {
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		actorScopeRequests.forEach(actorScopeRequest -> {
+			if(actorScopeRequest.getGranted() == null)
+				throwablesMessages.add(String.format("Spécifier explicitement la valeur accordée de %s", actorScopeRequest.getIdentifier()));
+			if(Boolean.FALSE.equals(actorScopeRequest.getGranted()) && StringHelper.isBlank(actorScopeRequest.getComment()))
+				throwablesMessages.add(String.format("Spécifier le motif de rejet de %s", actorScopeRequest.getIdentifier()));
+			actorScopeRequest.set__auditFunctionality__("Traitement de demande de domaine").set__auditWho__(actorCode);
+		});
+		throwablesMessages.throwIfNotEmpty();
+		TransactionResult transactionResult = new TransactionResult().setName(String.format("Traitement de demande de domaines")).setTupleName("Demande domaine traitée");
+		EntityUpdater.getInstance().update(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, actorScopeRequests)).setEntityManager(entityManager));
+		transactionResult.incrementNumberOfCreation(Long.valueOf(actorScopeRequests.size()));
+		transactionResult.log(ActorScopeRequestBusinessImpl.class);
+		return transactionResult;
+	}
+	
 	public static TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(identifiers))
 			throw new RuntimeException("Identifiants requis");
@@ -109,26 +126,20 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 		Collection<ActorScopeRequest> actorScopeRequests = EntityFinder.getInstance().findMany(ActorScopeRequest.class, identifiers);
 		if(CollectionHelper.isEmpty(actorScopeRequests))
 			throw new RuntimeException("domaines à annuler requis");
-		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		actorScopeRequests.forEach(actorScopeRequest -> {
 			actorScopeRequest.setGranted(MapHelper.readByKey(grants, actorScopeRequest.getIdentifier()));
 			actorScopeRequest.setComment(MapHelper.readByKey(comments, actorScopeRequest.getIdentifier()));
-			if(actorScopeRequest.getGranted() == null)
-				throwablesMessages.add(String.format("Spécifier explicitement la valeur accordée de %s", actorScopeRequest.getIdentifier()));
-			if(Boolean.FALSE.equals(actorScopeRequest.getGranted()) && StringHelper.isBlank(actorScopeRequest.getComment()))
-				throwablesMessages.add(String.format("Spécifier le motif de rejet de %s", actorScopeRequest.getIdentifier()));
-			actorScopeRequest.set__auditFunctionality__("Traitement de demande de domaine").set__auditWho__(actorCode);
 		});
-		throwablesMessages.throwIfNotEmpty();
-		TransactionResult transactionResult = new TransactionResult().setName(String.format("Traitement de demande de domaines %s",identifiers)).setTupleName("Demande domaine traitée");
-		EntityUpdater.getInstance().update(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, actorScopeRequests)).setEntityManager(entityManager));
-		transactionResult.incrementNumberOfCreation(Long.valueOf(actorScopeRequests.size()));
-		transactionResult.log(ActorScopeRequestBusinessImpl.class);
-		return transactionResult;
+		return process(actorScopeRequests, actorCode, entityManager);
 	}
 	
 	@Override @Transactional
 	public TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode) {
 		return process(identifiers,grants,comments,actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	@Override @Transactional
+	public TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests, String actorCode) {
+		return process(actorScopeRequests, actorCode, EntityManagerGetter.getInstance().get());
 	}
 }
