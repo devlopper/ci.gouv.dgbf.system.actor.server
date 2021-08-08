@@ -106,7 +106,7 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 		actorScopeRequests.forEach(actorScopeRequest -> {
 			if(actorScopeRequest.getGranted() == null)
 				throwablesMessages.add(String.format("Spécifier explicitement la valeur accordée de %s", actorScopeRequest.getIdentifier()));
-			if(Boolean.FALSE.equals(actorScopeRequest.getGranted()) && StringHelper.isBlank(actorScopeRequest.getComment()))
+			if(Boolean.FALSE.equals(actorScopeRequest.getGranted()) && StringHelper.isBlank(actorScopeRequest.getProcessingComment()))
 				throwablesMessages.add(String.format("Spécifier le motif de rejet de %s", actorScopeRequest.getIdentifier()));
 			actorScopeRequest.set__auditFunctionality__("Traitement de demande de domaine").set__auditWho__(actorCode);
 		});
