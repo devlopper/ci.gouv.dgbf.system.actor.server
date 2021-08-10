@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.impl.ActorScopeRequestBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 
 public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
@@ -131,15 +132,17 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void process_scope_joined_grantedNull() {
-		Long count = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
-		assertThat(count).isEqualTo(3);
+		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
+		Long actorScopeCount = DynamicManyExecutor.getInstance().count(ActorScope.class);
+		assertThat(actorScopeRequestCount).isEqualTo(3);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
 				ActorScopeRequestBusinessImpl.process(List.of("1"),Map.of("1",Boolean.TRUE),null,"test", entityManager);
 			}
 		}.run();
-		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(count);
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(actorScopeRequestCount);
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScope.class)).isEqualTo(actorScopeCount+1);
 	}
 	
 	@Test

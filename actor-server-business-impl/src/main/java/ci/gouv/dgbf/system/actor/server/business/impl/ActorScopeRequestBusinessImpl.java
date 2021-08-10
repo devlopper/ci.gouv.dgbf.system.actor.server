@@ -115,6 +115,14 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 		EntityUpdater.getInstance().update(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, actorScopeRequests)).setEntityManager(entityManager));
 		transactionResult.incrementNumberOfCreation(Long.valueOf(actorScopeRequests.size()));
 		transactionResult.log(ActorScopeRequestBusinessImpl.class);
+		
+		for(ActorScopeRequest actorScopeRequest : actorScopeRequests) {
+			if(Boolean.TRUE.equals(actorScopeRequest.getGranted())) {
+				ActorScopeBusinessImpl.visible(List.of(actorScopeRequest.getActor().getIdentifier()), List.of(actorScopeRequest.getScope().getIdentifier())
+						, Boolean.TRUE, actorCode,entityManager);
+			}
+		}
+		
 		return transactionResult;
 	}
 	
