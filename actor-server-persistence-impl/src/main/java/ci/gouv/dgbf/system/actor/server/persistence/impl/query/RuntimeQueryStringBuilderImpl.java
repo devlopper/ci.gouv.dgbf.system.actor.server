@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.string.JoinStringBuilder;
 import org.cyk.utility.persistence.server.query.string.LikeStringBuilder;
@@ -169,6 +170,12 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
 			predicate.add(String.format("section.identifier = :%s", ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
 			filter.addFieldEquals(ActorQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorQuerier.PARAMETER_NAME_IS_ACTOR_SCOPE_REQUEST_WHERE_GRANTED_IS_NULL_EXIST) != null) {
+			String string = "EXISTS(SELECT asr FROM ActorScopeRequest asr WHERE asr.actor = t AND asr.granted IS NULL)";
+			if(!arguments.getFilterFieldValueAsBoolean(Boolean.TRUE,ActorQuerier.PARAMETER_NAME_IS_ACTOR_SCOPE_REQUEST_WHERE_GRANTED_IS_NULL_EXIST))
+				string = Language.Where.not(string);
+			predicate.add(string);
 		}
 	}
 	

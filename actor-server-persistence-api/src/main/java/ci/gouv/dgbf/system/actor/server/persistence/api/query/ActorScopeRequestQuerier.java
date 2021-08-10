@@ -26,6 +26,8 @@ public interface ActorScopeRequestQuerier extends Querier {
 	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";
 	String PARAMETER_NAME_PROCESSED = "processed";
 	String PARAMETER_NAME_GRANTED = "granted";
+		
+	String FLAG_PREPARE_PROCESS = "prepareprocess";
 	
 	ActorScopeRequest readOne(QueryExecutorArguments arguments);
 	Collection<ActorScopeRequest> readMany(QueryExecutorArguments arguments);

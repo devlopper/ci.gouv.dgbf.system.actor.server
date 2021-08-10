@@ -27,7 +27,7 @@ public class ActorPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void actors(){
-		assertActors(null, null, null
+		assertActors(null, null, null,null
 		, new String[] {Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION}
 		, null
 		, new Object[][] { 
@@ -36,7 +36,7 @@ public class ActorPersistenceImplUnitTest extends AbstractUnitTestMemory {
 			,{"3","Monsieur","Komenan","Yao Christian","Fonctionnaire", "kycdev@gmail02.com", "DTI Direction des traitements informatiques", "327 Budget", "Chef de service",null}
 		}, Boolean.TRUE);
 		
-		assertActors(null, null, null
+		assertActors(null, null, null,null
 		, new String[] {Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS}
 		, null
 		, new Object[][] { 
@@ -44,6 +44,21 @@ public class ActorPersistenceImplUnitTest extends AbstractUnitTestMemory {
 			,{"2",null,null,null,null, "admin@mail.com", null, null, null,"Admin Administrateur"}
 			,{"3",null,null,null,null, "kycdev@gmail02.com", null, null, null,"Komenan Yao Christian"}
 		}, Boolean.TRUE);
+		
+		assertActors(null, null, null,Boolean.TRUE
+				, new String[] {Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS}
+				, null
+				, new Object[][] { 
+					{"1",null,null,null,null, "kycdev@gmail.com", null, null, null,"Komenan Yao Christian"}
+				}, Boolean.TRUE);
+		
+		assertActors(null, null, null,Boolean.FALSE
+				, new String[] {Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS}
+				, null
+				, new Object[][] { 
+					{"2",null,null,null,null, "admin@mail.com", null, null, null,"Admin Administrateur"}
+					,{"3",null,null,null,null, "kycdev@gmail02.com", null, null, null,"Komenan Yao Christian"}
+				}, Boolean.TRUE);
 	}
 	
 	@Test

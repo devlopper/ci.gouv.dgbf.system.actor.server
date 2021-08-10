@@ -65,6 +65,8 @@ public interface ActorQuerier extends Querier {
 	String PARAMETER_NAME_FIRST_NAME = "firstName";
 	String PARAMETER_NAME_LAST_NAMES = "lastNames";
 	
+	String PARAMETER_NAME_IS_ACTOR_SCOPE_REQUEST_WHERE_GRANTED_IS_NULL_EXIST = "isActorScopeRequestWhereGrantedIsNullExist";
+	
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeUnitIdentifier";
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
