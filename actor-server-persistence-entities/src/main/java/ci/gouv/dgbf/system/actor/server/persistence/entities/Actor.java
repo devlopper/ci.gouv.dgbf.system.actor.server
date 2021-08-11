@@ -253,4 +253,6 @@ public class Actor extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String COLUMN_IDENTITY = "IDENTITE";
 	public static final String COLUMN_NOTATION = "NOTATION";
 	public static final String COLUMN_COLOR = "COULEUR";
+	
+	public static final String LABEL = "Acteur";
 }

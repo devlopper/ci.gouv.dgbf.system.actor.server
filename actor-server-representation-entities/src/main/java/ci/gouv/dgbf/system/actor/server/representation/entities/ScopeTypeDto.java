@@ -14,5 +14,5 @@ public class ScopeTypeDto extends AbstractIdentifiableSystemScalarStringIdentifi
 	private static final long serialVersionUID = 1L;
 	
 	private Byte orderNumber;
-	
+	private Boolean requestable;
 }

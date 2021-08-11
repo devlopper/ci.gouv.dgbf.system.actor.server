@@ -22,6 +22,7 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	private static final long serialVersionUID = 1L;
 	
 	@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
+	@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
 	
 	@Override
 	public ScopeType setIdentifier(String identifier) {
@@ -39,10 +40,12 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	}
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_REQUESTABLE = "requestable";
 	
 	public static final String TABLE_NAME = "TYPE_DOMAINE";
 	
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
+	public static final String COLUMN_REQUESTABLE = "DEMANDABLE";
 
 	public static final String CODE_AB = "AB";
 	public static final String CODE_SECTION = "SECTION";
@@ -67,4 +70,6 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	
 	public static final String[] CODES = new String[]{ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION
 			,ScopeType.CODE_UA,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION};
+	
+	public static final String LABEL = "Type domaine visibilité";
 }

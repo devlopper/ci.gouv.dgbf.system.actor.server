@@ -7,8 +7,10 @@ import static org.cyk.utility.persistence.query.Language.Where.isNull;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -130,7 +132,16 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 	
 	protected void populatePredicateScopeType(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ScopeTypeQuerier.PARAMETER_NAME_IDENTIFIER);
-		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ScopeTypeQuerier.PARAMETER_NAME_CODE);
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ScopeTypeQuerier.PARAMETER_NAME_CODE);		
+		if(arguments.getFilterField(ScopeTypeQuerier.PARAMETER_NAME_REQUESTABLE) != null) {
+			Boolean requestable = arguments.getFilterFieldValueAsBoolean(null,ScopeTypeQuerier.PARAMETER_NAME_REQUESTABLE);
+			if(requestable == null)
+				predicate.add("t.requestable IS NOT NULL");
+			else {
+				predicate.add(String.format("t.requestable = :%s", ScopeTypeQuerier.PARAMETER_NAME_REQUESTABLE));
+				filter.addField(ScopeTypeQuerier.PARAMETER_NAME_REQUESTABLE, requestable);
+			}
+		}
 	}
 	
 	public static final String ADMINISTRATIVE_UNIT_PREDICATE_SEARCH = parenthesis(or(
@@ -332,6 +343,13 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		}else if(arguments.getQuery().getIdentifier().equals(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",AdministrativeUnit.FIELD_CODE);
 		}
+	}
+	
+	@Override
+	protected Map<String, SortOrder> getDefaultSortOrders(QueryExecutorArguments arguments) {
+		if(arguments.getQuery().getIdentifier().equals(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+			return Map.of(ScopeType.FIELD_ORDER_NUMBER,SortOrder.ASCENDING);
+		return super.getDefaultSortOrders(arguments);
 	}
 	
 	private static String getScopeFunctionFieldNameFromIdentifierParameterName(String fieldName) {

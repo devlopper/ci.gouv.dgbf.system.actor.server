@@ -56,11 +56,13 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	public static final String FIELDS_ACTOR_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringScopeAsStringGrantedAndGrantedAsString";
 	public static final String FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsString";
 	
-	public static final String TABLE_NAME = "TA_DEMANDE_DOMAINE";	
+	public static final String TABLE_NAME = "TA_DEMANDE_DOMAINE";
 	
 	public static final String COLUMN_SCOPE = "DOMAINE";
 	public static final String COLUMN___AUDIT_WHO__ = "AUDIT_ACTEUR";
 	public static final String COLUMN___AUDIT_FUNCTIONALITY__ = "AUDIT_FONCTIONNALITE";
 	public static final String COLUMN___AUDIT_WHAT__ = "AUDIT_ACTION";
 	public static final String COLUMN___AUDIT_WHEN__ = "AUDIT_DATE";
+	
+	public static final String LABEL = "Demande "+Scope.LABEL;
 }

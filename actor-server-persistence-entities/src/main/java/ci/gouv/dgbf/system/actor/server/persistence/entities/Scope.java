@@ -77,4 +77,6 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	public static final String COLUMN_TYPE = "type";
 	
 	public static final String TABLE_NAME = "VM_APP_DOMAINE";
+	
+	public static final String LABEL = "Domaine visibilité";
 }

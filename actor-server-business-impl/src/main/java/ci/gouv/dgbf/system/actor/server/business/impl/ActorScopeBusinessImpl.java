@@ -34,7 +34,6 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -573,7 +572,11 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 		//	deleteMany(actorScopes);
 		
 		if(CollectionHelper.isNotEmpty(childrenInfos)) {
-			Collection<String> identifiers = CollectionHelper.cast(String.class, FieldHelper.readSystemIdentifiers(ScopeQuerier.getInstance().readByCodesByTypesCodes(codes, List.of(typeCode))));
+			Collection<Scope> scopes = EntityManagerGetter.getInstance().get()
+					.createQuery("SELECT t FROM Scope t WHERE t.code IN :codes AND t.type.code IN :typesCodes", Scope.class)
+					.setParameter("codes", codes).setParameter("typesCodes", List.of(typeCode)).getResultList();
+			Collection<String> identifiers = CollectionHelper.cast(String.class, FieldHelper.readSystemIdentifiers(scopes));
+			//Collection<String> identifiers = CollectionHelper.cast(String.class, FieldHelper.readSystemIdentifiers(ScopeQuerier.getInstance().readByCodesByTypesCodes(codes, List.of(typeCode))));
 			for(Object[] childInfo : childrenInfos) {
 				@SuppressWarnings("unchecked")
 				Collection<ActorScope> children = (Collection<ActorScope>) childInfo[2];

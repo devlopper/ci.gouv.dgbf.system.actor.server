@@ -2,8 +2,10 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Query;
@@ -24,6 +26,26 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 	}
 
 	@Test
+	public void scopeTypes(){	
+		assertThat(EntityCounter.getInstance().count(ScopeType.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)))).isEqualTo(7);
+		
+		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("SECTION","UA","USB","ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE");
+		
+		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).setSortOrders(Map.of("code",SortOrder.ASCENDING)))
+				.stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE","SECTION","UA","USB");
+		
+		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).setSortOrders(Map.of("code",SortOrder.DESCENDING)))
+				.stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("USB","UA","SECTION","LOCALITE","CATEGORIE_ACTIVITE","ACTIVITE","ACTION");
+	}
+	
+	@Test
 	public void scopes_section(){	
 		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
@@ -37,16 +59,6 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
 				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"UA")).stream().map(x -> x.getCode()).collect(Collectors.toList()))
 			.containsExactly("ua01","ua02","ua10");
-	}
-	
-	@Test
-	public void scopeTypes(){	
-		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
-				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))).stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly("ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE","SECTION","UA","USB");
-		
-		assertThat(EntityCounter.getInstance().count(ScopeType.class, new QueryExecutorArguments()
-				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)))).isEqualTo(7);
 	}
 	
 	@Test

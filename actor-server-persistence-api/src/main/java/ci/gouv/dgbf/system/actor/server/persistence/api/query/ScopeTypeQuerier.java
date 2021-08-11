@@ -40,6 +40,8 @@ public interface ScopeTypeQuerier extends Querier.CodableAndNamable<ScopeType> {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(ScopeType.class, QueryName.COUNT_DYNAMIC);
 	
+	String PARAMETER_NAME_REQUESTABLE = "requestable";
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<ScopeType> implements ScopeTypeQuerier,Serializable {	
