@@ -14,5 +14,6 @@ public class ActorScopeRequestDto extends AbstractActorRequestDto implements Ser
 
 	private ScopeDto scope;
 	private String scopeAsString;
+	private String scopeTypeAsString;
 	private List<String> scopesIdentifiers;
 }

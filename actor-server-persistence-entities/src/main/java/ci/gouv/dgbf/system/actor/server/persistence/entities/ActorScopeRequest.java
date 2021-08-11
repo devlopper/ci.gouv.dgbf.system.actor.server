@@ -35,6 +35,7 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private Scope scope;
 	@Transient private String scopeAsString;
+	@Transient private String scopeTypeAsString;
 	
 	@Override
 	public ActorScopeRequest setActor(Actor actor) {
@@ -53,6 +54,7 @@ public class ActorScopeRequest extends AbstractActorRequest implements Serializa
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPE_STRING = "scopeAsString";
 	public static final String FIELDS_ACTOR_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringScopeAsStringGrantedAndGrantedAsString";
+	public static final String FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsString";
 	
 	public static final String TABLE_NAME = "TA_DEMANDE_DOMAINE";	
 	
