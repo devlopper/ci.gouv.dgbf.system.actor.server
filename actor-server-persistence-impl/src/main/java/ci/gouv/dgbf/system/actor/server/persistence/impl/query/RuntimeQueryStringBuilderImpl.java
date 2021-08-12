@@ -246,6 +246,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.actor.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS));
 			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS, arguments);
 		}
+		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.scope.type.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS));
+			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS, arguments);
+		}
 		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.scope.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS));
 			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPES_IDENTIFIERS, arguments);

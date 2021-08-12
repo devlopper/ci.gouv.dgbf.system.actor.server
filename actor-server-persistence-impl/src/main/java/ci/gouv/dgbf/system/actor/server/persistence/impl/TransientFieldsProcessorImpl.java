@@ -28,6 +28,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitReader;
@@ -100,6 +101,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new ActorCodeFirstNameLastNamesSectionAdministrativeUnitReader().readThenSet(actors, null);
 			else if(Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION.equals(fieldName))
 				new ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader().readThenSet(actors, null);
+			else if(Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION.equals(fieldName))
+				new ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader().readThenSet(actors, null);
 		}
 	}
 	
