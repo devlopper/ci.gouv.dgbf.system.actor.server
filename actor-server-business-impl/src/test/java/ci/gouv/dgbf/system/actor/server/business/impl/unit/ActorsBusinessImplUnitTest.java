@@ -58,6 +58,29 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
+	public void record_scope_notJoined_many_throwException() {
+		Long count = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
+		assertThat(count).isEqualTo(3);
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ActorScopeRequestBusinessImpl.record(List.of("1"), List.of("s01"),"test",null, entityManager);
+				}
+			}.run();
+			
+			assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(count+1);
+			
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					ActorScopeRequestBusinessImpl.record(List.of("1"), List.of("s01"),"test",null, entityManager);
+				}
+			}.run();
+		});
+	}
+	
+	@Test
 	public void record_scope_joined_throwException() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Transaction.AbstractImpl() {

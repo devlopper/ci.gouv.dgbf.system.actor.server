@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
@@ -40,11 +41,12 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 		if(StringHelper.isBlank(actorCode))
 			throw new RuntimeException("Nom utilisateur requis");
 		@SuppressWarnings("unchecked")
-		List<Object[]> arrays = entityManager.createQuery("SELECT t.actor.identifier,t.scope.identifier FROM ActorScopeRequest t WHERE t.actor.identifier IN :actorsIdentifiers"
+		List<Object[]> arrays = entityManager.createQuery("SELECT t.actor.identifier,t.scope.identifier,t.actor.code,t.scope.code FROM ActorScopeRequest t WHERE t.actor.identifier IN :actorsIdentifiers"
 				+ " AND t.scope.identifier IN :scopesIdentifiers").setParameter("actorsIdentifiers", actorsIdentifiers).setParameter("scopesIdentifiers", scopesIdentifiers)
 				.getResultList();
 		if(CollectionHelper.isNotEmpty(arrays))
-			throw new RuntimeException(String.format("Il y'a %s demande(s) à valider",arrays.size()));
+			throw new RuntimeException(String.format("Il existe %s demande(s) en cours de validation. <<%s>>",arrays.size()
+					,arrays.stream().map(a -> a[2]+","+a[3]).collect(Collectors.joining("|"))));
 		Collection<Actor> actors = EntityFinder.getInstance().findMany(Actor.class, actorsIdentifiers);
 		if(CollectionHelper.isEmpty(actors))
 			throw new RuntimeException("acteurs requis");
