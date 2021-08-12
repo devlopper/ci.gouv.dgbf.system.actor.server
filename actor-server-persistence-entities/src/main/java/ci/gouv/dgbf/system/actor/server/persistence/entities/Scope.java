@@ -64,6 +64,7 @@ public class Scope extends AbstractIdentifiableSystemScalarStringIdentifiableBus
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_AS_STRING = "sectionAsString";
 	public static final String FIELD_ACTION_AS_STRING = "actionAsString";

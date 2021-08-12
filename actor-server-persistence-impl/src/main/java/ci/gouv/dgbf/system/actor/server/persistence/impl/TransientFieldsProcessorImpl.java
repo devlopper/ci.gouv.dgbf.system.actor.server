@@ -42,6 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHolder
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -84,6 +85,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		for(String fieldName : fieldsNames) {
 			if(Scope.FIELD_VISIBLE.equals(fieldName) || Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName))
 				new ScopeVisiblesReader(filter).setStringify(Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName)).readThenSet(scopes, null);
+			else if(Scope.FIELD_TYPE_AS_STRING.equals(fieldName))
+				new ScopeTypeAsStringsReader().readThenSet(scopes, null);
 		}
 	}
 	

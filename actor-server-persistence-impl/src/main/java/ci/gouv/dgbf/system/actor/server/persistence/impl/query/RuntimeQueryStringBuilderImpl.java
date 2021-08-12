@@ -9,7 +9,6 @@ import static org.cyk.utility.persistence.query.Language.Where.or;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
@@ -234,7 +233,9 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			
 			if(StringHelper.isNotBlank(actorCode))
 				filter.addField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);			
-		}else if(CollectionHelper.contains(arguments.getFlags(),ScopeQuerier.FLAG_SEARCH)) {
+		}
+		//if(CollectionHelper.contains(arguments.getFlags(),ScopeQuerier.FLAG_SEARCH)) {
+		if(arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_SEARCH) != null) {
 			predicate.add(SCOPE_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(ScopeQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
