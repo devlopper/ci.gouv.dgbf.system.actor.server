@@ -27,6 +27,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -127,6 +128,20 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_TYPE);
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
+	}
+	
+	protected void populatePredicateProfile(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileQuerier.PARAMETER_NAME_IDENTIFIER);
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileQuerier.PARAMETER_NAME_CODE);		
+		if(arguments.getFilterField(ProfileQuerier.PARAMETER_NAME_REQUESTABLE) != null) {
+			Boolean requestable = arguments.getFilterFieldValueAsBoolean(null,ProfileQuerier.PARAMETER_NAME_REQUESTABLE);
+			if(requestable == null)
+				predicate.add("t.requestable IS NOT NULL");
+			else {
+				predicate.add(String.format("t.requestable = :%s", ProfileQuerier.PARAMETER_NAME_REQUESTABLE));
+				filter.addField(ProfileQuerier.PARAMETER_NAME_REQUESTABLE, requestable);
+			}
+		}
 	}
 	
 	protected void populatePredicateScopeType(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {

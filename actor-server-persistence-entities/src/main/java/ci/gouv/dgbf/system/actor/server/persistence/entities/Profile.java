@@ -31,9 +31,10 @@ import lombok.experimental.Accessors;
 public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ProfileType type;
-	//@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
-	//@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
+	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull 	
+	private ProfileType type;
+	@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
+	@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
 	
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<String> privilegesAsStrings;
@@ -103,4 +104,6 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String CODE_CHARGE_ETUDE_DAS = "CEDAS";
 	public static final String CODE_RESPONSABLE_FONCTION_FINANCIERE_MINISTERE = "RFFIM";
 	public static final String CODE_REQUERANT_CELIOPE = "REQUERANT_CELIOPE";
+	
+	public static final String LABEL = "Profile";
 }

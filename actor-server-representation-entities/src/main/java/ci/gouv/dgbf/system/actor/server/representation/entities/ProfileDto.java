@@ -20,4 +20,7 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	
 	private ArrayList<String> creatablePrivilegesIdentifiers;
 	private ArrayList<String> deletablePrivilegesIdentifiers;
+	
+	private Byte orderNumber;
+	private Boolean requestable;
 }

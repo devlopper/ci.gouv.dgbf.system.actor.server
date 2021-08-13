@@ -7,40 +7,90 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
+import org.cyk.utility.business.server.EntityCreator;
+import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.security.keycloak.server.Role;
 import org.cyk.utility.security.keycloak.server.RoleManager;
-import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
-import org.cyk.utility.server.business.BusinessFunctionCreator;
-import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
-import ci.gouv.dgbf.system.actor.server.business.api.ProfileFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ProfilePersistence;
-import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfilePrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfilePrivilege;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
 
 @ApplicationScoped
-public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, ProfilePersistence> implements ProfileBusiness,Serializable {
+public class ProfileBusinessImpl extends AbstractSpecificBusinessImpl<Profile> implements ProfileBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	private static Object[] validate(String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("code",code);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("name",name);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("identifiant type",typeIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("nom utilisateur",actorCode);
+		ProfileType type = EntityFinder.getInstance().find(ProfileType.class, typeIdentifier);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("type",type);
+		return new Object[] {type};
+	}
+	
+	private static void set(Profile profile,String code, String name, ProfileType type,Byte orderNumber,Boolean requestable,String actorCode) {
+		profile.setCode(code).setName(name).setType(type).setOrderNumber(orderNumber).setRequestable(requestable);
+	}
+	
+	public static TransactionResult create(String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode,EntityManager entityManager) {
+		Object[] array = validate(code, name, typeIdentifier, orderNumber, requestable, actorCode, entityManager);
+		ProfileType type = (ProfileType) array[0];
+		TransactionResult transactionResult = new TransactionResult().setTupleName(Profile.LABEL).setName("Création "+Profile.LABEL);
+		Profile profile = new Profile();
+		set(profile, code, name, type, orderNumber, requestable, actorCode);
+		EntityCreator.getInstance().create(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(CollectionHelper.cast(Object.class, List.of(profile))));
+		transactionResult.incrementNumberOfCreation(1l);
+		transactionResult.log(ProfileBusinessImpl.class);
+		return transactionResult;
+	}
+	
+	@Override @Transactional
+	public TransactionResult create(String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode) {
+		return create(code, name, typeIdentifier,orderNumber,requestable,actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static TransactionResult update(String identifier,String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("identifiant",identifier);		
+		Object[] array = validate(code, name, typeIdentifier, orderNumber, requestable, actorCode, entityManager);
+		ProfileType type = (ProfileType) array[0];
+		TransactionResult transactionResult = new TransactionResult().setTupleName(Profile.LABEL).setName("Mise à jour "+Profile.LABEL);
+		Profile profile = EntityFinder.getInstance().find(Profile.class, identifier);
+		set(profile, code, name, type, orderNumber, requestable, actorCode);
+		EntityUpdater.getInstance().update(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(CollectionHelper.cast(Object.class, List.of(profile))));
+		transactionResult.incrementNumberOfCreation(1l);
+		transactionResult.log(ProfileBusinessImpl.class);
+		return transactionResult;
+	}
+	
+	@Override @Transactional
+	public TransactionResult update(String identifier,String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode) {
+		return update(identifier,code, name, typeIdentifier,orderNumber,requestable,actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	/**/
 	
 	@Override @Transactional
 	public void createPrivileges(Collection<Profile> profiles, Collection<Privilege> privileges) {
@@ -121,7 +171,7 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		if(CollectionHelper.isNotEmpty(deletablePrivileges))
 			deletePrivileges(profiles, deletablePrivileges);
 	}
-	
+	/*
 	@Override
 	protected void __listenExecuteCreateBefore__(Profile profile, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(profile, properties, function);
@@ -155,7 +205,7 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		if(CollectionHelper.isNotEmpty(profileFunctions))
 			__inject__(ProfileFunctionBusiness.class).deleteMany(profileFunctions);
 	}
-	
+	*/
 	@Override @Transactional
 	public void importFormKeycloakRoles() {
 		Collection<Role> roles = RoleManager.getInstance().read();
@@ -172,7 +222,7 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		}
 		if(CollectionHelper.isEmpty(profiles))
 			return;
-		createMany(profiles);
+		EntityCreator.getInstance().create(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, profiles)));
 	}
 
 	@Override @Transactional
@@ -194,8 +244,4 @@ public class ProfileBusinessImpl extends AbstractBusinessEntityImpl<Profile, Pro
 		return arrays.stream().map(array -> (String)array[1]).collect(Collectors.toList());
 	}
 	
-	@Override
-	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
-		return Boolean.TRUE;
-	}
 }

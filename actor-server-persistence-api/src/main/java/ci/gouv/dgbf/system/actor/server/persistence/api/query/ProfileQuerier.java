@@ -53,6 +53,7 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.COUNT_DYNAMIC);
 	
+	String PARAMETER_NAME_REQUESTABLE = "requestable";
 	/* read order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, "readWhereTypeIsSystemeOrderByCodeAscending");
 	Collection<Profile> readWhereTypeIsSystemeOrderByCodeAscending();

@@ -38,7 +38,6 @@ import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
-import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ProfilePrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileQuerier;
@@ -286,9 +285,9 @@ public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPe
 			__inject__(ActorScopeBusiness.class).deleteMany(actorScopes);
 		Collection<ActorProfile> actorProfiles = ActorProfileQuerier.getInstance().readByActorsCodes(actorsCodes);
 		if(CollectionHelper.isNotEmpty(actorProfiles)) {
-			Collection<Profile> profiles = actorProfiles.stream().map(ActorProfile::getProfile).collect(Collectors.toSet());
-			__inject__(ActorProfileBusiness.class).deleteMany(actorProfiles);
-			__inject__(ProfileBusiness.class).deleteMany(profiles);
+			//Collection<Profile> profiles = actorProfiles.stream().map(ActorProfile::getProfile).collect(Collectors.toSet());
+			//__inject__(ActorProfileBusiness.class).deleteMany(actorProfiles);
+			//__inject__(ProfileBusiness.class).deleteMany(profiles);
 		}
 	}
 	
