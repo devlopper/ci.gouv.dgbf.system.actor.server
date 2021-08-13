@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,6 +32,8 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private ProfileType type;
+	//@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
+	//@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
 	
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<String> privilegesAsStrings;
@@ -84,12 +87,16 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	}
 	
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_ORDER_NUMBER = "orderNumber";
+	public static final String FIELD_REQUESTABLE = "requestable";
 	public static final String FIELD_PRIVILEGES = "privileges";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
 	
-	public static final String COLUMN_TYPE = "type";
-	
 	public static final String TABLE_NAME = "PROFILE";
+	
+	public static final String COLUMN_TYPE = "TYPE";
+	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
+	public static final String COLUMN_REQUESTABLE = "DEMANDABLE";
 	
 	public static final String CODE_UTILISATEUR = "UTILISATEUR";
 	public static final String CODE_ADMINISTRATEUR = "ADMINISTRATEUR";
