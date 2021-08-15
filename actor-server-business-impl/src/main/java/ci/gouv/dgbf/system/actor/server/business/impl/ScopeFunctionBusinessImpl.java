@@ -74,11 +74,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Scope scope = EntityFinder.getInstance().find(Scope.class, scopeIdentifier);
 		if(scope == null)
 			throw new RuntimeException(String.format("Le domaine <<%s>> n'existe pas", scopeIdentifier));
-		if(ScopeType.CODE_UA.equals(scopeTypeCode))
-			throwExceptionIfScopeFunctionExist(scope, Function.CODE_CREDIT_MANAGER_HOLDER, entityManager);
-		else if(ScopeType.CODE_USB.equals(scopeTypeCode))
-			throwExceptionIfScopeFunctionExist(scope, Function.CODE_AUTHORIZING_OFFICER_HOLDER, entityManager);		
-		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope);
+		String functionCode = ScopeType.getHolderFunctionCode(scopeTypeCode);
+		Function function = CodeExecutor.getInstance().getOne(Function.class, functionCode);
+		if(function == null)
+			throw new RuntimeException(String.format("La fonction <<%s>> n'existe pas", functionCode));
+		throwExceptionIfScopeFunctionExist(scope, functionCode, entityManager);
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function);
+		
 		scopeFunction.set__auditWho__(actorCode);
 		if(scopeFunction.getScope() == null)
 			throw new RuntimeException(String.format("<<%s>> identifié <<%s>> n'existe pas",scopeTypeCode, scopeIdentifier));
@@ -86,13 +88,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			transactionResult.setTupleName("gestionnaire de crédit");
 			//scopeFunction.setCode(__inject__(ScopeFunctionPersistence.class).computeCreditManagerHolderCode(scopeIdentifier));
 			scopeFunction.setName(__inject__(ScopeFunctionPersistence.class).computeCreditManagerHolderName(scopeIdentifier));
-			scopeFunction.setFunction(CodeExecutor.getInstance().getOne(Function.class, Function.CODE_CREDIT_MANAGER_HOLDER));
 		}else if(ScopeType.CODE_USB.equals(scopeTypeCode)) {
 			transactionResult.setTupleName("ordonnateur délégué");
-			scopeFunction.setFunction(CodeExecutor.getInstance().getOne(Function.class, Function.CODE_AUTHORIZING_OFFICER_HOLDER));
 		}
-		if(scopeFunction.getFunction() == null)
-			throw new RuntimeException(String.format("Détermination de la fonction du type de domaine <<%s>> n'est pas encore implémenté", scopeTypeCode));
 		create(List.of(scopeFunction), entityManager);
 		transactionResult.incrementNumberOfCreation(2l);
 		transactionResult.log(ScopeFunctionBusinessImpl.class);

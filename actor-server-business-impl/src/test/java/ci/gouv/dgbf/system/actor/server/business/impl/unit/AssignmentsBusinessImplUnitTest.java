@@ -27,30 +27,30 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 		ApplicationScopeLifeCycleListener.INTEGRATION = Boolean.FALSE;
 	}
 	
-	/*@Override
-	protected void __listenBefore__() {
-		super.__listenBefore__();
-		MetricsManager.getInstance().enable();
-	}
-	
-	@Override
-	protected void __listenAfter__() {
-		super.__listenAfter__();
-		MetricsManager.getInstance().disable();
-	}*/
-
 	@Override
 	protected String getPersistenceUnitName() {
 		return "assignments";
 	}
 	
 	@Test
-	public void createByScopeTypeCodeByScopeIdentifier() {
+	public void createByScopeTypeCodeByScopeIdentifier_UA() {
 		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
 				ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DBE", "test", entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+	}
+	
+	@Test
+	public void createByScopeTypeCodeByScopeIdentifier_USB() {
+		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_USB, "22086", "test", entityManager);
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);

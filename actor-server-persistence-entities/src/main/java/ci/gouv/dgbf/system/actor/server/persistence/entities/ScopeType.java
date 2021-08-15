@@ -71,5 +71,17 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String[] CODES = new String[]{ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION
 			,ScopeType.CODE_UA,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION};
 	
+	public static String getHolderFunctionCode(String code) {
+		if(CODE_UA.equals(code))
+			return Function.CODE_CREDIT_MANAGER_HOLDER;
+		if(CODE_USB.equals(code))
+			return Function.CODE_AUTHORIZING_OFFICER_HOLDER;
+		if(CODE_SERVICE_CF.equals(code))
+			return Function.CODE_FINANCIAL_CONTROLLER_HOLDER;
+		if(CODE_SERVICE_CPT.equals(code))
+			return Function.CODE_ACCOUNTING_HOLDER;
+		throw new RuntimeException(String.format("Holder function code of %s is unknown", code));
+	}
+	
 	public static final String LABEL = "Type domaine visibilité";
 }

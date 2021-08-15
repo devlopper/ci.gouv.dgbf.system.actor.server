@@ -6,9 +6,17 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class ScopeFunctionPersistenceEntitiesUnitTest extends AbstractUnitTestMemory {
+public class ScopeFunctionPersistenceEntitiesUnitTest extends AbstractUnitTest {
 	private static final long serialVersionUID = 1L;
 
+	@Test
+	public void scopeType_getHolderFunctionCode(){
+		assertThat(ScopeType.getHolderFunctionCode(ScopeType.CODE_UA)).isEqualTo(Function.CODE_CREDIT_MANAGER_HOLDER);
+		assertThat(ScopeType.getHolderFunctionCode(ScopeType.CODE_USB)).isEqualTo(Function.CODE_AUTHORIZING_OFFICER_HOLDER);
+		assertThat(ScopeType.getHolderFunctionCode(ScopeType.CODE_SERVICE_CF)).isEqualTo(Function.CODE_FINANCIAL_CONTROLLER_HOLDER);
+		assertThat(ScopeType.getHolderFunctionCode(ScopeType.CODE_SERVICE_CPT)).isEqualTo(Function.CODE_ACCOUNTING_HOLDER);
+	}
+	
 	@Test
 	public void scopeFunction_getCategoryCodeFromCategoryName(){
 		assertThat(ScopeFunction.getCategoryCodeFromCategoryName(ScopeFunction.CATEGORY_NAME_G1)).isEqualTo(ScopeFunction.CATEGORY_CODE_G1);
