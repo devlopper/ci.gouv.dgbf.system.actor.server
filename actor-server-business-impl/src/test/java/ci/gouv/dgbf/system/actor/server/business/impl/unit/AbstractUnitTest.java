@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.server.AbstractUnitTest {
 
@@ -97,5 +99,14 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 		}
 		assertScopesCodes(scopes,expectedCodes,exact);
 		assertScopesVisibles(scopes, expectedVisibles,exact);
+	}
+
+	/**/
+	
+	protected static void assertScopeFunction(String identifier,String expectedName) {
+		ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, identifier);
+		assertThat(scopeFunction).as(String.format("Scope function %s exists",identifier)).isNotNull();
+		assertThat(scopeFunction.getCode()).isEqualTo(identifier);
+		assertThat(scopeFunction.getName()).isEqualTo(expectedName);
 	}
 }

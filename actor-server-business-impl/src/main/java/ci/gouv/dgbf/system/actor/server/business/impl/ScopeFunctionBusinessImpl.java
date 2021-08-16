@@ -133,6 +133,10 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 						.setParent(scopeFunction)
 						.setCodePrefix(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
 						.setName(scopeFunction.getName());
+				assistantScopeFunction
+					.set__auditFunctionality__(scopeFunction.get__auditFunctionality__())
+					.set__auditWhat__(scopeFunction.get__auditWhat__())
+					.set__auditWho__(scopeFunction.get__auditWho__());
 				if(StringHelper.isNotBlank(scopeFunction.getName()))
 					assistantScopeFunction.setName("Assistant "+scopeFunction.getName());
 				
@@ -186,6 +190,35 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			if(StringHelper.isBlank(scopeFunction.getCode()))
 				throw new RuntimeException(String.format("Impossible de générer le code à partir du domaine %s et la fonction %s",scopeFunction.getScope()
 						,scopeFunction.getFunction()));
+			if(scopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes()) {
+				Long count = EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT COUNT(p) FROM ScopeFunction p WHERE p.%1$s = :%1$s",ScopeFunction.FIELD_CODE), Long.class)
+						.setParameter(ScopeFunction.FIELD_CODE, scopeFunction.getCode()).getSingleResult();
+				if(NumberHelper.isGreaterThanOrEqualOne(count))
+					throw new RuntimeException(String.format("%s existe déja",scopeFunction.getCode()));				
+			}else {
+				Integer retry = 0;
+				do {
+					Long count = EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT COUNT(p) FROM ScopeFunction p WHERE p.%1$s = :%1$s",ScopeFunction.FIELD_CODE), Long.class)
+						.setParameter(ScopeFunction.FIELD_CODE, scopeFunction.getCode()).getSingleResult();
+					if(NumberHelper.isEqualToZero(count) || retry > 3)
+						break;					
+					LogHelper.logInfo(String.format("Code %s exist. going to regenerate. %s", scopeFunction.getCode(),retry), ScopeBusinessImpl.class);				
+					scopeFunction.setCode(StringUtils.substring(scopeFunction.getCode(), 0, 7)+(NumberHelper.getInteger(StringUtils.substring(scopeFunction.getCode(), 7))+1));
+					if(scopeFunction.getCode().length() > 8)
+						throw new RuntimeException(String.format("Impossible de regénérer le code à partir du domaine %s et la fonction %s",scopeFunction.getScope()
+								,scopeFunction.getFunction()));
+					retry++;
+				}while(true);
+			}
+					
+			Long count = EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT COUNT(p) FROM ScopeFunction p WHERE p.%1$s = :%1$s AND p.%2$s = :%2$s"
+					,ScopeFunction.FIELD_FUNCTION,ScopeFunction.FIELD_DOCUMENT_NUMBER), Long.class)
+					.setParameter(ScopeFunction.FIELD_FUNCTION, scopeFunction.getFunction())
+					.setParameter(ScopeFunction.FIELD_DOCUMENT_NUMBER, scopeFunction.getDocumentNumber())
+					.getSingleResult();
+			if(NumberHelper.isGreaterThanOrEqualOne(count))
+				throw new RuntimeException(String.format("%s , Le couple (fonction = %s,numéro de document = %s) existe déja",scopeFunction.getCode()
+						,scopeFunction.getFunction().getCode(),scopeFunction.getDocumentNumber()));
 		}
 	}
 	
@@ -413,23 +446,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			return;
 		Long count = ScopeFunctionQuerier.getInstance().countByFunctionsCodes(functionCode);
 		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(codePrefix);
-		String categoryType = StringUtils.substring(codePrefix,0,1);
-		ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeUsingSubstringWhereCodeStartsWith(categoryType);
-		
-		//Integer orderNumber = count == 0 ? 0 : ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode) + 1;
-		Integer orderNumber = scopeFunctionMax == null ? null : ScopeFunction.getOrderNumberFromCode(scopeFunctionMax.getCode());
-		if(orderNumber == null)
-			orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));
-		else
-			orderNumber = orderNumber + 1;
-		
-		Integer documentNumber = scopeFunctionMax == null ? null : scopeFunctionMax.getDocumentNumber();
-		if(documentNumber == null)
-			documentNumber = count == 0 ? null : ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode) + 1;
-		else
-			documentNumber = documentNumber + 1;
-		
-		LogHelper.logInfo(String.format("%s|%s|%s - Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
+		//String categoryType = StringUtils.substring(codePrefix,0,1);
+		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeUsingSubstringWhereCodeStartsWith(categoryType);
+		Integer	orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));		
+		Integer documentNumber = NumberHelper.isEqualToZero(count) ? null : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode),1));
+		LogHelper.logInfo(String.format("%s|%s|%s Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
 				,orderNumber,documentNumber), ScopeFunctionBusinessImpl.class);
 		
 		if(ScopeType.CODE_UA.equals(scopeTypeCode)) {

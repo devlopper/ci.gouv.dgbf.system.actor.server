@@ -16,7 +16,7 @@ import ci.gouv.dgbf.system.actor.server.business.api.ScopeFunctionBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class ScopeFunctionBusinessIT extends AbstractBusinessInMemoryIT {
+public class ScopeFunctionBusinessIT_TO_REFACTOR_To_UNIT extends AbstractBusinessInMemoryIT {
 
 	@Inject private ScopeFunctionBusiness scopeFunctionBusiness;
 	
@@ -27,7 +27,7 @@ public class ScopeFunctionBusinessIT extends AbstractBusinessInMemoryIT {
     	scopeFunction.setFunctionFromIdentifier("GC");
     	Long count = EntityCounter.getInstance().count(ScopeFunction.class);
 		
-    	scopeFunctionBusiness.create(scopeFunction);		
+    	scopeFunctionBusiness.createByScopeIdentifierByCategoryCode("13010222", "G1", "Gestionnaire de credits DTI", "test", null);
 		
 		assertThat(EntityCounter.getInstance().count(ScopeFunction.class)).isEqualTo(count+2);
     	assertThat(scopeFunction.getCode()).isEqualTo("G100000");

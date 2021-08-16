@@ -12,6 +12,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 
+	String CREATE_BY_SCOPE_IDENTIFIER_BY_CATEGORY_CODE = "ScopeFunction.createByScopeIdentifierByCategoryCode";
 	@Transactional
 	TransactionResult createByScopeIdentifierByCategoryCode(String scopeIdentifier,String categoryCode,String name,String actorCode,Boolean throwOnExisting);
 	
