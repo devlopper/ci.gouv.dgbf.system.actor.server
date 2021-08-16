@@ -18,6 +18,50 @@ public class ScopeFunctionPersistenceEntitiesUnitTest extends AbstractUnitTest {
 	}
 	
 	@Test
+	public void scopeFunction_getAssistantCategoryCodeFromHolderCategoryCode(){
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_G1)).isEqualTo(ScopeFunction.CATEGORY_CODE_A1);
+		
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_O2)).isEqualTo(ScopeFunction.CATEGORY_CODE_A2);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_O3)).isEqualTo(ScopeFunction.CATEGORY_CODE_A2);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_O9)).isEqualTo(ScopeFunction.CATEGORY_CODE_A2);
+		
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_C1)).isEqualTo(ScopeFunction.CATEGORY_CODE_A3);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_C2)).isEqualTo(ScopeFunction.CATEGORY_CODE_A3);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_C3)).isEqualTo(ScopeFunction.CATEGORY_CODE_A3);
+		
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T1)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T2)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T3)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T4)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T5)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T6)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T8)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+		assertThat(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(ScopeFunction.CATEGORY_CODE_T9)).isEqualTo(ScopeFunction.CATEGORY_CODE_A4);
+	}
+	
+	@Test
+	public void scopeFunction_getScopeTypeCodeFromCategoryCode(){
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_G1)).isEqualTo(ScopeType.CODE_UA);
+		
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_O2)).isEqualTo(ScopeType.CODE_USB);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_O3)).isEqualTo(ScopeType.CODE_USB);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_O9)).isEqualTo(ScopeType.CODE_USB);
+		
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_C1)).isEqualTo(ScopeType.CODE_SERVICE_CF);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_C2)).isEqualTo(ScopeType.CODE_SERVICE_CF);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_C3)).isEqualTo(ScopeType.CODE_SERVICE_CF);
+		
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T1)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T2)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T3)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T4)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T5)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T6)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T8)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+		assertThat(ScopeFunction.getScopeTypeCodeFromCategoryCode(ScopeFunction.CATEGORY_CODE_T9)).isEqualTo(ScopeType.CODE_SERVICE_CPT);
+	}
+	
+	@Test
 	public void scopeFunction_getCategoryCodeFromCategoryName(){
 		assertThat(ScopeFunction.getCategoryCodeFromCategoryName(ScopeFunction.CATEGORY_NAME_G1)).isEqualTo(ScopeFunction.CATEGORY_CODE_G1);
 		

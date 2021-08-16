@@ -17,6 +17,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	@Override
 	protected void callInitialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
+		
 	}
 	
 	/**/

@@ -17,7 +17,6 @@ import ci.gouv.dgbf.system.actor.server.business.impl.ScopeFunctionBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -33,43 +32,85 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void createByScopeTypeCodeByScopeIdentifier_UA() {
+	public void createByScopeIdentifierByCategoryCode_G() {
 		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DBE", "test", entityManager);
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DBE","G1", null,"test",null, entityManager);
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+		assertScopeFunction("G100001", "Gestionnaire de crédits DBE");
+		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE");
 	}
 	
 	@Test
-	public void createByScopeTypeCodeByScopeIdentifier_USB() {
+	public void createByScopeIdentifierByCategoryCode_O() {
 		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_USB, "22086", "test", entityManager);
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("22086","O2", null,"test",null, entityManager);
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+		assertScopeFunction("O200001", "Ordonnateur délégué du Programme BUDGET");
+		assertScopeFunction("A2000010", "Assistant ordonnateur délégué du Programme BUDGET");
+		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("22086","O3", "Ordonnateur délégué du Programme BUDGET à Dimbokro","test",null, entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 10l);
+		assertScopeFunction("O300002", "Ordonnateur délégué du Programme BUDGET à Dimbokro");
+		assertScopeFunction("A2000020", "Assistant Ordonnateur délégué du Programme BUDGET à Dimbokro");
+	}
+	
+	@Test
+	public void createByScopeIdentifierByCategoryCode_C() {
+		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DTI","C1", "C.F. de la section 01","test",null, entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+		assertScopeFunction("C100001", "C.F. de la section 01");
+		assertScopeFunction("A3000010", "Assistant C.F. de la section 01");
+	}
+	
+	@Test
+	public void createByScopeIdentifierByCategoryCode_T() {
+		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DTI","T1", "Trésorier du SUD Comoé","test",null, entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
+		assertScopeFunction("T100000", "Trésorier du SUD Comoé");
+		assertScopeFunction("A4000000", "Assistant Trésorier du SUD Comoé");
 	}
 		
-	@Test
-	public void createByScopeTypeCodeByScopeIdentifier_sameMultiple() {
+	//@Test
+	public void createByScopeIdentifierByCategoryCode_sameMultiple() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DTI", "test", entityManager);
+					ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DOCD","G1", null,"test",Boolean.TRUE, entityManager);
 				}
 			}.run();
 			assertThatCountIsEqualTo(ScopeFunction.class, 8l);
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ScopeFunctionBusinessImpl.createByScopeTypeCodeByScopeIdentifier(ScopeType.CODE_UA, "DTI", "test", entityManager);
+					ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DOCD","G1", null,"test",Boolean.TRUE, entityManager);
 				}
 			}.run();
 		});

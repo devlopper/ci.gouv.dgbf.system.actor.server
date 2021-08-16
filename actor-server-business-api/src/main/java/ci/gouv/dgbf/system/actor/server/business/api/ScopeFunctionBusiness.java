@@ -13,7 +13,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 
 	@Transactional
-	TransactionResult createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode,String scopeIdentifier,String actorCode);
+	TransactionResult createByScopeIdentifierByCategoryCode(String scopeIdentifier,String categoryCode,String name,String actorCode,Boolean throwOnExisting);
 	
 	String CREATE_MANY = "ScopeFunction.createMany";
 	

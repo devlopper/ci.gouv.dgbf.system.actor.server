@@ -13,11 +13,24 @@ import javax.ws.rs.core.Response;
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 
 @Path(ScopeFunctionRepresentation.PATH)
 public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeFunctionDto> {
 
+	public static final String PATH_CREATE = "create";
+	@POST
+	@Path(PATH_CREATE)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.TEXT_PLAIN})
+	Response createByScopeIdentifierByCategoryCode(
+			@QueryParam("identifiant_domaine") String scopeIdentifier
+			,@QueryParam(ScopeFunctionRepresentation.PARAMETER_CATEGORY_CODE) String categoryCode
+			,@QueryParam(ScopeFunctionRepresentation.PARAMETER_NAME) String name
+			,@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			);
+	
 	@POST
 	@Path(PATH_SAVE)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
@@ -118,6 +131,14 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 	String PATH = "scopefunction";
 
 	String TAG = ScopeRepresentation.TAG;
+
+	String PARAMETER_CATEGORY_CODE = "code_categorie";
+	String DESCRIPTION_CATEGORY_CODE = "Code de la catégorie";
+	String EXAMPLE_CATEGORY_CODE = ScopeFunction.CATEGORY_CODE_G1;
+	
+	String PARAMETER_NAME = "libelle";
+	String DESCRIPTION_NAME = "Libelle du poste";
+	String EXAMPLE_NAME = ScopeFunction.CATEGORY_NAME_G1;
 	
 	static ScopeFunctionRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ScopeFunctionRepresentation.class);

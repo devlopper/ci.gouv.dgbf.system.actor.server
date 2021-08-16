@@ -34,6 +34,11 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public Response createByScopeIdentifierByCategoryCode(String scopeIdentifier, String categoryCode,String name,String actorCode) {
+		return createByScopeIdentifierByCategoryCodeStatic(scopeIdentifier,categoryCode,name,actorCode,null);
+	}
+	
+	@Override
 	public Response getByScopeIdentifierByFunctionIdentifier(String scopeIdentifier, String functionIdentifier) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
@@ -279,14 +284,14 @@ public class ScopeFunctionRepresentationImpl extends AbstractRepresentationEntit
 	
 	/**/
 	
-	public static Response createByScopeTypeCodeByScopeIdentifier(String scopeTypeCode, String scopeIdentifier,String actorCode) {
+	public static Response createByScopeIdentifierByCategoryCodeStatic(String scopeIdentifier,String categoryCode,String name,String actorCode,Boolean throwOnExisting) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ScopeFunctionBusiness.class).createByScopeTypeCodeByScopeIdentifier(scopeTypeCode, scopeTypeCode+scopeIdentifier,actorCode);
+						return __inject__(ScopeFunctionBusiness.class).createByScopeIdentifierByCategoryCode(scopeIdentifier,categoryCode,name,actorCode,throwOnExisting);
 					}
 				};
 			}

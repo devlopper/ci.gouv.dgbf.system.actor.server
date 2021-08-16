@@ -338,15 +338,13 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static String getAssistantCategoryCodeFromHolderCategoryCode(String holderCategoryCode) {
 		if(StringHelper.isBlank(holderCategoryCode))
 			return null;
-		if(CATEGORY_NAME_G1.equals(holderCategoryCode))
+		if(holderCategoryCode.startsWith("G"))
 			return CATEGORY_CODE_A1;
-		if(CATEGORY_NAME_O3.equals(holderCategoryCode))
+		if(holderCategoryCode.startsWith("O"))
 			return CATEGORY_CODE_A2;
-		if(CATEGORY_NAME_C2.equals(holderCategoryCode) || CATEGORY_NAME_C3.equals(holderCategoryCode))
+		if(holderCategoryCode.startsWith("C"))
 			return CATEGORY_CODE_A3;
-		if(CATEGORY_NAME_T1.equals(holderCategoryCode) || CATEGORY_NAME_T2.equals(holderCategoryCode) || CATEGORY_NAME_T3.equals(holderCategoryCode)
-				|| CATEGORY_NAME_T4.equals(holderCategoryCode) || CATEGORY_NAME_T5.equals(holderCategoryCode) || CATEGORY_NAME_T6.equals(holderCategoryCode)
-				|| CATEGORY_NAME_T8.equals(holderCategoryCode) || CATEGORY_NAME_T9.equals(holderCategoryCode))
+		if(holderCategoryCode.startsWith("T"))
 			return CATEGORY_CODE_A4;
 		return null;
 	}
@@ -512,6 +510,20 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			return Function.CODE_FINANCIAL_CONTROLLER_HOLDER;
 		if(categoryCode.startsWith("T"))
 			return Function.CODE_ACCOUNTING_HOLDER;
+		return null;
+	}
+	
+	public static String getScopeTypeCodeFromCategoryCode(String categoryCode) {
+		if(StringHelper.isBlank(categoryCode))
+			return null;
+		if(categoryCode.startsWith("G"))
+			return ScopeType.CODE_UA;
+		if(categoryCode.startsWith("O"))
+			return ScopeType.CODE_USB;
+		if(categoryCode.startsWith("C"))
+			return ScopeType.CODE_SERVICE_CF;
+		if(categoryCode.startsWith("T"))
+			return ScopeType.CODE_SERVICE_CPT;
 		return null;
 	}
 	

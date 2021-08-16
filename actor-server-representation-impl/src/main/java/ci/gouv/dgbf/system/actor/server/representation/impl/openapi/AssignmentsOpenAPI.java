@@ -20,9 +20,10 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
-import ci.gouv.dgbf.system.actor.server.representation.api.ScopeRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
 
 @Path(AssignmentsOpenAPI.PATH)
 @Tag(name = "Affectations")
@@ -40,14 +41,22 @@ public interface AssignmentsOpenAPI extends OpenAPI {
 			@APIResponse(description = "Poste créé",responseCode = "201", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(description = "Erreur lors de la création du poste",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
-	public Response createByScopeTypeCodeByScopeIdentifier(
-			@Parameter(description = ScopeRepresentation.DESCRIPTION_TYPE_CODE,example = ScopeType.CODE_UA,name = ScopeRepresentation.PARAMETER_TYPE_CODE
-			,allowEmptyValue = false,required = true
-			,schema = @Schema(enumeration = {/*ScopeType.CODE_SECTION,*/ScopeType.CODE_UA,ScopeType.CODE_USB}))
-			@QueryParam(ScopeRepresentation.PARAMETER_TYPE_CODE) String scopeTypeCode
-			
-			,@Parameter(allowEmptyValue = false,description = "Identifiant du domaine",example = "01",name = "identifiant_domaine",required = true)
+	public Response createByScopeIdentifierByCategoryCode(
+			@Parameter(allowEmptyValue = false,description = "Identifiant du domaine",example = "01",name = "identifiant_domaine",required = true)
 			@QueryParam("identifiant_domaine") String scopeIdentifier
+			
+			,@Parameter(description = ScopeFunctionRepresentation.DESCRIPTION_CATEGORY_CODE,example = ScopeType.CODE_UA,name = ScopeFunctionRepresentation.PARAMETER_CATEGORY_CODE
+			,allowEmptyValue = false,required = true
+			,schema = @Schema(enumeration = {
+					ScopeFunction.CATEGORY_CODE_G1					
+					,ScopeFunction.CATEGORY_CODE_O2,ScopeFunction.CATEGORY_CODE_O3,ScopeFunction.CATEGORY_CODE_O9					
+					,ScopeFunction.CATEGORY_CODE_C1,ScopeFunction.CATEGORY_CODE_C2,ScopeFunction.CATEGORY_CODE_C3
+				}))
+			@QueryParam(ScopeFunctionRepresentation.PARAMETER_CATEGORY_CODE) String scopeTypeCode
+			
+			,@Parameter(allowEmptyValue = false,description = ScopeFunctionRepresentation.DESCRIPTION_NAME,example = ScopeFunctionRepresentation.EXAMPLE_NAME
+			,name = ScopeFunctionRepresentation.PARAMETER_NAME,required = true)
+			@QueryParam(ScopeFunctionRepresentation.PARAMETER_NAME) String name
 			
 			,@Parameter(allowEmptyValue = false,description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME
 			,name = ActorRepresentation.PARAMETER_USER_NAME,required = true)
