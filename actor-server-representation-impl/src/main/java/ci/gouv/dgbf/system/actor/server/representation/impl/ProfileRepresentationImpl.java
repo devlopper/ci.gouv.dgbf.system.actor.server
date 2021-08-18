@@ -10,6 +10,8 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
+import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ProfileBusiness;
@@ -24,6 +26,51 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 public class ProfileRepresentationImpl extends AbstractRepresentationEntityImpl<ProfileDto> implements ProfileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response create(String code, String name, String typeIdentifier, Byte orderNumber, Boolean requestable,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ProfileBusiness.class).create(code, name, typeIdentifier, orderNumber, requestable, actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response update(String identifier, String code, String name, String typeIdentifier, Byte orderNumber,Boolean requestable, String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ProfileBusiness.class).update(identifier,code, name, typeIdentifier, orderNumber, requestable, actorCode);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response save(String identifier, String code, String name, String typeIdentifier, Byte orderNumber,Boolean requestable, String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ProfileBusiness.class).save(identifier,code, name, typeIdentifier, orderNumber, requestable, actorCode);
+					}
+				};
+			}
+		});
+	}
+	
 	@Override
 	public Response savePrivileges(Collection<ProfileDto> profiles) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			

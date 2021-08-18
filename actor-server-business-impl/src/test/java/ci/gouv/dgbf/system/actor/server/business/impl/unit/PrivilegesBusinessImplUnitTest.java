@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.server.MetricsManager;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.test.business.server.Transaction;
 import org.junit.jupiter.api.Assertions;
@@ -25,18 +24,6 @@ public class PrivilegesBusinessImplUnitTest extends AbstractUnitTestMemory {
 		ApplicationScopeLifeCycleListener.INTEGRATION = Boolean.FALSE;
 	}
 	
-	@Override
-	protected void __listenBefore__() {
-		super.__listenBefore__();
-		MetricsManager.getInstance().enable();
-	}
-	
-	@Override
-	protected void __listenAfter__() {
-		super.__listenAfter__();
-		MetricsManager.getInstance().disable();
-	}
-
 	@Override
 	protected String getPersistenceUnitName() {
 		return "privileges";

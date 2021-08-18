@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
@@ -88,6 +89,17 @@ public class ProfileBusinessImpl extends AbstractSpecificBusinessImpl<Profile> i
 	@Override @Transactional
 	public TransactionResult update(String identifier,String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode) {
 		return update(identifier,code, name, typeIdentifier,orderNumber,requestable,actorCode, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static TransactionResult save(String identifier,String code, String name, String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode,EntityManager entityManager) {
+		if(StringHelper.isBlank(identifier))
+			return create(code, name, typeIdentifier, orderNumber, requestable, actorCode,entityManager);
+		return update(identifier, code, name, typeIdentifier, orderNumber, requestable, actorCode, entityManager);
+	}
+	
+	@Override
+	public TransactionResult save(String identifier, String code, String name, String typeIdentifier, Byte orderNumber,Boolean requestable, String actorCode) {
+		return save(identifier,code, name, typeIdentifier,orderNumber,requestable,actorCode, EntityManagerGetter.getInstance().get());
 	}
 	
 	/**/

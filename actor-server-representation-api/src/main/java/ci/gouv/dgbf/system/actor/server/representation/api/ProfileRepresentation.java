@@ -5,16 +5,45 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 
 @Path(ProfileRepresentation.PATH)
 public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> {
+	
+	String PATH_CREATE = "create";
+	@POST
+	@Path(PATH_CREATE)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.APPLICATION_JSON})
+	Response create(@QueryParam(Profile.FIELD_CODE) String code,@QueryParam(Profile.FIELD_NAME) String name,@QueryParam(Profile.FIELD_TYPE) String typeIdentifier
+			,@QueryParam(Profile.FIELD_ORDER_NUMBER) Byte orderNumber,@QueryParam(Profile.FIELD_REQUESTABLE) Boolean requestable,@QueryParam("actor_code") String actorCode);
+	
+	String PATH_UPDATE = "update";
+	@POST
+	@Path(PATH_UPDATE)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.APPLICATION_JSON})
+	Response update(@QueryParam(Profile.FIELD_IDENTIFIER) String identifier,@QueryParam(Profile.FIELD_CODE) String code,@QueryParam(Profile.FIELD_NAME) String name
+			,@QueryParam(Profile.FIELD_TYPE) String typeIdentifier,@QueryParam(Profile.FIELD_ORDER_NUMBER) Byte orderNumber
+			,@QueryParam(Profile.FIELD_REQUESTABLE) Boolean requestable,@QueryParam("actor_code") String actorCode);
+	
+	String PATH_SAVE = "save";
+	@POST
+	@Path(PATH_SAVE)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.APPLICATION_JSON})
+	Response save(@QueryParam(Profile.FIELD_IDENTIFIER) String identifier,@QueryParam(Profile.FIELD_CODE) String code,@QueryParam(Profile.FIELD_NAME) String name
+			,@QueryParam(Profile.FIELD_TYPE) String typeIdentifier,@QueryParam(Profile.FIELD_ORDER_NUMBER) Byte orderNumber
+			,@QueryParam(Profile.FIELD_REQUESTABLE) Boolean requestable,@QueryParam("actor_code") String actorCode);
+	
 	/*
 	String PATH_SAVE_PRIVILEGES = "save_privileges";
 	@POST

@@ -39,4 +39,8 @@ public interface ProfileBusiness extends SpecificBusiness<Profile> {
 	String UPDATE = "Profile.update";
 	@Transactional
 	TransactionResult update(String identifier,String code,String name,String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode);
+	
+	String SAVE = "Profile.save";
+	@Transactional
+	TransactionResult save(String identifier,String code,String name,String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode);
 }
