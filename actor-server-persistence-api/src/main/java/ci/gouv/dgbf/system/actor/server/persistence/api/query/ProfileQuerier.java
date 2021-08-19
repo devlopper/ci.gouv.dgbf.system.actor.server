@@ -28,6 +28,7 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.EntityInstantiator;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
@@ -49,11 +50,15 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String PARAMETER_NAME_ACTORS_CODES = "actorsCodes";
 	String PARAMETER_NAME_SERVICES_IDENTIFIERS = "servicesIdentifiers";
 	
-	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_INSTANTIATE = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.INSTANTIATE);
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC);
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.COUNT_DYNAMIC);
 	
 	String PARAMETER_NAME_REQUESTABLE = "requestable";
+	
+	String FLAG_PREPARE_EDIT = "prepareEdit";
+	
 	/* read order by code ascending */
 	String QUERY_IDENTIFIER_READ_WHERE_TYPE_IS_SYSTEME = QueryIdentifierBuilder.getInstance().build(Profile.class, "readWhereTypeIsSystemeOrderByCodeAscending");
 	Collection<Profile> readWhereTypeIsSystemeOrderByCodeAscending();
@@ -123,6 +128,8 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 		public Profile readOne(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
 				return DynamicOneExecutor.getInstance().read(Profile.class,arguments.setQuery(null));
+			if(QUERY_IDENTIFIER_INSTANTIATE.equals(arguments.getQuery().getIdentifier()))
+				return EntityInstantiator.getInstance().instantiateOne(Profile.class, arguments.getFilter());
 			return super.readOne(arguments);
 		}
 		

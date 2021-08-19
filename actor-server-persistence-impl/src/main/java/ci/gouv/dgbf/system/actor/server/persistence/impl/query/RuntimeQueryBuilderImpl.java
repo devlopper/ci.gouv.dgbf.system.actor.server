@@ -10,8 +10,10 @@ import org.cyk.utility.persistence.server.query.RuntimeQueryBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
 public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl implements Serializable {
@@ -59,7 +61,12 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 	@Override
 	protected void processQueryExecutorArguments(QueryExecutorArguments arguments) {
 		super.processQueryExecutorArguments(arguments);
-		if(arguments.getQuery().isIdentifierEqualsDynamic(Locality.class)) {
+		if(arguments.getQuery().isIdentifierEqualsDynamic(Profile.class)) {
+			if(arguments.isFlagged(ProfileQuerier.FLAG_PREPARE_EDIT)) {
+				arguments.addProjectionsFromStrings(Profile.FIELD_IDENTIFIER,Profile.FIELD_CODE,Profile.FIELD_NAME,Profile.FIELD_TYPE,Profile.FIELD_ORDER_NUMBER
+						,Profile.FIELD_REQUESTABLE);
+			}
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Locality.class)) {
 			if(arguments.getFilter() != null && arguments.getFilter().hasFieldWithPath(LocalityQuerier.PARAMETER_NAME_TYPE) 
 					&& arguments.getFilter().getField(LocalityQuerier.PARAMETER_NAME_TYPE).getValue() instanceof String) {
 				String type = (String) arguments.getFilter().getField(LocalityQuerier.PARAMETER_NAME_TYPE).getValue();

@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.server.EntityInstantiator;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.audit.AuditReader;
 import org.cyk.utility.persistence.server.hibernate.Initializer;
@@ -50,7 +51,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		Initializer.initialize();
 		
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.actor.server.annotation.System.class,EntityLifeCycleListener.class
-				,TransientFieldsProcessor.class,RuntimeQueryStringBuilder.class,RuntimeQueryBuilder.class,AuditReader.class);
+				,TransientFieldsProcessor.class,RuntimeQueryStringBuilder.class,RuntimeQueryBuilder.class,AuditReader.class,EntityInstantiator.class);
 		
 		QueryManager.getInstance().scan(List.of(ActorQuerier.class.getPackage()));	
 		ci.gouv.dgbf.system.actor.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();
