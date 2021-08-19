@@ -22,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.MenuQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
@@ -46,6 +47,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
@@ -134,6 +136,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Profile.class)))
 				return (T) ProfileQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ProfileType.class)))
+				return (T) ProfileTypeQuerier.getInstance().readOne(arguments);
 		}
 		return super.readOne(tupleClass, arguments);
 	}
@@ -178,6 +183,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Profile.class)))
 			return (Collection<T>) ProfileQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, ProfileType.class)))
+			return (Collection<T>) ProfileTypeQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) SectionQuerier.getInstance().readMany(arguments);

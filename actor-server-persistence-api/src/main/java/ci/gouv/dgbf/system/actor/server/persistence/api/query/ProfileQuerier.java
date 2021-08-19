@@ -55,6 +55,9 @@ public interface ProfileQuerier extends Querier.CodableAndNamable<Profile> {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Profile.class, QueryName.COUNT_DYNAMIC);
 	
+	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
+	String PARAMETER_NAME_ACTOR_IDENTIFIER = "actorIdentifier";
+	String PARAMETER_NAME_SEARCH = "search";
 	String PARAMETER_NAME_REQUESTABLE = "requestable";
 	
 	String FLAG_PREPARE_EDIT = "prepareEdit";

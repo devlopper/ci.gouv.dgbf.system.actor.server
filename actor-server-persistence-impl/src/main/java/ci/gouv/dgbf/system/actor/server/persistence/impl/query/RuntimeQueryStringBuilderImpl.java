@@ -37,6 +37,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -130,9 +131,18 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
 	}
 	
+	public static final String PROFILE_PREDICATE_SEARCH = parenthesis(or(
+			LikeStringBuilder.getInstance().build("t",Profile.FIELD_CODE, ProfileQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Profile.FIELD_NAME,ProfileQuerier.PARAMETER_NAME_SEARCH)
+	));
 	protected void populatePredicateProfile(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileQuerier.PARAMETER_NAME_IDENTIFIER);
-		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileQuerier.PARAMETER_NAME_CODE);		
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileQuerier.PARAMETER_NAME_CODE);
+		if(arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_SEARCH) != null) {
+			predicate.add(PROFILE_PREDICATE_SEARCH);
+			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_SEARCH),"");
+			filter.addField(ProfileQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}
 		if(arguments.getFilterField(ProfileQuerier.PARAMETER_NAME_REQUESTABLE) != null) {
 			Boolean requestable = arguments.getFilterFieldValueAsBoolean(null,ProfileQuerier.PARAMETER_NAME_REQUESTABLE);
 			if(requestable == null)
@@ -141,6 +151,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 				predicate.add(String.format("t.requestable = :%s", ProfileQuerier.PARAMETER_NAME_REQUESTABLE));
 				filter.addField(ProfileQuerier.PARAMETER_NAME_REQUESTABLE, requestable);
 			}
+		}
+		if(arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER) != null) {
+			predicate.add(String.format("t.type.identifier = :%s", ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER));
+			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, arguments);
 		}
 	}
 	
@@ -157,7 +171,7 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			}
 		}
 	}
-	
+
 	public static final String ADMINISTRATIVE_UNIT_PREDICATE_SEARCH = parenthesis(or(
 			LikeStringBuilder.getInstance().build("t",AdministrativeUnit.FIELD_CODE, AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t", AdministrativeUnit.FIELD_NAME,AdministrativeUnitQuerier.PARAMETER_NAME_SEARCH)
