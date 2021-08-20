@@ -167,6 +167,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.type.identifier = :%s", ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER));
 			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, arguments);
 		}
+		if(arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER) != null) {
+			predicate.add(String.format("EXISTS(SELECT ap.identifier FROM ActorProfile ap WHERE ap.profile = t AND ap.actor.identifier = :%s)", ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER));
+			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
+		}
 	}
 	
 	protected void populatePredicateScopeType(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
