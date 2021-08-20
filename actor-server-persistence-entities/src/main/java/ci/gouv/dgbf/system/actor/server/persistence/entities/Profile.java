@@ -33,11 +33,16 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull 	
 	private ProfileType type;
+	@Transient private String typeAsString;
 	@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
 	@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
 	
 	@Transient private Collection<Privilege> privileges;
 	@Transient private Collection<String> privilegesAsStrings;
+	
+	@Transient private Boolean used;
+	@Transient private String usedAsString;
+	@Transient private Integer numberOfActors;
 	
 	@Override
 	public Profile setIdentifier(String identifier) {
@@ -89,10 +94,12 @@ public class Profile extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_IDENTIFIER = "typeIdentifier";
+	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUESTABLE = "requestable";
 	public static final String FIELD_PRIVILEGES = "privileges";
 	public static final String FIELD_PRIVILEGES_AS_STRINGS = "privilegesAsStrings";
+	public static final String FIELD_NUMBER_OF_ACTORS = "numberOfActors";
 	
 	public static final String TABLE_NAME = "PROFILE";
 	

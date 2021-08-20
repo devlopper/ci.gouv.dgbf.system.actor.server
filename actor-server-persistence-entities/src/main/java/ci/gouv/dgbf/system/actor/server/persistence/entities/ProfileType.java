@@ -39,4 +39,6 @@ public class ProfileType extends AbstractIdentifiableSystemScalarStringIdentifia
 	
 	public static final String CODE_SYSTEME = "SYSTEME";
 	public static final String CODE_UTILISATEUR = "UTILISATEUR";
+	
+	public static final String LABEL = "Type profile";
 }

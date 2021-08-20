@@ -28,6 +28,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnit
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -38,6 +39,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -124,11 +126,20 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateScope(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(ActorScopeRequest.class))
 			populatePredicateActorScopeRequest(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(ProfileType.class))
+			populatePredicateProfileType(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(Profile.class))
+			populatePredicateProfile(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_TYPE);
 		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, LocalityQuerier.PARAMETER_NAME_PARENT_IDENTIFIER,"t.parent",Locality.FIELD_IDENTIFIER);
+	}
+	
+	protected void populatePredicateProfileType(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileTypeQuerier.PARAMETER_NAME_IDENTIFIER);
+		addEqualsIfFilterHasFieldWithPath(arguments, builderArguments, predicate, filter, ProfileTypeQuerier.PARAMETER_NAME_CODE);		
 	}
 	
 	public static final String PROFILE_PREDICATE_SEARCH = parenthesis(or(

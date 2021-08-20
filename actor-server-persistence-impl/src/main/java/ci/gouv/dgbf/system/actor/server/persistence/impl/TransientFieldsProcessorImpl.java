@@ -22,6 +22,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
@@ -42,6 +43,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHolder
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfActorsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
 
@@ -64,6 +67,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processScopes(CollectionHelper.cast(Scope.class, objects),filter,fieldsNames);
 		else if(ActorScopeRequest.class.equals(klass))
 			processActorScopeRequests(CollectionHelper.cast(ActorScopeRequest.class, objects),filter,fieldsNames);
+		else if(Profile.class.equals(klass))
+			processProfiles(CollectionHelper.cast(Profile.class, objects),filter,fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
 	}
@@ -81,6 +86,15 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	}
 	
 	/**/
+	public void processProfiles(Collection<Profile> profiles,Filter filter,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(Profile.FIELD_TYPE_AS_STRING.equals(fieldName))
+				new ProfileTypeAsStringsReader().readThenSet(profiles, null);
+			else if(Profile.FIELD_NUMBER_OF_ACTORS.equals(fieldName))
+				new ProfileNumberOfActorsReader().readThenSet(profiles, null);
+		}
+	}
+	
 	public void processScopes(Collection<Scope> scopes,Filter filter,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
 			if(Scope.FIELD_VISIBLE.equals(fieldName) || Scope.FIELDS_VISIBLE_AND_VISIBLE_AS_STRING.equals(fieldName))
