@@ -41,6 +41,7 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest</class>
     	
@@ -128,6 +129,7 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest</class>
     	
@@ -214,6 +216,7 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest</class>
     	
@@ -300,6 +303,7 @@
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Actor</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest</class>
     	

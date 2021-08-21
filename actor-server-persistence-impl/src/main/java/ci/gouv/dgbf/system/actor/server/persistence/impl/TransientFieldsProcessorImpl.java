@@ -17,6 +17,7 @@ import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -34,6 +35,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNam
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeNamesElectronicMailAddressReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfileRequestActorAsStringProfileAsStringGrantedAndGrantedAsStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorRegistrationNumberFirstNameLastNamesElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSectionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader;
@@ -129,6 +132,15 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader().readThenSet(actorScopeRequests, null);
 			else if(ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
 				new ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader().readThenSet(actorScopeRequests, null);
+		}
+	}
+	
+	public void processActorProfileRequests(Collection<ActorProfileRequest> actorProfileRequests,Filter filter,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(ActorProfileRequest.FIELDS_ACTOR_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
+				new ActorProfileRequestActorAsStringProfileAsStringGrantedAndGrantedAsStringReader().readThenSet(actorProfileRequests, null);
+			else if(ActorProfileRequest.FIELDS_ACTOR_AS_STRING_PROFILE_TYPE_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
+				new ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsStringReader().readThenSet(actorProfileRequests, null);
 		}
 	}
 	
