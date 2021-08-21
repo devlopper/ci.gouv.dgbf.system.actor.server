@@ -112,4 +112,6 @@ public class Privilege extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String COLUMN_PARENT_IDENTIFIER = "parent";
 	
 	public static final String TABLE_NAME = "VM_APP_PRIVILEGE";	
+	
+	public static final String LABEL = "Privilège";
 }
