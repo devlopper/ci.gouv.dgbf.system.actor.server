@@ -25,8 +25,6 @@ public interface ProfileTypeQuerier extends Querier.CodableAndNamable<ProfileTyp
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(ProfileType.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(ProfileType.class, QueryName.COUNT_DYNAMIC);
 	
-	String PARAMETER_NAME_REQUESTABLE = "requestable";
-	
 	/* read order by code ascending */
 	String QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING = "readOrderByCodeAscending";
 	String QUERY_IDENTIFIER_READ_ORDER_BY_CODE_ASCENDING = QueryIdentifierBuilder.getInstance().build(ProfileType.class, QUERY_NAME_READ_ORDER_BY_CODE_ASCENDING);

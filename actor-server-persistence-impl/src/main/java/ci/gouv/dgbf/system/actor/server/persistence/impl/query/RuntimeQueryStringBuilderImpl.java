@@ -22,6 +22,7 @@ import org.cyk.utility.persistence.server.query.string.LikeStringValueBuilder;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Arguments;
 import org.cyk.utility.persistence.server.query.string.WhereStringBuilder.Predicate;
 
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorProfileRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
@@ -32,6 +33,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -130,6 +132,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateProfileType(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(Profile.class))
 			populatePredicateProfile(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(ActorProfileRequest.class))
+			populatePredicateActorProfileRequest(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
@@ -170,6 +174,35 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER) != null) {
 			predicate.add(String.format("EXISTS(SELECT ap.identifier FROM ActorProfile ap WHERE ap.profile = t AND ap.actor.identifier = :%s)", ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER));
 			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
+		}
+	}
+	
+	protected void populatePredicateActorProfileRequest(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.actor.identifier IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS));
+			filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_PROFILE_TYPES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.profile.type.identifier IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_PROFILE_TYPES_IDENTIFIERS));
+			filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_PROFILE_TYPES_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_PROFILES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.profile.identifier IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_PROFILES_IDENTIFIERS));
+			filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_PROFILES_IDENTIFIERS, arguments);
+		}
+		Boolean processed = arguments.getFilterFieldValueAsBoolean(null,ActorProfileRequestQuerier.PARAMETER_NAME_PROCESSED);
+		if(processed != null) {
+			if(processed) {
+				Boolean granted = arguments.getFilterFieldValueAsBoolean(null,ActorProfileRequestQuerier.PARAMETER_NAME_GRANTED);
+				if(granted == null) {
+					predicate.add("t.granted IS NOT NULL");
+				}else {
+					predicate.add(String.format("t.granted = :%s", ActorProfileRequestQuerier.PARAMETER_NAME_GRANTED));
+					filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_GRANTED, arguments);
+				}				
+			}else {
+				predicate.add("t.granted IS NULL");
+			}		
 		}
 	}
 	
