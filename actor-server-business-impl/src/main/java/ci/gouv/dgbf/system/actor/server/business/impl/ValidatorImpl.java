@@ -6,7 +6,8 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.Validator;
 
-import ci.gouv.dgbf.system.actor.server.business.api.AbstractActorRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AbstractActorRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
@@ -27,15 +28,15 @@ public class ValidatorImpl extends Validator.AbstractImpl implements Serializabl
 	/**/
 	
 	protected <T> void validateActorProfileRequest(ActorProfileRequest actorProfileRequest, Object actionIdentifier,ThrowablesMessages throwablesMessages) {
-		validateActorRequest(actorProfileRequest, actionIdentifier, throwablesMessages);
+		validateActorRequest(actorProfileRequest, actionIdentifier, throwablesMessages,ActorProfileRequestBusiness.PROCESS);
 	}
 	
 	protected <T> void validateActorScopeRequest(ActorScopeRequest actorScopeRequest, Object actionIdentifier,ThrowablesMessages throwablesMessages) {
-		validateActorRequest(actorScopeRequest, actionIdentifier, throwablesMessages);
+		validateActorRequest(actorScopeRequest, actionIdentifier, throwablesMessages,ActorScopeRequestBusiness.PROCESS);
 	}
 	
-	protected <T> void validateActorRequest(AbstractActorRequest actorRequest, Object actionIdentifier,ThrowablesMessages throwablesMessages) {
-		if(AbstractActorRequestBusiness.PROCESS.equals(actionIdentifier)) {
+	protected <T> void validateActorRequest(AbstractActorRequest actorRequest, Object actionIdentifier,ThrowablesMessages throwablesMessages,Object processActionIdentifier) {
+		if(processActionIdentifier.equals(actionIdentifier)) {
 			if(actorRequest.getGranted() == null)
 				throwablesMessages.add(String.format("Spécifier explicitement la valeur accordée de %s", actorRequest.getIdentifier()));
 			if(Boolean.FALSE.equals(actorRequest.getGranted()) && StringHelper.isBlank(actorRequest.getProcessingComment()))

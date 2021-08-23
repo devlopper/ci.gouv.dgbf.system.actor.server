@@ -27,11 +27,16 @@ public class ActorProfileRequestBusinessImpl extends AbstractActorRequestBusines
 	}
 	
 	public static TransactionResult process(Collection<ActorProfileRequest> actorProfileRequests, String actorCode,EntityManager entityManager) {
-		return process(ActorProfileRequestBusinessImpl.class, actorProfileRequests, actorCode, new ProcessingImpl(), entityManager);
+		return process(ActorProfileRequestBusinessImpl.class, actorProfileRequests, actorCode,PROCESS, new ProcessingImpl(), entityManager);
 	}
 	
 	public static TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode,EntityManager entityManager) {
-		return process(ActorProfileRequestBusinessImpl.class, ActorProfileRequest.class, identifiers, grants, comments, actorCode, new ProcessingImpl(), entityManager);
+		return process(ActorProfileRequestBusinessImpl.class, ActorProfileRequest.class, identifiers, grants, comments, actorCode,PROCESS, new ProcessingImpl(), entityManager);
+	}
+	
+	@Override
+	protected String getProcessActionIdentitifer() {
+		return PROCESS;
 	}
 	
 	@Override
@@ -42,6 +47,11 @@ public class ActorProfileRequestBusinessImpl extends AbstractActorRequestBusines
 	@Override
 	protected Class<?> getRequestableClass() {
 		return Profile.class;
+	}
+	
+	@Override
+	protected Class<ActorProfileRequest> getEntityClass() {
+		return ActorProfileRequest.class;
 	}
 	
 	/**/

@@ -59,9 +59,10 @@ ELSE NULL END) AS "REGION_IDENTIFIANT"
 ,(CASE WHEN LENGTH(l.loc_code) = 4 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-2))
 WHEN LENGTH(l.loc_code) = 6 THEN (SELECT p.loc_code||' '||p.loc_lib FROM CA.LOCALITE p WHERE p.loc_code = SUBSTR(l.loc_code,1,LENGTH(l.loc_code)-4))
 ELSE NULL END) AS "REGION_CODE_LIBELLE"
+,l.loc_tref_id AS "REFERENTIEL"
 FROM CA.localite l WHERE l.entitystatus = 'COMMITTED';
 ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_PK PRIMARY KEY (IDENTIFIANT);
-ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_UK_CODE UNIQUE (CODE);
+ALTER TABLE VM_APP_LOCALITE ADD CONSTRAINT VM_APP_LOCALITE_UK_CODE UNIQUE (CODE,REFERENTIEL);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Classification par programme - CPP                                                                                                                                --

@@ -15,6 +15,7 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.klass.ClassHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.Validator;
@@ -34,8 +35,12 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 	private static final long serialVersionUID = 1L;
 
 	protected abstract Class<?> getRequestableClass();
+	protected abstract String getProcessActionIdentitifer();
 	
 	protected static <REQUESTABLE,REQUEST> TransactionResult record(Class<?> callerClass,Class<REQUEST> requestClass,Collection<String> actorsIdentifiers,Class<REQUESTABLE> requestableClass, Collection<String> requestablesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("caller class", callerClass);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("request class", requestClass);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("requestable class", requestableClass);
 		if(CollectionHelper.isEmpty(actorsIdentifiers))
 			throw new RuntimeException("Identifiants acteurs requis");
 		if(CollectionHelper.isEmpty(requestablesIdentifiers))
@@ -114,10 +119,10 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 	
 	protected abstract Processing<REQUEST> getPocessing();
 	
-	public static <REQUEST extends AbstractActorRequest> TransactionResult process(Class<?> callerClass,Collection<REQUEST> requests, String actorCode,Processing<REQUEST> processing,EntityManager entityManager) {
+	public static <REQUEST extends AbstractActorRequest> TransactionResult process(Class<?> callerClass,Collection<REQUEST> requests, String actorCode,String processActionIdentifier,Processing<REQUEST> processing,EntityManager entityManager) {
 		@SuppressWarnings("unchecked")
 		Class<REQUEST> requestClass = (Class<REQUEST>) requests.iterator().next().getClass();
-		ThrowablesMessages.throwIfNotEmpty(Validator.getInstance().validate(requestClass, requests, PROCESS));
+		ThrowablesMessages.throwIfNotEmpty(Validator.getInstance().validate(requestClass, requests, processActionIdentifier));
 		TransactionResult transactionResult = new TransactionResult().setName(String.format("Traitement de demande de domaines")).setTupleName("Demande domaine traitée");
 		EntityUpdater.getInstance().update(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, requests)).setEntityManager(entityManager));
 		transactionResult.incrementNumberOfUpdate(Long.valueOf(requests.size()));
@@ -131,7 +136,7 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 		return transactionResult;
 	}
 	
-	public static <REQUEST extends AbstractActorRequest> TransactionResult process(Class<?> callerClass,Class<REQUEST> requestClass,Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode,Processing<REQUEST> processing,EntityManager entityManager) {
+	public static <REQUEST extends AbstractActorRequest> TransactionResult process(Class<?> callerClass,Class<REQUEST> requestClass,Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode,String processActionIdentifier,Processing<REQUEST> processing,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(identifiers))
 			throw new RuntimeException("Identifiants requis");
 		if(StringHelper.isBlank(actorCode))
@@ -143,16 +148,16 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 			request.setGranted(MapHelper.readByKey(grants, request.getIdentifier()));
 			request.setComment(MapHelper.readByKey(comments, request.getIdentifier()));
 		});
-		return process(callerClass,requests, actorCode,processing, entityManager);
+		return process(callerClass,requests, actorCode,processActionIdentifier,processing, entityManager);
 	}
 	
 	@Override @Transactional
 	public TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode) {
-		return process(getClass(),getEntityClass(),identifiers,grants,comments,actorCode,getPocessing(), EntityManagerGetter.getInstance().get());
+		return process(getClass(),getEntityClass(),identifiers,grants,comments,actorCode,getProcessActionIdentitifer(),getPocessing(), EntityManagerGetter.getInstance().get());
 	}
 	
 	@Override @Transactional
 	public TransactionResult process(Collection<REQUEST> requests, String actorCode) {
-		return process(getClass(),requests, actorCode,getPocessing(), EntityManagerGetter.getInstance().get());
+		return process(getClass(),requests,getProcessActionIdentitifer(), actorCode,getPocessing(), EntityManagerGetter.getInstance().get());
 	}
 }

@@ -18,8 +18,8 @@ public class ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringG
 		QueryStringBuilder.Arguments arguments = new QueryStringBuilder.Arguments();
 		arguments.getProjection(Boolean.TRUE).addFromTuple("t",ActorProfileRequest.FIELD_IDENTIFIER,ActorProfileRequest.FIELD_GRANTED);
 		arguments.getProjection(Boolean.TRUE).addFromTuple("a.identity", Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES,Identity.FIELD_ELECTRONIC_MAIL_ADDRESS);
-		arguments.getProjection(Boolean.TRUE).add(Language.Select.concatCodeName("s"));
-		arguments.getProjection(Boolean.TRUE).addFromTuple("st", ProfileType.FIELD_NAME);
+		arguments.getProjection(Boolean.TRUE).add(Language.Select.concatCodeName("p"));
+		arguments.getProjection(Boolean.TRUE).addFromTuple("pt", ProfileType.FIELD_NAME);
 		arguments.getTuple(Boolean.TRUE).add("ActorProfileRequest t").addJoins("JOIN Actor a ON a = t.actor","JOIN Profile p ON p = t.profile","JOIN ProfileType pt ON pt = p.type");
 		arguments.getPredicate(Boolean.TRUE).add("t.identifier IN :"+Querier.PARAMETER_NAME_IDENTIFIERS);
 		return QueryStringBuilder.getInstance().build(arguments);

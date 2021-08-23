@@ -13,19 +13,19 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AbstractActorReques
 
 public interface AbstractActorRequestBusiness<REQUEST extends AbstractActorRequest> extends SpecificBusiness<REQUEST> {
 
-	String RECORD = "record";
+	//String RECORD = "record";
 	@Transactional
 	TransactionResult record(Collection<String> actorsIdentifiers,Collection<String> requestablesIdentifiers,String actorCode,Boolean ignoreExisting);
 	
-	String CANCEL = "cancel";
+	//String CANCEL = "cancel";
 	@Transactional
 	TransactionResult cancel(Collection<String> identifiers,String actorCode,Boolean ignoreExisting);
 	
-	String PROCESS = "process";
+	//String PROCESS = "process";
 	@Transactional
 	TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments,String actorCode);
 	@Transactional
-	TransactionResult process(Collection<REQUEST> requestables,String actorCode);
+	TransactionResult process(Collection<REQUEST> requests,String actorCode);
 	
 	/* rules */
 	

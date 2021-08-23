@@ -13,15 +13,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 
 public interface ActorScopeRequestBusiness extends SpecificBusiness<ActorScopeRequest> {
 
-	String RECORD = "record";
+	String RECORD = "ActorScopeRequest.record";
 	@Transactional
 	TransactionResult record(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting);
 	
-	String CANCEL = "cancel";
+	String CANCEL = "ActorScopeRequest.cancel";
 	@Transactional
 	TransactionResult cancel(Collection<String> identifiers,String actorCode,Boolean ignoreExisting);
 	
-	String PROCESS = "process";
+	String PROCESS = "ActorScopeRequest.process";
 	@Transactional
 	TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments,String actorCode);
 	@Transactional

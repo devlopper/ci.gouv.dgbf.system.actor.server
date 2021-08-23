@@ -113,6 +113,10 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	String PATH_DELETE_PROFILES = "delete_profiles";
 	String PATH_CREATE_BY_PUBLIC = "createbypublic";
 	String PATH_SAVE_PROFILE = "saveProfile";
+
+	String PARAMETER_ACTORS = "acteurs";
+	String DESCRIPTION_ACTORS = "Acteurs";
+	String EXAMPLE_ACTORS = "komenan";
 	
 	//String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	String PARAMETER_USER_NAME = "nom_utilisateur";

@@ -72,6 +72,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processActorScopeRequests(CollectionHelper.cast(ActorScopeRequest.class, objects),filter,fieldsNames);
 		else if(Profile.class.equals(klass))
 			processProfiles(CollectionHelper.cast(Profile.class, objects),filter,fieldsNames);
+		else if(ActorProfileRequest.class.equals(klass))
+			processActorProfileRequests(CollectionHelper.cast(ActorProfileRequest.class, objects),filter,fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
 	}
