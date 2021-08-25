@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.persistence.EntityManager;
 
+import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.test.business.server.Transaction;
@@ -31,44 +32,47 @@ public class PrivilegesBusinessImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void create() {
+		String code = RandomHelper.getAlphabetic(10);
 		assertThat(DynamicManyExecutor.getInstance().count(Profile.class)).isEqualTo(1l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ProfileBusinessImpl.create("p01", "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
+				ProfileBusinessImpl.create(code, "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
 			}
 		}.run();
 		assertThat(DynamicManyExecutor.getInstance().count(Profile.class)).isEqualTo(2l);
-		Profile profile = EntityFinder.getInstance().find(Profile.class, "p01");
+		Profile profile = EntityFinder.getInstance().find(Profile.class, code);
 		assertThat(profile).isNotNull();
-		assertThat(profile.getIdentifier()).isEqualTo("p01");
+		assertThat(profile.getIdentifier()).isEqualTo(code);
 	}
 	
 	@Test
 	public void create_another() {
+		String code = RandomHelper.getAlphabetic(10);
 		assertThat(DynamicManyExecutor.getInstance().count(Profile.class)).isEqualTo(1l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ProfileBusinessImpl.create("p02", "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
+				ProfileBusinessImpl.create(code, "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
 			}
 		}.run();
 		assertThat(DynamicManyExecutor.getInstance().count(Profile.class)).isEqualTo(2l);
 	}
 	
 	@Test
-	public void create_duplicate() {		
+	public void create_duplicate() {	
+		String code = RandomHelper.getAlphabetic(10);
 		Assertions.assertThrows(Exception.class, () -> {
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ProfileBusinessImpl.create("p03", "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
+					ProfileBusinessImpl.create(code, "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
 				}
 			}.run();
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					ProfileBusinessImpl.create("p03", "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
+					ProfileBusinessImpl.create(code, "profile",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
 				}
 			}.run();
 		});
@@ -76,15 +80,16 @@ public class PrivilegesBusinessImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void update() {
+		String code = RandomHelper.getAlphabetic(10);
 		assertThat(DynamicManyExecutor.getInstance().count(Profile.class)).isEqualTo(1l);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				ProfileBusinessImpl.update("RPROG","RPROG001", "profile rp",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
+				ProfileBusinessImpl.update("RPROG",code, "profile rp",ProfileType.CODE_SYSTEME,null,null,"test", entityManager);
 			}
 		}.run();
 		Profile profile = EntityFinder.getInstance().find(Profile.class, "RPROG");
 		assertThat(profile).isNotNull();
-		assertThat(profile.getCode()).isEqualTo("RPROG001");
+		assertThat(profile.getCode()).isEqualTo(code);
 	}
 }
