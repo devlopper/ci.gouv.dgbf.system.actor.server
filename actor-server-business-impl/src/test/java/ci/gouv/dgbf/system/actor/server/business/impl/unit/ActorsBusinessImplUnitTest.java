@@ -39,8 +39,6 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	public void recordRequests_profiles() {
 		Long actorProfileRequestCount = DynamicManyExecutor.getInstance().count(ActorProfileRequest.class);
 		assertThat(actorProfileRequestCount).isEqualTo(3);
-		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
-		assertThat(actorScopeRequestCount).isEqualTo(3);		
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
@@ -52,8 +50,6 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void recordRequests_scopes() {
-		Long actorProfileRequestCount = DynamicManyExecutor.getInstance().count(ActorProfileRequest.class);
-		assertThat(actorProfileRequestCount).isEqualTo(3);
 		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
 		assertThat(actorScopeRequestCount).isEqualTo(3);		
 		new Transaction.AbstractImpl() {
@@ -62,7 +58,7 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 				ActorBusinessImpl.recordRequests(List.of("1","2"), null, List.of("s01"),"test",null, entityManager);
 			}
 		}.run();
-		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(actorProfileRequestCount+2);
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(actorScopeRequestCount+2);
 	}
 	
 	@Test
