@@ -13,6 +13,8 @@ Insert into PROFILE (IDENTIFIANT,CODE,LIBELLE,TYPE) values ('p04','p04','Profile
 
 Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('1','komenan','christian','kycdev@gmail.com');
 Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('1','christian','1');
+Insert into ID_IDENTITE (IDENTIFIANT,NOM,PRENOMS,EMAIL) values ('2','zadi','gérard','zd@gmail.com');
+Insert into ACTEUR (IDENTIFIANT,NOM_UTILISATEUR,IDENTITE) values ('2','zd','2');
 
 Insert into TA_DEMANDE_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE) values ('1','1','s02');
 Insert into TA_DEMANDE_DOMAINE (IDENTIFIANT,ACTEUR,DOMAINE,ACCORDEE) values ('2','1','s03',true);

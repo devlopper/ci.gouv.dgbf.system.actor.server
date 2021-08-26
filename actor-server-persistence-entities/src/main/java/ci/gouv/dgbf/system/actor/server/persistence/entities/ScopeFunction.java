@@ -300,10 +300,10 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 			return;
 		String script = formatScript(scopeTypeCode,orderNumber1,orderNumber2,codeScript, nameScript);
 		Collection<ScriptDto> dtos = ScriptDto.collect(scopeFunctions);
-		LogHelper.logInfo(String.format("Codification du code et du libelle de %s poste(s) en cours...", scopeFunctions.size()), ScopeFunction.class);
+		LogHelper.logFine(String.format("Codification du code et du libelle de %s poste(s) en cours...", scopeFunctions.size()), ScopeFunction.class);
 		Long t = System.currentTimeMillis();
 		ScriptExecutor.getInstance().execute(script, "l",dtos);
-		LogHelper.logInfo(String.format("Codification du code et du libelle de %s poste(s) éffectué(s) en %s", scopeFunctions.size()
+		LogHelper.logFine(String.format("Codification du code et du libelle de %s poste(s) éffectué(s) en %s", scopeFunctions.size()
 				,TimeHelper.formatDuration(System.currentTimeMillis()-t)), ScopeFunction.class);
 	}
 	

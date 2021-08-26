@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import ci.gouv.dgbf.system.actor.server.business.impl.ActorBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.ActorProfileRequestBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.ActorScopeRequestBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
@@ -32,6 +33,52 @@ public class ActorsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "actors";
+	}
+	
+	@Test
+	public void recordRequests_profiles() {
+		Long actorProfileRequestCount = DynamicManyExecutor.getInstance().count(ActorProfileRequest.class);
+		assertThat(actorProfileRequestCount).isEqualTo(3);
+		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
+		assertThat(actorScopeRequestCount).isEqualTo(3);		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorBusinessImpl.recordRequests(List.of("1","2"), List.of("p01"), null,"test",null, entityManager);
+			}
+		}.run();
+		assertThat(DynamicManyExecutor.getInstance().count(ActorProfileRequest.class)).isEqualTo(actorProfileRequestCount+2);
+	}
+	
+	@Test
+	public void recordRequests_scopes() {
+		Long actorProfileRequestCount = DynamicManyExecutor.getInstance().count(ActorProfileRequest.class);
+		assertThat(actorProfileRequestCount).isEqualTo(3);
+		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
+		assertThat(actorScopeRequestCount).isEqualTo(3);		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorBusinessImpl.recordRequests(List.of("1","2"), null, List.of("s01"),"test",null, entityManager);
+			}
+		}.run();
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(actorProfileRequestCount+2);
+	}
+	
+	@Test
+	public void recordRequests_profiles_scopes() {
+		Long actorProfileRequestCount = DynamicManyExecutor.getInstance().count(ActorProfileRequest.class);
+		assertThat(actorProfileRequestCount).isEqualTo(3);
+		Long actorScopeRequestCount = DynamicManyExecutor.getInstance().count(ActorScopeRequest.class);
+		assertThat(actorScopeRequestCount).isEqualTo(3);		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ActorBusinessImpl.recordRequests(List.of("1","2"), List.of("p01"), List.of("s01"),"test",null, entityManager);
+			}
+		}.run();
+		assertThat(DynamicManyExecutor.getInstance().count(ActorProfileRequest.class)).isEqualTo(actorProfileRequestCount+2);
+		assertThat(DynamicManyExecutor.getInstance().count(ActorScopeRequest.class)).isEqualTo(actorScopeRequestCount+2);		
 	}
 	
 	/* Scope Request*/

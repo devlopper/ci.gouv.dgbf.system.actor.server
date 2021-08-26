@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -16,6 +17,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
 public interface ActorBusiness extends BusinessEntity<Actor> {
 
+	@Transactional
+	TransactionResult recordRequests(Collection<String> actorsIdentifiers, Collection<String> profilesIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting);
+	
 	@Transactional
 	void createPrivilegesFromFunctions(Collection<Actor> actors,Collection<Function> functions);
 	

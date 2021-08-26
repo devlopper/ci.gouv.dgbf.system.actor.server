@@ -10,7 +10,6 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.annotation.Oracle;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.persistence.PersistenceHelper;
 import org.cyk.utility.persistence.query.CountQueryIdentifierGetter;
 import org.cyk.utility.persistence.query.EntityCounter;
@@ -169,7 +168,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		IdentificationFormAttributeQuerier.initialize();
 		//INITIALIZED.set(Boolean.TRUE);
 		
-		LogHelper.logInfo("Named queries created", ApplicationScopeLifeCycleListener.class);
+		//LogHelper.logInfo("Named queries created", ApplicationScopeLifeCycleListener.class);
 	}
 	
 	//public static final Value INITIALIZED = new Value();

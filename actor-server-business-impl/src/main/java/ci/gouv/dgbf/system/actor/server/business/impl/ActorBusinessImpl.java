@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,9 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.mail.MailSender;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityUpdater;
 import org.cyk.utility.persistence.server.query.executor.field.GenericFieldExecutor;
@@ -46,7 +49,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity.Interface;
@@ -57,6 +62,26 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 public class ActorBusinessImpl extends AbstractBusinessEntityImpl<Actor, ActorPersistence> implements ActorBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static TransactionResult recordRequests(Collection<String> actorsIdentifiers, Collection<String> profilesIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
+		TransactionResult transactionResult = new TransactionResult().setName(String.format("Enregistrement %s , %s",ActorProfileRequest.LABEL,ActorScopeRequest.LABEL));
+		transactionResult.setTupleName("Demande");
+		if(CollectionHelper.isNotEmpty(profilesIdentifiers)) {
+			TransactionResult profilesTransactionResult = ActorProfileRequestBusinessImpl.record(actorsIdentifiers, profilesIdentifiers, actorCode, ignoreExisting, entityManager);
+			transactionResult.add(profilesTransactionResult);
+		}
+		if(CollectionHelper.isNotEmpty(scopesIdentifiers)) {
+			TransactionResult scopesTransactionResult = ActorScopeRequestBusinessImpl.record(actorsIdentifiers, scopesIdentifiers, actorCode, ignoreExisting, entityManager);
+			transactionResult.add(scopesTransactionResult);
+		}		
+		transactionResult.log(ActorBusinessImpl.class);
+		return transactionResult;
+	}
+	
+	@Override @Transactional
+	public TransactionResult recordRequests(Collection<String> actorsIdentifiers, Collection<String> profilesIdentifiers,Collection<String> scopesIdentifiers, String actorCode, Boolean ignoreExisting) {
+		return recordRequests(actorsIdentifiers, profilesIdentifiers, scopesIdentifiers, actorCode, ignoreExisting, EntityManagerGetter.getInstance().get());
+	}
+	
 	@Override
 	public Actor instantiateOneToBeCreatedByPublic() {
 		Actor actor = ActorQuerier.getInstance().instantiateOneToBeCreatedByPublic();

@@ -18,8 +18,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 public class ActorProfileRequestBusinessImpl extends AbstractActorRequestBusinessImpl<ActorProfileRequest> implements ActorProfileRequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public static TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> requestablesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
-		return record(ActorProfileRequestBusinessImpl.class,ActorProfileRequest.class, actorsIdentifiers, Profile.class, requestablesIdentifiers, actorCode, ignoreExisting, entityManager);
+	public static TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> profilesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
+		return record(ActorProfileRequestBusinessImpl.class,ActorProfileRequest.class, actorsIdentifiers, Profile.class, profilesIdentifiers, actorCode, ignoreExisting, entityManager);
 	}
 	
 	public static TransactionResult cancel(Collection<String> identifiers, String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
