@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 
 public interface ActorBusiness extends BusinessEntity<Actor> {
 
+	String RECORD_REQUESTS = "Actor.recordRequests";
 	@Transactional
 	TransactionResult recordRequests(Collection<String> actorsIdentifiers, Collection<String> profilesIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting);
 	

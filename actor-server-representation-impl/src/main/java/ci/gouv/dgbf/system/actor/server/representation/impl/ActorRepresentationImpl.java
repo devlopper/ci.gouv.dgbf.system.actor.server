@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
@@ -42,6 +43,22 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 public class ActorRepresentationImpl extends AbstractRepresentationEntityImpl<ActorDto> implements ActorRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response recordRequests(List<String> actorsIdentifiers, List<String> profilesIdentifiers,
+			List<String> scopesIdentifiers, String actorCode, Boolean ignoreExisting) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ActorBusiness.class).recordRequests(actorsIdentifiers, profilesIdentifiers,scopesIdentifiers, actorCode, ignoreExisting);
+					}
+				};
+			}			
+		});
+	}
+	
 	@Override
 	public ActorDto getOneToBeCreatedByPublic() {	
 		Actor actor = __inject__(ActorBusiness.class).instantiateOneToBeCreatedByPublic();				

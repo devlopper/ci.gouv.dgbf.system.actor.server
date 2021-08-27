@@ -3,7 +3,7 @@ package ci.gouv.dgbf.system.actor.server.representation.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl;
+import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl implements Serializable {
+public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private IdentityDto identity;
@@ -55,7 +55,11 @@ public class ActorDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	private ArrayList<ScopeDto> scopes;
 	private ArrayList<ScopeDto> visibleSections;
 	private ArrayList<String> sectionsIdentifiers;
+	private ArrayList<String> actorsIdentifiers;
+	private ArrayList<String> profilesIdentifiers;
 	private ArrayList<String> scopesIdentifiers;
+	
+	private Boolean ignoreExisting;
 	
 	@Override
 	public ActorDto setIdentifier(String identifier) {

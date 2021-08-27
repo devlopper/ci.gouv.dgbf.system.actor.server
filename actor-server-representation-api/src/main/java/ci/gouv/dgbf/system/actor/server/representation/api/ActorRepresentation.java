@@ -1,5 +1,6 @@
 package ci.gouv.dgbf.system.actor.server.representation.api;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -20,6 +21,18 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorDto;
 @Path(ActorRepresentation.PATH)
 @Tag(name = ActorRepresentation.TAG)
 public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
+	
+	String PATH_RECORD_REQUESTS = "recordrequests";
+	@POST
+	@Path(PATH_RECORD_REQUESTS)
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_JSON})
+	Response recordRequests(
+			@QueryParam("actors") List<String> actorsIdentifiers
+			,@QueryParam("profiles") List<String> profilesIdentifiers
+			,@QueryParam("scopes") List<String> scopesIdentifiers
+			,@QueryParam("actorcode") String actorCode
+			,@QueryParam("ignoreexisting") Boolean ignoreExisting);
 	
 	@GET
 	@Path(PATH_GET_ONE_TO_BE_CREATED_BY_PUBLIC)
