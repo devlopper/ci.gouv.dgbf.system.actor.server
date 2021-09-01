@@ -64,61 +64,31 @@ public class ActorScopeRequestRepresentationImpl extends AbstractActorRequestRep
 		});
 	}
 	
-	/*
-	@Override
-	public Response record(List<String> actorsIdentifiers, List<String> scopesIdentifiers, String actorCode,Boolean ignoreExisting) {
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+	public static Response recordByActorCode(String actorCode,Collection<String> requestablesIdentifiers, Boolean ignoreExisting) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeRequestBusiness.class).record(actorsIdentifiers, scopesIdentifiers, actorCode, ignoreExisting);
+						return __inject__(ActorScopeRequestBusiness.class).recordByActorCode(actorCode, requestablesIdentifiers, ignoreExisting);
 					}
 				};
-			}			
+			}
 		});
 	}
 
-	@Override
-	public Response cancel(List<String> identifiers, String actorCode,Boolean ignoreExisting) {
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+	public static Response cancel(String actorCode,Collection<String> identifiers, Boolean ignoreExisting) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
 			@Override
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
 					public TransactionResult transact() {
-						return __inject__(ActorScopeRequestBusiness.class).cancel(identifiers,actorCode,ignoreExisting);
+						return __inject__(ActorScopeRequestBusiness.class).cancel(identifiers, actorCode, ignoreExisting);
 					}
 				};
-			}			
+			}
 		});
 	}
-
-	@Override
-	public Response process(List<ActorScopeRequestDto> actorScopeRequestDtos,String actorCode) {
-		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
-			@Override
-			public Runnable getRunnable() {
-				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
-					@Override
-					public TransactionResult transact() {
-						ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actorScopeRequestDtos", actorScopeRequestDtos);
-						Collection<ActorScopeRequest> actorScopeRequests = EntityFinder.getInstance().findMany(ActorScopeRequest.class, FieldHelper.readSystemIdentifiersAsStrings(actorScopeRequestDtos));
-						ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("actorScopeRequests", actorScopeRequests);
-						actorScopeRequests.forEach(actorScopeRequest -> {
-							for(ActorScopeRequestDto dto : actorScopeRequestDtos)
-								if(actorScopeRequest.getIdentifier().equals(dto.getIdentifier())) {
-									actorScopeRequest.setGranted(dto.getGranted());
-									actorScopeRequest.setProcessingComment(dto.getProcessingComment());
-									break;
-								}
-						});
-						return __inject__(ActorScopeRequestBusiness.class).process(actorScopeRequests, actorCode);
-					}
-				};
-			}			
-		});
-	}
-	*/
 }

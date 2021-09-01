@@ -134,7 +134,7 @@ public interface ActorRepresentation extends RepresentationEntity<ActorDto> {
 	//String QUERY_PARAMETER_NAME_USER_NAME = "nom_utilisateur";
 	String PARAMETER_USER_NAME = "nom_utilisateur";
 	String DESCRIPTION_USER_NAME = "Nom d'utilisateur";
-	String EXAMPLE_USER_NAME = "komenan";
+	String EXAMPLE_USER_NAME = "christian";
 	
 	String PARAMETER_FIRST_NAME = "nom";
 	String PARAMETER_LAST_NAMES = "prenoms";

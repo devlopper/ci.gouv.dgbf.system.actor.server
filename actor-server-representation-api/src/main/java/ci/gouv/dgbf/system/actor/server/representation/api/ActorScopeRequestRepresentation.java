@@ -35,4 +35,8 @@ public interface ActorScopeRequestRepresentation extends AbstractActorRequestRep
 	static ActorScopeRequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ActorScopeRequestRepresentation.class);
 	}
+	
+	String PARAMETER_SCOPES_IDENTIFIERS = "identifiants_domaines";
+	String DESCRIPTION_SCOPES_IDENTIFIERS = "Identifiants de domaines";
+	String EXAMPLE_SCOPES_IDENTIFIERS = "1,2,3";
 }

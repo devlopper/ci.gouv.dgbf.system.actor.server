@@ -17,6 +17,9 @@ public interface AbstractActorRequestBusiness<REQUEST extends AbstractActorReque
 	@Transactional
 	TransactionResult record(Collection<String> actorsIdentifiers,Collection<String> requestablesIdentifiers,String actorCode,Boolean ignoreExisting);
 	
+	@Transactional
+	TransactionResult recordByActorCode(String actorCode,Collection<String> requestablesIdentifiers,Boolean ignoreExisting);
+	
 	//String CANCEL = "cancel";
 	@Transactional
 	TransactionResult cancel(Collection<String> identifiers,String actorCode,Boolean ignoreExisting);

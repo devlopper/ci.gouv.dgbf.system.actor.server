@@ -64,5 +64,33 @@ public class ActorProfileRequestRepresentationImpl extends AbstractActorRequestR
 		});
 	}
 	
+	public static Response recordByActorCode(String actorCode,Collection<String> requestablesIdentifiers, Boolean ignoreExisting) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ActorProfileRequestBusiness.class).recordByActorCode(actorCode, requestablesIdentifiers, ignoreExisting);
+					}
+				};
+			}
+		});
+	}
+
+	public static Response cancel(String actorCode,Collection<String> identifiers, Boolean ignoreExisting) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(ActorProfileRequestBusiness.class).cancel(identifiers, actorCode, ignoreExisting);
+					}
+				};
+			}
+		});
+	}
+	
 	/**/
 }

@@ -7,10 +7,14 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.ActorProfileRequ
 
 @Path(ActorProfileRequestRepresentation.PATH)
 public interface ActorProfileRequestRepresentation extends AbstractActorRequestRepresentation<ActorProfileRequestDto> {
-	
+
 	String PATH = "actorprofilerequest";
-	
+
 	static ActorProfileRequestRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ActorProfileRequestRepresentation.class);
 	}
+
+	String PARAMETER_PROFILES_IDENTIFIERS = "identifiants_profiles";
+	String DESCRIPTION_PROFILES_IDENTIFIERS = "Identifiants de profiles";
+	String EXAMPLE_PROFILES_IDENTIFIERS = "1,2,3";
 }

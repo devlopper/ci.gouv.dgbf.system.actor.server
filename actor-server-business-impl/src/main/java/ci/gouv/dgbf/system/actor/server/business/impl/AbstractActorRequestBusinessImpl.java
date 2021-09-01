@@ -30,6 +30,7 @@ import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.field.IdentifierExecutor;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AbstractActorRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AbstractActorRequestQuerier;
@@ -86,6 +87,14 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 	@Override @Transactional
 	public TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> requestablesIdentifiers,String actorCode,Boolean ignoreExisting) {
 		return record(getClass(),getEntityClass(),actorsIdentifiers,getRequestableClass(), requestablesIdentifiers, actorCode,ignoreExisting, EntityManagerGetter.getInstance().get());
+	}
+	
+	@Override
+	public TransactionResult recordByActorCode(String actorCode, Collection<String> requestablesIdentifiers,Boolean ignoreExisting) {
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		ValidatorImpl.validateActorCode(actorCode, throwablesMessages);
+		throwablesMessages.throwIfNotEmpty();
+		return record(CollectionHelper.listOf(Boolean.TRUE, IdentifierExecutor.getByCode(Actor.class, actorCode)), requestablesIdentifiers, actorCode,ignoreExisting);
 	}
 	
 	/**/

@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl.openapi;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -48,6 +49,16 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAP
 	}
 	
 	@Override
+	public Response createRequestScopes(String actorCode, List<String> requestablesIdentifiers) {
+		return ActorScopeRequestRepresentationImpl.recordByActorCode(actorCode, requestablesIdentifiers, Boolean.FALSE);
+	}
+	
+	@Override
+	public Response deleteRequestScopes(String actorCode, List<String> requestsIdentifiers) {
+		return ActorScopeRequestRepresentationImpl.cancel(actorCode, requestsIdentifiers, Boolean.FALSE);
+	}
+	
+	@Override
 	public Response getProfiles(String actorCode) {
 		return ProfileRepresentationImpl.getByActorCode(actorCode);
 	}
@@ -60,5 +71,15 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAP
 	@Override
 	public Response getRequestProfiles(String actorCode, Boolean processed,Boolean granted, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
 		return ActorProfileRequestRepresentationImpl.getByActorCode(actorCode, processed, granted, pageable, firstTupleIndex, numberOfTuples);
+	}
+	
+	@Override
+	public Response createRequestProfiles(String actorCode, List<String> requestablesIdentifiers) {
+		return ActorProfileRequestRepresentationImpl.recordByActorCode(actorCode, requestablesIdentifiers, Boolean.FALSE);
+	}
+	
+	@Override
+	public Response deleteRequestProfiles(String actorCode, List<String> requestsIdentifiers) {
+		return ActorProfileRequestRepresentationImpl.cancel(actorCode, requestsIdentifiers, Boolean.FALSE);
 	}
 }

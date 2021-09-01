@@ -1,5 +1,7 @@
 package ci.gouv.dgbf.system.actor.server.representation.impl.openapi;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -206,6 +208,44 @@ public interface ActorOpenAPI extends OpenAPI {
 			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
+	public static final String OPERATION_CREATE_REQUEST_SCOPES = "creer-demandes-domaines";
+	@POST
+	@Path(OPERATION_CREATE_REQUEST_SCOPES)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Créer demandes de domaines",operationId = "creer-demandes-domaines")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes domaines créées",responseCode = "201", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Erreur lors de la création des demandes de domaines",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response createRequestScopes(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)
+			String actorCode
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_SCOPES_IDENTIFIERS,example = ActorScopeRequestRepresentation.EXAMPLE_SCOPES_IDENTIFIERS,name = ActorScopeRequestRepresentation.PARAMETER_SCOPES_IDENTIFIERS)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_SCOPES_IDENTIFIERS)
+			List<String> requestablesIdentifiers
+			);
+	
+	public static final String OPERATION_DELETE_REQUEST_SCOPES = "supprimer-demandes-domaines";
+	@POST
+	@Path(OPERATION_DELETE_REQUEST_SCOPES)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Supprimer demandes de domaines",operationId = "supprimer-demandes-domaines")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes domaines supprimées",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Erreur lors de la suppression des demandes de domaines",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response deleteRequestScopes(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)
+			String actorCode
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_IDENTIFIERS,example = ActorScopeRequestRepresentation.EXAMPLE_IDENTIFIERS,name = ActorScopeRequestRepresentation.PARAMETER_IDENTIFIERS)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_IDENTIFIERS)
+			List<String> requestsIdentifiers
+			);
+	
 	/* Profiles */
 	
 	public static final String OPERATION_GET_PROFILES = "obtenir-profiles";
@@ -274,5 +314,41 @@ public interface ActorOpenAPI extends OpenAPI {
 			
 			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ActorProfileRequestRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ActorProfileRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES)
 			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	public static final String OPERATION_CREATE_PROFILE_SCOPES = "creer-demandes-profiles";
+	@POST
+	@Path(OPERATION_CREATE_PROFILE_SCOPES)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Créer demandes de profiles",operationId = "creer-demandes-profiles")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes profiles créées",responseCode = "201", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Erreur lors de la création des demandes de profiles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response createRequestProfiles(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME)
+			String actorCode
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_PROFILES_IDENTIFIERS,example = ActorProfileRequestRepresentation.EXAMPLE_PROFILES_IDENTIFIERS,name = ActorProfileRequestRepresentation.PARAMETER_PROFILES_IDENTIFIERS)
+			List<String> requestablesIdentifiers
+			);
+	
+	public static final String OPERATION_DELETE_PROFILE_SCOPES = "supprimer-demandes-profiles";
+	@POST
+	@Path(OPERATION_DELETE_PROFILE_SCOPES)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Supprimer demandes de profiles",operationId = "supprimer-demandes-profiles")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes profiles supprimées",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Erreur lors de la suppression des demandes de profiles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response deleteRequestProfiles(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)
+			String actorCode
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_IDENTIFIERS,example = ActorProfileRequestRepresentation.EXAMPLE_IDENTIFIERS,name = ActorProfileRequestRepresentation.PARAMETER_IDENTIFIERS)
+			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_IDENTIFIERS)
+			List<String> requestsIdentifiers
 			);
 }
