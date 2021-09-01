@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfile;
@@ -54,17 +55,23 @@ public class ActorProfileRequestBusinessImpl extends AbstractActorRequestBusines
 		return ActorProfileRequest.class;
 	}
 	
+	@Override
+	protected QueryExecutorArguments findByActorCodeGetQueryExecutorArguments(String actorCode, Boolean processed,Boolean granted, Boolean pageable, Integer firstTupleIndex, Integer numberOfTuples) {
+		return super.findByActorCodeGetQueryExecutorArguments(actorCode, processed, granted, pageable, firstTupleIndex,
+				numberOfTuples).addProcessableTransientFieldsNames(ActorProfileRequest.FIELDS_ACTOR_AS_STRING_PROFILE_TYPE_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING);
+	}
+	
 	/**/
 	
 	public static class ProcessingImpl implements Processing<ActorProfileRequest> {
 
 		@Override
-		public void listenGrantIsTrue(ActorProfileRequest request,EntityManager entityManager) {
+		public void listenGrantIsTrue(ActorProfileRequest request,String actorCode,EntityManager entityManager) {
 			ActorProfileBusinessImpl.create(new ActorProfile().setActor(request.getActor()).setProfile(request.getProfile()), entityManager);
 		}
 
 		@Override
-		public void listenGrantIsNotTrue(ActorProfileRequest request,EntityManager entityManager) {
+		public void listenGrantIsNotTrue(ActorProfileRequest request,String actorCode,EntityManager entityManager) {
 			// Nothing to do
 		}
 	}

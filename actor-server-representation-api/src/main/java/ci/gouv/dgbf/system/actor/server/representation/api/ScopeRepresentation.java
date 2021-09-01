@@ -71,15 +71,7 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String DESCRIPTION_TYPE_CODE = "Code du type de domaine";
 	String EXAMPLE_TYPE_CODE = ScopeType.CODE_SECTION;
 	
-	String PARAMETER_PAGEABLE = "paginer";
-	String DESCRIPTION_PAGEABLE = "Activer la pagination";
-	String EXAMPLE_PAGEABLE = "true";
-	
-	String PARAMETER_FIRST_TUPLE_INDEX = "index";
-	String DESCRIPTION_FIRST_TUPLE_INDEX = "index du premier élément";
-	String EXAMPLE_FIRST_TUPLE_INDEX = "0";
-	
-	String PARAMETER_NUMBER_OF_TUPLES = "nombre";
-	String DESCRIPTION_NUMBER_OF_TUPLES = "Nombre d'élément";
-	String EXAMPLE_NUMBER_OF_TUPLES = "5";
+	String PARAMETER_VISIBLE = "visible";
+	String DESCRIPTION_VISIBLE = "Visibilté";
+	String EXAMPLE_VISIBLE = "true";
 }

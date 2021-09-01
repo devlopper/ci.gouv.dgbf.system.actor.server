@@ -175,12 +175,20 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("EXISTS(SELECT ap.identifier FROM ActorProfile ap WHERE ap.profile = t AND ap.actor.identifier = :%s)", ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER));
 			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_ACTOR_IDENTIFIER, arguments);
 		}
+		if(arguments.getFilterFieldValue(ProfileQuerier.PARAMETER_NAME_ACTOR_CODE) != null) {
+			predicate.add(String.format("EXISTS(SELECT ap.identifier FROM ActorProfile ap WHERE ap.profile = t AND ap.actor.code = :%s)", ProfileQuerier.PARAMETER_NAME_ACTOR_CODE));
+			filter.addFieldEquals(ProfileQuerier.PARAMETER_NAME_ACTOR_CODE, arguments);
+		}
 	}
 	
 	protected void populatePredicateActorProfileRequest(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.actor.identifier IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS));
 			filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_CODES) != null) {
+			predicate.add(String.format("t.actor.code IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_CODES));
+			filter.addFieldEquals(ActorProfileRequestQuerier.PARAMETER_NAME_ACTORS_CODES, arguments);
 		}
 		if(arguments.getFilterFieldValue(ActorProfileRequestQuerier.PARAMETER_NAME_PROFILE_TYPES_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.profile.type.identifier IN :%s", ActorProfileRequestQuerier.PARAMETER_NAME_PROFILE_TYPES_IDENTIFIERS));
@@ -323,6 +331,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.actor.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS));
 			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_CODES) != null) {
+			predicate.add(String.format("t.actor.code IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_CODES));
+			filter.addFieldEquals(ActorScopeRequestQuerier.PARAMETER_NAME_ACTORS_CODES, arguments);
 		}
 		if(arguments.getFilterFieldValue(ActorScopeRequestQuerier.PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.scope.type.identifier IN :%s", ActorScopeRequestQuerier.PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS));

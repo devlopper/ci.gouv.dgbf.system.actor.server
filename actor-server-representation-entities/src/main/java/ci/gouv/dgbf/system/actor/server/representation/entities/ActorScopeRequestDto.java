@@ -16,4 +16,7 @@ public class ActorScopeRequestDto extends AbstractActorRequestDto implements Ser
 	private String scopeAsString;
 	private String scopeTypeAsString;
 	private List<String> scopesIdentifiers;
+	
+	public static final String JSON_FIELD_SCOPE_AS_STRING = "domaine";
+	public static final String JSON_FIELD_SCOPE_TYPE_AS_STRING = "type_domaine";
 }

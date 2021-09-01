@@ -27,6 +27,8 @@ public interface AbstractActorRequestBusiness<REQUEST extends AbstractActorReque
 	@Transactional
 	TransactionResult process(Collection<REQUEST> requests,String actorCode);
 	
+	Collection<REQUEST> findByActorCode(String actorCode,Boolean processed,Boolean granted,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples);
+	
 	/* rules */
 	
 	static Boolean isGrantValid(Boolean granted) {

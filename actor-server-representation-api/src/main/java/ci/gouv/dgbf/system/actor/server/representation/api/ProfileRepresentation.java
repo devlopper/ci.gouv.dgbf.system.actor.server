@@ -13,6 +13,7 @@ import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ProfileDto;
 
 @Path(ProfileRepresentation.PATH)
@@ -82,4 +83,8 @@ public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> 
 	static ProfileRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ProfileRepresentation.class);
 	}
+	
+	String PARAMETER_TYPE_CODE = "code_type_domaine";
+	String DESCRIPTION_TYPE_CODE = "Code du type de profile";
+	String EXAMPLE_TYPE_CODE = ProfileType.CODE_SYSTEME;
 }

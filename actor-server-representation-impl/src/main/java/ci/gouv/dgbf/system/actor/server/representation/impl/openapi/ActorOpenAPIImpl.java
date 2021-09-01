@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import javax.ws.rs.core.Response;
 
+import ci.gouv.dgbf.system.actor.server.representation.impl.ActorProfileRequestRepresentationImpl;
 import ci.gouv.dgbf.system.actor.server.representation.impl.ActorRepresentationImpl;
+import ci.gouv.dgbf.system.actor.server.representation.impl.ActorScopeRequestRepresentationImpl;
 import ci.gouv.dgbf.system.actor.server.representation.impl.ProfileRepresentationImpl;
 import ci.gouv.dgbf.system.actor.server.representation.impl.ScopeRepresentationImpl;
 
@@ -31,12 +33,32 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAP
 	}
 	
 	@Override
-	public Response getScopes(String typeCode, String actorCode, Boolean pageable, Integer firstTupleIndex,Integer numberOfTuples) {
+	public Response getScopes(String typeCode, Boolean visible, String actorCode, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
+		return ScopeRepresentationImpl.getByTypeCodeByActorCode(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, Boolean.TRUE);
+	}
+	
+	@Override
+	public Response getVisibleScopes(String typeCode, String actorCode, Boolean pageable, Integer firstTupleIndex,Integer numberOfTuples) {
 		return ScopeRepresentationImpl.getByTypeCodeByActorCode(typeCode, actorCode, Boolean.TRUE, pageable, firstTupleIndex, numberOfTuples, Boolean.TRUE);
+	}
+	
+	@Override
+	public Response getRequestScopes(String actorCode, Boolean processed,Boolean granted, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
+		return ActorScopeRequestRepresentationImpl.getByActorCode(actorCode, processed, granted, pageable, firstTupleIndex, numberOfTuples);
+	}
+	
+	@Override
+	public Response getProfiles(String actorCode) {
+		return ProfileRepresentationImpl.getByActorCode(actorCode);
 	}
 	
 	@Override
 	public Response getProfilesCodes(String actorCode) {
 		return ProfileRepresentationImpl.getCodesByActorCode(actorCode);
+	}
+	
+	@Override
+	public Response getRequestProfiles(String actorCode, Boolean processed,Boolean granted, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
+		return ActorProfileRequestRepresentationImpl.getByActorCode(actorCode, processed, granted, pageable, firstTupleIndex, numberOfTuples);
 	}
 }

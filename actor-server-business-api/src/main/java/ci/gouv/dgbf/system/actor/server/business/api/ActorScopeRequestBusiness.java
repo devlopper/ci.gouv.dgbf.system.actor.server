@@ -1,31 +1,16 @@
 package ci.gouv.dgbf.system.actor.server.business.api;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.transaction.Transactional;
-
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.business.SpecificBusiness;
-import org.cyk.utility.business.TransactionResult;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 
-public interface ActorScopeRequestBusiness extends SpecificBusiness<ActorScopeRequest> {
+public interface ActorScopeRequestBusiness extends AbstractActorRequestBusiness<ActorScopeRequest> {
 
 	String RECORD = "ActorScopeRequest.record";
-	@Transactional
-	TransactionResult record(Collection<String> actorsIdentifiers,Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting);
 	
 	String CANCEL = "ActorScopeRequest.cancel";
-	@Transactional
-	TransactionResult cancel(Collection<String> identifiers,String actorCode,Boolean ignoreExisting);
 	
 	String PROCESS = "ActorScopeRequest.process";
-	@Transactional
-	TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments,String actorCode);
-	@Transactional
-	TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests,String actorCode);
 	
 	/* rules */
 	

@@ -146,6 +146,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	@Transient private String financialControllerAssistantAsString;	
 	@Transient private String accountingHolderAsString;
 	@Transient private String accountingAssistantAsString;
+	@Transient private String accountingTresorIdentifier;
 	
 	@Transient private Collection<Assignments> __auditRecords__;
 	/**/
@@ -227,6 +228,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	public static final String FIELD_FINANCIAL_CONTROLLER_ASSISTANT_AS_STRING = "financialControllerAssistantAsString";
 	public static final String FIELD_ACCOUNTING_HOLDER_AS_STRING = "accountingHolderAsString";
 	public static final String FIELD_ACCOUNTING_ASSISTANT_AS_STRING = "accountingAssistantAsString";
+	public static final String FIELD_ACCOUNTING_TRESOR_IDENTIFIER = "accountingTresorIdentifier";
 	
 	//public static final String FIELD___ALL__ = "__all__";
 	

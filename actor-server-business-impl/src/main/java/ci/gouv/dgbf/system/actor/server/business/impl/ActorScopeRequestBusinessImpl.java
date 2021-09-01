@@ -1,38 +1,86 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.TransactionResult;
-import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
-import org.cyk.utility.business.server.EntityCreator;
-import org.cyk.utility.business.server.EntityDeletor;
-import org.cyk.utility.business.server.EntityUpdater;
-import org.cyk.utility.persistence.EntityManagerGetter;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 
 @ApplicationScoped
-public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<ActorScopeRequest> implements ActorScopeRequestBusiness,Serializable {
+public class ActorScopeRequestBusinessImpl extends AbstractActorRequestBusinessImpl<ActorScopeRequest> implements ActorScopeRequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	protected String getProcessActionIdentitifer() {
+		return PROCESS;
+	}
+	
+	@Override
+	protected Processing<ActorScopeRequest> getPocessing() {
+		return new ProcessingImpl();
+	}
+	
+	@Override
+	protected Class<?> getRequestableClass() {
+		return Scope.class;
+	}
+	
+	@Override
+	protected Class<ActorScopeRequest> getEntityClass() {
+		return ActorScopeRequest.class;
+	}
+	
+	@Override
+	protected QueryExecutorArguments findByActorCodeGetQueryExecutorArguments(String actorCode, Boolean processed,
+			Boolean granted, Boolean pageable, Integer firstTupleIndex, Integer numberOfTuples) {
+		return super.findByActorCodeGetQueryExecutorArguments(actorCode, processed, granted, pageable, firstTupleIndex,
+				numberOfTuples).addProcessableTransientFieldsNames(ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING);
+	}
+	
+	/**/
+	
+	public static class ProcessingImpl implements Processing<ActorScopeRequest> {
+
+		@Override
+		public void listenGrantIsTrue(ActorScopeRequest request, String actorCode,EntityManager entityManager) {
+			ActorScopeBusinessImpl.visible(List.of(request.getActor().getIdentifier()), List.of(request.getScope().getIdentifier())
+					, Boolean.FALSE, actorCode, entityManager);
+		}
+
+		@Override
+		public void listenGrantIsNotTrue(ActorScopeRequest request, String actorCode,EntityManager entityManager) {
+			// Nothing to do
+		}
+	}
+	
+	/**/
+	
+	public static TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
+		return record(ActorScopeRequestBusinessImpl.class,ActorScopeRequest.class, actorsIdentifiers, Scope.class, scopesIdentifiers, actorCode, ignoreExisting, entityManager);
+	}
+	
+	public static TransactionResult cancel(Collection<String> identifiers, String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
+		return cancel(ActorScopeRequestBusinessImpl.class,ActorScopeRequest.class, identifiers, actorCode, ignoreExisting, entityManager);
+	}
+	
+	public static TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests, String actorCode,EntityManager entityManager) {
+		return process(ActorScopeRequestBusinessImpl.class, actorScopeRequests, actorCode,PROCESS, new ProcessingImpl(), entityManager);
+	}
+	
+	public static TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode,EntityManager entityManager) {
+		return process(ActorScopeRequestBusinessImpl.class, ActorScopeRequest.class, identifiers, grants, comments, actorCode,PROCESS, new ProcessingImpl(), entityManager);
+	}
+	
+	/*
 	public static TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(actorsIdentifiers))
 			throw new RuntimeException("Identifiants acteurs requis");
@@ -72,9 +120,10 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 	public TransactionResult record(Collection<String> actorsIdentifiers, Collection<String> scopesIdentifiers,String actorCode,Boolean ignoreExisting) {
 		return record(actorsIdentifiers, scopesIdentifiers, actorCode,ignoreExisting, EntityManagerGetter.getInstance().get());
 	}
-	
+	*/
 	/**/
 	
+	/*
 	public static TransactionResult cancel(Collection<String> identifiers, String actorCode,Boolean ignoreExisting,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(identifiers))
 			throw new RuntimeException("Identifiants requis");
@@ -100,9 +149,11 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 	public TransactionResult cancel(Collection<String> identifiers, String actorCode,Boolean ignoreExisting) {
 		return cancel(identifiers, actorCode,ignoreExisting, EntityManagerGetter.getInstance().get());
 	}
+	*/
 	
 	/**/
 	
+	/*
 	public static TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests, String actorCode,EntityManager entityManager) {
 		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		actorScopeRequests.forEach(actorScopeRequest -> {
@@ -142,7 +193,9 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 		});
 		return process(actorScopeRequests, actorCode, entityManager);
 	}
+	*/
 	
+	/*
 	@Override @Transactional
 	public TransactionResult process(Collection<String> identifiers,Map<String,Boolean> grants,Map<String,String> comments, String actorCode) {
 		return process(identifiers,grants,comments,actorCode, EntityManagerGetter.getInstance().get());
@@ -152,4 +205,5 @@ public class ActorScopeRequestBusinessImpl extends AbstractSpecificBusinessImpl<
 	public TransactionResult process(Collection<ActorScopeRequest> actorScopeRequests, String actorCode) {
 		return process(actorScopeRequests, actorCode, EntityManagerGetter.getInstance().get());
 	}
+	*/
 }

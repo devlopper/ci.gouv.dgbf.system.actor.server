@@ -45,7 +45,8 @@ public class ActorProfileRequest extends AbstractActorRequest implements Seriali
 	/**/
 	
 	public static final String FIELD_PROFILE = "profile";
-	public static final String FIELD_PROFILE_STRING = "profileAsString";
+	public static final String FIELD_PROFILE_AS_STRING = "profileAsString";
+	public static final String FIELD_PROFILE_TYPE_AS_STRING = "profileTypeAsString";
 	public static final String FIELDS_ACTOR_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringProfileAsStringGrantedAndGrantedAsString";
 	public static final String FIELDS_ACTOR_AS_STRING_PROFILE_TYPE_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING = "actorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsString";
 	

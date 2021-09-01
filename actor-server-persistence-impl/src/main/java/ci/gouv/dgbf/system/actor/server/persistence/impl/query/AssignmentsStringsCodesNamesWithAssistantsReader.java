@@ -1,14 +1,15 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
+import java.io.Serializable;
+
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
-import org.cyk.utility.persistence.server.query.ArraysReaderByIdentifiers;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 
-public class AssignmentsStringsCodesNamesWithAssistantsReader extends ArraysReaderByIdentifiers.AbstractImpl.DefaultImpl<Assignments> {
+public class AssignmentsStringsCodesNamesWithAssistantsReader extends AbstractAssignmentsReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {
@@ -46,10 +47,5 @@ public class AssignmentsStringsCodesNamesWithAssistantsReader extends ArraysRead
 		assignments.setFinancialControllerAssistantAsString((String) array[i++]);
 		assignments.setAccountingHolderAsString((String) array[i++]);
 		assignments.setAccountingAssistantAsString((String) array[i++]);
-	}
-	
-	@Override
-	protected Class<Assignments> getEntityClass() {
-		return Assignments.class;
 	}
 }

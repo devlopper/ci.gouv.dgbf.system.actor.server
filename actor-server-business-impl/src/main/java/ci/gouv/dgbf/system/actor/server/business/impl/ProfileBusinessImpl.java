@@ -14,6 +14,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.business.server.EntityCreator;
@@ -21,6 +22,7 @@ import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.security.keycloak.server.Role;
@@ -256,4 +258,14 @@ public class ProfileBusinessImpl extends AbstractSpecificBusinessImpl<Profile> i
 		return arrays.stream().map(array -> (String)array[1]).collect(Collectors.toList());
 	}
 	
+	@Override
+	public Collection<Profile> getByActorCode(String actorCode) {
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		ValidatorImpl.validateActorCode(actorCode, throwablesMessages);
+		throwablesMessages.throwIfNotEmpty();
+		QueryExecutorArguments arguments = new QueryExecutorArguments();
+		arguments.setQuery(new Query().setIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		arguments.addFilterField(ProfileQuerier.PARAMETER_NAME_ACTOR_CODE,actorCode);
+		return EntityReader.getInstance().readMany(getEntityClass(), arguments);
+	}
 }

@@ -42,6 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorRegistration
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAccountingTresorIdentifiersReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHoldersReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesNamesWithAssistantsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
@@ -191,6 +192,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader().readThenSet(assignmentsCollection, null);
 			else if(Assignments.FIELDS_HOLDERS.equals(fieldName))
 				new AssignmentsHoldersReader().readThenSet(assignmentsCollection, null);
+			else if(Assignments.FIELD_ACCOUNTING_TRESOR_IDENTIFIER.equals(fieldName))
+				new AssignmentsAccountingTresorIdentifiersReader().readThenSet(assignmentsCollection, null);
 			//else if(Assignments.FIELD___AUDIT_RECORDS__.equals(fieldName))
 			//	new AssignmentsAuditsReader().readThenSet(assignmentsCollection, null);
 		}

@@ -29,4 +29,8 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private Boolean used;
 	private String usedAsString;
 	private Integer numberOfActors;
+	
+	public static final String JSON_FIELD_IDENTIFIER = "identifiant";
+	public static final String JSON_FIELD_CODE = "code";
+	public static final String JSON_FIELD_NAME = "libelle";
 }

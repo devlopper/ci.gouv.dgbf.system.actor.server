@@ -1,14 +1,15 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
+import java.io.Serializable;
+
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.Querier;
-import org.cyk.utility.persistence.server.query.ArraysReaderByIdentifiers;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class AssignmentsHoldersReader extends ArraysReaderByIdentifiers.AbstractImpl.DefaultImpl<Assignments> {
+public class AssignmentsHoldersReader extends AbstractAssignmentsReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {
@@ -45,10 +46,5 @@ public class AssignmentsHoldersReader extends ArraysReaderByIdentifiers.Abstract
 			assignments.setAccountingHolder(new ScopeFunction().setIdentifier((String)array[i++]).setCode((String)array[i++]).setName((String)array[i++]));
 		else
 			i += 3;
-	}
-	
-	@Override
-	protected Class<Assignments> getEntityClass() {
-		return Assignments.class;
 	}
 }

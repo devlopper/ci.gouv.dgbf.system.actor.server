@@ -105,18 +105,7 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
 								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
 										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME);
-						//CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments);
-						/*if(scopes == null)
-							scopes = new ArrayList<>();
-						Collection<Map<String,String>> maps = new ArrayList<>();
-						scopes.forEach(scope -> {
-							Map<String,String> map = new LinkedHashMap<>();
-							map.put("identifiant", StringUtils.substringAfter(scope.getIdentifier(), typeCode));
-							map.put("code", scope.getCode());
-							map.put("libelle", scope.getName());
-							maps.add(map);
-						});
-						*/
+						arguments.setEmptyValueAsArrayList();
 						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
 					}
 				};

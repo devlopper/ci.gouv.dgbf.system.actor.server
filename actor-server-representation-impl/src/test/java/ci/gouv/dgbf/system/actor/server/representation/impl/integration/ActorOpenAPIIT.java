@@ -80,4 +80,9 @@ public class ActorOpenAPIIT extends AbstractClientIT {
     public void getProfilesCodes() {
     	assertGetProfilesCodes("christian", 200, "P00","P02");
     }
+    
+    @Test @InSequence(13)
+    public void getProfiles() {
+    	assertGetProfiles("christian", 200, new String[] {"1","3"}, new String[] {"P00","P02"}, new String[] {"Profile 0","Profile 2"});
+    }
 }

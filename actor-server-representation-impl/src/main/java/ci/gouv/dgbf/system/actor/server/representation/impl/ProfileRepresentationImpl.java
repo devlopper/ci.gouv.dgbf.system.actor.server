@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.map.CollectionOfMapsStringStringBuilder;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl.AbstractRunnableImpl;
@@ -149,6 +150,25 @@ public class ProfileRepresentationImpl extends AbstractRepresentationEntityImpl<
 						if(codes == null)
 							codes = new ArrayList<>();
 						responseBuilderArguments.setEntity(Map.of("codes",codes));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getByActorCode(String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Profile> profiles = __inject__(ProfileBusiness.class).getByActorCode(actorCode);
+						CollectionOfMapsStringStringBuilder.Arguments<Profile> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Profile>()
+								.setCollection(profiles).addFieldsNames(Profile.FIELD_IDENTIFIER,ProfileDto.JSON_FIELD_IDENTIFIER
+										,Profile.FIELD_CODE,ProfileDto.JSON_FIELD_CODE,Profile.FIELD_NAME,ProfileDto.JSON_FIELD_NAME);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Profile.class, arguments));
 					}
 				};
 			}

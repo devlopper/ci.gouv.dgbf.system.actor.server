@@ -1,13 +1,14 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
+import java.io.Serializable;
+
 import org.cyk.utility.persistence.query.Querier;
-import org.cyk.utility.persistence.server.query.ArraysReaderByIdentifiers;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ExecutionImputation;
 
-public class AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader extends ArraysReaderByIdentifiers.AbstractImpl.DefaultImpl<Assignments> {
+public class AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader extends AbstractAssignmentsReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {
@@ -33,10 +34,5 @@ public class AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader extends Arra
 		assignments.setEconomicNatureAsString((String) array[i++]);
 		assignments.setExpenditureNatureAsString((String) array[i++]);
 		assignments.setActivityCategoryAsString((String) array[i++]);
-	}
-	
-	@Override
-	protected Class<Assignments> getEntityClass() {
-		return Assignments.class;
 	}
 }

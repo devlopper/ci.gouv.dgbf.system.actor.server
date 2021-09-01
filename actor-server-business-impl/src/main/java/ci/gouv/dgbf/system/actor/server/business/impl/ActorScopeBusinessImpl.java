@@ -83,10 +83,17 @@ public class ActorScopeBusinessImpl extends AbstractBusinessEntityImpl<ActorScop
 			arguments.getPersistenceArguments(Boolean.TRUE).getCreatables(Boolean.TRUE).add(new ActorScope().setActor(actor).setScope(scope));
 			return;
 		}
+		visible(actorScope, ignoreExisting, actorCode, arguments);
+	}
+	
+	public static void visible(ActorScope actorScope,Boolean ignoreExisting,String actorCode,Arguments<ActorScope> arguments) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor scope", actorScope);
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("actor", actorScope.getActor());
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("scope", actorScope.getScope());
 		if(actorScope.getVisible() == null || actorScope.getVisible()) {
 			if(Boolean.TRUE.equals(ignoreExisting))
 				return;
-			throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actor.getCode()+","+scope.getCode()+")");
+			throw new RuntimeException("A scope supposed to be invisible has been found to be visible("+actorScope.getActor().getCode()+","+actorScope.getScope().getCode()+")");
 		}
 		actorScope.setVisible(null);// make it visible
 		arguments.getPersistenceArguments(Boolean.TRUE).getUpdatables(Boolean.TRUE).add(actorScope);

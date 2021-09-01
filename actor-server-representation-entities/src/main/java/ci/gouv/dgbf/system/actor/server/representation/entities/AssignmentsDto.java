@@ -46,6 +46,7 @@ public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringAudite
 	private String financialControllerAssistantAsString;	
 	private String accountingHolderAsString;
 	private String accountingAssistantAsString;
+	private String accountingTresorIdentifier;
 	
 	private Filter.Dto filter;
 	private List<String> overridablesFieldsNames;

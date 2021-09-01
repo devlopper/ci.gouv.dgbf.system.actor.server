@@ -43,4 +43,6 @@ public interface ProfileBusiness extends SpecificBusiness<Profile> {
 	String SAVE = "Profile.save";
 	@Transactional
 	TransactionResult save(String identifier,String code,String name,String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode);
+	
+	Collection<Profile> getByActorCode(String actorCode);
 }

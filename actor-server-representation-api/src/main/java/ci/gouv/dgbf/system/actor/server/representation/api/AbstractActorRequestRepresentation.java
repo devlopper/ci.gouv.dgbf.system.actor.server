@@ -39,4 +39,14 @@ public interface AbstractActorRequestRepresentation<REQUEST extends AbstractActo
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({MediaType.APPLICATION_JSON})
 	Response process(List<REQUEST> requestDtos,@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode);
+	
+	/**/
+	
+	String PARAMETER_PROCESSED = "traite";
+	String DESCRIPTION_PROCESSED = "Traitement";
+	String EXAMPLE_PROCESSED = "true";
+	
+	String PARAMETER_GRANTED = "accorde";
+	String DESCRIPTION_GRANTED = "Accord";
+	String EXAMPLE_GRANTED = "true";
 }

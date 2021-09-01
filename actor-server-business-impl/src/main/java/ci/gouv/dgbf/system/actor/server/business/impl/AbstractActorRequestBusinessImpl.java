@@ -25,9 +25,14 @@ import org.cyk.utility.business.server.EntityDeletor;
 import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.EntityReader;
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryName;
 
 import ci.gouv.dgbf.system.actor.server.business.api.AbstractActorRequestBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.AbstractActorRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AbstractActorRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 
@@ -113,8 +118,8 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 	/**/
 	
 	public static interface Processing<REQUEST extends AbstractActorRequest>{
-		void listenGrantIsTrue(REQUEST request,EntityManager entityManager);
-		void listenGrantIsNotTrue(REQUEST request,EntityManager entityManager);
+		void listenGrantIsTrue(REQUEST request, String actorCode,EntityManager entityManager);
+		void listenGrantIsNotTrue(REQUEST request, String actorCode,EntityManager entityManager);
 	}
 	
 	protected abstract Processing<REQUEST> getPocessing();
@@ -129,9 +134,9 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 		transactionResult.log(callerClass);
 		requests.forEach(request -> {
 			if(Boolean.TRUE.equals(request.getGranted()))
-				processing.listenGrantIsTrue(request,entityManager);
+				processing.listenGrantIsTrue(request,actorCode,entityManager);
 			else
-				processing.listenGrantIsNotTrue(request,entityManager);
+				processing.listenGrantIsNotTrue(request,actorCode,entityManager);
 		});
 		return transactionResult;
 	}
@@ -159,5 +164,32 @@ public abstract class AbstractActorRequestBusinessImpl<REQUEST extends AbstractA
 	@Override @Transactional
 	public TransactionResult process(Collection<REQUEST> requests, String actorCode) {
 		return process(getClass(),requests,getProcessActionIdentitifer(), actorCode,getPocessing(), EntityManagerGetter.getInstance().get());
+	}
+
+	/**/
+	
+	@Override
+	public Collection<REQUEST> findByActorCode(String actorCode, Boolean processed, Boolean granted, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		ValidatorImpl.validateActorCode(actorCode, throwablesMessages);
+		throwablesMessages.throwIfNotEmpty();
+		QueryExecutorArguments arguments = findByActorCodeGetQueryExecutorArguments(actorCode, processed, granted, pageable, firstTupleIndex, numberOfTuples);
+		return EntityReader.getInstance().readMany(getEntityClass(), arguments);
+	}
+	
+	protected QueryExecutorArguments findByActorCodeGetQueryExecutorArguments(String actorCode, Boolean processed, Boolean granted, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples) {
+		QueryExecutorArguments arguments = new QueryExecutorArguments();
+		arguments.setQuery(new Query().setIdentifier(QueryIdentifierBuilder.getInstance().build(getEntityClass(), QueryName.READ_DYNAMIC)));
+		arguments.addProjectionsFromStrings(AbstractActorRequest.FIELD_IDENTIFIER,AbstractActorRequest.FIELD_COMMENT,AbstractActorRequest.FIELD_PROCESSING_COMMENT);
+		arguments.addFilterField(AbstractActorRequestQuerier.PARAMETER_NAME_ACTORS_CODES,List.of(actorCode));
+		if(processed != null) {
+			arguments.addFilterField(AbstractActorRequestQuerier.PARAMETER_NAME_PROCESSED, processed);
+			arguments.addFilterField(AbstractActorRequestQuerier.PARAMETER_NAME_GRANTED, granted);
+			if(Boolean.TRUE.equals(pageable)) {
+				arguments.setFirstTupleIndex(firstTupleIndex);
+				arguments.setNumberOfTuples(numberOfTuples);
+			}
+		}
+		return arguments;
 	}
 }

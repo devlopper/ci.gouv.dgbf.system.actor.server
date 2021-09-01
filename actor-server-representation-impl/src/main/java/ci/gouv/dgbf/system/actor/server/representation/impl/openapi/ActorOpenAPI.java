@@ -20,7 +20,9 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorProfileRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
+import ci.gouv.dgbf.system.actor.server.representation.api.ActorScopeRequestRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeRepresentation;
 
 @Path(ActorOpenAPI.PATH)
@@ -98,6 +100,43 @@ public interface ActorOpenAPI extends OpenAPI {
 			@Parameter(allowEmptyValue = false,description = "Nom d'utilisateur",example = "komenan",name = ActorRepresentation.PARAMETER_USER_NAME,required = true)
 			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String code);
 
+	/* Scopes */
+	
+	public static final String OPERATION_GET_SCOPES = "obtenir-domaines";
+	@GET
+	@Path(OPERATION_GET_SCOPES)
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les domaines d'un acteur",operationId = "obtenir-domaines")
+	@APIResponses(value = {
+			@APIResponse(description = "Domaines obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des domaines",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getScopes(
+			@Parameter(description = ScopeRepresentation.DESCRIPTION_TYPE_CODE,example = ScopeRepresentation.EXAMPLE_TYPE_CODE,name = ScopeRepresentation.PARAMETER_TYPE_CODE
+			,allowEmptyValue = false,required = true
+			,schema = @Schema(enumeration = {ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION,ScopeType.CODE_UA
+					,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION}))
+			@QueryParam(ScopeRepresentation.PARAMETER_TYPE_CODE) String typeCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_VISIBLE,example = ScopeRepresentation.EXAMPLE_VISIBLE,name = ScopeRepresentation.PARAMETER_VISIBLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_VISIBLE) Boolean visible
+			
+			,@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ScopeRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
 	public static final String OPERATION_GET_VISIBLES_SCOPES = "obtenir_domaines_visibles";
 	@GET
 	@Path(OPERATION_GET_VISIBLES_SCOPES)
@@ -107,7 +146,7 @@ public interface ActorOpenAPI extends OpenAPI {
 			@APIResponse(description = "Domaines visibles obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 			,@APIResponse(description = "Erreur lors de l'obtention des domaines visibles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
-	public Response getScopes(
+	public Response getVisibleScopes(
 			@Parameter(description = ScopeRepresentation.DESCRIPTION_TYPE_CODE,example = ScopeRepresentation.EXAMPLE_TYPE_CODE,name = ScopeRepresentation.PARAMETER_TYPE_CODE
 			,allowEmptyValue = false,required = true
 			,schema = @Schema(enumeration = {ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION,ScopeType.CODE_UA
@@ -129,6 +168,61 @@ public interface ActorOpenAPI extends OpenAPI {
 			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
+	public static final String OPERATION_GET_REQUEST_SCOPES = "obtenir-demandes-domaines";
+	@GET
+	@Path(OPERATION_GET_REQUEST_SCOPES)
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les demandes de domaines d'un acteur",operationId = "obtenir-demandes-domaines")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes de domaines obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des demandes de domaines",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getRequestScopes(
+			/*@Parameter(description = ScopeRepresentation.DESCRIPTION_TYPE_CODE,example = ScopeRepresentation.EXAMPLE_TYPE_CODE,name = ScopeRepresentation.PARAMETER_TYPE_CODE
+			,allowEmptyValue = false,required = true
+			,schema = @Schema(enumeration = {ScopeType.CODE_SECTION,ScopeType.CODE_USB}))
+			@QueryParam(ScopeRepresentation.PARAMETER_TYPE_CODE) String typeCode
+			
+			,*/@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_PROCESSED,example = ActorScopeRequestRepresentation.EXAMPLE_PROCESSED,name = ActorScopeRequestRepresentation.PARAMETER_PROCESSED
+			,allowEmptyValue = true)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_PROCESSED) Boolean processed
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_GRANTED,example = ActorScopeRequestRepresentation.EXAMPLE_GRANTED,name = ActorScopeRequestRepresentation.PARAMETER_GRANTED
+			,allowEmptyValue = true)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_GRANTED) Boolean granted
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_PAGEABLE,example = ActorScopeRequestRepresentation.EXAMPLE_PAGEABLE,name = ActorScopeRequestRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ActorScopeRequestRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ActorScopeRequestRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ActorScopeRequestRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ActorScopeRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	/* Profiles */
+	
+	public static final String OPERATION_GET_PROFILES = "obtenir-profiles";
+	@GET
+	@Path(OPERATION_GET_PROFILES)
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les profiles d'un acteur",operationId = "obtenir-profiles")
+	@APIResponses(value = {
+			@APIResponse(description = "Profiles obtenus",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des profiles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getProfiles(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			);
+	
 	public static final String OPERATION_GET_PROFILES_CODES = "obtenir_codes_profiles";
 	@GET
 	@Path(OPERATION_GET_PROFILES_CODES)
@@ -142,5 +236,43 @@ public interface ActorOpenAPI extends OpenAPI {
 			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
 			,allowEmptyValue = false,required = true)
 			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			);
+	
+	public static final String OPERATION_GET_REQUEST_PROFILES = "obtenir-demandes-profiles";
+	@GET
+	@Path(OPERATION_GET_REQUEST_PROFILES)
+	@Produces({MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les demandes de profiles d'un acteur",operationId = "obtenir-demandes-profiles")
+	@APIResponses(value = {
+			@APIResponse(description = "Demandes de profiles obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des demandes de profiles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getRequestProfiles(
+			/*@Parameter(description = ProfileRepresentation.DESCRIPTION_TYPE_CODE,example = ProfileRepresentation.EXAMPLE_TYPE_CODE,name = ProfileRepresentation.PARAMETER_TYPE_CODE
+			,allowEmptyValue = false,required = true
+			,schema = @Schema(enumeration = {ProfileType.CODE_SYSTEME,ProfileType.CODE_UTILISATEUR}))
+			@QueryParam(ProfileRepresentation.PARAMETER_TYPE_CODE) String typeCode
+			
+			,*/@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_PROCESSED,example = ActorProfileRequestRepresentation.EXAMPLE_PROCESSED,name = ActorProfileRequestRepresentation.PARAMETER_PROCESSED
+			,allowEmptyValue = true)
+			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_PROCESSED) Boolean processed
+			
+			,@Parameter(description = ActorScopeRequestRepresentation.DESCRIPTION_GRANTED,example = ActorScopeRequestRepresentation.EXAMPLE_GRANTED,name = ActorScopeRequestRepresentation.PARAMETER_GRANTED
+			,allowEmptyValue = true)
+			@QueryParam(ActorScopeRequestRepresentation.PARAMETER_GRANTED) Boolean granted
+			
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_PAGEABLE,example = ActorProfileRequestRepresentation.EXAMPLE_PAGEABLE,name = ActorProfileRequestRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ActorProfileRequestRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ActorProfileRequestRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ActorProfileRequestRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ActorProfileRequestRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ActorProfileRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ActorProfileRequestRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 }

@@ -5,10 +5,12 @@ import java.io.Serializable;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.Validator;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorProfileRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.ActorScopeRequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AbstractActorRequest;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 
@@ -42,5 +44,12 @@ public class ValidatorImpl extends Validator.AbstractImpl implements Serializabl
 			if(Boolean.FALSE.equals(actorRequest.getGranted()) && StringHelper.isBlank(actorRequest.getProcessingComment()))
 				throwablesMessages.add(String.format("Spécifier le motif de rejet de %s", actorRequest.getIdentifier()));
 		}
+	}
+
+	/**/
+	
+	public static void validateActorCode(String code,ThrowablesMessages throwablesMessages) {
+		throwablesMessages.addIfTrue("nom d'utilisateur requis", StringHelper.isBlank(code));
+		throwablesMessages.addIfTrue("utilisateur inconnu", !Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Actor.class, code)));
 	}
 }

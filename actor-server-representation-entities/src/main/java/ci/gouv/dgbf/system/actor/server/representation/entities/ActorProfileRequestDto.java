@@ -17,4 +17,6 @@ public class ActorProfileRequestDto extends AbstractActorRequestDto implements S
 	private String profileTypeAsString;
 	private List<String> profilesIdentifiers;
 
+	public static final String JSON_FIELD_PROFILE_AS_STRING = "profile";
+	public static final String JSON_FIELD_PROFILE_TYPE_AS_STRING = "type_profile";
 }

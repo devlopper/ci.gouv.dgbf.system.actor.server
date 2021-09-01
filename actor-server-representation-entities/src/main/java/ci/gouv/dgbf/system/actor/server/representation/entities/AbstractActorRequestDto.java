@@ -26,4 +26,12 @@ public abstract class AbstractActorRequestDto extends AbstractIdentifiableSystem
 	protected String processingComment;
 	
 	protected Boolean ignoreExisting;
+	
+	/**/
+	
+	public static final String JSON_FIELD_IDENTIFIER = "identifiant";
+	public static final String JSON_FIELD_ACTOR_AS_STRING = "acteur";
+	public static final String JSON_FIELD_COMMENT = "commentaire";
+	public static final String JSON_FIELD_GRANTED_AS_STRING = "accord";
+	public static final String JSON_FIELD_PROCESSING_COMMENT = "commentaire_traitement";
 }
