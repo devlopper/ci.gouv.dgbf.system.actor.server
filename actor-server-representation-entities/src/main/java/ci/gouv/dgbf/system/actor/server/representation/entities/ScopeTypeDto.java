@@ -15,4 +15,8 @@ public class ScopeTypeDto extends AbstractIdentifiableSystemScalarStringIdentifi
 	
 	private Byte orderNumber;
 	private Boolean requestable;
+
+	public static final String JSON_FIELD_IDENTIFIER = "identifiant";
+	public static final String JSON_FIELD_CODE = "code";
+	public static final String JSON_FIELD_NAME = "libelle";
 }

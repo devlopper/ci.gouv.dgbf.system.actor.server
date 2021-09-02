@@ -71,6 +71,10 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String DESCRIPTION_TYPE_CODE = "Code du type de domaine";
 	String EXAMPLE_TYPE_CODE = ScopeType.CODE_SECTION;
 	
+	String PARAMETER_TYPE_IDENTIFIER = "identifiant_type_domaine";
+	String DESCRIPTION_TYPE_IDENTIFIER = "Identifiant du type de domaine";
+	String EXAMPLE_TYPE_IDENTIFIER = "1";
+	
 	String PARAMETER_VISIBLE = "visible";
 	String DESCRIPTION_VISIBLE = "Visibilté";
 	String EXAMPLE_VISIBLE = "true";

@@ -22,7 +22,6 @@ import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
-import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.security.keycloak.server.Role;
@@ -259,13 +258,23 @@ public class ProfileBusinessImpl extends AbstractSpecificBusinessImpl<Profile> i
 	}
 	
 	@Override
-	public Collection<Profile> getByActorCode(String actorCode) {
+	public Collection<Profile> getByActorCode(String actorCode,String typeIdentifier,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples) {
 		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		ValidatorImpl.validateActorCode(actorCode, throwablesMessages);
 		throwablesMessages.throwIfNotEmpty();
-		QueryExecutorArguments arguments = new QueryExecutorArguments();
-		arguments.setQuery(new Query().setIdentifier(ProfileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
-		arguments.addFilterField(ProfileQuerier.PARAMETER_NAME_ACTOR_CODE,actorCode);
-		return EntityReader.getInstance().readMany(getEntityClass(), arguments);
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Profile.class)
+				.addFilterFieldsValues(ProfileQuerier.PARAMETER_NAME_ACTOR_CODE,actorCode)
+				.filterIfNotBlank(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, typeIdentifier)
+				.page(pageable, firstTupleIndex, numberOfTuples);
+		return EntityReader.getInstance().readMany(Profile.class, arguments);
+	}
+	
+	@Override
+	public Collection<Profile> get(String typeIdentifier,Boolean requestable, Boolean pageable, Integer firstTupleIndex,Integer numberOfTuples) {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Profile.class)
+				.filterIfNotBlank(ProfileQuerier.PARAMETER_NAME_TYPE_IDENTIFIER, typeIdentifier)
+				.filterIfNotNull(ProfileQuerier.PARAMETER_NAME_REQUESTABLE, requestable)
+				.page(pageable, firstTupleIndex, numberOfTuples);
+		return EntityReader.getInstance().readMany(Profile.class, arguments);
 	}
 }

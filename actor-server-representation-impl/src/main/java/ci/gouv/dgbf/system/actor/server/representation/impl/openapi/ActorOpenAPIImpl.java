@@ -60,7 +60,7 @@ public class ActorOpenAPIImpl extends AbstractOpenAPIImpl implements ActorOpenAP
 	
 	@Override
 	public Response getProfiles(String actorCode) {
-		return ProfileRepresentationImpl.getByActorCode(actorCode);
+		return ProfileRepresentationImpl.getByActorCode(actorCode, null, null, null, null);
 	}
 	
 	@Override

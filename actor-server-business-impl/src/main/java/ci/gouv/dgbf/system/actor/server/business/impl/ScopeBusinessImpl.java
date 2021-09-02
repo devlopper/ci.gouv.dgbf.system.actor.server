@@ -9,14 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
-import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeBusiness;
-import ci.gouv.dgbf.system.actor.server.persistence.api.ScopePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
@@ -26,9 +25,41 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ApplicationScoped
-public class ScopeBusinessImpl extends AbstractBusinessEntityImpl<Scope, ScopePersistence> implements ScopeBusiness,Serializable {
+public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> implements ScopeBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	protected Class<Scope> getEntityClass() {
+		return Scope.class;
+	}
+	
+	@Override
+	public Collection<Scope> get(String typeCode, String actorCode, Boolean visible, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(getEntityClass())
+				.filterIfNotBlank(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, typeCode)
+				.filterIfNotBlank(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode)
+				.filterIfNotNull(ScopeQuerier.PARAMETER_NAME_VISIBLE,visible)
+				.page(pageable, firstTupleIndex, numberOfTuples);
+		Collection<Scope> scopes = EntityReader.getInstance().readMany(getEntityClass(), arguments);
+		if(CollectionHelper.isEmpty(scopes))
+			return null;
+		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
+			scopes.forEach(scope -> {
+				scope.setIdentifier(StringUtils.substringAfter(scope.getIdentifier(), typeCode));
+			});
+		return scopes;
+	}
+	
+	@Override
+	public Collection<Scope> getByActorCode(String actorCode, String typeCode, Boolean visible, Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples
+			, Boolean removeTypeCodeFromIdentifier) {
+		CodeExecutor.getInstance().throwExceptionIfNotExist(Actor.class, actorCode);
+		CodeExecutor.getInstance().throwExceptionIfNotExist(ScopeType.class, typeCode);		
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("visilbe", visible);
+		return get(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, removeTypeCodeFromIdentifier);
+	}
+	
 	@Override
 	public Collection<Scope> getByTypeCodeByActorCode(String typeCode, String actorCode, Boolean visible,Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples
 			,Boolean removeTypeCodeFromIdentifier) {

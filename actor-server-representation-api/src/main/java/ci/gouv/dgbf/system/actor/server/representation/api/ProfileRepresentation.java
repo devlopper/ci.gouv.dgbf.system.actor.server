@@ -84,7 +84,15 @@ public interface ProfileRepresentation extends RepresentationEntity<ProfileDto> 
 		return ProxyGetter.getInstance().get(ProfileRepresentation.class);
 	}
 	
-	String PARAMETER_TYPE_CODE = "code_type_domaine";
+	String PARAMETER_REQUESTABLE = "demandable";
+	String DESCRIPTION_REQUESTABLE = "Demandable";
+	String EXAMPLE_REQUESTABLE = "true";
+	
+	String PARAMETER_TYPE_IDENTIFIER = "identifiant_type_profile";
+	String DESCRIPTION_TYPE_IDENTIFIER = "Identifiant du type de profile";
+	String EXAMPLE_TYPE_IDENTIFIER = "1";
+	
+	String PARAMETER_TYPE_CODE = "code_type_profile";
 	String DESCRIPTION_TYPE_CODE = "Code du type de profile";
 	String EXAMPLE_TYPE_CODE = ProfileType.CODE_SYSTEME;
 }

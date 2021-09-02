@@ -44,5 +44,7 @@ public interface ProfileBusiness extends SpecificBusiness<Profile> {
 	@Transactional
 	TransactionResult save(String identifier,String code,String name,String typeIdentifier,Byte orderNumber,Boolean requestable,String actorCode);
 	
-	Collection<Profile> getByActorCode(String actorCode);
+	Collection<Profile> get(String typeIdentifier,Boolean requestable,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples);
+	
+	Collection<Profile> getByActorCode(String actorCode,String typeIdentifier,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples);
 }

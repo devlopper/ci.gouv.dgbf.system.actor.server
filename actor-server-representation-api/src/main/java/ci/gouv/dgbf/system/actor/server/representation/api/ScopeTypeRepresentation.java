@@ -10,4 +10,8 @@ public interface ScopeTypeRepresentation extends RepresentationEntity<ScopeTypeD
 	String PATH = "scopetype";
 
 	String TAG = ScopeRepresentation.TAG;
+
+	String PARAMETER_REQUESTABLE = "demandable";
+	String DESCRIPTION_REQUESTABLE = "Demandable";
+	String EXAMPLE_REQUESTABLE = "true";
 }

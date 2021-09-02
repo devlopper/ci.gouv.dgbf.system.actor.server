@@ -92,6 +92,48 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 	
 	/**/
 	
+	public static Response get(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).get(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples
+								,removeTypeCodeFromIdentifier);
+						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
+								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
+										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getByActorCode(actorCode,typeCode, visible, pageable, firstTupleIndex, numberOfTuples
+								,removeTypeCodeFromIdentifier);
+						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
+								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
+										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
+					}
+				};
+			}
+		});
+	}
+	
 	public static Response getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
 			,Boolean removeTypeCodeFromIdentifier) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {

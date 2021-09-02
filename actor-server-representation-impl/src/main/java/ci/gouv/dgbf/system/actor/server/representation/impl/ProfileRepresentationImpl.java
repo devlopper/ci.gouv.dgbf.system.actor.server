@@ -156,14 +156,33 @@ public class ProfileRepresentationImpl extends AbstractRepresentationEntityImpl<
 		});
 	}
 	
-	public static Response getByActorCode(String actorCode) {
+	public static Response getByActorCode(String actorCode,String typeIdentifier,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
 			public Runnable getRunnable() {
 				return new Runnable() {
 					@Override
 					public void run() {
-						Collection<Profile> profiles = __inject__(ProfileBusiness.class).getByActorCode(actorCode);
+						Collection<Profile> profiles = __inject__(ProfileBusiness.class).getByActorCode(actorCode, typeIdentifier, pageable, firstTupleIndex, numberOfTuples);
+						CollectionOfMapsStringStringBuilder.Arguments<Profile> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Profile>()
+								.setCollection(profiles).addFieldsNames(Profile.FIELD_IDENTIFIER,ProfileDto.JSON_FIELD_IDENTIFIER
+										,Profile.FIELD_CODE,ProfileDto.JSON_FIELD_CODE,Profile.FIELD_NAME,ProfileDto.JSON_FIELD_NAME);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Profile.class, arguments));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response get(String typeIdentifier,Boolean requestable,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Profile> profiles = __inject__(ProfileBusiness.class).get(typeIdentifier, requestable,pageable, firstTupleIndex, numberOfTuples);
 						CollectionOfMapsStringStringBuilder.Arguments<Profile> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Profile>()
 								.setCollection(profiles).addFieldsNames(Profile.FIELD_IDENTIFIER,ProfileDto.JSON_FIELD_IDENTIFIER
 										,Profile.FIELD_CODE,ProfileDto.JSON_FIELD_CODE,Profile.FIELD_NAME,ProfileDto.JSON_FIELD_NAME);
