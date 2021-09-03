@@ -2,7 +2,10 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.Validator;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
@@ -51,5 +54,12 @@ public class ValidatorImpl extends Validator.AbstractImpl implements Serializabl
 	public static void validateActorCode(String code,ThrowablesMessages throwablesMessages) {
 		throwablesMessages.addIfTrue("nom d'utilisateur requis", StringHelper.isBlank(code));
 		throwablesMessages.addIfTrue("utilisateur inconnu", !Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Actor.class, code)));
+	}
+	
+	public static Object[] validateScopeType(String code, String name,Byte orderNumber,Boolean requestable,String actorCode,EntityManager entityManager) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("code",code);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("name",name);
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("nom utilisateur",actorCode);
+		return new Object[] {};
 	}
 }

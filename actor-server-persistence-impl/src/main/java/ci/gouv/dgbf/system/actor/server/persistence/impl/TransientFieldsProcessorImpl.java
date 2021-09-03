@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader;
@@ -50,6 +51,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsString
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfActorsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -67,6 +69,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processAdministrativeUnits(CollectionHelper.cast(AdministrativeUnit.class, objects),fieldsNames);
 		else if(Actor.class.equals(klass))
 			processActors(CollectionHelper.cast(Actor.class, objects),fieldsNames);
+		else if(ScopeType.class.equals(klass))
+			processScopeTypes(CollectionHelper.cast(ScopeType.class, objects),filter,fieldsNames);
 		else if(Scope.class.equals(klass))
 			processScopes(CollectionHelper.cast(Scope.class, objects),filter,fieldsNames);
 		else if(ActorScopeRequest.class.equals(klass))
@@ -98,6 +102,13 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new ProfileTypeAsStringsReader().readThenSet(profiles, null);
 			else if(Profile.FIELD_NUMBER_OF_ACTORS.equals(fieldName))
 				new ProfileNumberOfActorsReader().readThenSet(profiles, null);
+		}
+	}
+	
+	public void processScopeTypes(Collection<ScopeType> scopeTypes,Filter filter,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(ScopeType.FIELDS_REQUESTABLE_AND_REQUESTABLE_AS_STRING.equals(fieldName))
+				new ScopeTypeRequestableAndRequestableAsStringsReader().readThenSet(scopeTypes, null);
 		}
 	}
 	

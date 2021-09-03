@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.impl.openapi.ActorOpenAPI;
+import ci.gouv.dgbf.system.actor.server.representation.impl.openapi.ScopeOpenAPI;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -59,6 +60,19 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		}		
     }
 	
+	protected void assertGetScopeTypes(Integer expectedCode,String[] expectedIdentifiers,String[] expectedCodes,String[] expectedNames) {
+		RequestSpecification requestSpecification = given().when();
+		Response response = requestSpecification.get(ScopeOpenAPI.OPERATION_GET_TYPES);
+		ValidatableResponse validatableResponse = response.then().statusCode(expectedCode);
+		if(expectedCode == 200) {
+			validatableResponse
+			.body("identifiant", hasItems(expectedIdentifiers))
+			.body("code", hasItems(expectedCodes))
+			.body("libelle", hasItems(expectedNames))
+			;
+		}		
+    }
+	
 	protected void assertGetProfiles(String code,Integer expectedCode,String[] expectedIdentifiers,String[] expectedCodes,String[] expectedNames) {
 		RequestSpecification requestSpecification = given().when();
 		if(StringHelper.isNotBlank(code))
@@ -67,9 +81,9 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		ValidatableResponse validatableResponse = response.then().statusCode(expectedCode);
 		if(expectedCode == 200) {
 			validatableResponse
-			.body("identifier", hasItems(expectedIdentifiers))
+			.body("identifiant", hasItems(expectedIdentifiers))
 			.body("code", hasItems(expectedCodes))
-			.body("name", hasItems(expectedNames))
+			.body("libelle", hasItems(expectedNames))
 			;
 		}		
     }

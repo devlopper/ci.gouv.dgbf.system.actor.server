@@ -6,6 +6,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
 
@@ -23,6 +24,7 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	
 	@Column(name = COLUMN_ORDER_NUMBER) private Byte orderNumber;
 	@Column(name = COLUMN_REQUESTABLE) private Boolean requestable;
+	@Transient private String requestableAsString;
 	
 	@Override
 	public ScopeType setIdentifier(String identifier) {
@@ -41,6 +43,8 @@ public class ScopeType extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_REQUESTABLE = "requestable";
+	public static final String FIELD_REQUESTABLE_AS_STRING = "requestableAsString";
+	public static final String FIELDS_REQUESTABLE_AND_REQUESTABLE_AS_STRING = "requestableAndRequestableAsString";
 	
 	public static final String TABLE_NAME = "TYPE_DOMAINE";
 	

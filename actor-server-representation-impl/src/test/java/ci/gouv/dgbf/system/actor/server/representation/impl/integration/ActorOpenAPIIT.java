@@ -85,4 +85,9 @@ public class ActorOpenAPIIT extends AbstractClientIT {
     public void getProfiles() {
     	assertGetProfiles("christian", 200, new String[] {"1","3"}, new String[] {"P00","P02"}, new String[] {"Profile 0","Profile 2"});
     }
+    
+    //@Test @InSequence(14)
+    public void getScopeTypes() {
+    	assertGetScopeTypes(200, new String[] {"1","3"}, new String[] {"P00","P02"}, new String[] {"Profile 0","Profile 2"});
+    }
 }
