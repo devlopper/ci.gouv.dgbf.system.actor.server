@@ -49,6 +49,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsString
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsStringsCodesOnlyWithoutScopeFunctionsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfActorsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeRequestableAndRequestableAsStringsReader;
@@ -102,6 +103,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new ProfileTypeAsStringsReader().readThenSet(profiles, null);
 			else if(Profile.FIELD_NUMBER_OF_ACTORS.equals(fieldName))
 				new ProfileNumberOfActorsReader().readThenSet(profiles, null);
+			else if(Profile.FIELDS_REQUESTABLE_AND_REQUESTABLE_AS_STRING.equals(fieldName))
+				new ProfileRequestableAndRequestableAsStringsReader().readThenSet(profiles, null);
 		}
 	}
 	

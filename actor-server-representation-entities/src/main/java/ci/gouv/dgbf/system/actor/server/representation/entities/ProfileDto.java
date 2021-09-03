@@ -25,6 +25,7 @@ public class ProfileDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	
 	private Byte orderNumber;
 	private Boolean requestable;
+	private String requestableAsString;
 	
 	private Boolean used;
 	private String usedAsString;
