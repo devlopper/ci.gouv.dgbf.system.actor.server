@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.persistence.server.MetricsManager;
 import org.cyk.utility.test.business.server.Transaction;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,18 +27,6 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 		ApplicationScopeLifeCycleListener.INTEGRATION = Boolean.FALSE;
 	}
 	
-	@Override
-	protected void __listenBefore__() {
-		super.__listenBefore__();
-		MetricsManager.getInstance().enable();
-	}
-	
-	@Override
-	protected void __listenAfter__() {
-		super.__listenAfter__();
-		MetricsManager.getInstance().disable();
-	}
-
 	@Test
 	public void saveScopeFunctions() {
 		Assignments instance = EntityFinder.getInstance().find(Assignments.class, "1");

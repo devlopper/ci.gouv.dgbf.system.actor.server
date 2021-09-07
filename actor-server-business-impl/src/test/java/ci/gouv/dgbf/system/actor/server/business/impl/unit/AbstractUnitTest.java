@@ -14,7 +14,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.server.AbstractUnitTest {
+public abstract class AbstractUnitTest extends org.cyk.utility.test.business.server.AbstractUnitTest {
 
 	@Override
 	protected void callInitialize() {

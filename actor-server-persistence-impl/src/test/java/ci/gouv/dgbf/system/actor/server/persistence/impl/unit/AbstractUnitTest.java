@@ -20,9 +20,7 @@ import org.cyk.utility.persistence.query.Field;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryHelper;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
@@ -40,13 +38,6 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.persistence.
 	@Override
 	protected void callInitialize() {
 		ci.gouv.dgbf.system.actor.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
-	}
-	
-	@Override
-	protected void __listenAfter__() {
-		super.__listenAfter__();
-		QueryHelper.clear();
-		QueryManager.getInstance().clear();
 	}
 	
 	protected static void assert_scopeFunctionQuerier_readMaxCodeWhereCodeStartsWith(String string,String expectedCode) {
