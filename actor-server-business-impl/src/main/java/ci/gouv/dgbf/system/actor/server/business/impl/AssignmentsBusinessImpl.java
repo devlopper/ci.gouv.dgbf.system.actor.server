@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleL
 import org.cyk.utility.__kernel__.object.marker.IdentifiableSystem;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
@@ -172,9 +173,12 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	}
 	
 	public static TransactionResult deriveValuesByIdentifiers(Collection<String> identifiers, Boolean holdersSettable,Boolean assistantsSettable, Boolean overridable, String actorCode,EntityManager entityManager) {
+		if(CollectionHelper.isEmpty(identifiers))
+			throw new RuntimeException("Identifiant(s) affectation(s) requis");
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("assignments identifiers", identifiers);
 		Collection<Assignments> assignments = EntityFinder.getInstance().findMany(Assignments.class, identifiers);
-		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("assignments", identifiers);
+		if(CollectionHelper.isEmpty(assignments))
+			throw new RuntimeException(String.format("Affectation(s) identifiée(s) par %s non trouvée(s)",identifiers));
 		return deriveValues(assignments, holdersSettable, assistantsSettable, overridable, actorCode, entityManager);
 	}
 	
@@ -824,6 +828,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	}
 	
 	public static void importNews(String actorCode,EntityManager entityManager) {
+		LogHelper.logInfo(String.format("Importation des nouvelles lignes par %s", actorCode), AssignmentsBusinessImpl.class);
 		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
 		AssignmentsQuerier.getInstance().importNews(actorCode, "importation", EntityLifeCycleListener.Event.CREATE.getValue(), new Date(),entityManager);
 	}
@@ -841,6 +846,32 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	@Override @Transactional
 	public TransactionResult importNewsAndDeriveValuesByIdentifiersAndExport(Collection<String> identifiers,String actorCode) {
 		TransactionResult transactionResult = importNewsAndDeriveValuesByIdentifiers(identifiers, actorCode,EntityManagerGetter.getInstance().get());
+		exportAsynchronously(actorCode);
+		return transactionResult;
+	}
+	
+	public static TransactionResult importNewsAndDeriveValuesByReferencedIdentifiers(Collection<String> referencedIdentifiers,String actorCode,EntityManager entityManager) {
+		LogHelper.logInfo(String.format("Importation et dérivation des nouvelles lignes à partir des identifiants des lignes budgétaires", actorCode,referencedIdentifiers), AssignmentsBusinessImpl.class);
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("referenced identifiers", referencedIdentifiers);
+		importNews(actorCode,entityManager);
+		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+		@SuppressWarnings("unchecked")		
+		Collection<Object[]> arrays = entityManager.createQuery("SELECT t.executionImputation.referencedIdentifier,t.identifier FROM Assignments t WHERE t.executionImputation.referencedIdentifier"
+				+ " IN :referencedIdentifiers").setParameter("referencedIdentifiers", referencedIdentifiers).getResultList();		
+		Collection<String> referencedIdentifiersMapped = CollectionHelper.isEmpty(arrays) ? null : arrays.stream().map(array -> array[0].toString())
+				.collect(Collectors.toList());
+		if(referencedIdentifiers.size() != CollectionHelper.getSize(referencedIdentifiersMapped)) {
+			for(String referencedIdentifier : referencedIdentifiers)
+				if(referencedIdentifiersMapped == null || !referencedIdentifiersMapped.contains(referencedIdentifier))
+					throwablesMessages.add(String.format("La ligne budgétaire identifiée par <<%s>> n'existe pas",referencedIdentifier));
+		}
+		throwablesMessages.throwIfNotEmpty();
+		return deriveValuesByIdentifiers(arrays.stream().map(array -> array[1].toString()).collect(Collectors.toList()), Boolean.TRUE, Boolean.TRUE, null, actorCode, entityManager);
+	}
+	
+	@Override @Transactional
+	public TransactionResult importNewsAndDeriveValuesByReferencedIdentifiersAndExport(Collection<String> referencedIdentifiers,String actorCode) {
+		TransactionResult transactionResult = importNewsAndDeriveValuesByReferencedIdentifiers(referencedIdentifiers, actorCode,EntityManagerGetter.getInstance().get());
 		exportAsynchronously(actorCode);
 		return transactionResult;
 	}

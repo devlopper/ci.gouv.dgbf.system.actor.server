@@ -117,8 +117,8 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
-	public void deriveValuesByIdentifiers() {
-		assertThatCountIsEqualTo(Assignments.class, 1l);
+	public void deriveValuesByIdentifiers_one() {
+		assertThatCountIsEqualTo(Assignments.class, 3l);
 		Assignments assignments = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(assignments.getCreditManagerHolder()).as("gc").isNull();
 		assertThat(assignments.getCreditManagerAssistant()).as("agc").isNull();
@@ -134,7 +134,7 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 				AssignmentsBusinessImpl.deriveValuesByIdentifiers(List.of("1"), Boolean.TRUE, Boolean.TRUE, null, "test", entityManager);
 			}
 		}.run();
-		assertThatCountIsEqualTo(Assignments.class, 1l);
+		assertThatCountIsEqualTo(Assignments.class, 3l);
 		assignments = EntityFinder.getInstance().find(Assignments.class, "1");
 		assertThat(assignments.getCreditManagerHolder()).as("gc").isNotNull();
 		assertThat(assignments.getCreditManagerAssistant()).as("agc").isNotNull();
@@ -144,5 +144,53 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(assignments.getFinancialControllerAssistant()).as("acf").isNotNull();
 		//assertThat(assignments.getAccountingHolder()).as("cpt").isNotNull();
 		//assertThat(assignments.getAccountingAssistant()).as("acpt").isNotNull();
+	}
+	
+	@Test
+	public void deriveValuesByIdentifiers_many() {
+		assertThatCountIsEqualTo(Assignments.class, 3l);
+		Assignments assignments01 = EntityFinder.getInstance().find(Assignments.class, "1");
+		assertThat(assignments01.getCreditManagerHolder()).as("gc").isNull();
+		assertThat(assignments01.getCreditManagerAssistant()).as("agc").isNull();
+		assertThat(assignments01.getAuthorizingOfficerHolder()).as("ord").isNull();
+		assertThat(assignments01.getAuthorizingOfficerAssistant()).as("aord").isNull();
+		assertThat(assignments01.getFinancialControllerHolder()).as("cf").isNull();
+		assertThat(assignments01.getFinancialControllerAssistant()).as("acf").isNull();
+		assertThat(assignments01.getAccountingHolder()).as("cpt").isNull();
+		assertThat(assignments01.getAccountingAssistant()).as("acpt").isNull();
+		
+		Assignments assignments02 = EntityFinder.getInstance().find(Assignments.class, "2");
+		assertThat(assignments02.getCreditManagerHolder()).as("gc").isNull();
+		assertThat(assignments02.getCreditManagerAssistant()).as("agc").isNull();
+		assertThat(assignments02.getAuthorizingOfficerHolder()).as("ord").isNull();
+		assertThat(assignments02.getAuthorizingOfficerAssistant()).as("aord").isNull();
+		assertThat(assignments02.getFinancialControllerHolder()).as("cf").isNull();
+		assertThat(assignments02.getFinancialControllerAssistant()).as("acf").isNull();
+		assertThat(assignments02.getAccountingHolder()).as("cpt").isNull();
+		assertThat(assignments02.getAccountingAssistant()).as("acpt").isNull();
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				AssignmentsBusinessImpl.deriveValuesByIdentifiers(List.of("1","2"), Boolean.TRUE, Boolean.TRUE, null, "test", entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(Assignments.class, 3l);
+		assignments01 = EntityFinder.getInstance().find(Assignments.class, "1");
+		assertThat(assignments01.getCreditManagerHolder()).as("gc").isNotNull();
+		assertThat(assignments01.getCreditManagerAssistant()).as("agc").isNotNull();
+		assertThat(assignments01.getAuthorizingOfficerHolder()).as("ord").isNotNull();
+		assertThat(assignments01.getAuthorizingOfficerAssistant()).as("aord").isNotNull();
+		assertThat(assignments01.getFinancialControllerHolder()).as("cf").isNotNull();
+		assertThat(assignments01.getFinancialControllerAssistant()).as("acf").isNotNull();
+		//assertThat(assignments.getAccountingHolder()).as("cpt").isNotNull();
+		//assertThat(assignments.getAccountingAssistant()).as("acpt").isNotNull();
+		
+		assignments02 = EntityFinder.getInstance().find(Assignments.class, "2");
+		assertThat(assignments02.getCreditManagerHolder()).as("gc").isNotNull();
+		assertThat(assignments02.getCreditManagerAssistant()).as("agc").isNotNull();
+		assertThat(assignments02.getAuthorizingOfficerHolder()).as("ord").isNotNull();
+		assertThat(assignments02.getAuthorizingOfficerAssistant()).as("aord").isNotNull();
+		assertThat(assignments02.getFinancialControllerHolder()).as("cf").isNotNull();
+		assertThat(assignments02.getFinancialControllerAssistant()).as("acf").isNotNull();
 	}
 }

@@ -24,7 +24,7 @@ public class AssignmentsOpenAPIImpl extends AbstractOpenAPIImpl implements Assig
 	}
 	
 	@Override
-	public Response importNewsAndDeriveValuesByIdentifiersAndExport(List<String> identifiers, String actorCode) {
-		return AssignmentsRepresentationImpl.importNewsAndDeriveValuesByIdentifiersAndExport(identifiers, actorCode);
+	public Response importNewsAndDeriveValuesByReferencedIdentifiersAndExport(List<String> referencedIdentifiers, String actorCode) {
+		return AssignmentsRepresentationImpl.importNewsAndDeriveValuesByReferencedIdentifiersAndExport(referencedIdentifiers, actorCode);
 	}
 }

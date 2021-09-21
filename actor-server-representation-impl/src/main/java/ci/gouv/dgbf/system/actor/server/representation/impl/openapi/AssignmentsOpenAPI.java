@@ -3,7 +3,6 @@ package ci.gouv.dgbf.system.actor.server.representation.impl.openapi;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -13,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.representation.server.OpenAPI;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterStyle;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -73,12 +73,13 @@ public interface AssignmentsOpenAPI extends OpenAPI {
 			@APIResponse(description = "Lignes budgétaires importées",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(description = "Erreur lors de l'importer des lignes budgétaires",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
-	public Response importNewsAndDeriveValuesByIdentifiersAndExport(
-			@Parameter(allowEmptyValue = false,description = "Identifiants lignes budgétaires",example = "01",name = "identifiants_lignes_budgetaires",required = true)
-			@FormParam("identifiants_lignes_budgetaires") List<String> identifiers
+	public Response importNewsAndDeriveValuesByReferencedIdentifiersAndExport(
+			@Parameter(allowEmptyValue = false,description = "Identifiants lignes budgétaires",example = "01",name = "identifiants_lignes_budgetaires",required = true
+			,style = ParameterStyle.DEFAULT)
+			@QueryParam("identifiants_lignes_budgetaires") List<String> referencedIdentifiers
 			
 			,@Parameter(allowEmptyValue = false,description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME
 			,name = ActorRepresentation.PARAMETER_USER_NAME,required = true)
-			@FormParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode			
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode			
 			);
 }

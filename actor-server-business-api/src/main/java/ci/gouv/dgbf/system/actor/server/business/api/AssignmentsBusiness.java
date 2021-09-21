@@ -63,6 +63,10 @@ public interface AssignmentsBusiness extends BusinessEntity<Assignments> {
 	@Transactional
 	TransactionResult importNewsAndDeriveValuesByIdentifiersAndExport(Collection<String> identifiers,String actorCode);
 	
+	String IMPORT_NEWS_AND_DERIVE_VALUES_BY_REFERENCED_IDENTIFIERS = "Assignments.importNewsAndDeriveValuesByReferencedIdentifiersAndExport";
+	@Transactional
+	TransactionResult importNewsAndDeriveValuesByReferencedIdentifiersAndExport(Collection<String> referencedIdentifiers,String actorCode);
+	
 	String EXPORT = "Assignments.export";
 	@Transactional
 	void export(String actorCode);

@@ -274,4 +274,18 @@ public class AssignmentsRepresentationImpl extends AbstractSpecificRepresentatio
 			}
 		});
 	}
+	
+	public static Response importNewsAndDeriveValuesByReferencedIdentifiersAndExport(List<String> referencedIdentifiers,String actorCode) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
+					@Override
+					public TransactionResult transact() {
+						return __inject__(AssignmentsBusiness.class).importNewsAndDeriveValuesByReferencedIdentifiersAndExport(referencedIdentifiers, actorCode);
+					}
+				};
+			}
+		});
+	}
 }

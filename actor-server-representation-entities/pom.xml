@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -9,36 +11,42 @@
 	</parent>
 
 	<name>Representation Entities</name>
-	
+
 	<groupId>ci.gouv.dgbf.system.actor.server.representation</groupId>
 	<artifactId>actor-server-representation-entities</artifactId>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>ci.gouv.dgbf.system.actor.server.business</groupId>
 			<artifactId>actor-server-business-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.representation</groupId>
 			<artifactId>jee-utility-representation</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.cyk.jee.utility.mapping.mapstruct</groupId>
+			<artifactId>jee-utility-mapping-mapstruct</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.representation.server</groupId>
 			<artifactId>jee-utility-representation-server</artifactId>
 			<version>0.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cyk.jee.utility.server.representation</groupId>
 			<artifactId>jee-utility-server-representation</artifactId>
 			<version>0.1.0</version>
-		</dependency>		
-	</dependencies>		
+		</dependency>
+	</dependencies>
 
 </project>
