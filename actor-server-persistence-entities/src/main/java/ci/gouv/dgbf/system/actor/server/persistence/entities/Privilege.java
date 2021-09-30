@@ -9,13 +9,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl;
-import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.EntityFinder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,12 @@ import lombok.experimental.Accessors;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_ONLY)
 @org.hibernate.annotations.Immutable
+@NamedStoredProcedureQueries(value = {
+		@NamedStoredProcedureQuery(
+				name = Privilege.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_REFRESH, 
+				procedureName = Privilege.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_REFRESH
+		)
+	})
 public class Privilege extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -111,7 +119,8 @@ public class Privilege extends AbstractIdentifiableSystemScalarStringIdentifiabl
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PARENT_IDENTIFIER = "parent";
 	
-	public static final String TABLE_NAME = "VM_APP_PRIVILEGE";	
+	public static final String TABLE_NAME = "VM_APP_PRIVILEGE";
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_REFRESH = "P_RAFFRAICHIR_VM_APP_PRIVILEGE";
 	
 	public static final String LABEL = "Privilège";
 }

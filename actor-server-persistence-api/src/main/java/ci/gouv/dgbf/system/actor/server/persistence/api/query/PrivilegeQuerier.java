@@ -12,19 +12,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.persistence.annotation.Queries;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Privilege;
 
@@ -116,6 +118,8 @@ public interface PrivilegeQuerier extends Querier {
 	/* count visible by actor code */
 	String QUERY_IDENTIFIER_COUNT_VISIBLE_BY_PROFILES_CODES = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_VISIBLE_BY_PROFILES_CODES);
 	Long countVisibleByProfilesCodes(Collection<String> profilesCodes);
+	
+	void refresh(EntityManager entityManager);
 	
 	/**/
 	

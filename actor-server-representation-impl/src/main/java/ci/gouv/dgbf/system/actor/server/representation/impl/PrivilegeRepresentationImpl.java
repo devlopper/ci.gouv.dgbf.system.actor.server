@@ -8,12 +8,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.rest.RequestProcessor;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.representation.Arguments;
 import org.cyk.utility.representation.EntityReader;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
+import ci.gouv.dgbf.system.actor.server.business.api.PrivilegeBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.ActorPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.PrivilegeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -25,6 +27,21 @@ import ci.gouv.dgbf.system.actor.server.representation.entities.PrivilegeDto;
 public class PrivilegeRepresentationImpl extends AbstractRepresentationEntityImpl<PrivilegeDto> implements PrivilegeRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response refresh() {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {			
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(PrivilegeBusiness.class).refresh();
+					}
+				};
+			}
+		});
+	}
+	
 	@Override
 	public Response getByActorCode(String actorCode) {
 		return __getByActorCode__(actorCode, Boolean.FALSE);
