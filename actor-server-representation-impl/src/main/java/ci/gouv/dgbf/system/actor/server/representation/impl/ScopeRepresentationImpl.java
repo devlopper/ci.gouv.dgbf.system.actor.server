@@ -155,6 +155,50 @@ public class ScopeRepresentationImpl extends AbstractRepresentationEntityImpl<Sc
 		});
 	}
 	
+	public static Response getAdministrativeUnitsByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getAdministrativeUnitsByActorCode(actorCode, visible, pageable, firstTupleIndex, numberOfTuples
+								,removeTypeCodeFromIdentifier);
+						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
+								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
+										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME,Scope.FIELD_SECTION_AS_STRING
+										,ScopeDto.JSON_FIELD_SECTION_IDENTIFIER);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
+					}
+				};
+			}
+		});
+	}
+	
+	public static Response getBudgetSpecializationUnitsByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples
+			,Boolean removeTypeCodeFromIdentifier) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {
+					@Override
+					public void run() {
+						Collection<Scope> scopes = __inject__(ScopeBusiness.class).getBudgetSpecializationUnitsByActorCode(actorCode, visible, pageable, firstTupleIndex, numberOfTuples
+								,removeTypeCodeFromIdentifier);
+						CollectionOfMapsStringStringBuilder.Arguments<Scope> arguments = new CollectionOfMapsStringStringBuilder.Arguments<Scope>()
+								.setCollection(scopes).addFieldsNames(Scope.FIELD_IDENTIFIER,ScopeDto.JSON_FIELD_IDENTIFIER
+										,Scope.FIELD_CODE,ScopeDto.JSON_FIELD_CODE,Scope.FIELD_NAME,ScopeDto.JSON_FIELD_NAME,Scope.FIELD_SECTION_AS_STRING
+										,ScopeDto.JSON_FIELD_SECTION_IDENTIFIER);
+						arguments.setEmptyValueAsArrayList();
+						responseBuilderArguments.setEntity(CollectionOfMapsStringStringBuilder.getInstance().build(Scope.class, arguments));
+					}
+				};
+			}
+		});
+	}
+	
 	public static Response getVisibleSections(String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override

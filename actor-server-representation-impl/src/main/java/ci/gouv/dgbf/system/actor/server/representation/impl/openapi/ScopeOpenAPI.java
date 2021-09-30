@@ -124,11 +124,69 @@ public interface ScopeOpenAPI extends OpenAPI {
 			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
-	String OPERATION_GET_VISIBLES_BY_ACTOR = "obtenir-visibles-par-acteur";
+	String OPERATION_GET_ADMINISTRATIVE_UNIT_BY_ACTOR = "obtenir-unites-administratives-par-acteur";
 	@GET
-	@Path(OPERATION_GET_VISIBLES_BY_ACTOR)
+	@Path(OPERATION_GET_ADMINISTRATIVE_UNIT_BY_ACTOR)
 	@Produces({MediaType.APPLICATION_JSON})
-	@Operation(description = "Obtenir les domaines visibles d'un acteur",operationId = OPERATION_GET_VISIBLES_BY_ACTOR)
+	@Operation(description = "Obtenir les unités administratives d'un acteur",operationId = OPERATION_GET_ADMINISTRATIVE_UNIT_BY_ACTOR)
+	@APIResponses(value = {
+			@APIResponse(description = "Unités administratives obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des unités administratives",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getAdministrativeUnitsByActor(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_VISIBLE,example = ScopeRepresentation.EXAMPLE_VISIBLE,name = ScopeRepresentation.PARAMETER_VISIBLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_VISIBLE) Boolean visible
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ScopeRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	String OPERATION_GET_BUDGET_SPECIALIZATION_UNIT_BY_ACTOR = "obtenir-unites-specialisations-budget-par-acteur";
+	@GET
+	@Path(OPERATION_GET_BUDGET_SPECIALIZATION_UNIT_BY_ACTOR)
+	@Produces({MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les unités de specialisations du budget d'un acteur",operationId = OPERATION_GET_BUDGET_SPECIALIZATION_UNIT_BY_ACTOR)
+	@APIResponses(value = {
+			@APIResponse(description = "Unités de specialisations du budget obtenues",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des unités de specialisations du budget",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getBudgetSpecializationUnitsByActor(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_VISIBLE,example = ScopeRepresentation.EXAMPLE_VISIBLE,name = ScopeRepresentation.PARAMETER_VISIBLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_VISIBLE) Boolean visible
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ScopeRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	String OPERATION_GET_VISIBLE_BY_ACTOR = "obtenir-visibles-par-acteur";
+	@GET
+	@Path(OPERATION_GET_VISIBLE_BY_ACTOR)
+	@Produces({MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les domaines visibles d'un acteur",operationId = OPERATION_GET_VISIBLE_BY_ACTOR)
 	@APIResponses(value = {
 			@APIResponse(description = "Domaines visibles obtenus",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 			,@APIResponse(description = "Erreur lors de l'obtention des domaines visibles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
@@ -143,6 +201,56 @@ public interface ScopeOpenAPI extends OpenAPI {
 			,schema = @Schema(enumeration = {ScopeType.CODE_CATEGORIE_BUDGET,ScopeType.CODE_CATEGORIE_ACTIVITE,ScopeType.CODE_AB,ScopeType.CODE_SECTION,ScopeType.CODE_UA
 					,ScopeType.CODE_USB,ScopeType.CODE_ACTION,ScopeType.CODE_ACTIVITE,ScopeType.CODE_IMPUTATION}))
 			@QueryParam(ScopeRepresentation.PARAMETER_TYPE_CODE) String typeCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ScopeRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	String OPERATION_GET_VISIBLE_ADMINISTRATRIVE_UNIT_BY_ACTOR = "obtenir-unites-administratives-visibles-par-acteur";
+	@GET
+	@Path(OPERATION_GET_VISIBLE_ADMINISTRATRIVE_UNIT_BY_ACTOR)
+	@Produces({MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les unités administratives visibles d'un acteur",operationId = OPERATION_GET_VISIBLE_ADMINISTRATRIVE_UNIT_BY_ACTOR)
+	@APIResponses(value = {
+			@APIResponse(description = "Unités administratives visibles obtenus",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des unités administratives visibles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getVisiblesAdministrativeUnitsByActor(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
+			,allowEmptyValue = true)
+			@QueryParam(ScopeRepresentation.PARAMETER_PAGEABLE) Boolean pageable
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_FIRST_TUPLE_INDEX,example = ScopeRepresentation.EXAMPLE_FIRST_TUPLE_INDEX,name = ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX)
+			@QueryParam(ScopeRepresentation.PARAMETER_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			
+			,@Parameter(description = ScopeRepresentation.DESCRIPTION_NUMBER_OF_TUPLES,example = ScopeRepresentation.EXAMPLE_NUMBER_OF_TUPLES,name = ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES)
+			@QueryParam(ScopeRepresentation.PARAMETER_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
+	
+	String OPERATION_GET_VISIBLE_BUDGET_SPECIALISATION_UNIT_BY_ACTOR = "obtenir-unites-specialisations-budget-visibles-par-acteur";
+	@GET
+	@Path(OPERATION_GET_VISIBLE_BUDGET_SPECIALISATION_UNIT_BY_ACTOR)
+	@Produces({MediaType.APPLICATION_JSON})
+	@Operation(description = "Obtenir les unités de specialisations du budget visibles d'un acteur",operationId = OPERATION_GET_VISIBLE_BUDGET_SPECIALISATION_UNIT_BY_ACTOR)
+	@APIResponses(value = {
+			@APIResponse(description = "Unités de specialisations du budget visibles obtenus",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Erreur lors de l'obtention des unités de specialisations du budget visibles",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	public Response getVisiblesBudgetSpecializationUnitsByActor(
+			@Parameter(description = ActorRepresentation.DESCRIPTION_USER_NAME,example = ActorRepresentation.EXAMPLE_USER_NAME,name = ActorRepresentation.PARAMETER_USER_NAME
+			,allowEmptyValue = false,required = true)
+			@QueryParam(ActorRepresentation.PARAMETER_USER_NAME) String actorCode
 			
 			,@Parameter(description = ScopeRepresentation.DESCRIPTION_PAGEABLE,example = ScopeRepresentation.EXAMPLE_PAGEABLE,name = ScopeRepresentation.PARAMETER_PAGEABLE
 			,allowEmptyValue = true)

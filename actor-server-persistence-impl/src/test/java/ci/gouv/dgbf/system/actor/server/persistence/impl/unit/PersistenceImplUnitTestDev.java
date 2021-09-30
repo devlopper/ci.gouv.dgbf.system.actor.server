@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 
@@ -20,7 +21,9 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeAdministrativeUnitSectionsReader;
 
 public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 	private static final long serialVersionUID = 1L;
@@ -130,6 +133,17 @@ public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 			for(Integer index = 0; index < 100; index = index + 1) {
 				AssignmentsQuerier.getInstance().export("test", "test", "test", new Date(), EntityManagerGetter.getInstance().get());
 			}
+		});
+	}
+	
+	@Test
+	public void scopeAdministrativeUnitSectionsReader() {
+		Collection<Scope> scopes = EntityReader.getInstance().readMany(AdministrativeUnit.class).stream().map(a -> new Scope()
+				.setIdentifier(a.getIdentifier()).setCode(a.getCode())).collect(Collectors.toList());
+		//__inject__(ScopeQuerier.class).readByTypesCodes(List.of("UA"));
+		new ScopeAdministrativeUnitSectionsReader().readThenSet(scopes, null);
+		scopes.forEach(s -> {
+			System.out.println("PersistenceImplUnitTestDev.scopeAdministrativeUnitSectionsReader() : "+s.getCode()+" - "+s.getSectionAsString());
 		});
 	}
 }

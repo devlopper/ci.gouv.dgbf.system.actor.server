@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.persistence.query.EntityReader;
@@ -23,6 +24,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeAdministrativeUnitSectionsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeBudgetSpecializationUnitSectionsReader;
 
 @ApplicationScoped
 public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> implements ScopeBusiness,Serializable {
@@ -87,6 +90,36 @@ public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> imple
 		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
 			scopes.forEach(scope -> {
 				scope.setIdentifier(StringUtils.substringAfter(scope.getIdentifier(), typeCode));
+			});
+		return scopes;
+	}
+	
+	@Override
+	public Collection<Scope> getAdministrativeUnitsByActorCode(String actorCode, Boolean visible, Boolean pageable,
+			Integer firstTupleIndex, Integer numberOfTuples, Boolean removeTypeCodeFromIdentifier) {
+		Collection<Scope> scopes = getByTypeCodeByActorCode(ScopeType.CODE_UA, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, Boolean.FALSE);
+		new ScopeAdministrativeUnitSectionsReader().readThenSet(scopes, null);
+		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
+			scopes.forEach(scope -> {
+				scope.setIdentifier(StringUtils.substringAfterLast(scope.getIdentifier(), ScopeType.CODE_UA));
+				if(StringHelper.isBlank(scope.getSectionAsString()))
+					return;
+				scope.setSectionAsString(StringUtils.substringAfterLast(scope.getSectionAsString(), ScopeType.CODE_SECTION));
+			});
+		return scopes;
+	}
+	
+	@Override
+	public Collection<Scope> getBudgetSpecializationUnitsByActorCode(String actorCode, Boolean visible,
+			Boolean pageable, Integer firstTupleIndex, Integer numberOfTuples, Boolean removeTypeCodeFromIdentifier) {
+		Collection<Scope> scopes = getByTypeCodeByActorCode(ScopeType.CODE_USB, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, Boolean.FALSE);
+		new ScopeBudgetSpecializationUnitSectionsReader().readThenSet(scopes, null);
+		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
+			scopes.forEach(scope -> {
+				scope.setIdentifier(StringUtils.substringAfterLast(scope.getIdentifier(), ScopeType.CODE_USB));
+				if(StringHelper.isBlank(scope.getSectionAsString()))
+					return;
+				scope.setSectionAsString(StringUtils.substringAfterLast(scope.getSectionAsString(), ScopeType.CODE_SECTION));
 			});
 		return scopes;
 	}

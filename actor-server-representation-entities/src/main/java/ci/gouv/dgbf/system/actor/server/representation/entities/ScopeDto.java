@@ -41,4 +41,6 @@ public class ScopeDto extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String JSON_FIELD_IDENTIFIER = "identifiant";
 	public static final String JSON_FIELD_CODE = "code";
 	public static final String JSON_FIELD_NAME = "libelle";
+	public static final String JSON_FIELD_SECTION_IDENTIFIER = "identifiant_section";
+	public static final String JSON_FIELD_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER = "identifiant_unite_specialisation_budget";
 }
