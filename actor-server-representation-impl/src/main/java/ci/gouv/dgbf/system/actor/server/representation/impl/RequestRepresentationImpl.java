@@ -128,7 +128,32 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 				return runnerArguments;
 			}
 		});
-	}	
+	}
+	
+	@Override
+	public Response getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress) {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		runnerArguments.addRunnables(new Runnable() {					
+			@Override
+			public void run() {
+				if(StringHelper.isBlank(typeIdentifier))
+					throw new RuntimeException("Identifiant du type obligatoire");						
+				Request request = __inject__(RequestBusiness.class).getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(typeIdentifier, electronicMailAddress);
+				if(request != null)
+					runnerArguments.setResult(MappingHelper.getSource(request, RequestDto.class));
+			}
+		});
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return null;
+			}
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+		});
+	}
 	
 	@Override
 	public Response initialize(RequestDto requestDto) {

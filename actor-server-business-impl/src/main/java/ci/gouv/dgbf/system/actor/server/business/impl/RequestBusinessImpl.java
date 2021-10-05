@@ -60,6 +60,16 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.FreeMarker;
 public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, RequestPersistence> implements RequestBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Override
+	public Request getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress) {
+		if(StringHelper.isBlank(typeIdentifier))
+			throw new RuntimeException("Identifiant du type de demande requis");
+		if(StringHelper.isBlank(electronicMailAddress))
+			throw new RuntimeException("Addresse électronique requise");
+		Request request = RequestQuerier.getInstance().instantiateOneByTypeIdentifierByElectronicMailAddress(typeIdentifier, electronicMailAddress);
+		return request;
+	}
+	
 	private static void validate(Request request,Boolean budgetariesScopeFunctionsIncludable) {
 		if(request == null)
 			throw new RuntimeException("La demande est obligatoire");

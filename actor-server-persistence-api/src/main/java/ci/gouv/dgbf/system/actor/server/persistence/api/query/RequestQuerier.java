@@ -92,6 +92,9 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifier");
 	Request instantiateOneByTypeIdentifier(String typeIdentifier);
 	
+	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ELECTRONIC_MAIL_ADDRESS = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifierByElectronicMailAddress");
+	Request instantiateOneByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress);
+	
 	String QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER_BY_ACTOR_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(Request.class, "instantiateOneByTypeIdentifierByActorIdentifier");
 	Request instantiateOneByTypeIdentifierByActorIdentifier(String typeIdentifier,String actorIdentifier);
 	

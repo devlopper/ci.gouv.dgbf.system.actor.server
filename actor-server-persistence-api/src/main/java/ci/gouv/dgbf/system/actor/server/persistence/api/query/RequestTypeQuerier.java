@@ -1,24 +1,28 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.From.from;
+import static org.cyk.utility.persistence.query.Language.Order.asc;
+import static org.cyk.utility.persistence.query.Language.Order.order;
+import static org.cyk.utility.persistence.query.Language.Select.fields;
+import static org.cyk.utility.persistence.query.Language.Select.kaseBooleanYesNo;
+import static org.cyk.utility.persistence.query.Language.Select.select;
+import static org.cyk.utility.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 
-import static org.cyk.utility.persistence.query.Language.jpql;
-import static org.cyk.utility.persistence.query.Language.Select.select;
-import static org.cyk.utility.persistence.query.Language.Select.kaseBooleanYesNo;
-import static org.cyk.utility.persistence.query.Language.Select.fields;
-import static org.cyk.utility.persistence.query.Language.From.from;
-import static org.cyk.utility.persistence.query.Language.Where.where;
-import static org.cyk.utility.persistence.query.Language.Order.order;
-import static org.cyk.utility.persistence.query.Language.Order.asc;
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
@@ -44,6 +48,10 @@ public interface RequestTypeQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION = "readByIdentifierForRequestCreation";
 	RequestType readByIdentifierForRequestCreation(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestType.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(RequestType.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestType.class, QueryName.COUNT_DYNAMIC);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestTypeQuerier,Serializable {
@@ -54,6 +62,8 @@ public interface RequestTypeQuerier extends Querier {
 				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_CREATION))
 				return readByIdentifierForRequestCreation((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(RequestType.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -63,6 +73,8 @@ public interface RequestTypeQuerier extends Querier {
 				return readAll();
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_FOR_UI))
 				return readForUI(arguments);
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(RequestType.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -70,6 +82,8 @@ public interface RequestTypeQuerier extends Querier {
 		public Long count(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_FOR_UI))
 				return countForUI(arguments);
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(RequestType.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		

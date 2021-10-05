@@ -37,6 +37,14 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	})
 	Response getOneToBeCreatedByTypeIdentifier(@QueryParam(QUERY_PARAMETER_NAME_TYPE_IDENTIFIER) String typeIdentifier);
 	
+	@GET
+	@Path("obtenir-nouvelle-instance-par-identifiant-type-par-email")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Instantier une demande par l'identifiant du type et l'email")
+	Response getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(@QueryParam(QUERY_PARAMETER_NAME_TYPE_IDENTIFIER) String typeIdentifier
+			,@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress);
+	
 	@POST
 	@Path(PATH_INITIALIZE)
 	@Consumes({MediaType.APPLICATION_JSON})

@@ -100,6 +100,32 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	}
 	
 	@Override
+	public Request instantiateOneByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress) {
+		if(StringHelper.isBlank(typeIdentifier) || StringHelper.isBlank(electronicMailAddress))
+			return null;
+		RequestType type = EntityFinder.getInstance().find(RequestType.class, typeIdentifier);
+		if(type == null)
+			return null;
+		Collection<Request> requests = EntityManagerGetter.getInstance().get().createQuery("SELECT t FROM Request t "
+			+ "WHERE t.type.identifier = :typeIdentifier AND t.electronicMailAddress = :electronicMailAddress ORDER BY t.creationDate DESC", Request.class)
+				.setParameter("typeIdentifier", typeIdentifier).setParameter("electronicMailAddress", electronicMailAddress)
+			.setMaxResults(1).getResultList();
+		if(CollectionHelper.getSize(requests) > 1)
+			throw new RuntimeException("Trop de demandes récentes trouvées");
+		Request request = CollectionHelper.getFirst(requests);
+		if(request == null)
+			request = new Request();
+		request.setType(type);
+		IdentificationFormQuerier.AbstractImpl.setFields(type.getForm(), null);
+		if(request.getActOfAppointmentSignatureDate() != null)
+			request.setActOfAppointmentSignatureDateAsTimestamp(TimeHelper.toMillisecond(request.getActOfAppointmentSignatureDate()));
+		request.setAuthenticationRequired(request.getType().getAuthenticationRequired());
+		request.setIdentifier(null);
+		request.setCode(null);
+		return request;
+	}
+	
+	@Override
 	public Request instantiateOneByTypeIdentifierByActorIdentifier(String typeIdentifier,String actorIdentifier) {
 		if(StringHelper.isBlank(typeIdentifier) || StringHelper.isBlank(actorIdentifier))
 			return null;

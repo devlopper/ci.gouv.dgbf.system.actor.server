@@ -10,6 +10,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 
 public interface RequestBusiness extends BusinessEntity<Request> {
 
+	Request getOneToBeCreatedByTypeIdentifierByElectronicMailAddress(String typeIdentifier,String electronicMailAddress);
+	
 	@Transactional
 	void initialize(Request request);
 	
