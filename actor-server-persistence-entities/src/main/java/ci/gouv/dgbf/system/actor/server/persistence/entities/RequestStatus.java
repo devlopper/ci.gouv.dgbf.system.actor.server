@@ -37,4 +37,6 @@ public class RequestStatus extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CODE_SUBMITTED = "SOUMISE";
 	public static final String CODE_ACCEPTED = "ACCEPTEE";
 	public static final String CODE_REJECTED = "REJETEE";
+	
+	public static final String LABEL = "Type de statut";
 }

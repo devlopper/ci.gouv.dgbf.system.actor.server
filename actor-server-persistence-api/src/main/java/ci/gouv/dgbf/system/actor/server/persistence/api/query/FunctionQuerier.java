@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.annotation.Queries;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.From;
@@ -25,12 +27,12 @@ import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryIdentifierGetter;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.annotation.Queries;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.FunctionComparator;
 import ci.gouv.dgbf.system.actor.server.persistence.api.FunctionPersistence;
@@ -44,6 +46,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 })
 public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 
+	String PARAMETER_NAME_SEARCH = "search";
+	
 	String PARAMETER_NAME_ACCOUNT_REQUEST_IDENTIFIER = "accountRequestIdentifier";
 	String PARAMETER_NAME_TYPES_CODES = "typesCodes";
 	String PARAMETER_NAME_TYPE_IDENTIFIER = "typeIdentifier";
@@ -125,6 +129,10 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 	
 	String QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS_AND_ASSISTANTS = Querier.buildIdentifier(Function.class, "readExecutionHoldersAndAssistants");
 	Collection<Function> readExecutionHoldersAndAssistants(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Function.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Function.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Function.class, QueryName.COUNT_DYNAMIC);
 	
 	/**/
 	
@@ -329,6 +337,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 		public Function readOne(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return QueryExecutor.getInstance().executeReadOne(Function.class, arguments);
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(Function.class,arguments.setQuery(null));
 			return super.readOne(arguments);
 		}
 		
@@ -365,6 +375,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return readExecutionHolders(arguments);
 			if(QUERY_IDENTIFIER_READ_EXECUTION_HOLDERS_AND_ASSISTANTS.equals(arguments.getQuery().getIdentifier()))
 				return readExecutionHoldersAndAssistants(arguments);
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(Function.class,arguments.setQuery(null));
 			return super.readMany(arguments);
 		}
 		
@@ -377,6 +389,8 @@ public interface FunctionQuerier extends Querier.CodableAndNamable<Function> {
 				return countByTypesCodes((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_TYPES_CODES));
 			if(QUERY_IDENTIFIER_COUNT_BY_TYPE_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 				return countByTypeIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(Function.class,arguments.setQuery(null));
 			return super.count(arguments);
 		}
 		

@@ -51,6 +51,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsString
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfActorsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitStatusCreationDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
@@ -97,6 +101,13 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	}
 	
 	/**/
+	/*public void processRequests(Collection<Request> requests,Filter filter,Collection<String> fieldsNames) {
+		for(String fieldName : fieldsNames) {
+			if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+		}
+	}*/
+	
 	public void processProfiles(Collection<Profile> profiles,Filter filter,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
 			if(Profile.FIELD_TYPE_AS_STRING.equals(fieldName))
@@ -311,7 +322,15 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		Collection<RequestScopeFunction> requestScopeFunctions = readRequestScopeFunctions(requestsIdentifiers, fieldsNames);		
 		
 		for(String fieldName : fieldsNames) {
-			if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
+			if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAdministrativeUnitStatusCreationDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES.equals(fieldName))
+				new RequestScopeFunctionsCodesReader().readThenSet(requests, null);
+			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName))
+				new RequestGrantedScopeFunctionsCodesReader().readThenSet(requests, null);
+			else if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
 				Collection<Object[]> arrays = new ReaderByCollection.AbstractImpl<String, Object[]>() {
 					protected Collection<Object[]> __read__(Collection<String> values) {
 						return RequestScopeFunctionQuerier.getInstance().countWhereGrantedIsTrueGroupByRequestIdentifierByRequestsIdentifiers(values);

@@ -79,6 +79,7 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String CODE_DEMANDE_POSTES_BUDGETAIRES = "DEMANDE_POSTES_BUDGETAIRES";
 	public static final String IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES = "DPB";
 	
+	public static final String LABEL = "Type de demande";
 	//public static final String CODE_CREATION_COMPTE_E_REQUETE = "CREATION_COMPTE_E_REQUETE";
 	//public static final String IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES = "CCE";
 }

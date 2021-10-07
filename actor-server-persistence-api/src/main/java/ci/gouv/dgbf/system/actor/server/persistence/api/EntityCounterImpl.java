@@ -20,6 +20,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
@@ -37,9 +39,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
@@ -84,11 +89,20 @@ public class EntityCounterImpl extends org.cyk.utility.persistence.server.query.
 		if(Boolean.TRUE.equals(ClusterQuerier.getInstance().isOwner(arguments)))
 			return ClusterQuerier.getInstance().count(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Function.class)))
+			return FunctionQuerier.getInstance().count(arguments);
+		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
 			return RequestTypeQuerier.getInstance().count(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestStatus.class)))
+			return RequestStatusQuerier.getInstance().count(arguments);
+		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return RequestQuerier.getInstance().count(arguments);
+		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestScopeFunction.class)))
+			return RequestScopeFunctionQuerier.getInstance().count(arguments);
 		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
 			return RequestDispatchSlipQuerier.getInstance().count(arguments);

@@ -133,6 +133,8 @@ public class Function extends AbstractIdentifiableSystemScalarStringIdentifiable
 	public static final String CODE_ACCOUNTING_HOLDER = "CPT";
 	public static final String CODE_ACCOUNTING_ASSISTANT = formatAssistantCode(CODE_ACCOUNTING_HOLDER);
 	
+	public static final String LABEL = "Fonction";
+	
 	public static final Collection<String> EXECUTION_HOLDERS_CODES = List.of(CODE_CREDIT_MANAGER_HOLDER,CODE_AUTHORIZING_OFFICER_HOLDER
 			,CODE_FINANCIAL_CONTROLLER_HOLDER,CODE_ACCOUNTING_HOLDER);
 	

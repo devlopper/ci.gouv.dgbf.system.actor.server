@@ -24,8 +24,8 @@ import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -36,6 +36,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 public interface RequestQuerier extends Querier {
 
 	Integer NUMBER_OF_WORDS = 6;
+	
+	String PARAMETER_NAME_SEARCH = "search";
 	
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_ACCESS_TOKEN = "accessToken";
@@ -54,14 +56,27 @@ public interface RequestQuerier extends Querier {
 	
 	String PARAMETER_NAME_MOBILE_PHONE_NUMBER = "mobilePhoneNumber";
 	
-	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeunit";
+	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	
+	String PARAMETER_NAME_ADMINISTRATIVE_UNIT = "administrativeunit";	
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER = "administrativeunitIdentifier";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS = "administrativeUnitsIdentifiers";
+	String PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS = "administrativeUnitsSectionsIdentifiers";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER = PARAMETER_NAME_ADMINISTRATIVE_UNIT+"SectionIdentifier";
 	String PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_ADMINISTRATIVE_UNIT_SECTION_IDENTIFIER+"Nullable";
 	
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
+	
+	String PARAMETER_NAME_STATUS_IDENTIFIERS = "statusIdentifiers";
+	String PARAMETER_NAME_TYPES_IDENTIFIERS = "typesIdentifiers";
+	
+	String PARAMETER_NAME_LOWEST_CREATION_DATE = "lowestCreationDate";
+	String PARAMETER_NAME_HIGHEST_CREATION_DATE = "highestCreationDate";
+	String PARAMETER_NAME_LOWEST_PROCESSING_DATE = "lowestProcessingDate";
+	String PARAMETER_NAME_HIGHEST_PROCESSING_DATE = "highestProcessingDate";
 	
 	String PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER = "dispatchSlipIdentifier";
 	String PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER_NULLABLE = PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIER+"Nullable";
@@ -141,6 +156,10 @@ public interface RequestQuerier extends Querier {
 	Collection<Object[]> readFromViewByElectronicMailAddresses(String...emails);
 	Collection<Object[]> readFromViewByRequests(Collection<Request> requests);
 	Collection<Object[]> readFromViewByRequests(Request...requests);
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.COUNT_DYNAMIC);
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		

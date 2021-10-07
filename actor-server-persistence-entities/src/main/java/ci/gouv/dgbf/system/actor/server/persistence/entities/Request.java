@@ -114,6 +114,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Collection<Function> budgetariesFunctions;
 	@Transient private Collection<String> budgetariesFunctionsAsStrings;
 	@Transient private Collection<ScopeFunction> budgetariesScopeFunctions,grantedBudgetariesScopeFunctions;
+	@Transient private Collection<String> scopeFunctionsCodes,grantedScopeFunctionsCodes;
+	@Transient private String scopeFunctionsCodesAsString,grantedScopeFunctionsCodesAsString;
 	@Transient private Collection<String> budgetariesScopeFunctionsAsStrings;
 	@Transient private Collection<String> budgetariesScopeFunctionsGrantedAsStrings;
 	@Transient private Boolean hasGrantedHolderScopeFunction;
@@ -151,6 +153,30 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Boolean isFinancialControllerHolder;
 	@Transient private Boolean isAccountingHolder;
 	@Transient private Boolean isAssistant;
+	
+	public Collection<String> getScopeFunctionsCodes(Boolean injectIfNull) {
+		if(scopeFunctionsCodes == null && Boolean.TRUE.equals(injectIfNull))
+			scopeFunctionsCodes = new ArrayList<>();
+		return scopeFunctionsCodes;
+	}
+	
+	public Collection<String> getGrantedScopeFunctionsCodes(Boolean injectIfNull) {
+		if(grantedScopeFunctionsCodes == null && Boolean.TRUE.equals(injectIfNull))
+			grantedScopeFunctionsCodes = new ArrayList<>();
+		return grantedScopeFunctionsCodes;
+	}
+	
+	public Collection<String> getBudgetariesScopeFunctionsAsStrings(Boolean injectIfNull) {
+		if(budgetariesScopeFunctionsAsStrings == null && Boolean.TRUE.equals(injectIfNull))
+			budgetariesScopeFunctionsAsStrings = new ArrayList<>();
+		return budgetariesScopeFunctionsAsStrings;
+	}
+	
+	public Collection<String> getBudgetariesScopeFunctionsGrantedAsStrings(Boolean injectIfNull) {
+		if(budgetariesScopeFunctionsGrantedAsStrings == null && Boolean.TRUE.equals(injectIfNull))
+			budgetariesScopeFunctionsGrantedAsStrings = new ArrayList<>();
+		return budgetariesScopeFunctionsGrantedAsStrings;
+	}
 	
 	@Override
 	public Request setIdentifier(String identifier) {
@@ -281,12 +307,20 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
 	
+	public static final String FIELD_SCOPE_FUNCTIONS_CODES_AS_STRING = "scopeFunctionsCodesAsString";
+	public static final String FIELD_GRANTED_SCOPE_FUNCTIONS_CODES_AS_STRING = "grantedScopeFunctionsCodesAsString";
+	
 	public static final String FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION = "hasGrantedHolderScopeFunction";
 	
 	public static final String FIELD_IS_CREDIT_MANAGER_HOLDER = "isCreditManagerHolder";
 	public static final String FIELD_IS_AUTHORIZING_OFFICER_HOLDER = "isAuthorizingOfficerHolder";
 	public static final String FIELD_IS_FINANCIAL_CONTROLLER_HOLDER = "isFinancialControllerHolder";
 	public static final String FIELD_IS_ACCOUNTING_HOLDER = "isAccountingHolder";
+	
+	public static final String FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS = "sectionAdministrativeUnitStatusCreationDateProcessingDateAsStrings";
+	public static final String FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_AS_STRINGS = "sectionAdministrativeUnitStatusCreationDateAsStrings";
+	public static final String FIELDS_SCOPE_FUNCTIONS_CODES = "scopeFunctionsCodes";
+	public static final String FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES = "grantedScopeFunctionsCodes";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";
@@ -331,6 +365,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String COLUMN_ACCEPTATION_COMMENT = "COMMENTAIRE_ACCEPTATION";
 	public static final String COLUMN_REJECTION_REASON = "MOTIF_REJET";
 	public static final String COLUMN_DISPATCH_SLIP = "BORDEREAU";
+	
+	public static final String LABEL = "Demande";
 	
 	public static final Collection<String> COLUMNS_FIELDS_NAMES = new ArrayList<>();
 	static {

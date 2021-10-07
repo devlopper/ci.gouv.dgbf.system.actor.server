@@ -9,13 +9,16 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 
@@ -28,6 +31,10 @@ public interface RequestStatusQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, "readByCodeForUI");
 	RequestStatus readByCodeForUI(String code);
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, QueryName.COUNT_DYNAMIC);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestStatusQuerier,Serializable {
@@ -36,16 +43,22 @@ public interface RequestStatusQuerier extends Querier {
 		public RequestStatus readOne(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_CODE_FOR_UI))
 				return readByCodeForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(RequestStatus.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
 		@Override
 		public Collection<RequestStatus> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(RequestStatus.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
 		@Override
 		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(RequestStatus.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -59,8 +72,8 @@ public interface RequestStatusQuerier extends Querier {
 	
 	/**/
 	
-	static RequestTypeQuerier getInstance() {
-		return Helper.getInstance(RequestTypeQuerier.class, INSTANCE);
+	static RequestStatusQuerier getInstance() {
+		return Helper.getInstance(RequestStatusQuerier.class, INSTANCE);
 	}
 	
 	Value INSTANCE = new Value();

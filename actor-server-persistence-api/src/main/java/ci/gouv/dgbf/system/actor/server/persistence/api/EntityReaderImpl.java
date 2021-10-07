@@ -27,6 +27,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RejectedAccountRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQuerier;
@@ -46,12 +48,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
@@ -121,11 +126,20 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Section.class)))
 				return (T) SectionQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Function.class)))
+				return (T) FunctionQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
 				return (T) RequestTypeQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestStatus.class)))
+				return (T) RequestStatusQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 				return (T) RequestQuerier.getInstance().readOne(arguments);
+			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestScopeFunction.class)))
+				return (T) RequestScopeFunctionQuerier.getInstance().readOne(arguments);
 			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
 				return (T) RequestDispatchSlipQuerier.getInstance().readOne(arguments);
@@ -213,9 +227,15 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestType.class)))
 			return (Collection<T>) RequestTypeQuerier.getInstance().readMany(arguments);
 		
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestStatus.class)))
+			return (Collection<T>) RequestStatusQuerier.getInstance().readMany(arguments);
+		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Request.class)))
 			return (Collection<T>) RequestQuerier.getInstance().readMany(arguments);
 			
+		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestScopeFunction.class)))
+			return (Collection<T>) RequestScopeFunctionQuerier.getInstance().readMany(arguments);
+		
 		if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, RequestDispatchSlip.class)))
 			return (Collection<T>) RequestDispatchSlipQuerier.getInstance().readMany(arguments);
 		

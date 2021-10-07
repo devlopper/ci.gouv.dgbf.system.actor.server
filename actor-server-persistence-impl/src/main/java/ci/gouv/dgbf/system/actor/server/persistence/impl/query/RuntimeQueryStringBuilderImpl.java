@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -42,6 +43,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -108,6 +110,12 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			if(arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
 				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN Section section ON section = t.section");
 			}			
+		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class)) {
+			builderArguments.getTuple(Boolean.TRUE).add("Request t");
+			if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
+				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN RequestScopeFunction rsf ON rsf.request = t");
+				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN Function function ON function = rsf.scopeFunction.function");
+			}			
 		}
 	}
 	
@@ -134,6 +142,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateProfile(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(ActorProfileRequest.class))
 			populatePredicateActorProfileRequest(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class))
+			populatePredicateRequest(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
@@ -423,6 +433,50 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			)));			
 	}
 	
+	public static final String REQUEST_PREDICATE_SEARCH = parenthesis(or(
+			LikeStringBuilder.getInstance().build("t",Request.FIELD_CODE, RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_FIRST_NAME,RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_LAST_NAMES,RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_REGISTRATION_NUMBER,RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_ELECTRONIC_MAIL_ADDRESS,RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_ADMINISTRATIVE_FUNCTION,RequestQuerier.PARAMETER_NAME_SEARCH)
+			,LikeStringBuilder.getInstance().build("t", Request.FIELD_MOBILE_PHONE_NUMBER,RequestQuerier.PARAMETER_NAME_SEARCH)
+	));
+	protected void populatePredicateRequest(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.administrativeUnit.section.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.administrativeUnit.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
+			predicate.add(String.format("function.identifier IN :%s", RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.status.identifier IN :%s", RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.type.identifier IN :%s", RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_SEARCH) != null) {
+			predicate.add(REQUEST_PREDICATE_SEARCH);
+			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_SEARCH),"");
+			filter.addField(RequestQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE) != null) {
+			predicate.add(String.format("t.creationDate >= :%s", RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE) != null) {
+			predicate.add(String.format("t.creationDate <= :%s", RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE) != null) {
+			predicate.add(String.format("t.processingDate >= :%s", RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE, arguments);
+		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE) != null) {
+			predicate.add(String.format("t.processingDate <= :%s", RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE, arguments);
+		}
+	}
+	
 	/**/
 	
 	@Override
@@ -436,6 +490,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t.identity",Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES);
 		}else if(arguments.getQuery().getIdentifier().equals(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",AdministrativeUnit.FIELD_CODE);
+		}else if(arguments.getQuery().getIdentifier().equals(RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
+			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",Request.FIELD_CODE);
 		}
 	}
 	

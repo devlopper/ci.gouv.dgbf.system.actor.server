@@ -32,6 +32,8 @@ import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
 import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
@@ -63,6 +65,8 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 			return readByAccessToken((String)arguments.getFilterFieldValue(PARAMETER_NAME_ACCESS_TOKEN));
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_ACCESS_TOKEN_FOR_UI))
 			return readByAccessTokenForUI((String)arguments.getFilterFieldValue(PARAMETER_NAME_ACCESS_TOKEN));
+		if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+			return DynamicOneExecutor.getInstance().read(Request.class,arguments.setQuery(null));
 		throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 	}
 	
@@ -76,6 +80,8 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 			return readByDispatchSlipIdentifier((String) arguments.getFilterFieldValue(PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER));
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_DISPATCH_SLIP_IDENTIFIER_FOR_UI))
 			return readByDispatchSlipIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER));
+		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().read(Request.class,arguments.setQuery(null));
 		throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 	}
 	
@@ -83,6 +89,8 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	public Long count(QueryExecutorArguments arguments) {
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_WHERE_FILTER))
 			return countWhereFilter(arguments);
+		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().count(Request.class,arguments.setQuery(null));
 		throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 	}
 	

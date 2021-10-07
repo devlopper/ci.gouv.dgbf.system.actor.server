@@ -19,6 +19,9 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryName;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 
@@ -63,7 +66,36 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	Integer updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,String auditActor,String auditFunctionality,String auditAction,LocalDateTime auditDate,EntityManager entityManager);
 	Integer updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(EntityManager entityManager,String auditActor,String auditFunctionality,String auditAction,LocalDateTime auditDate,String...scopeFunctionsIdentifiers);
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, QueryName.COUNT_DYNAMIC);
+	
+	RequestScopeFunction readOne(QueryExecutorArguments arguments);
+	Collection<RequestScopeFunction> readMany(QueryExecutorArguments arguments);
+	Long count(QueryExecutorArguments arguments);
+	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestScopeFunctionQuerier,Serializable {
+		
+		@Override
+		public RequestScopeFunction readOne(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(RequestScopeFunction.class,arguments.setQuery(null));
+			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
+		}
+		
+		@Override
+		public Collection<RequestScopeFunction> readMany(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(RequestScopeFunction.class,arguments.setQuery(null));
+			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
+		}
+		
+		@Override
+		public Long count(QueryExecutorArguments arguments) {
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(RequestScopeFunction.class,arguments.setQuery(null));
+			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
+		}
 		
 		@Override
 		public Collection<RequestScopeFunction> readByRequestsIdentifiers(Collection<String> requestsIdentifiers) {
