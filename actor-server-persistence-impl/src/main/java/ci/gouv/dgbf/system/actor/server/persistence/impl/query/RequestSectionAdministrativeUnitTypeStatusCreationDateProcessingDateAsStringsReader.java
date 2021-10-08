@@ -7,7 +7,7 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 
-public class RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader extends RequestSectionAdministrativeUnitStatusCreationDateAsStringsReader implements Serializable {
+public class RequestSectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader extends RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader implements Serializable {
 
 	@Override
 	protected QueryStringBuilder.Arguments instantiateQueryStringBuilderArguments() {

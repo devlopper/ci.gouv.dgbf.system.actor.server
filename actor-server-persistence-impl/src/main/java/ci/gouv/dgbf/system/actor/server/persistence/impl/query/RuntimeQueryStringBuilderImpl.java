@@ -110,13 +110,13 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			if(arguments.getFilterFieldValue(AdministrativeUnitQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
 				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN Section section ON section = t.section");
 			}			
-		}else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class)) {
+		}/*else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class)) {
 			builderArguments.getTuple(Boolean.TRUE).add("Request t");
 			if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
-				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN RequestScopeFunction rsf ON rsf.request = t");
-				builderArguments.getTuple(Boolean.TRUE).addJoins("LEFT JOIN Function function ON function = rsf.scopeFunction.function");
+				builderArguments.getTuple(Boolean.TRUE).addJoins("JOIN RequestScopeFunction rsf ON rsf.request = t");
+				builderArguments.getTuple(Boolean.TRUE).addJoins("JOIN Function function ON function = rsf.scopeFunction.function");
 			}			
-		}
+		}*/
 	}
 	
 	@Override
@@ -446,32 +446,41 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.administrativeUnit.section.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.administrativeUnit.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
-			predicate.add(String.format("function.identifier IN :%s", RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
+			predicate.add(String.format("EXISTS(SELECT c.identifier FROM RequestScopeFunction c WHERE c.request = t AND c.scopeFunction.function.identifier IN :%s)", RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.status.identifier IN :%s", RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.type.identifier IN :%s", RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_SEARCH) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_SEARCH) != null) {
 			predicate.add(REQUEST_PREDICATE_SEARCH);
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(RequestQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE) != null) {
 			predicate.add(String.format("t.creationDate >= :%s", RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE) != null) {
 			predicate.add(String.format("t.creationDate <= :%s", RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_HIGHEST_CREATION_DATE, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE) != null) {
 			predicate.add(String.format("t.processingDate >= :%s", RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_LOWEST_PROCESSING_DATE, arguments);
-		}else if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE) != null) {
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE) != null) {
 			predicate.add(String.format("t.processingDate <= :%s", RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE, arguments);
 		}

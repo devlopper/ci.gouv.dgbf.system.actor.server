@@ -26,16 +26,16 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	@Test
 	public void read_dynamic() {
 		assertThat(EntityCounter.getInstance().count(Request.class, new QueryExecutorArguments().queryCountDynamic(Request.class))).isEqualTo(3l);
-		assertThat(EntityCounter.getInstance().count(RequestScopeFunction.class, new QueryExecutorArguments().queryCountDynamic(RequestScopeFunction.class))).isEqualTo(5l);
+		assertThat(EntityCounter.getInstance().count(RequestScopeFunction.class, new QueryExecutorArguments().queryCountDynamic(RequestScopeFunction.class))).isEqualTo(6l);
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -44,7 +44,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, List.of("327"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -58,7 +58,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, List.of("323"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -71,7 +71,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("GC"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -81,11 +81,25 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
+	public void read_dynamic_function_gc_accepted() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("GC"));
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("A"));
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+		});
+	}
+	
+	@Test
 	public void read_dynamic_function_agc() {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("AGC"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -99,7 +113,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("ORD"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -112,7 +126,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, List.of("DPA"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -125,7 +139,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, List.of("DPB"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -139,7 +153,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("I"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -153,7 +167,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("A"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -166,7 +180,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
-		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE, LocalDateTime.of(2000, 1, 2, 0, 0));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
@@ -180,7 +194,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		if(CollectionHelper.isEmpty(requests))
 			assertThat(expectedStrings).isNull();
 		else {
-			assertThat(expectedStrings).hasSize(requests.size());
+			assertThat(expectedStrings).as("nombre de demandes").hasSize(requests.size());
 			for(Integer index = 0; index < requests.size(); index = index + 1) {
 				Request request = requests.get(index);
 				assertThat(request.getCode()).as("Code").isEqualTo(expectedStrings[index][0]);

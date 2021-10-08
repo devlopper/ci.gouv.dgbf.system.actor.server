@@ -53,8 +53,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestabl
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitStatusCreationDateAsStringsReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
@@ -322,10 +326,18 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		Collection<RequestScopeFunction> requestScopeFunctions = readRequestScopeFunctions(requestsIdentifiers, fieldsNames);		
 		
 		for(String fieldName : fieldsNames) {
-			if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
-				new RequestSectionAdministrativeUnitStatusCreationDateAsStringsReader().readThenSet(requests, null);
-			else if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
-				new RequestSectionAdministrativeUnitStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+			if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateAsStringsReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
+				new RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestScopeFunctionsCodesReader().readThenSet(requests, null);
 			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName))
