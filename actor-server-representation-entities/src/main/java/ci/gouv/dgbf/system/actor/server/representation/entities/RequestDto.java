@@ -26,6 +26,7 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String authenticationRequiredAsString;
 	private String creationDateAsString;
 	private String accessToken;
+	private String dispatchSlipAsString,dispatchSlipCode;
 	
 	/* Identity */
 	

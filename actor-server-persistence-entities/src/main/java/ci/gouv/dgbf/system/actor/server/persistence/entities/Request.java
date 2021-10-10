@@ -140,6 +140,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	@Transient private Boolean rejected;
 	@ManyToOne @JoinColumn(name = COLUMN_DISPATCH_SLIP) private RequestDispatchSlip dispatchSlip;
 	@Transient private String dispatchSlipAsString;
+	@Transient private String dispatchSlipCode;
 	
 	/* Links */
 	
@@ -306,6 +307,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_ACCEPTATION_COMMENT = "acceptationComment";
 	public static final String FIELD_REJECTION_REASON = "rejectionReason";
 	public static final String FIELD_DISPATCH_SLIP = "dispatchSlip";
+	public static final String FIELD_DISPATCH_SLIP_AS_STRING = "dispatchSlipAsString";
+	public static final String FIELD_DISPATCH_SLIP_CODE = "dispatchSlipCode";
 	
 	public static final String FIELD_SCOPE_FUNCTIONS_CODES_AS_STRING = "scopeFunctionsCodesAsString";
 	public static final String FIELD_GRANTED_SCOPE_FUNCTIONS_CODES_AS_STRING = "grantedScopeFunctionsCodesAsString";
@@ -316,6 +319,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_IS_AUTHORIZING_OFFICER_HOLDER = "isAuthorizingOfficerHolder";
 	public static final String FIELD_IS_FINANCIAL_CONTROLLER_HOLDER = "isFinancialControllerHolder";
 	public static final String FIELD_IS_ACCOUNTING_HOLDER = "isAccountingHolder";
+	public static final String FIELDS_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER = "isCreditManagerHolderisAuthorizingOfficerHolderisFinancialControllerHolderisAccountingHolder";
 	
 	public static final String FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS = "sectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStrings";
 	public static final String FIELDS_SECTION_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_AS_STRINGS = "sectionAdministrativeUnitTypeStatusCreationDateAsStrings";
@@ -324,7 +328,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS = "sectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateProcessingDateAsStrings";
 	public static final String FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS = "sectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateAsStrings";	
 	public static final String FIELDS_SCOPE_FUNCTIONS_CODES = "scopeFunctionsCodes";
+	public static final String FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER = "scopeFunctionsCodesIsCreditManagerHolderisAuthorizingOfficerHolderisFinancialControllerHolderisAccountingHolder";
 	public static final String FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES = "grantedScopeFunctionsCodes";
+	public static final String FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER = "grantedScopeFunctionsCodesIsCreditManagerHolderisAuthorizingOfficerHolderisFinancialControllerHolderisAccountingHolder";
 	
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";

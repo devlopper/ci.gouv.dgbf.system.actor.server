@@ -51,7 +51,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsString
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfActorsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipCodeReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader;
@@ -340,8 +343,14 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestScopeFunctionsCodesReader().readThenSet(requests, null);
+			else if(Request.FIELD_DISPATCH_SLIP_CODE.equals(fieldName))
+				new RequestDispatchSlipCodeReader().readThenSet(requests, null);
+			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
+				new RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader().readThenSet(requests, null);
 			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestGrantedScopeFunctionsCodesReader().readThenSet(requests, null);
+			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
+				new RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader().readThenSet(requests, null);
 			else if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
 				Collection<Object[]> arrays = new ReaderByCollection.AbstractImpl<String, Object[]>() {
 					protected Collection<Object[]> __read__(Collection<String> values) {

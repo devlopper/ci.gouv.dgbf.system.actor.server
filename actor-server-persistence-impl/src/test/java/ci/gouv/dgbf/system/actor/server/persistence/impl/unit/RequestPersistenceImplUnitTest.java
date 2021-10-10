@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -65,12 +66,33 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
 				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
 		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
-				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté","B001",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
+		
+		arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
+		Collection<Request> requests = EntityReader.getInstance().readMany(Request.class, arguments);
+		assertThat(CollectionHelper.getElementAt(requests, 0).getIsCreditManagerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, 0).getIsAuthorizingOfficerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 0).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 0).getIsAccountingHolder()).isNull();
+		
+		assertThat(CollectionHelper.getElementAt(requests, 1).getIsCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 1).getIsAuthorizingOfficerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 1).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 1).getIsAccountingHolder()).isNull();
+		
+		assertThat(CollectionHelper.getElementAt(requests, 2).getIsCreditManagerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAuthorizingOfficerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, 2).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAccountingHolder()).isNull();
 	}
 	
 	@Test
@@ -82,7 +104,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_PROCESSED, Boolean.TRUE);
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
 		});
 	}
 	
@@ -95,8 +117,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_PROCESSED, Boolean.FALSE);
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -109,8 +131,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, List.of("DTI"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
 		});
 	}
 	
@@ -123,7 +145,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, List.of("DGDDL"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -136,8 +158,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, List.of("327"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
 		});
 	}
 	
@@ -150,7 +172,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, List.of("323"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -163,8 +185,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("GC"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -178,7 +200,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("GC"));
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("A"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
 		});
 	}
 	
@@ -191,8 +213,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("AGC"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
 		});
 	}
 	
@@ -205,7 +227,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("ORD"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -218,7 +240,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, List.of("DPA"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
 		});
 	}
 	
@@ -231,8 +253,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_TYPES_IDENTIFIERS, List.of("DPB"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -245,8 +267,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("I"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
-			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323 Intérieur","13010220 DGDDL","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
 	
@@ -259,7 +281,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_STATUS_IDENTIFIERS, List.of("A"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
 		});
 	}
 	
@@ -272,7 +294,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_LOWEST_CREATION_DATE, LocalDateTime.of(2000, 1, 2, 0, 0));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGCDTI"},null}
 		});
 	}
 	
@@ -295,16 +317,17 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				assertThat(request.getCreationDateAsString()).as("Date de création").isEqualTo(expectedStrings[index][7]);
 				assertThat(request.getProcessingDateAsString()).as("Date de traitement").isEqualTo(expectedStrings[index][8]);
 				assertThat(request.getStatusAsString()).as("Statut").isEqualTo(expectedStrings[index][9]);
+				assertThat(request.getDispatchSlipAsString()).as("Bordereau").isEqualTo(expectedStrings[index][10]);
 				
 				if(CollectionHelper.isEmpty(request.getScopeFunctionsCodes()))
-					assertThat(expectedStrings[index][10]).as("Postes demandées").isNull();
+					assertThat(expectedStrings[index][11]).as("Postes demandées").isNull();
 				else
-					assertThat(request.getScopeFunctionsCodes()).as("Postes demandées").containsOnly((String[])expectedStrings[index][10]);
+					assertThat(request.getScopeFunctionsCodes()).as("Postes demandées").containsOnly((String[])expectedStrings[index][11]);
 				
 				if(CollectionHelper.isEmpty(request.getGrantedScopeFunctionsCodes()))
-					assertThat(expectedStrings[index][11]).as("Postes accordées").isNull();
+					assertThat(expectedStrings[index][12]).as("Postes accordées").isNull();
 				else
-					assertThat(request.getGrantedScopeFunctionsCodes()).as("Postes accordées").containsOnly((String[])expectedStrings[index][11]);
+					assertThat(request.getGrantedScopeFunctionsCodes()).as("Postes accordées").containsOnly((String[])expectedStrings[index][12]);
 			}
 		}
 	}
