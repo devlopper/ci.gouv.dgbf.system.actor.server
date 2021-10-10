@@ -91,6 +91,9 @@ public interface RequestQuerier extends Querier {
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE = PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL+"Nullable";
 	String PARAMETER_NAME_REQUEST_DISPATCH_SLIP_IDENTIFIER = "requestDispatchSlipIdentifier";
 	
+	String PARAMETER_NAME_PROCESSED = "processed";
+	String PARAMETER_NAME_ACCEPTED = "accepted";
+	
 	Request readOne(QueryExecutorArguments arguments);
 	Collection<Request> readMany(QueryExecutorArguments arguments);
 	Long count(QueryExecutorArguments arguments);

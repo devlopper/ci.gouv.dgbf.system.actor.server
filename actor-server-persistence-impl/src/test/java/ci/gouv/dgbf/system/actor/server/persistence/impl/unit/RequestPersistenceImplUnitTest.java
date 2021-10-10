@@ -12,8 +12,10 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 
 public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +25,38 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		return "requests";
 	}
 
+	@Test
+	public void requestStatus_read_dynamic() {
+		assertThat(EntityCounter.getInstance().count(RequestStatus.class, new QueryExecutorArguments().queryCountDynamic(RequestStatus.class))).isEqualTo(4l);
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(RequestStatus.class);
+		arguments.addProjectionsFromStrings(RequestStatus.FIELD_IDENTIFIER,RequestStatus.FIELD_CODE,RequestStatus.FIELD_NAME);
+		assertRequestStatus((List<RequestStatus>) EntityReader.getInstance().readMany(RequestStatus.class, arguments), new Object[][] {
+			{"ACCEPTEE","Accepté"},{"INITIEE","Initié"},{"REJETEE","Rejeté"},{"SOUMISE","Soumise"}
+		});
+	}
+	
+	@Test
+	public void requestStatus_read_dynamic_processed_true() {
+		assertThat(EntityCounter.getInstance().count(RequestStatus.class, new QueryExecutorArguments().queryCountDynamic(RequestStatus.class))).isEqualTo(4l);
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(RequestStatus.class);
+		arguments.addProjectionsFromStrings(RequestStatus.FIELD_IDENTIFIER,RequestStatus.FIELD_CODE,RequestStatus.FIELD_NAME);
+		arguments.addFilterField(RequestStatusQuerier.PARAMETER_NAME_PROCESSED, Boolean.TRUE);
+		assertRequestStatus((List<RequestStatus>) EntityReader.getInstance().readMany(RequestStatus.class, arguments), new Object[][] {
+			{"ACCEPTEE","Accepté"},{"REJETEE","Rejeté"}
+		});
+	}
+	
+	@Test
+	public void requestStatus_read_dynamic_processed_false() {
+		assertThat(EntityCounter.getInstance().count(RequestStatus.class, new QueryExecutorArguments().queryCountDynamic(RequestStatus.class))).isEqualTo(4l);
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(RequestStatus.class);
+		arguments.addProjectionsFromStrings(RequestStatus.FIELD_IDENTIFIER,RequestStatus.FIELD_CODE,RequestStatus.FIELD_NAME);
+		arguments.addFilterField(RequestStatusQuerier.PARAMETER_NAME_PROCESSED, Boolean.FALSE);
+		assertRequestStatus((List<RequestStatus>) EntityReader.getInstance().readMany(RequestStatus.class, arguments), new Object[][] {
+			{"INITIEE","Initié"},{"SOUMISE","Soumise"}
+		});
+	}
+	
 	@Test
 	public void read_dynamic() {
 		assertThat(EntityCounter.getInstance().count(Request.class, new QueryExecutorArguments().queryCountDynamic(Request.class))).isEqualTo(3l);
@@ -35,6 +69,33 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
 			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
 			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
+		});
+	}
+	
+	@Test
+	public void read_dynamic_processed_true() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_PROCESSED, Boolean.TRUE);
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",new String[]{"GCDTI","AGCDTI"},new String[]{"GCDTI"}}
+		});
+	}
+	
+	@Test
+	public void read_dynamic_processed_false() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_PROCESSED, Boolean.FALSE);
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",new String[]{"AGCDTI"},null}
 			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",new String[]{"GCDTI","ORDBUDGET"},null}
 		});
 	}
@@ -217,6 +278,19 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 					assertThat(expectedStrings[index][11]).as("Postes accordées").isNull();
 				else
 					assertThat(request.getGrantedScopeFunctionsCodes()).as("Postes accordées").containsOnly((String[])expectedStrings[index][11]);
+			}
+		}
+	}
+	
+	public static void assertRequestStatus(List<RequestStatus> requestStatus,Object[][] expectedStrings) {
+		if(CollectionHelper.isEmpty(requestStatus))
+			assertThat(expectedStrings).isNull();
+		else {
+			assertThat(expectedStrings).as("nombre de statuts").hasSize(requestStatus.size());
+			for(Integer index = 0; index < requestStatus.size(); index = index + 1) {
+				RequestStatus requestStatus_ = requestStatus.get(index);
+				assertThat(requestStatus_.getCode()).as("Code").isEqualTo(expectedStrings[index][0]);
+				assertThat(requestStatus_.getName()).as("Libelle").isEqualTo(expectedStrings[index][1]);
 			}
 		}
 	}

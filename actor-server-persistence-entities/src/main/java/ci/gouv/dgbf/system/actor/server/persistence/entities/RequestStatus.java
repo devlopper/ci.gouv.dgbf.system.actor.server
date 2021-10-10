@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.server.persistence.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -38,5 +40,7 @@ public class RequestStatus extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CODE_ACCEPTED = "ACCEPTEE";
 	public static final String CODE_REJECTED = "REJETEE";
 	
-	public static final String LABEL = "Type de statut";
+	public static final String LABEL = "Statut";
+	
+	public static final Collection<String> CODES_ACCEPTED_REJECTED = List.of(RequestStatus.CODE_ACCEPTED,RequestStatus.CODE_REJECTED);
 }

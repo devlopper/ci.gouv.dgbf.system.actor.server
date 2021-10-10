@@ -31,6 +31,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
@@ -44,6 +45,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
@@ -144,6 +146,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateActorProfileRequest(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class))
 			populatePredicateRequest(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestStatus.class))
+			populatePredicateRequestStatus(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
@@ -433,6 +437,16 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			)));			
 	}
 	
+	protected void populatePredicateRequestStatus(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(RequestStatusQuerier.PARAMETER_NAME_PROCESSED) != null) {
+			Boolean processed = arguments.getFilterFieldValueAsBoolean(null,RequestStatusQuerier.PARAMETER_NAME_PROCESSED);
+			if(processed != null) {
+				predicate.add(String.format("t.code %sIN :statusCodes",processed ? "" : "NOT "));			
+				filter.addField("statusCodes", RequestStatus.CODES_ACCEPTED_REJECTED);
+			}
+		}
+	}
+	
 	public static final String REQUEST_PREDICATE_SEARCH = parenthesis(or(
 			LikeStringBuilder.getInstance().build("t",Request.FIELD_CODE, RequestQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t", Request.FIELD_FIRST_NAME,RequestQuerier.PARAMETER_NAME_SEARCH)
@@ -483,6 +497,22 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE) != null) {
 			predicate.add(String.format("t.processingDate <= :%s", RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_HIGHEST_PROCESSING_DATE, arguments);
+		}
+		Boolean processed = arguments.getFilterFieldValueAsBoolean(null,RequestQuerier.PARAMETER_NAME_PROCESSED);
+		if(processed != null) {
+			if(processed) {
+				Boolean accepted = arguments.getFilterFieldValueAsBoolean(null,RequestQuerier.PARAMETER_NAME_ACCEPTED);
+				if(accepted == null) {
+					predicate.add("t.status.code IN :statusCodes");
+					filter.addField("statusCodes", RequestStatus.CODES_ACCEPTED_REJECTED);
+				}else {
+					predicate.add(String.format("t.status.code = :%s", RequestQuerier.PARAMETER_NAME_ACCEPTED));
+					filter.addField(RequestQuerier.PARAMETER_NAME_ACCEPTED, accepted ? RequestStatus.CODE_ACCEPTED : RequestStatus.CODE_REJECTED);
+				}
+			}else {
+				predicate.add("t.status.code NOT IN :statusCodes");
+				filter.addField("statusCodes", RequestStatus.CODES_ACCEPTED_REJECTED);
+			}		
 		}
 	}
 	

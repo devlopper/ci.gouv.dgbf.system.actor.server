@@ -35,6 +35,8 @@ public interface RequestStatusQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestStatus.class, QueryName.COUNT_DYNAMIC);
 	
+	String PARAMETER_NAME_PROCESSED = "processed";
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestStatusQuerier,Serializable {
