@@ -42,5 +42,7 @@ public class Section extends AbstractIdentifiableSystemScalarStringIdentifiableB
 		return code+" "+name;
 	}
 	
-	public static final String TABLE_NAME = "VM_APP_SECTION";	
+	public static final String TABLE_NAME = "VM_APP_SECTION";
+	
+	public static final String LABEL = "Section";
 }

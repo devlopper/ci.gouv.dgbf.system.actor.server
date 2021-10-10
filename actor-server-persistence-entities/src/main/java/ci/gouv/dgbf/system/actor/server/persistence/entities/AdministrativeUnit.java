@@ -96,4 +96,6 @@ public class AdministrativeUnit extends AbstractIdentifiableSystemScalarStringId
 	
 	public static final String COLUMN_REGION_IDENTIFIER = "REGION_IDENTIFIANT";
 	public static final String COLUMN_REGION_CODE_NAME = "REGION_CODE_LIBELLE";
+	
+	public static final String LABEL = "Unité administrative";
 }
