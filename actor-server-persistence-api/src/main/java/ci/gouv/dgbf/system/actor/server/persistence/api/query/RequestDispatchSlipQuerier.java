@@ -4,9 +4,9 @@ import static org.cyk.utility.persistence.query.Language.jpql;
 import static org.cyk.utility.persistence.query.Language.parenthesis;
 import static org.cyk.utility.persistence.query.Language.Order.desc;
 import static org.cyk.utility.persistence.query.Language.Order.order;
+import static org.cyk.utility.persistence.query.Language.Select.concatCodeName;
 import static org.cyk.utility.persistence.query.Language.Select.fields;
 import static org.cyk.utility.persistence.query.Language.Select.select;
-import static org.cyk.utility.persistence.query.Language.Select.concatCodeName;
 import static org.cyk.utility.persistence.query.Language.Where.and;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 import static org.cyk.utility.persistence.query.Language.Where.where;
@@ -16,17 +16,19 @@ import java.util.Collection;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.time.TimeHelper;
-import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
@@ -34,9 +36,11 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip
 public interface RequestDispatchSlipQuerier extends Querier {
 
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	String PARAMETER_NAME_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_SECTION_IDENTIFIER+"Nullable";
 	
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
 	
 	String PARAMETER_NAME_SENDING_DATE_IS_NULL = "sendingDateIsNull";
@@ -75,6 +79,10 @@ public interface RequestDispatchSlipQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_PROCESS = QueryIdentifierBuilder.getInstance().build(RequestDispatchSlip.class, "readByIdentifierForProcess");
 	RequestDispatchSlip readByIdentifierForProcess(String identifier);
 	
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestDispatchSlip.class, QueryName.READ_DYNAMIC);	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(RequestDispatchSlip.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(RequestDispatchSlip.class, QueryName.COUNT_DYNAMIC);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestDispatchSlipQuerier,Serializable {
@@ -88,6 +96,8 @@ public interface RequestDispatchSlipQuerier extends Querier {
 				return readByIdentifierForEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_PROCESS))
 				return readByIdentifierForProcess((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
+			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+				return DynamicOneExecutor.getInstance().read(RequestDispatchSlip.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -97,6 +107,8 @@ public interface RequestDispatchSlipQuerier extends Querier {
 				return readWhereFilter(arguments);
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI))
 				return readWhereFilterForUI(arguments);
+			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().read(RequestDispatchSlip.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -104,6 +116,8 @@ public interface RequestDispatchSlipQuerier extends Querier {
 		public Long count(QueryExecutorArguments arguments) {
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_COUNT_WHERE_FILTER))
 				return countWhereFilter(arguments);
+			if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+				return DynamicManyExecutor.getInstance().count(RequestDispatchSlip.class,arguments.setQuery(null));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 

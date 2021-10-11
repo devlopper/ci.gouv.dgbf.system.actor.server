@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 
@@ -26,6 +27,17 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		return "requests";
 	}
 
+	@Test
+	public void requestDispatchSlip_read_dynamic() {
+		assertThat(EntityCounter.getInstance().count(RequestDispatchSlip.class, new QueryExecutorArguments().queryCountDynamic(RequestDispatchSlip.class))).isEqualTo(1l);
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(RequestDispatchSlip.class);
+		arguments.addProjectionsFromStrings(RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
+				,RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS).addProcessableTransientFieldsNames(RequestDispatchSlip.FIELDS_SECTION_FUNCTION);
+		assertRequestDispatchSlip((List<RequestDispatchSlip>) EntityReader.getInstance().readMany(RequestDispatchSlip.class, arguments), new Object[][] {
+			{"B001","B001","327","GC",1}
+		});
+	}
+	
 	@Test
 	public void requestStatus_read_dynamic() {
 		assertThat(EntityCounter.getInstance().count(RequestStatus.class, new QueryExecutorArguments().queryCountDynamic(RequestStatus.class))).isEqualTo(4l);
@@ -341,6 +353,24 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				RequestStatus requestStatus_ = requestStatus.get(index);
 				assertThat(requestStatus_.getCode()).as("Code").isEqualTo(expectedStrings[index][0]);
 				assertThat(requestStatus_.getName()).as("Libelle").isEqualTo(expectedStrings[index][1]);
+			}
+		}
+	}
+	
+	public static void assertRequestDispatchSlip(List<RequestDispatchSlip> requestDispatchSlips,Object[][] expectedStrings) {
+		if(CollectionHelper.isEmpty(requestDispatchSlips))
+			assertThat(expectedStrings).isNull();
+		else {
+			assertThat(expectedStrings).as("nombre de bordereaux").hasSize(requestDispatchSlips.size());
+			for(Integer index = 0; index < requestDispatchSlips.size(); index = index + 1) {
+				RequestDispatchSlip requestDispatchSlip = requestDispatchSlips.get(index);
+				assertThat(requestDispatchSlip.getCode()).as("Code").isEqualTo(expectedStrings[index][0]);
+				assertThat(requestDispatchSlip.getName()).as("Libelle").isEqualTo(expectedStrings[index][1]);
+				assertThat(requestDispatchSlip.getSection()).as("Section").isNotNull();
+				assertThat(requestDispatchSlip.getSection().getCode()).as("Code section").isEqualTo(expectedStrings[index][2]);	
+				assertThat(requestDispatchSlip.getFunction()).as("Fonction").isNotNull();
+				assertThat(requestDispatchSlip.getFunction().getCode()).as("Code fonction").isEqualTo(expectedStrings[index][3]);	
+				assertThat(requestDispatchSlip.getNumberOfRequests()).as("Nombre de demandes").isEqualTo(expectedStrings[index][4]);
 			}
 		}
 	}

@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
@@ -45,6 +46,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
@@ -148,6 +150,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateRequest(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestStatus.class))
 			populatePredicateRequestStatus(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestDispatchSlip.class))
+			populatePredicateRequestDispatchSlip(arguments, builderArguments, predicate, filter);
 	}
 	
 	protected void populatePredicateLocality(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
@@ -447,6 +451,25 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		}
 	}
 	
+	protected void populatePredicateRequestDispatchSlip(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.section.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+			predicate.add(String.format("t.section.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.function.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER) != null) {
+			predicate.add(String.format("t.function.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
+		}
+	}
+	
 	public static final String REQUEST_PREDICATE_SEARCH = parenthesis(or(
 			LikeStringBuilder.getInstance().build("t",Request.FIELD_CODE, RequestQuerier.PARAMETER_NAME_SEARCH)
 			,LikeStringBuilder.getInstance().build("t", Request.FIELD_FIRST_NAME,RequestQuerier.PARAMETER_NAME_SEARCH)
@@ -464,6 +487,10 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.administrativeUnit.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.dispatchSlip.identifier IN :%s", RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, arguments);
 		}
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("EXISTS(SELECT c.identifier FROM RequestScopeFunction c WHERE c.request = t AND c.scopeFunction.function.identifier IN :%s)", RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));

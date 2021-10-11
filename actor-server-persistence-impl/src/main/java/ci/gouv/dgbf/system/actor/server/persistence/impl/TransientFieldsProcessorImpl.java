@@ -25,6 +25,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.AssignmentsAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
@@ -52,6 +53,8 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileNumberOfAc
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipCodeReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipNumberOfRequestsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
@@ -72,9 +75,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	@Override
 	protected void __process__(Class<?> klass,Collection<?> objects,Filter filter, Collection<String> fieldsNames) {
 		if(ScopeFunction.class.equals(klass))
-			processScopeFunctions(CollectionHelper.cast(ScopeFunction.class, objects),fieldsNames);
-		else if(Request.class.equals(klass))
-			processRequests(CollectionHelper.cast(Request.class, objects),fieldsNames);
+			processScopeFunctions(CollectionHelper.cast(ScopeFunction.class, objects),fieldsNames);		
 		else if(Assignments.class.equals(klass))
 			processAssignments(CollectionHelper.cast(Assignments.class, objects),fieldsNames);
 		else if(AdministrativeUnit.class.equals(klass))
@@ -91,6 +92,10 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processProfiles(CollectionHelper.cast(Profile.class, objects),filter,fieldsNames);
 		else if(ActorProfileRequest.class.equals(klass))
 			processActorProfileRequests(CollectionHelper.cast(ActorProfileRequest.class, objects),filter,fieldsNames);
+		else if(Request.class.equals(klass))
+			processRequests(CollectionHelper.cast(Request.class, objects),fieldsNames);
+		else if(RequestDispatchSlip.class.equals(klass))
+			processRequestDispatchSlips(CollectionHelper.cast(RequestDispatchSlip.class, objects),fieldsNames);
 		else
 			super.__process__(klass,objects,filter, fieldsNames);
 	}
@@ -419,6 +424,17 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 					request.setAccountCreationDateAsString(TimeHelper.formatLocalDateTime(request.getAccountCreationDate()));
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
+		}
+	}
+	
+	public void processRequestDispatchSlips(Collection<RequestDispatchSlip> requestDispatchSlips,Collection<String> fieldsNames) {	
+		for(String fieldName : fieldsNames) {
+			if(RequestDispatchSlip.FIELD_NUMBER_OF_REQUESTS.equals(fieldName))
+				new RequestDispatchSlipNumberOfRequestsReader().readThenSet(requestDispatchSlips, null);
+			else if(RequestDispatchSlip.FIELDS_SECTION_FUNCTION.equals(fieldName))
+				new RequestDispatchSlipSectionFunctionReader().readThenSet(requestDispatchSlips, null);
+			else
+				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}
 	}
 	
