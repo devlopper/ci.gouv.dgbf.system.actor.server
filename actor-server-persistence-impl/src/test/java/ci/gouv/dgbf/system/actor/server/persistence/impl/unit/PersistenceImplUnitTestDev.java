@@ -18,9 +18,11 @@ import org.junit.jupiter.api.Test;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.LocalityQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeAdministrativeUnitSectionsReader;
@@ -31,6 +33,23 @@ public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void request_assertHolders(){
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadOneDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER);	
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER
+				,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_IDENTIFIER, "ff7eb43d-1521-4566-b28e-50f6f4fa77e8");
+		Request request = EntityReader.getInstance().readOne(Request.class, arguments);
+		assertThat(request.getIsCreditManagerHolder()).isTrue();
+		assertThat(request.getIsAuthorizingOfficerHolder()).isNull();
+		assertThat(request.getIsFinancialControllerHolder()).isNull();
+		assertThat(request.getIsAccountingHolder()).isNull();
 	}
 	
 	@Test
