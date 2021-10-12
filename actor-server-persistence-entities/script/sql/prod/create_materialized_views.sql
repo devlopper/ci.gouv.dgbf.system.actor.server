@@ -371,8 +371,8 @@ TABLESPACE USERS
 REFRESH NEXT SYSDATE + 1/24 COMPLETE AS
 SELECT
     ld.ldep_id AS "LDEP_ID"
-    ,ld.exo_num||ld.ads_id||ld.nat_id AS "IDENTIFIANT"
-    --,ld.ads_id||ld.nat_id AS "IDENTIFIANT"
+    --,ld.exo_num||ld.ads_id||ld.nat_id AS "IDENTIFIANT" -- To be used to support multiple years
+    ,ld.ads_id||ld.nat_id AS "IDENTIFIANT" -- Used for producation
     ,ld.exo_num||adp.ads_code||nec.nat_code AS "CODE"
     ,adp.ads_liblg||' | '||nec.nat_liblg AS "LIBELLE"
     ,ld.exo_num AS "EXERCICE"

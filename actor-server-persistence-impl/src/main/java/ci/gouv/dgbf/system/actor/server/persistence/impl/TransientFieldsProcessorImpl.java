@@ -55,8 +55,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStri
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipCodeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipNumberOfRequestsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionFunctionReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestFirstNameAndLastNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
@@ -348,8 +350,12 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestScopeFunctionsCodesReader().readThenSet(requests, null);
+			else if(Request.FIELDS_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
+				new RequestIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader().readThenSet(requests, null);
 			else if(Request.FIELD_DISPATCH_SLIP_CODE.equals(fieldName))
 				new RequestDispatchSlipCodeReader().readThenSet(requests, null);
+			else if(Request.FIELD_FIRST_NAME_AND_LAST_NAMES.equals(fieldName))
+				new RequestFirstNameAndLastNamesReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
 				new RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader().readThenSet(requests, null);
 			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName))

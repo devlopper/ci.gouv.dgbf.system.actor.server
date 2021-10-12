@@ -278,6 +278,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_PHOTO = "photo";
 	public static final String FIELD_SIGNATURE = "signature";
+	public static final String FIELD_FIRST_NAME_AND_LAST_NAMES = "firstNameAndLastNames";
 	
 	public static final String FIELD_BUDGETARY_EXERCICE = "budgetaryExercice";	
 	public static final String FIELD_ADMINISTRATIVE_UNIT = "administrativeUnit";
