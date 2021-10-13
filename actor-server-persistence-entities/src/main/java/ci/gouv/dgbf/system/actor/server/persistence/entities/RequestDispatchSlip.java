@@ -45,7 +45,7 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	@Column(name = COLUMN_COMMENT) private String comment;
 	
 	@Transient private Collection<Request> requests;
-	@Transient private Integer numberOfRequests;
+	@Transient private Integer numberOfRequests,numberOfRequestsProcessed,numberOfRequestsAccepted,numberOfRequestsRejected,numberOfRequestsNotProcessed;
 	
 	@Transient private String readPageURL;
 	
@@ -77,6 +77,10 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	public static final String FIELD_COMMENT = "comment";
 	public static final String FIELD_NUMBER_OF_REQUESTS = "numberOfRequests";
 	public static final String FIELDS_SECTION_FUNCTION = "sectionFunction";
+	public static final String FIELDS_SECTION_FUNCTION_AS_STRING = "sectionFunctionAsString";
+	public static final String FIELDS_SECTION_AS_CODE_FUNCTION_AS_CODE_ALL_DATES_ALL_NUMBERS_OF_REQUESTS_AS_STRING = "sectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsString";
+	public static final String FIELDS_ALL_NUMBERS_OF_REQUESTS_AS_STRING = "allNumbersOfRequestsAsString";
+	public static final String FIELDS_ALL_DATES_AS_STRING = "allDatesAsString";
 	
 	public static final String TABLE_NAME = "DM_BORDEREAU";
 	

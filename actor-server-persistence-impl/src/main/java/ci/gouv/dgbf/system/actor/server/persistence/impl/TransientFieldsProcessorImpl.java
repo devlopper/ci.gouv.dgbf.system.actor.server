@@ -54,6 +54,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestabl
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipCodeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipNumberOfRequestsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestFirstNameAndLastNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
@@ -439,6 +440,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				new RequestDispatchSlipNumberOfRequestsReader().readThenSet(requestDispatchSlips, null);
 			else if(RequestDispatchSlip.FIELDS_SECTION_FUNCTION.equals(fieldName))
 				new RequestDispatchSlipSectionFunctionReader().readThenSet(requestDispatchSlips, null);
+			else if(RequestDispatchSlip.FIELDS_SECTION_AS_CODE_FUNCTION_AS_CODE_ALL_DATES_ALL_NUMBERS_OF_REQUESTS_AS_STRING.equals(fieldName))
+				new RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsStringReader().readThenSet(requestDispatchSlips, null);
 			else
 				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}

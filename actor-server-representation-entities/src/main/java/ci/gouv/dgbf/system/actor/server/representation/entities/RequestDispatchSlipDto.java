@@ -25,7 +25,7 @@ public class RequestDispatchSlipDto extends AbstractIdentifiableSystemScalarStri
 	private String creationDateAsString,sendingDateAsString,processingDateAsString,comment;
 	
 	private ArrayList<RequestDto> requests;
-	private Integer numberOfRequests;
+	private Integer numberOfRequests,numberOfRequestsProcessed,numberOfRequestsAccepted,numberOfRequestsRejected,numberOfRequestsNotProcessed;
 	private ArrayList<String> requestsIdentifiers;
 	private ArrayList<RequestDto.Acceptation> requestsAcceptations;
 	private ArrayList<RequestDto.Rejection> requestsRejections;

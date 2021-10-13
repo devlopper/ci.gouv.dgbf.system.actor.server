@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.computation.SortOrder;
+import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -451,23 +452,29 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		}
 	}
 	
+	public static final String REQUEST_DISPATCH_SLIP_PREDICATE_SEARCH = parenthesis(or(
+			LikeStringBuilder.getInstance().build("t",Request.FIELD_CODE, RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH)
+	));
 	protected void populatePredicateRequestDispatchSlip(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH) != null) {
+			predicate.add(REQUEST_DISPATCH_SLIP_PREDICATE_SEARCH);
+			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH),"");
+			filter.addField(RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
+		}
 		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.section.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, arguments);
-		}
-		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
-			predicate.add(String.format("t.section.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
-			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
 		}
 		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.function.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);
 		}
-		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER) != null) {
-			predicate.add(String.format("t.function.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER));
-			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
-		}
+		Boolean sent = arguments.getFilterFieldValueAsBoolean(null,RequestDispatchSlipQuerier.PARAMETER_NAME_SENT);
+		if(sent != null)
+			predicate.add(String.format("t.sendingDate IS %sNULL",sent ? "NOT " : ConstantEmpty.STRING));
+		Boolean processed = arguments.getFilterFieldValueAsBoolean(null,RequestDispatchSlipQuerier.PARAMETER_NAME_PROCESSED);
+		if(processed != null)
+			predicate.add(String.format("t.processingDate IS %sNULL",processed ? "NOT " : ConstantEmpty.STRING));
 	}
 	
 	public static final String REQUEST_PREDICATE_SEARCH = parenthesis(or(

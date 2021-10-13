@@ -52,6 +52,9 @@ public interface RequestDispatchSlipQuerier extends Querier {
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL = "processingDateIsNotNull";
 	String PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE = PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL+"Nullable";
 	
+	String PARAMETER_NAME_SENT = "sent";
+	String PARAMETER_NAME_PROCESSED = "processed";
+	String PARAMETER_NAME_SEARCH = "search";
 	/**/
 	
 	RequestDispatchSlip readOne(QueryExecutorArguments arguments);
