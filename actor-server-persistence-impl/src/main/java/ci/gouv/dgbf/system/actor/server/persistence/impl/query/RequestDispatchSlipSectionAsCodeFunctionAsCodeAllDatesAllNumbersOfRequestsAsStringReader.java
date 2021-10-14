@@ -36,7 +36,7 @@ public class RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfR
 		requestDispatchSlip.setNumberOfRequests(NumberHelper.getInteger(getAsLong(array, index++)));
 		requestDispatchSlip.setNumberOfRequestsAccepted(NumberHelper.getInteger(getAsLong(array, index++)));
 		requestDispatchSlip.setNumberOfRequestsRejected(NumberHelper.getInteger(getAsLong(array, index++)));
-		requestDispatchSlip.setNumberOfRequestsProcessed(NumberHelper.getInteger(NumberHelper.subtract(requestDispatchSlip.getNumberOfRequestsAccepted(),requestDispatchSlip.getNumberOfRequestsRejected())));
+		requestDispatchSlip.setNumberOfRequestsProcessed(NumberHelper.getInteger(NumberHelper.add(requestDispatchSlip.getNumberOfRequestsAccepted(),requestDispatchSlip.getNumberOfRequestsRejected())));
 		requestDispatchSlip.setNumberOfRequestsNotProcessed(NumberHelper.getInteger(NumberHelper.subtract(requestDispatchSlip.getNumberOfRequests(),requestDispatchSlip.getNumberOfRequestsProcessed())));
 	}
 }

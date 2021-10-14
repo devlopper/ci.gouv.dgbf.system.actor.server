@@ -27,7 +27,7 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	protected String getPersistenceUnitName() {
 		return "requests";
 	}
-
+	
 	@Test
 	public void requestDispatchSlip_read_dynamic() {
 		assertThat(EntityCounter.getInstance().count(RequestDispatchSlip.class, new QueryExecutorArguments().queryCountDynamic(RequestDispatchSlip.class))).isEqualTo(3l);
@@ -154,6 +154,33 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAuthorizingOfficerHolder()).isTrue();
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsFinancialControllerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAccountingHolder()).isNull();
+	}
+	
+	@Test
+	public void read_dynamic_dispatchSlip_exist_true() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_EXISTS, Boolean.TRUE);
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
+		});
+	}
+	
+	@Test
+	public void read_dynamic_dispatchSlip_exist_false() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
+		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_EXISTS, Boolean.FALSE);
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GDTI","OBUDGET"},null}
+		});
 	}
 	
 	@Test

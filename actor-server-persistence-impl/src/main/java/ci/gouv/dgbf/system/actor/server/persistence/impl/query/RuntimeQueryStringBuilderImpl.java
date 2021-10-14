@@ -465,9 +465,17 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.section.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, arguments);
 		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER) != null) {
+			predicate.add(String.format("t.section.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
+		}
 		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.function.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER) != null) {
+			predicate.add(String.format("t.function.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
 		}
 		Boolean sent = arguments.getFilterFieldValueAsBoolean(null,RequestDispatchSlipQuerier.PARAMETER_NAME_SENT);
 		if(sent != null)
@@ -495,6 +503,11 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.administrativeUnit.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, arguments);
 		}
+		
+		Boolean dispatchSlipExists = arguments.getFilterFieldValueAsBoolean(null,RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_EXISTS);
+		if(dispatchSlipExists != null)
+			predicate.add(String.format("t.dispatchSlip IS %sNULL",dispatchSlipExists ? "NOT " : ConstantEmpty.STRING));
+		
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.dispatchSlip.identifier IN :%s", RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, arguments);

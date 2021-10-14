@@ -73,6 +73,7 @@ public interface RequestQuerier extends Querier {
 	String PARAMETER_NAME_STATUS_IDENTIFIERS = "statusIdentifiers";
 	String PARAMETER_NAME_TYPES_IDENTIFIERS = "typesIdentifiers";
 	String PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS = "dispatchSlipIdentifiers";
+	String PARAMETER_NAME_DISPATCH_SLIP_EXISTS = "dispatchSlipExists";
 	
 	String PARAMETER_NAME_LOWEST_CREATION_DATE = "lowestCreationDate";
 	String PARAMETER_NAME_HIGHEST_CREATION_DATE = "highestCreationDate";
