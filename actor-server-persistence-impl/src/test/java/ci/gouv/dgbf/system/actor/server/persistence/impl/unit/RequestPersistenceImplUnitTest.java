@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -154,6 +156,36 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAuthorizingOfficerHolder()).isTrue();
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsFinancialControllerHolder()).isNull();
 		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAccountingHolder()).isNull();
+	}
+	
+	@Test
+	public void read_dynamic_sort_code_descending() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
+		arguments.setSortOrders(Map.of("code",SortOrder.DESCENDING));
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GDTI","OBUDGET"},null}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté","B001",new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}	
+		});
+	}
+	
+	@Test
+	public void read_dynamic_sort_firstAndLastNames() {
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_CODE,Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES,Request.FIELD_REGISTRATION_NUMBER
+				,Request.FIELD_ELECTRONIC_MAIL_ADDRESS)
+		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
+				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
+		arguments.setSortOrders(Map.of(Request.FIELD_FIRST_NAME_AND_LAST_NAMES,SortOrder.DESCENDING));
+		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
+			{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GDTI","OBUDGET"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté","B001",new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
+			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}				
+		});
 	}
 	
 	@Test

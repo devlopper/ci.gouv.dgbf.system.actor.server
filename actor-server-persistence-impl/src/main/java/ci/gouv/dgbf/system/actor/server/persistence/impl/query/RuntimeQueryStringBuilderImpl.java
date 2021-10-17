@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -576,15 +577,17 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t.identity",Identity.FIELD_FIRST_NAME,Identity.FIELD_LAST_NAMES);
 		}else if(arguments.getQuery().getIdentifier().equals(AdministrativeUnitQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",AdministrativeUnit.FIELD_CODE);
-		}else if(arguments.getQuery().getIdentifier().equals(RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)) {
+		}/*else if(arguments.getQuery().getIdentifier().equals(RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC) && MapHelper.isEmpty(arguments.getSortOrders())) {
 			builderArguments.getOrder(Boolean.TRUE).addFromTupleAscending("t",Request.FIELD_CODE);
-		}
+		}*/
 	}
 	
 	@Override
 	protected Map<String, SortOrder> getDefaultSortOrders(QueryExecutorArguments arguments) {
 		if(arguments.getQuery().getIdentifier().equals(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
 			return Map.of(ScopeType.FIELD_ORDER_NUMBER,SortOrder.ASCENDING);
+		if(arguments.getQuery().getIdentifier().equals(RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+			return Map.of(FieldHelper.join("t",Request.FIELD_CODE),SortOrder.ASCENDING);
 		return super.getDefaultSortOrders(arguments);
 	}
 	
@@ -599,5 +602,4 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			return Assignments.FIELD_ACCOUNTING_HOLDER;
 		throw new RuntimeException(String.format("Scope function field of parameter named %s not found", fieldName));
 	}
-	
 }

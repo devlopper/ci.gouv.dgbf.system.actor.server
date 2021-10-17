@@ -1,6 +1,8 @@
 package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.persistence.query.Query;
@@ -15,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -80,5 +83,12 @@ public class RuntimeQueryBuilderImpl extends RuntimeQueryBuilder.AbstractImpl im
 					arguments.getFilter().getField(LocalityQuerier.PARAMETER_NAME_TYPE).setValue(Locality.Type.valueOf(type));
 			}
 		}
+	}
+	
+	@Override
+	protected Collection<String> computeSortOrdersFieldsNames(QueryExecutorArguments arguments,String fieldName) {
+		if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class) && Request.FIELD_FIRST_NAME_AND_LAST_NAMES.equals(fieldName))
+			return List.of(Request.FIELD_FIRST_NAME,Request.FIELD_LAST_NAMES);
+		return super.computeSortOrdersFieldsNames(arguments,fieldName);
 	}
 }
