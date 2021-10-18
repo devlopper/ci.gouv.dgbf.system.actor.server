@@ -11,6 +11,7 @@ import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
@@ -108,5 +109,13 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.business.ser
 		assertThat(scopeFunction).as(String.format("Scope function %s exists",identifier)).isNotNull();
 		assertThat(scopeFunction.getCode()).isEqualTo(identifier);
 		assertThat(scopeFunction.getName()).isEqualTo(expectedName);
+	}
+	
+	protected static void assertRequestDispatchSlipProcessingDateIsNull(String identifier,Boolean expectedValue) {
+		RequestDispatchSlip requestDispatchSlip = EntityFinder.getInstance().find(RequestDispatchSlip.class, identifier);
+		if(Boolean.TRUE.equals(expectedValue))
+			assertThat(requestDispatchSlip.getProcessingDate()).as("processing date is null").isNull();
+		else
+			assertThat(requestDispatchSlip.getProcessingDate()).as("processing date is not null").isNotNull();
 	}
 }

@@ -46,6 +46,7 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	
 	@Transient private Collection<Request> requests;
 	@Transient private Integer numberOfRequests,numberOfRequestsProcessed,numberOfRequestsAccepted,numberOfRequestsRejected,numberOfRequestsNotProcessed;
+	@Transient private Boolean isNumberOfRequestsEqualNumberOfRequestsProcessed;
 	
 	@Transient private String readPageURL;
 	
@@ -76,6 +77,7 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	public static final String FIELD_PROCESSING_DATE_AS_STRING = "processingDateAsString";
 	public static final String FIELD_COMMENT = "comment";
 	public static final String FIELD_NUMBER_OF_REQUESTS = "numberOfRequests";
+	public static final String FIELD_IS_NUMBER_OF_REQUESTS_EQUAL_NUMBER_OF_REQUESTS_PROCESSED = "isNumberOfRequestsEqualNumberOfRequestsProcessed";
 	public static final String FIELDS_SECTION_FUNCTION = "sectionFunction";
 	public static final String FIELDS_SECTION_FUNCTION_AS_STRING = "sectionFunctionAsString";
 	public static final String FIELDS_SECTION_AS_CODE_FUNCTION_AS_CODE_ALL_DATES_ALL_NUMBERS_OF_REQUESTS_AS_STRING = "sectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsString";

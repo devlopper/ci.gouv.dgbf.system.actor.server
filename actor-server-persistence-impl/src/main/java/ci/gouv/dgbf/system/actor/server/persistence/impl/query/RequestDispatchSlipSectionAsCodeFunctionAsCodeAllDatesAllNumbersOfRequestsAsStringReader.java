@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.query;
 
 import java.io.Serializable;
 
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 
@@ -38,5 +39,7 @@ public class RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfR
 		requestDispatchSlip.setNumberOfRequestsRejected(NumberHelper.getInteger(getAsLong(array, index++)));
 		requestDispatchSlip.setNumberOfRequestsProcessed(NumberHelper.getInteger(NumberHelper.add(requestDispatchSlip.getNumberOfRequestsAccepted(),requestDispatchSlip.getNumberOfRequestsRejected())));
 		requestDispatchSlip.setNumberOfRequestsNotProcessed(NumberHelper.getInteger(NumberHelper.subtract(requestDispatchSlip.getNumberOfRequests(),requestDispatchSlip.getNumberOfRequestsProcessed())));
+		requestDispatchSlip.setIsNumberOfRequestsEqualNumberOfRequestsProcessed(NumberHelper.compare(requestDispatchSlip.getNumberOfRequests()
+				, requestDispatchSlip.getNumberOfRequestsProcessed(), ComparisonOperator.EQ));
 	}
 }

@@ -348,63 +348,23 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				, request.getReadPageURL(), EntityManagerGetter.getInstance().get());
 	}
 	
-	@Override @Transactional
-	public void acceptByIdentifier(String identifier,Collection<String> grantedBudgetariesScopeFunctionsIdentifiers,String acceptationComment,String readPageURL,String auditActor) {
+	public static void acceptByIdentifier(String identifier,Collection<String> grantedBudgetariesScopeFunctionsIdentifiers,String acceptationComment,String readPageURL,String auditActor,EntityManager entityManager) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setAcceptationComment(acceptationComment).setReadPageURL(readPageURL);
 		request.set__auditWho__(auditActor);
-		/*
-		Collection<ScopeFunction> grantedScopeFunctions = null;
-		//update granted
-		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
-		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
-			for(RequestScopeFunction requestScopeFunction : requestScopeFunctions) {
-				requestScopeFunction
-					.setGranted(CollectionHelper.contains(grantedBudgetariesScopeFunctionsIdentifiers, requestScopeFunction.getScopeFunction().getIdentifier()));
-				if(Boolean.TRUE.equals(requestScopeFunction.getGranted())) {
-					if(grantedScopeFunctions == null)
-						grantedScopeFunctions = new ArrayList<>();
-					grantedScopeFunctions.add(requestScopeFunction.getScopeFunction());
-				}
-			}
-			EntityUpdater.getInstance().updateMany(CollectionHelper.cast(Object.class, requestScopeFunctions));
-		}
-		//create granted
-		if(CollectionHelper.isNotEmpty(grantedBudgetariesScopeFunctionsIdentifiers)) {
-			Collection<String> requestScopeFunctionsIdentifiers = CollectionHelper.isEmpty(requestScopeFunctions) ? null 
-					: requestScopeFunctions.stream().map(x -> x.getScopeFunction().getIdentifier()).collect(Collectors.toList());
-			Collection<Object> creatables = null;
-			for(String grantedScopeFunctionIdentifier : grantedBudgetariesScopeFunctionsIdentifiers) {
-				if(requestScopeFunctionsIdentifiers.contains(grantedScopeFunctionIdentifier))
-					continue;
-				if(creatables == null)
-					creatables = new ArrayList<>();
-				ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, grantedScopeFunctionIdentifier);
-				if(grantedScopeFunctions == null)
-					grantedScopeFunctions = new ArrayList<>();
-				grantedScopeFunctions.add(scopeFunction);
-				creatables.add(new RequestScopeFunction().setRequest(request).setScopeFunction(scopeFunction).setRequested(Boolean.FALSE).setGranted(Boolean.TRUE));
-			}
-			if(CollectionHelper.isNotEmpty(creatables))
-				EntityCreator.getInstance().createMany(creatables);
-		}
-		
-		if(CollectionHelper.isEmpty(grantedScopeFunctions))
-			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
-		
-		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedScopeFunctions.size(),grantedScopeFunctions.stream().map(x -> x.getCode())
-				.collect(Collectors.joining(","))), getClass());
-		
-		accept(request,grantedScopeFunctions);
-		*/
 		accept(request, RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()))
-				, grantedBudgetariesScopeFunctionsIdentifiers.stream()
+				, grantedBudgetariesScopeFunctionsIdentifiers == null ? null : grantedBudgetariesScopeFunctionsIdentifiers.stream()
 					.map(x -> EntityFinder.getInstance().find(ScopeFunction.class, x))
 					.filter(x -> x != null)
 					.collect(Collectors.toList())
-				, readPageURL, EntityManagerGetter.getInstance().get());
+				, readPageURL, entityManager);
+	}
+	
+	@Override @Transactional
+	public void acceptByIdentifier(String identifier,Collection<String> grantedBudgetariesScopeFunctionsIdentifiers,String acceptationComment,String readPageURL,String auditActor) {
+		acceptByIdentifier(identifier, grantedBudgetariesScopeFunctionsIdentifiers, acceptationComment, readPageURL, auditActor, EntityManagerGetter.getInstance().get());
 	}
 	
 	public static void accept(Request request,Collection<RequestScopeFunction> requestScopeFunctions,Collection<ScopeFunction> grantedBudgetariesScopeFunctions
@@ -444,7 +404,9 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setProcessingDate(LocalDateTime.now());
 		
 		entityManager.merge(request);
-			
+		
+		RequestDispatchSlipBusinessImpl.processIfAllRequestsProcessed(request.getDispatchSlip(),entityManager);
+		
 		//Non blocking operations
 		try {
 			notifyAccepted(request,grantedBudgetariesScopeFunctions);
@@ -453,8 +415,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
-	@Override @Transactional
-	public void reject(Request request) {
+	public static void reject(Request request,EntityManager entityManager) {
 		validate(request,Boolean.FALSE);
 		validateProcess(request);		
 		if(StringHelper.isBlank(request.getRejectionReason()))
@@ -463,18 +424,29 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_REJECTED));
 		request.setProcessingDate(LocalDateTime.now());
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
-			.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setUpdatables(List.of(request))));
+			.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager).setUpdatables(List.of(request))));
+		
+		RequestDispatchSlipBusinessImpl.processIfAllRequestsProcessed(request.getDispatchSlip(),entityManager);
 	}
 	
 	@Override @Transactional
-	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String auditActor) {
+	public void reject(Request request) {
+		reject(request, EntityManagerGetter.getInstance().get());
+	}
+	
+	public static void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String auditActor,EntityManager entityManager) {
 		Request request = EntityFinder.getInstance().find(Request.class, new QueryExecutorArguments().addSystemIdentifiers(identifier)
 				.setIsThrowExceptionIfIdentifierIsBlank(Boolean.TRUE)
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setReadPageURL(readPageURL);
 		request.setRejectionReason(rejectionReason);
 		request.set__auditWho__(auditActor);
-		reject(request);
+		reject(request,entityManager);
+	}
+	
+	@Override @Transactional
+	public void rejectByIdentifier(String identifier, String rejectionReason,String readPageURL,String auditActor) {
+		rejectByIdentifier(identifier, rejectionReason, readPageURL, auditActor, EntityManagerGetter.getInstance().get());
 	}
 
 	@Override

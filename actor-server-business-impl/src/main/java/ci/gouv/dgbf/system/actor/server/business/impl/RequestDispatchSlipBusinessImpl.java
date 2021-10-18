@@ -9,9 +9,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityCreator;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
@@ -33,7 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<RequestDispatchSlip, RequestDispatchSlipPersistence> implements RequestDispatchSlipBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private void validate(RequestDispatchSlip requestDispatchSlip,Boolean requestsValidatable) {
+	private static void validate(RequestDispatchSlip requestDispatchSlip,Boolean requestsValidatable) {
 		if(requestDispatchSlip == null)
 			throw new RuntimeException("Le bordereau est obligatoire");
 		if(requestDispatchSlip.getSection() == null)
@@ -149,12 +152,10 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		entityManager.merge(requestDispatchSlip);
 	}
 	
-	@Override @Transactional
-	public void process(RequestDispatchSlip requestDispatchSlip) {
+	public static void process(RequestDispatchSlip requestDispatchSlip,EntityManager entityManager) {
 		validate(requestDispatchSlip,Boolean.TRUE);
 		if(requestDispatchSlip.getProcessingDate() != null)
 			throw new RuntimeException("Le bordereau a déja été traité");
-		EntityManager entityManager = EntityManagerGetter.getInstance().get();
 		requestDispatchSlip.set__auditFunctionality__("Traitement bordereau");
 		requestDispatchSlip.setProcessingDate(LocalDateTime.now());
 		entityManager.merge(requestDispatchSlip);
@@ -182,7 +183,44 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		}
 	}
 	
-	/**/
+	@Override @Transactional
+	public void process(RequestDispatchSlip requestDispatchSlip) {
+		process(requestDispatchSlip, EntityManagerGetter.getInstance().get());
+	}
 	
+	public static void processIfAllRequestsProcessed(Collection<String> identifiers,EntityManager entityManager) {
+		if(CollectionHelper.isEmpty(identifiers))
+			return;
+		identifiers.forEach(identifier -> {
+			processIfAllRequestsProcessed(identifier, entityManager);
+		});
+	}
 	
+	public static void processIfAllRequestsProcessed(String identifier,EntityManager entityManager) {
+		if(StringHelper.isBlank(identifier))
+			return;
+		Long numberOfRequestsNotProcessed = entityManager.createQuery("SELECT COUNT(r) FROM Request r WHERE r.dispatchSlip.identifier = :identifier AND r.status.code NOT IN :codes",Long.class)
+			.setParameter("identifier", identifier).setParameter("codes", RequestStatus.CODES_ACCEPTED_REJECTED).getSingleResult();
+		if(NumberHelper.isGreaterThanZero(numberOfRequestsNotProcessed))
+			return;
+		RequestDispatchSlip requestDispatchSlip = EntityFinder.getInstance().find(RequestDispatchSlip.class, identifier);
+		if(requestDispatchSlip == null)
+			return;
+		LocalDateTime processingDate = entityManager.createQuery("SELECT MAX(r.processingDate) FROM Request r WHERE r.dispatchSlip.identifier = :identifier",LocalDateTime.class)
+				.setParameter("identifier", identifier).getSingleResult();
+		requestDispatchSlip.setProcessingDate(processingDate);
+		entityManager.merge(requestDispatchSlip);
+	}
+	
+	public static void processIfAllRequestsProcessed(EntityManager entityManager,String...identifiers) {
+		if(ArrayHelper.isEmpty(identifiers))
+			return;
+		processIfAllRequestsProcessed(CollectionHelper.listOf(identifiers), entityManager);
+	}
+	
+	public static void processIfAllRequestsProcessed(RequestDispatchSlip requestDispatchSlip,EntityManager entityManager) {
+		if(requestDispatchSlip == null)
+			return;
+		processIfAllRequestsProcessed(entityManager, requestDispatchSlip.getIdentifier());
+	}
 }
