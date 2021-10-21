@@ -6,6 +6,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
@@ -20,6 +21,16 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	@Operation(description = "Obtenir les domaines d'un compte utilisateur",tags = {"get"})
 	Response getByActorCode(@QueryParam(ActorRepresentation.QUERY_PARAMETER_NAME_USER_NAME)String actorCode);
 	*/
+	@GET
+	@Path("sections-visibles-par-acteur")
+	@Produces({MediaType.APPLICATION_JSON})
+	Response getVisibleSectionsByActorCode(@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)String actorCode);
+	
+	@GET
+	@Path("identifiants-sections-visibles-par-acteur")
+	@Produces({MediaType.APPLICATION_JSON})
+	Response getVisibleSectionsIdentifiersByActorCode(@QueryParam(ActorRepresentation.PARAMETER_USER_NAME)String actorCode);
+	
 	@GET
 	@Path(PATH_GET_SECTIONS_BY_ACTOR_CODE)
 	@Produces({MediaType.APPLICATION_JSON})
@@ -78,4 +89,8 @@ public interface ScopeRepresentation extends RepresentationEntity<ScopeDto> {
 	String PARAMETER_VISIBLE = "visible";
 	String DESCRIPTION_VISIBLE = "Visibilté";
 	String EXAMPLE_VISIBLE = "true";
+	
+	static ScopeRepresentation getProxy() {
+		return ProxyGetter.getInstance().get(ScopeRepresentation.class);
+	}
 }

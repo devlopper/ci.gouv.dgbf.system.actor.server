@@ -20,6 +20,9 @@ public interface ScopeBusiness extends SpecificBusiness<Scope> {
 	
 	Collection<Scope> getByTypeCodeByActorCode(String typeCode,String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
 	
+	Collection<Scope> getSectionsByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
+	Collection<String> getSectionsIdentifiersByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
+	
 	Collection<Scope> getAdministrativeUnitsByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
 	
 	Collection<Scope> getBudgetSpecializationUnitsByActorCode(String actorCode,Boolean visible,Boolean pageable,Integer firstTupleIndex,Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);

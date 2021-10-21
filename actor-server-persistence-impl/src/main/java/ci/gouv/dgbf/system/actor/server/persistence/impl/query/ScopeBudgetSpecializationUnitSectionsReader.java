@@ -19,6 +19,6 @@ public class ScopeBudgetSpecializationUnitSectionsReader extends AbstractScopeRe
 	@Override
 	protected void __set__(Scope scope, Object[] array) {
 		int i = 1;
-		scope.setSectionAsString(StringUtils.stripToNull(getAsString(array, i)));
+		scope.setSectionAsString(StringUtils.defaultIfBlank(getAsString(array, i),null));
 	}
 }

@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -92,6 +93,26 @@ public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> imple
 				scope.setIdentifier(StringUtils.substringAfter(scope.getIdentifier(), typeCode));
 			});
 		return scopes;
+	}
+	
+	@Override
+	public Collection<Scope> getSectionsByActorCode(String actorCode, Boolean visible, Boolean pageable,
+			Integer firstTupleIndex, Integer numberOfTuples, Boolean removeTypeCodeFromIdentifier) {
+		Collection<Scope> scopes = getByTypeCodeByActorCode(ScopeType.CODE_SECTION, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, Boolean.FALSE);
+		if(Boolean.TRUE.equals(removeTypeCodeFromIdentifier))
+			scopes.forEach(scope -> {
+				scope.setIdentifier(StringUtils.substringAfterLast(scope.getIdentifier(), ScopeType.CODE_SECTION));
+			});
+		return scopes;
+	}
+	
+	@Override
+	public Collection<String> getSectionsIdentifiersByActorCode(String actorCode, Boolean visible, Boolean pageable,
+			Integer firstTupleIndex, Integer numberOfTuples, Boolean removeTypeCodeFromIdentifier) {
+		Collection<Scope> scopes = getByTypeCodeByActorCode(ScopeType.CODE_SECTION, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, Boolean.FALSE);
+		if(CollectionHelper.isEmpty(scopes))
+			return null;
+		return scopes.stream().map(scope -> scope.getIdentifier()).collect(Collectors.toList());
 	}
 	
 	@Override

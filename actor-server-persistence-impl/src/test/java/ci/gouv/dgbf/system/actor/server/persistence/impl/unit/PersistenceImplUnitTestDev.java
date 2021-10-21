@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -33,6 +35,19 @@ public class PersistenceImplUnitTestDev extends AbstractUnitTestLive {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "dev";
+	}
+	
+	@Test
+	public void request_sort_firstNameAndLastNames(){
+		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(Request.class);
+		arguments.addProjectionsFromStrings(Request.FIELD_IDENTIFIER,Request.FIELD_FIRST_NAME_AND_LAST_NAMES)
+		.addProcessableTransientFieldsNames(Request.FIELD_FIRST_NAME_AND_LAST_NAMES);
+		arguments.setSortOrders(Map.of(Request.FIELD_FIRST_NAME_AND_LAST_NAMES,SortOrder.ASCENDING));
+		arguments.setNumberOfTuples(10);
+		Collection<Request> requests = EntityReader.getInstance().readMany(Request.class, arguments);
+		requests.forEach(r -> {
+			System.out.println(r.getFirstNameAndLastNames());
+		});
 	}
 	
 	@Test
