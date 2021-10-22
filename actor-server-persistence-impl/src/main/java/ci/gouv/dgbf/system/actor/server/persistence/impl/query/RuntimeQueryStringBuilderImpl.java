@@ -587,7 +587,9 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(arguments.getQuery().getIdentifier().equals(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
 			return Map.of(ScopeType.FIELD_ORDER_NUMBER,SortOrder.ASCENDING);
 		if(arguments.getQuery().getIdentifier().equals(RequestQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-			return Map.of(FieldHelper.join("t",Request.FIELD_CODE),SortOrder.ASCENDING);
+			return Map.of(FieldHelper.join("t",Request.FIELD_CREATION_DATE),SortOrder.DESCENDING);
+		if(arguments.getQuery().getIdentifier().equals(RequestDispatchSlipQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+			return Map.of(FieldHelper.join("t",RequestDispatchSlip.FIELD_CREATION_DATE),SortOrder.DESCENDING);
 		return super.getDefaultSortOrders(arguments);
 	}
 	
