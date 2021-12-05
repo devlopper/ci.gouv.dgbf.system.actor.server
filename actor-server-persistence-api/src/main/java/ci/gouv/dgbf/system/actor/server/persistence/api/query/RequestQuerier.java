@@ -165,7 +165,14 @@ public interface RequestQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC);	
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.COUNT_DYNAMIC);
-	
+	/*
+	String QUERY_IDENTIFIER_COUNT_FOR_EACH_YEAR = "Request.countForEachYear";
+	Object[][] countForEachYear(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_COUNT_FOR_EACH_YEAR_FOR_EACH_MONTH = "Request.countForEachYearForEachMonth";
+	Object[][] countForEachYearForEachMonth(QueryExecutorArguments arguments);
+	String QUERY_IDENTIFIER_COUNT_FOR_EACH_YEAR_FOR_EACH_MONTH_FOR_EACH_DAY = "Request.countForEachYearForEachMonthForEachDay";
+	Object[][] countForEachYearForEachMonthForEachDay(QueryExecutorArguments arguments);
+	*/
 	public static abstract class AbstractImpl extends Querier.AbstractImpl implements RequestQuerier,Serializable {
 		
 	}
@@ -217,6 +224,7 @@ public interface RequestQuerier extends Querier {
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
 				,Query.buildSelect(Request.class, QUERY_IDENTIFIER_READ_SIGNED_REQUEST_SHEET_BY_IDENTIFIER, "SELECT t.signedRequestSheet FROM Request t WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER)
 				.setTupleFieldsNamesIndexesFromFieldsNames(Request.FIELD_SIGNATURE)
+			//,new Query().setIdentifier(QUERY_IDENTIFIER_COUNT_FOR_EACH_YEAR).setValue("SELECT t.identifier FROM Request t GROUP BY YEAR(t.creationDate)")
 		);
 	}
 	
