@@ -178,7 +178,7 @@ SELECT
     ,localite_gestionnaire.loc_code AS "GESTIONNAIRE_LOCALITE_CODE"
     ,localite_activite.loc_code AS "ACTIVITE_LOCALITE_CODE"
 FROM
-    SIIBC_BUDGET.ligne_depense ld
+    SIIBC_BUD.ligne_depense ld
     ,SIIBC_ADS.activite_de_service adp
     ,SIIBC_NEC.nature_economique nec
     ,SIIBC_NEC.nature_depense nd
