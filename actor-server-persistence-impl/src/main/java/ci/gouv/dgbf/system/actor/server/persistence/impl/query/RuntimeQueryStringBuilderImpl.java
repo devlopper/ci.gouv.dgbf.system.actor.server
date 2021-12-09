@@ -34,6 +34,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ProfileTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
@@ -49,6 +50,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Profile;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
@@ -150,6 +152,8 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			populatePredicateActorProfileRequest(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(Request.class))
 			populatePredicateRequest(arguments, builderArguments, predicate, filter);
+		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestScopeFunction.class))
+			populatePredicateRequestScopeFunction(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestStatus.class))
 			populatePredicateRequestStatus(arguments, builderArguments, predicate, filter);
 		else if(arguments.getQuery().isIdentifierEqualsDynamic(RequestDispatchSlip.class))
@@ -561,6 +565,20 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 				predicate.add("t.status.code NOT IN :statusCodes");
 				filter.addField("statusCodes", RequestStatus.CODES_ACCEPTED_REJECTED);
 			}		
+		}
+	}
+	
+	protected void populatePredicateRequestScopeFunction(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		String electronicMailAddress = (String) arguments.getFilterFieldValue(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+		if(StringHelper.isNotBlank(electronicMailAddress)) {
+			predicate.add(String.format("t.request.electronicMailAddress = :%s",RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS));
+			filter.addField(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, electronicMailAddress);
+		}
+
+		Boolean granted = arguments.getFilterFieldValueAsBoolean(null,RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED);
+		if(granted != null) {
+			predicate.add(String.format("t.granted = :%s",RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED));
+			filter.addField(RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED, granted);
 		}
 	}
 	

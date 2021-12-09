@@ -31,6 +31,13 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl implements Serializable {
 
 	@Override
+	public Collection<Object[]> readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress) {
+		return EntityManagerGetter.getInstance().get().createQuery(
+				"SELECT sf.identifier,sf.function.code FROM ScopeFunction sf JOIN RequestScopeFunction rsf ON rsf.scopeFunction = sf "
+				+ "WHERE rsf.request.electronicMailAddress = :electronicMailAddress").setParameter("electronicMailAddress", electronicMailAddress).getResultList();
+	}
+	
+	@Override
 	public ScopeFunction readOne(QueryExecutorArguments arguments) {
 		if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
 			return DynamicOneExecutor.getInstance().read(ScopeFunction.class,arguments.setQuery(null));

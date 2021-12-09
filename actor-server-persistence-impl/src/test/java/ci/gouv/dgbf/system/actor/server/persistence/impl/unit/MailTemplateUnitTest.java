@@ -34,4 +34,16 @@ public class MailTemplateUnitTest extends AbstractWeldUnitTest {
 				/*.setCivility(new Civility().setName("Monsieur"))*/);
 		assertThat(text).contains("Komenan Yao Christian").contains("votre demande a");
 	}
+	
+	@Test
+	public void getSignaturesSpecimensMailMessage_many(){
+		String text = FreeMarker.getRequestsSignaturesSpecimensMailMessage("Mr", "Komenan", "Christian",2);
+		assertThat(text).contains("Mr Komenan Christian").contains("ci joint vos spécimens de signature");
+	}
+	
+	@Test
+	public void getSignaturesSpecimensMailMessage_one(){
+		String text = FreeMarker.getRequestsSignaturesSpecimensMailMessage("Mr", "Komenan", "Christian",1);
+		assertThat(text).contains("Mr Komenan Christian").contains("ci joint votre spécimen de signature");
+	}
 }

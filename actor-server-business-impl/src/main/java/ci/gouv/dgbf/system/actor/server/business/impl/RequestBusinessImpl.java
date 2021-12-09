@@ -47,6 +47,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -464,6 +465,21 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		return requests.size();
 	}
 	
+	@Override
+	public Integer notifySignaturesSpecimens(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			throw new RuntimeException("L'adresse mail est obligatoire");
+		Object[] requestArray = RequestQuerier.getInstance().readForSendSignaturesSpecimensByElectronicMailAddress(electronicMailAddress);
+		if(requestArray == null)
+			throw new RuntimeException(String.format("Aucune demande n'existe pour cette adresse email : %s", electronicMailAddress));
+		Collection<Object[]> scopeFunctionsArrays = ScopeFunctionQuerier.getInstance().readForSendSignaturesSpecimensByElectronicMailAddress(electronicMailAddress);
+		if(CollectionHelper.isEmpty(scopeFunctionsArrays))
+			throw new RuntimeException(String.format("Aucun spécimen de signature n'existe pour cette adresse email : %s", electronicMailAddress));
+		notifySignaturesSpecimens(requestArray, scopeFunctionsArrays);
+		LogHelper.logInfo(String.format("%s ,  %s spécimen(s) de signature envoyé(s)",requestArray[0], scopeFunctionsArrays.size()), getClass());
+		return scopeFunctionsArrays.size();
+	}
+	
 	/**/
 	
 	public static Boolean isNotifiableByEmail(Request request,Boolean loggableIfNot) {
@@ -491,6 +507,59 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					String message = FreeMarker.getRequestAccessTokenMailMessage(request
 							,RestHelper.buildResourceIdentifier(REPRESENTATION_PATH, REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER));
 					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), message, request.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}
+			}
+		}).start();
+	}
+	
+	private static Collection<org.cyk.utility.mail.Message.Attachment> getAttachments(Object[] requestArray,Collection<Object[]> scopeFunctionsArrays) {
+		String requestIdentifier = (String) requestArray[0];
+		String creditManagerSignatureSpecimenReportIdentifier = (String) requestArray [6];
+		String authorizingOfficerSignatureSpecimenReportIdentifier = (String) requestArray[7];
+		Collection<org.cyk.utility.mail.Message.Attachment> attachments = null;
+		for(Object[] array : scopeFunctionsArrays) {
+			String scopeFunctionIdentifier = (String) array[0];
+			String functionCode = (String) array[1];
+			if(Function.EXECUTION_ASSISTANTS_CODES.contains(functionCode))
+				continue;
+			String reportIdentifier = null;
+			if(Function.CODE_CREDIT_MANAGER_HOLDER.equals(functionCode))
+				reportIdentifier = creditManagerSignatureSpecimenReportIdentifier;
+			else if(Function.CODE_AUTHORIZING_OFFICER_HOLDER.equals(functionCode))
+				reportIdentifier = authorizingOfficerSignatureSpecimenReportIdentifier;
+			if(StringHelper.isBlank(reportIdentifier))
+				continue;
+			ByteArrayOutputStream byteArrayOutputStream = ReportGetter.getInstance().get(reportIdentifier
+					,Map.of("identifiant",requestIdentifier,"poste",scopeFunctionIdentifier),FileType.PDF);
+			if(byteArrayOutputStream == null) {
+				LogHelper.logSevere(String.format("Le flux du spécimen de signature de %s|%s est null", requestIdentifier,scopeFunctionIdentifier), RequestBusinessImpl.class);
+				continue;
+			}
+			if(attachments == null)
+				attachments = new ArrayList<org.cyk.utility.mail.Message.Attachment>();
+			attachments.add(new org.cyk.utility.mail.Message.Attachment().setBytes(byteArrayOutputStream.toByteArray()).setExtension(FileType.PDF.name().toLowerCase())
+					.setName("specimen_de_signature_"+functionCode));
+		}
+		LogHelper.logInfo(String.format("%s fichier(s) joint(s) à envoyer", CollectionHelper.getSize(attachments)), RequestBusinessImpl.class);
+		return attachments;
+	}
+	
+	private static void notifySignaturesSpecimens(Object[] requestArray,Collection<Object[]> scopeFunctionsArrays) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Collection<org.cyk.utility.mail.Message.Attachment> attachments = getAttachments(requestArray, scopeFunctionsArrays);
+					if(CollectionHelper.isEmpty(attachments))
+						return;
+					org.cyk.utility.mail.Message message = new org.cyk.utility.mail.Message();
+					message.setSubject("SIGOBE - "+requestArray[2]+" - Spécimen de signature");
+					message.setBody(FreeMarker.getRequestsSignaturesSpecimensMailMessage((String)requestArray[3],(String)requestArray[4],(String)requestArray[5],attachments.size()));
+					message.addReceivers(List.of(requestArray[1]));
+					message.addAttachments(attachments);
+					MailSender.getInstance().send(message);
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}

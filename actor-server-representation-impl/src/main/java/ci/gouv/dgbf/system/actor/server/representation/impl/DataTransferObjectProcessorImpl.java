@@ -12,6 +12,7 @@ import org.cyk.utility.report.ReportRepresentation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.representation.entities.RequestDto;
+import ci.gouv.dgbf.system.actor.server.representation.entities.RequestScopeFunctionDto;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 
 @ci.gouv.dgbf.system.actor.server.annotation.System
@@ -69,6 +70,14 @@ public class DataTransferObjectProcessorImpl extends DataTransferObjectProcessor
 						}
 					}
 				}
+			}
+		}else if(RequestScopeFunctionDto.class.equals(klass)) {
+			RequestScopeFunctionDto requestScopeFunctionDto = (RequestScopeFunctionDto) dto;
+			if(StringHelper.isNotBlank(requestScopeFunctionDto.getSignatureSpecimenReportIdentifier()) && StringHelper.isNotBlank(requestScopeFunctionDto.getRequestIdentifier())
+					&& StringHelper.isNotBlank(requestScopeFunctionDto.getScopeFunctionIdentifier())) {
+				String uriQuery = ReportRepresentation.buildURIQuery(requestScopeFunctionDto.getSignatureSpecimenReportIdentifier(), Map.of(REQUEST_REPORT_PARAMETER_IDENTIFIER, requestScopeFunctionDto.getRequestIdentifier()
+						,REQUEST_REPORT_PARAMETER_SCOPE_FUNCTION,requestScopeFunctionDto.getScopeFunctionIdentifier()), null, null);
+				requestScopeFunctionDto.setSignatureSpecimenReadReportURIQuery(uriQuery);
 			}
 		}
 	}

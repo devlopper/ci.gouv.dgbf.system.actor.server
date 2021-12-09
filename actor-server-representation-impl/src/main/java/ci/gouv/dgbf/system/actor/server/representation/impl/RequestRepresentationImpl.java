@@ -440,6 +440,21 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
+	public Response notifySignaturesSpecimens(String electronicMailAddress) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).notifySignaturesSpecimens(electronicMailAddress);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response exportForAccountCreation(String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override

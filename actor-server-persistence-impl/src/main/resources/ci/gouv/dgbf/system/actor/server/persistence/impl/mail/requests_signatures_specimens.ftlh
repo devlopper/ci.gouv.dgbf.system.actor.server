@@ -1,0 +1,1 @@
+<p>${names}&nbsp;,ci joint ${my_specimen} de signature.</p>

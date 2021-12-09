@@ -61,6 +61,8 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String FIELD_FORM_AS_STRING = "formAsString";
 	public static final String FIELD_REPORT_IDENTIFIER = "reportIdentifier";
 	public static final String FIELD_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "signatureSpecimenReportIdentifier";
+	public static final String FIELD_CREDIT_MANAGER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "creditManagerSignatureSpecimenReportIdentifier";
+	public static final String FIELD_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "authorizingOfficerSignatureSpecimenReportIdentifier";
 	public static final String FIELD_AUTHENTICATION_REQUIRED = "authenticationRequired";		
 	public static final String FIELD_AUTHENTICATION_REQUIRED_AS_STRING = "authenticationRequiredAsString";
 	public static final String FIELD_NOTIFIABLE_BY_EMAIL = "notifiableByEmail";

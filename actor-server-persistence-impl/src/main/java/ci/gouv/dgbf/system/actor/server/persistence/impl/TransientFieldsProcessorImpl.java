@@ -60,6 +60,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestFirstNameA
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionIdentityScopeFunctionStringGrantedStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
@@ -97,6 +98,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			processActorProfileRequests(CollectionHelper.cast(ActorProfileRequest.class, objects),filter,fieldsNames);
 		else if(Request.class.equals(klass))
 			processRequests(CollectionHelper.cast(Request.class, objects),fieldsNames);
+		else if(RequestScopeFunction.class.equals(klass))
+			processRequestScopeFunctions(CollectionHelper.cast(RequestScopeFunction.class, objects),fieldsNames);
 		else if(RequestDispatchSlip.class.equals(klass))
 			processRequestDispatchSlips(CollectionHelper.cast(RequestDispatchSlip.class, objects),fieldsNames);
 		else
@@ -431,6 +434,15 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 					request.setAccountCreationDateAsString(TimeHelper.formatLocalDateTime(request.getAccountCreationDate()));
 			}else
 				logFieldNameHasNotBeenSet(ScopeFunction.class, fieldName);
+		}
+	}
+	
+	public void processRequestScopeFunctions(Collection<RequestScopeFunction> requestScopeFunctions,Collection<String> fieldsNames) {	
+		for(String fieldName : fieldsNames) {
+			if(RequestScopeFunction.FIELDS_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING.equals(fieldName))
+				new RequestScopeFunctionIdentityScopeFunctionStringGrantedStringReader().readThenSet(requestScopeFunctions, null);
+			else
+				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}
 	}
 	

@@ -162,6 +162,8 @@ public interface RequestQuerier extends Querier {
 	Collection<Object[]> readFromViewByRequests(Collection<Request> requests);
 	Collection<Object[]> readFromViewByRequests(Request...requests);
 	
+	Object[] readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress);
+	
 	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC);	
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(Request.class, QueryName.COUNT_DYNAMIC);

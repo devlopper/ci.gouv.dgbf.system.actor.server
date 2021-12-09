@@ -14,7 +14,26 @@ import lombok.experimental.Accessors;
 public class RequestScopeFunctionDto extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private String requestIdentifier;
+	private String scopeFunctionIdentifier;
+	
 	private ArrayList<String> scopeFunctionsIdentifiers;
+	private String electronicMailAddress;
+	private String scopeFunctionString;
+	private String sectionString;
+	private String administrativeUnitString;
+	private String firstName;
+	private String lastNames;
+	private String grantedString;
+	private Boolean granted;
+	private String administrativeUnitFunction;
+	private String mobilePhoneNumber;
+	private String officePhoneNumber;
+	private String postalBoxAddress;
+	private String actOfAppointmentReference;
+	private String registrationNumber;
+	private String signatureSpecimenReportIdentifier;
+	private String signatureSpecimenReadReportURIQuery;
 	
 	@Override
 	public RequestScopeFunctionDto setIdentifier(String identifier) {

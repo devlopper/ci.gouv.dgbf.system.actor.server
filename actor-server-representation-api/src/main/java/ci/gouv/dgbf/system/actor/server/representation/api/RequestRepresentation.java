@@ -232,10 +232,20 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	@Produces({ MediaType.APPLICATION_JSON})
 	@Operation(description = "Notifier les jetons d'accès")
 	@Parameters(value = {
-			@Parameter(name = "Email",allowEmptyValue = false,description = "Email",required = true,example = "k@m.com",style = ParameterStyle.SIMPLE)
+			@Parameter(name = "Email",allowEmptyValue = false,description = "Email",required = true,example = "cyk@mail.com",style = ParameterStyle.SIMPLE)
 	})
 	Response notifyAcessTokens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress
 			,@QueryParam(QUERY_PARAMETER_NAME_READ_PAGE_URL) String readPageURL);
+	
+	@POST
+	@Path("notification-specimen-signature")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Notifier les spécimens de signature")
+	@Parameters(value = {
+			@Parameter(name = "Email",allowEmptyValue = false,description = "Email",required = true,example = "cyk@mail.com",style = ParameterStyle.SIMPLE)
+	})
+	Response notifySignaturesSpecimens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress);
 	
 	@POST
 	@Path(PATH_EXPORT_FOR_ACCOUNT_CREATION)

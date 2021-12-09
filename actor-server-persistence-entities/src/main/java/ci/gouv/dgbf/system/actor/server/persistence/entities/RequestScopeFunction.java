@@ -40,6 +40,22 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	@Column(name = COLUMN_REQUESTED) private Boolean requested;
 	@Column(name = COLUMN_GRANTED) private Boolean granted;
 	
+	
+	@Transient private String electronicMailAddress;
+	@Transient private String scopeFunctionString;
+	@Transient private String grantedString;
+	@Transient private String sectionString;
+	@Transient private String administrativeUnitString;
+	@Transient private String administrativeUnitFunction;
+	@Transient private String mobilePhoneNumber;
+	@Transient private String officePhoneNumber;
+	@Transient private String postalBoxAddress;
+	@Transient private String actOfAppointmentReference;
+	@Transient private String firstName;
+	@Transient private String lastNames;
+	@Transient private String registrationNumber;
+	@Transient private String signatureSpecimenReportIdentifier;
+	
 	@Override
 	public RequestScopeFunction setIdentifier(String identifier) {
 		return (RequestScopeFunction) super.setIdentifier(identifier);
@@ -54,6 +70,10 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_REQUESTED = "requested";
 	public static final String FIELD_GRANTED = "granted";
+	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
+	public static final String FIELD_SCOPE_FUNCTION_STRING = "scopeFunctionString";
+	public static final String FIELD_GRANTED_STRING = "grantedString";
+	public static final String FIELDS_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING = "identityScopeFunctionStringGrantedString";
 	
 	public static final String TABLE_NAME = "DM_POSTE";
 	
@@ -61,4 +81,6 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String COLUMN_SCOPE_FUNCTION = "POSTE";
 	public static final String COLUMN_REQUESTED = "DEMANDEE";
 	public static final String COLUMN_GRANTED = "ACCORDEE";
+	
+	public static final String LABEL = "Poste";
 }

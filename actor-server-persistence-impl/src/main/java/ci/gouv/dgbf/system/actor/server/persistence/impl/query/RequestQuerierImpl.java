@@ -49,6 +49,16 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	
 	@Override
+	public Object[] readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress) {
+		return (Object[]) CollectionHelper.getFirst(EntityManagerGetter.getInstance().get().createQuery(String.format(
+				"SELECT r.identifier,r.electronicMailAddress,r.type.name,c.name,r.firstName,r.lastNames,r.type.creditManagerSignatureSpecimenReportIdentifier,r.type.authorizingOfficerSignatureSpecimenReportIdentifier "
+				+ "FROM Request r LEFT JOIN Civility c ON c = r.civility "
+				+ "WHERE r.electronicMailAddress = :electronicMailAddress AND r.status.code = :statusCode ORDER BY r.creationDate DESC"
+				,electronicMailAddress)).setParameter("electronicMailAddress", electronicMailAddress).setParameter("statusCode", RequestStatus.CODE_ACCEPTED)
+				.setMaxResults(1).getResultList());
+	}
+	
+	@Override
 	public Request readOne(QueryExecutorArguments arguments) {
 		if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_INSTANTIATE_ONE_BY_TYPE_IDENTIFIER))
 			return instantiateOneByTypeIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_TYPE_IDENTIFIER));

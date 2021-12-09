@@ -169,6 +169,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<Object[]> readActorsCodes(Collection<ScopeFunction> scopeFunctions);
 	Collection<Object[]> readActorsCodes(ScopeFunction...scopeFunctions);
 	
+	Collection<Object[]> readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress);
+	
 	Long countByScopeIdentifierByFunctionCode(String scopeIdentifier,String functionCode);
 	
 	/**/

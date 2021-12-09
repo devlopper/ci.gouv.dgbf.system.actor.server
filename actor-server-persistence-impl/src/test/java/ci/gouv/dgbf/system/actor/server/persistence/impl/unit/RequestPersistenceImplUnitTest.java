@@ -131,8 +131,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté","B001",new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327","13010222","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté","B001",new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}			
 			,{"3","Zadi","Gérard","100100A","test@mail.com","323","13010220","01/01/2000 à 00:00",null,"Initié",null,new String[]{"GDTI","OBUDGET"},null}
 		});
 		
@@ -142,20 +142,23 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		.addProcessableTransientFieldsNames(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES,Request.FIELD_DISPATCH_SLIP_CODE);
 		Collection<Request> requests = EntityReader.getInstance().readMany(Request.class, arguments);
-		assertThat(CollectionHelper.getElementAt(requests, 0).getIsCreditManagerHolder()).isTrue();
-		assertThat(CollectionHelper.getElementAt(requests, 0).getIsAuthorizingOfficerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 0).getIsFinancialControllerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 0).getIsAccountingHolder()).isNull();
+		Integer index = 1;
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsCreditManagerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAuthorizingOfficerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAccountingHolder()).isNull();
 		
-		assertThat(CollectionHelper.getElementAt(requests, 1).getIsCreditManagerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 1).getIsAuthorizingOfficerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 1).getIsFinancialControllerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 1).getIsAccountingHolder()).isNull();
+		index = 0;
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsCreditManagerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAuthorizingOfficerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAccountingHolder()).isNull();
 		
-		assertThat(CollectionHelper.getElementAt(requests, 2).getIsCreditManagerHolder()).isTrue();
-		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAuthorizingOfficerHolder()).isTrue();
-		assertThat(CollectionHelper.getElementAt(requests, 2).getIsFinancialControllerHolder()).isNull();
-		assertThat(CollectionHelper.getElementAt(requests, 2).getIsAccountingHolder()).isNull();
+		index = 2;
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsCreditManagerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAuthorizingOfficerHolder()).isTrue();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsFinancialControllerHolder()).isNull();
+		assertThat(CollectionHelper.getElementAt(requests, index).getIsAccountingHolder()).isNull();
 	}
 	
 	@Test
@@ -251,8 +254,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_IDENTIFIERS, List.of("DTI"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}			
 		});
 	}
 	
@@ -278,8 +281,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, List.of("327"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
 		});
 	}
 	
@@ -333,8 +336,8 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 				,Request.FIELDS_SCOPE_FUNCTIONS_CODES,Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES);
 		arguments.addFilterField(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, List.of("AGC"));
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
-			{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}
-			,{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
+			,{"1","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","01/01/2000 à 00:00","02/01/2000 à 00:00","Accepté",null,new String[]{"GDTI","AGDTI"},new String[]{"GDTI"}}		
 		});
 	}
 	
@@ -416,6 +419,18 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertRequests((List<Request>) EntityReader.getInstance().readMany(Request.class, arguments), new Object[][] {
 			{"2","Komenan","Yao Christian","498721Y","kycdev@gmail.com","327 Budget","13010222 DTI","02/01/2000 à 00:00",null,"Initié",null,new String[]{"AGDTI"},null}
 		});
+	}
+	
+	@Test
+	public void readForSendSignaturesSpecimensByElectronicMailAddress() {
+		Object[] array = RequestQuerier.getInstance().readForSendSignaturesSpecimensByElectronicMailAddress("kycdev@gmail.com");
+		assertThat(array).isNotNull();
+		assertThat(array[0]).isEqualTo("1");
+		assertThat(array[1]).isEqualTo("kycdev@gmail.com");
+		assertThat(array[2]).isEqualTo("Demande de poste budgétaire");
+		assertThat(array[3]).isEqualTo(null);
+		assertThat(array[4]).isEqualTo("Komenan");
+		assertThat(array[5]).isEqualTo("Yao Christian");
 	}
 	
 	/**/
