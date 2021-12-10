@@ -17,4 +17,8 @@ public interface RequestScopeFunctionBusiness extends BusinessEntity<RequestScop
 	
 	@Transactional
 	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,String...scopeFunctionsIdentifiers);
+	
+	String NOTIFY_SIGNATURE_SPECIMEN = "RequestScopeFunction.notifySignatureSpecimen";
+	void notifySignatureSpecimen(Collection<String> identifiers);
+	void notifySignatureSpecimen(String...identifiers);
 }

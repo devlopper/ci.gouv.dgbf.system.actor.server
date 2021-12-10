@@ -36,4 +36,19 @@ public class RequestScopeFunctionRepresentationImpl extends AbstractRepresentati
 			}
 		});
 	}
+	
+	@Override
+	public Response notifySignatureSpecimen(List<String> identifiers) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestScopeFunctionBusiness.class).notifySignatureSpecimen(identifiers);
+					}
+				};
+			}
+		});
+	}
 }
