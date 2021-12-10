@@ -32,6 +32,8 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	String PARAMETER_NAME_SCOPE_FUNCTIONS_IDENTIFIERS = "scopeFunctionsIdentifiers";
 	String PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER = "scopeFunctionIdentifier";
 	
+	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
+	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	String PARAMETER_NAME_GRANTED = "granted";
 	String PARAMETER_NAME_SEARCH = "search";

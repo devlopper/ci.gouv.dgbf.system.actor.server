@@ -7,14 +7,17 @@ import static org.cyk.utility.persistence.query.Language.Where.isNull;
 import static org.cyk.utility.persistence.query.Language.Where.or;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.constant.ConstantEmpty;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.persistence.query.Field;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -579,6 +582,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 		if(granted != null) {
 			predicate.add(String.format("t.granted = :%s",RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED));
 			filter.addField(RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED, granted);
+		}
+		
+		Field functionsCodesField = arguments.getFilterField(RequestScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES);
+		if(functionsCodesField != null) {
+			Collection<String> functionsCodes = (Collection<String>) functionsCodesField.getValue();
+			if(CollectionHelper.isNotEmpty(functionsCodes)){
+				predicate.add(String.format("t.scopeFunction.function.code IN :%s",RequestScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES));
+				filter.addField(RequestScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES, functionsCodes);
+			}
 		}
 	}
 	
