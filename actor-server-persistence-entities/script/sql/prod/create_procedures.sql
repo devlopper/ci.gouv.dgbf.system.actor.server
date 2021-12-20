@@ -27,7 +27,7 @@ BEGIN
     vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.ldep_id) '
     ||'WHEN NOT MATCHED THEN INSERT '
     ||'(identifiant, imputation, gc,agc,ord,aord,cf,acf,cpt,acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date'
-    ||',etat,date_etat) values (i.ldep_id,i.identifiant,i.gc,i.agc,i.od,i.aod,i.cf,i.acf,i.cpt,i.acpt,:1,:2,:3,:4,NULL,NULL)'
+    ||',etat,date_etat) values (i.identifiant,i.identifiant,i.gc,i.agc,i.od,i.aod,i.cf,i.acf,i.cpt,i.acpt,:1,:2,:3,:4,NULL,NULL)'
     ;
     P_RAFFRAICHIR_VM_APP_EX_IMP();
     EXECUTE IMMEDIATE vsql USING audit_acteur,audit_fonctionalite,audit_action,audit_date;

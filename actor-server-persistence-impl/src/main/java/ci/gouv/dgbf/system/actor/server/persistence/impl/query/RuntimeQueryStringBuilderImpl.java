@@ -389,6 +389,11 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 	
 	protected void populatePredicateAssignments(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
 		//imputation filter
+		//by exercise
+		if(Boolean.TRUE.equals(isQueryExecutorArgumentsFilterHasFieldsWithPaths(arguments,AssignmentsQuerier.PARAMETER_NAME_EXERCISE))) {
+			predicate.add(String.format("i.exercise = :%1$s",AssignmentsQuerier.PARAMETER_NAME_EXERCISE));
+			filter.addField(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_EXERCISE));
+		}
 		//	by identifier
 		for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
 				,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER

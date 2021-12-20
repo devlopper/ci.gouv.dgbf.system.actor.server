@@ -41,6 +41,7 @@ public interface AssignmentsQuerier extends Querier {
 
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 4;
 	
+	String PARAMETER_NAME_EXERCISE = "exercise";
 	String PARAMETER_NAME_SECTION = "section";
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
 	String PARAMETER_NAME_SECTION_CODE = "sectionCode";

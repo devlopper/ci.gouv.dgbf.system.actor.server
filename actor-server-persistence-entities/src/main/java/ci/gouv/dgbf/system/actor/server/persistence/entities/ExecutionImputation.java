@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
@@ -33,6 +34,8 @@ import lombok.experimental.Accessors;
 })
 public class ExecutionImputation extends AbstractImputation implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	@Column(name = COLUMN_EXERCISE) private Integer exercise;
 	
 	/*Gestionnaire de crédits*/
 	
@@ -325,6 +328,8 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 		return String.format(SCOPE_FUNCTION_EXECUTION_IMPUTATION_IDENTIFIER_COLUMN_NAME_FORMAT, scopeFunctionColumnName);
 	}
 	
+	public static final String FIELD_EXERCISE = "exercise";
+	
 	public static final String FIELD_CREDIT_MANAGER = "creditManager";
 	//Holder
 	public static final String FIELD_CREDIT_MANAGER_HOLDER_SCOPE_FUNCTION_IDENTIFIER = buildScopeFunctionHolderIdentifierFieldName(FIELD_CREDIT_MANAGER);
@@ -368,6 +373,8 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	public static final String TABLE_NAME = "VM_APP_EX_IMPUTATION";
 	public static final String PROCEDURE_NAME_REFRESH_MATERIALIZED_VIEW = "P_RAFFRAICHIR_VM_APP_EX_IMP";
 	//public static final String VIEW_NAME = "VM_APP_EX_IMPUTATION_POSTE";
+	
+	public static final String COLUMN_EXERCISE = "exercice";
 	
 	//Holder
 	public static final String COLUMN_CREDIT_MANAGER_HOLDER = "GC";
