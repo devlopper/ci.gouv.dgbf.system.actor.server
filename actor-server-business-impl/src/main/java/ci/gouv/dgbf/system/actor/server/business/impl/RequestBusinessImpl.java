@@ -498,7 +498,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			throw new RuntimeException(String.format("Aucune demande n'existe pour cette adresse email : %s", electronicMailAddress));
 		
 		if(NumberHelper.isLessThanOrEqualZero(EntityCounter.getInstance().count(RequestScopeFunction.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC))
-				.addFilterFieldsValues(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress,RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED,Boolean.TRUE))))
+				.addFilterFieldsValues(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress,RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED,Boolean.TRUE
+						,RequestScopeFunctionQuerier.PARAMETER_NAME_FUNCTIONS_CODES,Function.EXECUTION_HOLDERS_CODES_HAVING_SIGNATURE_SPECIMEN))))
 			throw new RuntimeException(String.format("Aucun spécimen de signature n'existe pour cette adresse email : %s", electronicMailAddress));
 		
 		try {
