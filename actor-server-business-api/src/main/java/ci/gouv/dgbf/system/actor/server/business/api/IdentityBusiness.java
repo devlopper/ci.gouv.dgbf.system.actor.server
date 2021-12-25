@@ -11,4 +11,7 @@ public interface IdentityBusiness extends BusinessEntity<Identity> {
 	@Transactional
 	Identity createFromInterface(Identity.Interface identity);
 	
+	String encryptElectroncicMailAddress(String electronicMailAddress);
+	
+	String decryptElectroncicMailAddress(String encryptElectronicMailAddress);
 }

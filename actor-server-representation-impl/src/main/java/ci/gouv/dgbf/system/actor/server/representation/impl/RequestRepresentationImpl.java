@@ -455,6 +455,42 @@ public class RequestRepresentationImpl extends AbstractRepresentationEntityImpl<
 	}
 	
 	@Override
+	public Response notifySignaturesSpecimensLink(String electronicMailAddress,String readPageURL) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						__inject__(RequestBusiness.class).notifySignaturesSpecimensLink(electronicMailAddress,readPageURL);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response recordSignatureSpecimenInformations(RequestDto requestDto) {
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						Request database = EntityFinder.getInstance().find(Request.class,requestDto.getIdentifier());
+						Request request = MappingHelper.getDestination(requestDto, Request.class);
+						InstanceCopier.getInstance().copy(database, request, List.of(Request.FIELD_TYPE,Request.FIELD_STATUS,Request.FIELD_CREATION_DATE
+							,Request.FIELD_AUTHENTICATION_REQUIRED,Request.FIELD_ACCESS_TOKEN
+							//files
+							,Request.FIELD_PHOTO,Request.FIELD_ACT_OF_APPOINTMENT,Request.FIELD_SIGNATURE,Request.FIELD_SIGNED_REQUEST_SHEET));
+						__inject__(RequestBusiness.class).recordSignatureSpecimenInformations(request);
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response exportForAccountCreation(String actorCode) {
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override

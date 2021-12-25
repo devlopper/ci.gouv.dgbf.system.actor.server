@@ -73,7 +73,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_SCOPE_FUNCTION_STRING = "scopeFunctionString";
 	public static final String FIELD_GRANTED_STRING = "grantedString";
-	public static final String FIELDS_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING = "identityScopeFunctionStringGrantedString";
+	public static final String FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING = "requestIdentifierIdentityScopeFunctionStringGrantedString";
 	
 	public static final String TABLE_NAME = "DM_POSTE";
 	

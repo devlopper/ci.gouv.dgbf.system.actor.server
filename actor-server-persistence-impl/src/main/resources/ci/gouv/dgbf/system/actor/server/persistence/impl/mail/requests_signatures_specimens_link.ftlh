@@ -1,0 +1,1 @@
+<p><a href="${url}">Cliquer sur ce lien pour accéder à vos spécimens de signature.</a></p>

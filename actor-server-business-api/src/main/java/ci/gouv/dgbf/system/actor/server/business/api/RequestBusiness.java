@@ -71,6 +71,13 @@ public interface RequestBusiness extends BusinessEntity<Request> {
 	String NOTIFY_SIGNATURES_SPECIMENS = "Request.notifySignaturesSpecimens";
 	Integer notifySignaturesSpecimens(String electronicMailAddress);
 	
+	String NOTIFY_SIGNATURES_SPECIMENS_LINK = "Request.notifySignaturesSpecimensLink";
+	void notifySignaturesSpecimensLink(String electronicMailAddress,String readPageURL);
+	
+	String RECORD_SIGNATURE_SPECIMEN_INFORMATIONS = "Request.recordSignatureSpecimenInformations";
+	@Transactional
+	void recordSignatureSpecimenInformations(Request request);
+	
 	@Transactional
 	void exportForAccountCreation(String actorCode);
 	

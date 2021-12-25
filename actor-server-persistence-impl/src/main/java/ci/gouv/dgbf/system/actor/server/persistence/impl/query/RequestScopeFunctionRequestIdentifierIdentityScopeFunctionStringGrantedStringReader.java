@@ -13,7 +13,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
 
-public class RequestScopeFunctionIdentityScopeFunctionStringGrantedStringReader extends AbstractRequestScopeFunctionReaderImpl implements Serializable {
+public class RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader extends AbstractRequestScopeFunctionReaderImpl implements Serializable {
 
 	@Override
 	protected QueryStringBuilder.Arguments instantiateQueryStringBuilderArguments() {

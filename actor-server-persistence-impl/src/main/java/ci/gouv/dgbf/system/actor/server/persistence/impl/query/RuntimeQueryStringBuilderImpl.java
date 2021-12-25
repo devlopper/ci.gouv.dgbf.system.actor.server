@@ -508,6 +508,12 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			,LikeStringBuilder.getInstance().build("t", Request.FIELD_MOBILE_PHONE_NUMBER,RequestQuerier.PARAMETER_NAME_SEARCH)
 	));
 	protected void populatePredicateRequest(QueryExecutorArguments arguments, Arguments builderArguments, Predicate predicate,Filter filter) {
+		String electronicMailAddress = (String) arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS);
+		if(StringHelper.isNotBlank(electronicMailAddress)) {
+			predicate.add(String.format("t.electronicMailAddress = :%s",RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS));
+			filter.addField(RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS, electronicMailAddress);
+		}
+		
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.administrativeUnit.section.identifier IN :%s", RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNITS_SECTIONS_IDENTIFIERS, arguments);

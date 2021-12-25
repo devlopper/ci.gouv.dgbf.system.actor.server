@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,13 +37,16 @@ import org.cyk.utility.business.server.EntitySaver;
 import org.cyk.utility.business.server.EntitySaver.Arguments;
 import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityCounter;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.report.ReportGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ActorBusiness;
+import ci.gouv.dgbf.system.actor.server.business.api.IdentityBusiness;
 import ci.gouv.dgbf.system.actor.server.business.api.RequestBusiness;
 import ci.gouv.dgbf.system.actor.server.persistence.api.RequestPersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationFormQuerier;
@@ -480,6 +485,44 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		return scopeFunctionsArrays.size();
 	}
 	
+	@Override
+	public void notifySignaturesSpecimensLink(String electronicMailAddress,String readPageURL) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			throw new RuntimeException("L'adresse mail est obligatoire");
+		
+		if(StringHelper.isBlank(readPageURL))
+			throw new RuntimeException("Le lien est obligatoire");
+		
+		if(NumberHelper.isLessThanOrEqualZero(EntityCounter.getInstance().count(Request.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC))
+				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress))))
+			throw new RuntimeException(String.format("Aucune demande n'existe pour cette adresse email : %s", electronicMailAddress));
+		
+		if(NumberHelper.isLessThanOrEqualZero(EntityCounter.getInstance().count(RequestScopeFunction.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestScopeFunctionQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC))
+				.addFilterFieldsValues(RequestScopeFunctionQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress,RequestScopeFunctionQuerier.PARAMETER_NAME_GRANTED,Boolean.TRUE))))
+			throw new RuntimeException(String.format("Aucun spécimen de signature n'existe pour cette adresse email : %s", electronicMailAddress));
+		
+		try {
+			readPageURL = readPageURL+"?email="+URLEncoder.encode(__inject__(IdentityBusiness.class).encryptElectroncicMailAddress(electronicMailAddress),IdentityBusinessImpl.ENCODING);
+		} catch (UnsupportedEncodingException exception) {
+			throw new RuntimeException(exception);
+		}
+		
+		__notifySignaturesSpecimensLink__(electronicMailAddress, readPageURL);
+	}
+	
+	@Override @Transactional
+	public void recordSignatureSpecimenInformations(Request request) {
+		validate(request,Boolean.FALSE);
+		if(StringHelper.isNotBlank(request.getElectronicMailAddress()))
+			request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
+		request.set__auditFunctionality__("Modification pour spécimen de signature");
+		setFields(request);
+		EntityManager entityManager = __inject__(EntityManager.class);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+						.setUpdatables(List.of(request))));
+	}
+	
 	/**/
 	
 	public static Boolean isNotifiableByEmail(Request request,Boolean loggableIfNot) {
@@ -507,6 +550,20 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 					String message = FreeMarker.getRequestAccessTokenMailMessage(request
 							,RestHelper.buildResourceIdentifier(REPRESENTATION_PATH, REPRESENTATION_PATH_BUILD_REPORT_BY_IDENTIFIER));
 					MailSender.getInstance().send("SIGOBE - "+request.getType().getName(), message, request.getElectronicMailAddress());
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}
+			}
+		}).start();
+	}
+	
+	private static void __notifySignaturesSpecimensLink__(String electronicMailAddress,String readPageURL) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					String message = FreeMarker.getRequestsSignaturesSpecimensLinkMailMessage(readPageURL);
+					MailSender.getInstance().send("SIGOBE - Récupération de spécimen de signature", message, electronicMailAddress);
 				} catch (Exception exception) {
 					LogHelper.log(exception, getClass());
 				}

@@ -248,6 +248,23 @@ public interface RequestRepresentation extends RepresentationEntity<RequestDto> 
 	Response notifySignaturesSpecimens(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress);
 	
 	@POST
+	@Path("notification-lien-specimen-signature")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Notifier le lien d'accès aux spécimens de signature")
+	Response notifySignaturesSpecimensLink(@QueryParam(QUERY_PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS) String electronicMailAddress,@QueryParam("url") String readPageURL);
+	
+	@POST
+	@Path("enregistrer-informations-specimen-signature")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON})
+	@Operation(description = "Enregistrer les informations du spécimen de signature")
+	@Parameters(value = {
+			@Parameter(name = "Demande",allowEmptyValue = false,description = "Demande",required = true,style = ParameterStyle.DEFAULT)
+	})
+	Response recordSignatureSpecimenInformations(RequestDto request);
+	
+	@POST
 	@Path(PATH_EXPORT_FOR_ACCOUNT_CREATION)
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })

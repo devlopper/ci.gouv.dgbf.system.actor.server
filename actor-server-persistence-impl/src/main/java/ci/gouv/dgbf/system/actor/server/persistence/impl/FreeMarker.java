@@ -50,6 +50,12 @@ public class FreeMarker {
 		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("request_access_token.ftlh"), map);
 	}
 	
+	public static String getRequestsSignaturesSpecimensLinkMailMessage(String readPageURL) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		map.put("url",readPageURL);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("requests_signatures_specimens_link.ftlh"), map);
+	}
+	
 	public static String getRequestsSignaturesSpecimensMailMessage(String civility,String firstName,String lastNames,Integer count) {
 		Map<String,Object> map = new LinkedHashMap<>();
 		map.put("names",Identity.getNames(civility,firstName,lastNames));

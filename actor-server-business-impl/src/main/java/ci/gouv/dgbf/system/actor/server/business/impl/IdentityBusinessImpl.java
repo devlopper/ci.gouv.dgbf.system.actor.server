@@ -1,10 +1,17 @@
 package ci.gouv.dgbf.system.actor.server.business.impl;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Base64;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -56,4 +63,68 @@ public class IdentityBusinessImpl extends AbstractBusinessEntityImpl<Identity, I
 		create(__identity__);
 		return __identity__;
 	}
+	
+	@Override
+	public String encryptElectroncicMailAddress(String electronicMailAddress) {
+		if(StringHelper.isBlank(electronicMailAddress))
+			throw new RuntimeException("Email à crypter pour URL est obligatoire");
+		try {
+			return encryptElectroncicMailAddress(electronicMailAddress, SECRET);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception.toString());
+		}
+	}
+	
+	@Override
+	public String decryptElectroncicMailAddress(String string) {
+		if(StringHelper.isBlank(string))
+			throw new RuntimeException("Email à décrypter à partir d'une URL est obligatoire");
+		try {
+			return decryptElectroncicMailAddress(string, SECRET);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception.toString());
+		}
+	}
+	
+	/**/
+	
+	private static final String SECRET = "this_is_my_secret";
+	public static final String ENCODING = "UTF-8";
+	private static final String DIGEST_ALGORITHM = "SHA-1";
+	private static final String CIPHER_ALGORITHM = "AES";	
+	private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+	
+	private static SecretKeySpec SECRET_KEY;
+    private static byte[] KEY;
+ 
+    private static void setKey(String myKey) {
+        MessageDigest sha = null;
+        try {
+        	KEY = myKey.getBytes(ENCODING);
+            sha = MessageDigest.getInstance(DIGEST_ALGORITHM);
+            KEY = sha.digest(KEY);
+            KEY = Arrays.copyOf(KEY, 16); 
+            SECRET_KEY = new SecretKeySpec(KEY, CIPHER_ALGORITHM);
+        } 
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } 
+        catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+ 
+    private static String encryptElectroncicMailAddress(String string, String secret) throws Exception {
+    	setKey(secret);
+    	Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+    	cipher.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
+    	return Base64.getEncoder().encodeToString(cipher.doFinal(string.getBytes(ENCODING)));
+    }
+ 
+    private static String decryptElectroncicMailAddress(String string, String secret) throws Exception {
+    	setKey(secret);
+    	Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+    	cipher.init(Cipher.DECRYPT_MODE, SECRET_KEY);
+    	return new String(cipher.doFinal(Base64.getDecoder().decode(string)));
+    }
 }
