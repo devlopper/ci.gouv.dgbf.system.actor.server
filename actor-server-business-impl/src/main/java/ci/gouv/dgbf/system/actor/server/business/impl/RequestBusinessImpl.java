@@ -488,11 +488,17 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	@Override
 	public void notifySignaturesSpecimensLink(String electronicMailAddress,String readPageURL) {
 		if(StringHelper.isBlank(electronicMailAddress))
-			throw new RuntimeException("L'adresse mail est obligatoire");
-		
+			throw new RuntimeException("L'adresse mail est obligatoire");		
 		if(StringHelper.isBlank(readPageURL))
 			throw new RuntimeException("Le lien est obligatoire");
+		/*
+		EntityManager entityManager = EntityManagerGetter.getInstance().get();
+		String jpql = "SELECT t FROM ScopeFunctionElectronicMailAddressRequest JOIN ScopeFunction sf ON sf = t.scopeFunction WHERE t.electronicMailAddress = :electronicMailAddress AND (sf.code LIKE 'G%' OR sf.code LIKE 'O%')";
+		Long count = entityManager.createQuery(jpql,Long.class).setParameter("electronicMailAddress", electronicMailAddress).getSingleResult();
 		
+		if(NumberHelper.isLessThanOrEqualZero(count))
+			throw new RuntimeException(String.format("Aucun spécimen de signature n'existe pour cette adresse email : %s", electronicMailAddress));
+		*/
 		if(NumberHelper.isLessThanOrEqualZero(EntityCounter.getInstance().count(Request.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(RequestQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC))
 				.addFilterFieldsValues(RequestQuerier.PARAMETER_NAME_ELECTRONIC_MAIL_ADDRESS,electronicMailAddress))))
 			throw new RuntimeException(String.format("Aucune demande n'existe pour cette adresse email : %s", electronicMailAddress));

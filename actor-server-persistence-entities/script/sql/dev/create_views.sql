@@ -168,3 +168,30 @@ WHERE
     SUBSTR(p.code,1,1) IN ('G','O')
 ORDER BY
     d.identifiant,dp.identifiant ASC;
+
+-- Liste des postes et login
+CREATE OR REPLACE VIEW VA_POSTE_LOGIN AS
+SELECT DISTINCT fu.fonction_code||fu.login AS "IDENTIFIANT",fu.fonction_code AS "POSTE_CODE",fu.login AS "LOGIN"
+FROM fonction_et_utilisateur@dblink_elabo_bidf fu
+ORDER BY fu.login||fu.fonction_code ASC;
+
+CREATE OR REPLACE VIEW VA_POSTE_LOGIN_GC_ORD AS
+SELECT p.identifiant AS "POSTE",pl.login AS "LOGIN"
+FROM VA_POSTE_LOGIN pl
+JOIN Poste p ON p.code = pl.poste_code
+WHERE pl.poste_code LIKE 'G%' OR pl.poste_code LIKE 'O%'
+ORDER BY p.code ASC,pl.login ASC;
+
+CREATE OR REPLACE VIEW VA_DM_POSTE_EMAIL_GC_ORD AS
+SELECT p.identifiant AS "POSTE",d.email AS "EMAIL"
+FROM DM_POSTE dp
+JOIN DM_DEMANDE d ON d.identifiant = dp.demande AND d.statut = 'ACCEPTEE'
+JOIN POSTE p ON p.identifiant = dp.poste AND (p.code LIKE 'G%' OR p.code LIKE 'O%')
+WHERE dp.accordee = 1
+ORDER BY p.code ASC,d.email ASC;
+
+-- Liste des lignes importables
+CREATE OR REPLACE VIEW VA_LIGNE_IMPORTABLE AS
+SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2021 AND l.ldep_id NOT IN (SELECT a.identifiant FROM affectations a)
+UNION
+SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2022 AND l.identifiant NOT IN (SELECT a.identifiant FROM affectations a);

@@ -205,3 +205,9 @@ ORDER BY d.code ASC;
 
 CREATE OR REPLACE VIEW V_ASSISTANTS_NON_RATTACHES
 AS SELECT a.identifiant,a.code,a.libelle,a.parent FROM poste a WHERE a.code LIKE 'A%' AND a.parent IS NULL;
+
+-- Liste des lignes importables
+CREATE OR REPLACE VIEW VA_LIGNE_IMPORTABLE AS
+SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2021 AND l.ldep_id NOT IN (SELECT a.identifiant FROM affectations a)
+UNION
+SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2022 AND l.identifiant NOT IN (SELECT a.identifiant FROM affectations a);

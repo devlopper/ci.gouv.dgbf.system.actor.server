@@ -29,6 +29,7 @@ import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
+import org.cyk.utility.persistence.query.Field;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
@@ -713,6 +714,11 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	public static TransactionResult applyModel(Assignments model, Filter filter, Collection<String> overridablesFieldsNames,String actorCode,EntityManager entityManager) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("model", model);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("filter", filter);
+		Field exerciceField = filter.getField(AssignmentsQuerier.PARAMETER_NAME_EXERCISE);
+		if(exerciceField == null || exerciceField.getValue() == null)
+			throw new RuntimeException("L'exercice budgétaire est obligatoire");
+		if(CollectionHelper.getSize(filter.getFields()) < 2)
+			throw new RuntimeException("Un autre paramètre de filtre (autre que l'exercice) est obligatoire");
 		TransactionResult transactionResult = new TransactionResult().setName("Application de modèle").setTupleName("Affectation").setIsTupleNameFeminine(Boolean.TRUE);
 		LogHelper.logInfo(String.format("Modèle d'écrasement : %s|%s|%s|%s", model.getCreditManagerHolder(),model.getAuthorizingOfficerHolder()
 				,model.getFinancialControllerHolder(),model.getAccountingHolder()), AssignmentsBusinessImpl.class);

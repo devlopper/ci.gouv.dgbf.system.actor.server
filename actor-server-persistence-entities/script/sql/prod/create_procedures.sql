@@ -22,22 +22,23 @@ BEGIN
 END;
 
 CREATE OR REPLACE PROCEDURE P_IMPORTER_AFFECTATIONS_NVL(audit_acteur IN VARCHAR2,audit_fonctionalite IN VARCHAR2,audit_action IN VARCHAR2,audit_date IN DATE) AS
-    vsql VARCHAR2(4000);
 BEGIN
-    vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.ldep_id) '
-    ||'WHEN NOT MATCHED THEN INSERT '
-    ||'(identifiant, imputation, gc,agc,ord,aord,cf,acf,cpt,acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date'
-    ||',etat,date_etat) values (i.identifiant,i.identifiant,i.gc,i.agc,i.od,i.aod,i.cf,i.acf,i.cpt,i.acpt,:1,:2,:3,:4,NULL,NULL)'
-    ;
     P_RAFFRAICHIR_VM_APP_EX_IMP();
-    EXECUTE IMMEDIATE vsql USING audit_acteur,audit_fonctionalite,audit_action,audit_date;
+    FOR l IN (SELECT l.* FROM VA_LIGNE_IMPORTABLE l)
+    LOOP
+        IF l.exercice = 2021 THEN
+            INSERT INTO AFFECTATIONS(identifiant,imputation,gc,agc,ord,aord,cf,acf,cpt,acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date) VALUES(l.ldep_id,l.identifiant,l.gc,l.agc,l.od,l.aod,l.cf,l.acf,l.cpt,l.acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date);
+        ELSE
+            INSERT INTO AFFECTATIONS(identifiant,imputation,gc,agc,ord,aord,cf,acf,cpt,acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date) VALUES(l.identifiant,l.identifiant,l.gc,l.agc,l.od,l.aod,l.cf,l.acf,l.cpt,l.acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date);
+        END IF;
+    END LOOP;
     COMMIT;
 END;
 
 CREATE OR REPLACE PROCEDURE P_IMPORTER_AFFECTATIONS_ACT(audit_acteur IN VARCHAR2,audit_fonctionalite IN VARCHAR2,audit_action_creer IN VARCHAR2,audit_action_modifier IN VARCHAR2,audit_date IN DATE) AS
     vsql VARCHAR2(4000);
 BEGIN
-    vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.ldep_id) '
+    vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.identifiant) '
     ||'WHEN MATCHED THEN UPDATE SET '
     ||'a.gc = i.gc,a.agc = i.agc ,a.ord = i.od,a.aord = i.aod ,a.cf = i.cf,a.acf = i.acf ,a.cpt = i.cpt,a.acpt = i.acpt'
     ||',a.audit_acteur = :1, a.audit_fonctionalite = :2, a.audit_action = :3, a.audit_date = :4 '
@@ -51,14 +52,14 @@ END;
 CREATE OR REPLACE PROCEDURE P_IMPORTER_AFFECTATIONS(audit_acteur IN VARCHAR2,audit_fonctionalite IN VARCHAR2,audit_action_creer IN VARCHAR2,audit_action_modifier IN VARCHAR2,audit_date IN DATE) AS
     vsql VARCHAR2(4000);
 BEGIN
-    vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.ldep_id) '
+    vsql := 'MERGE INTO ACTEUR.affectations a USING ACTEUR.vm_app_ex_imputation i ON (a.identifiant = i.identifiant) '
     ||'WHEN MATCHED THEN UPDATE SET '
     ||'a.gc = i.gc,a.agc = i.agc ,a.ord = i.od,a.aord = i.aod ,a.cf = i.cf,a.acf = i.acf ,a.cpt = i.cpt,a.acpt = i.acpt'
     ||',a.audit_acteur = :1, a.audit_fonctionalite = :2, a.audit_action = :3, a.audit_date = :4 '
     ||',a.etat = i.etat ,a.date_etat = i.date_etat '
     ||'WHEN NOT MATCHED THEN INSERT '
     ||'(identifiant, imputation, gc,agc,ord,aord,cf,acf,cpt,acpt,audit_acteur,audit_fonctionalite,audit_action,audit_date'
-    ||',etat,date_etat) values (i.ldep_id,i.identifiant'
+    ||',etat,date_etat) values (i.identifiant,i.identifiant'
     -- fonctions budg�taires
     ||',i.gc,i.agc,i.od,i.aod,i.cf,i.acf,i.cpt,i.acpt'
     -- audit
