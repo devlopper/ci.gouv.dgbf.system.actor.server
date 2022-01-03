@@ -195,3 +195,10 @@ CREATE OR REPLACE VIEW VA_LIGNE_IMPORTABLE AS
 SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2021 AND l.ldep_id NOT IN (SELECT a.identifiant FROM affectations a)
 UNION
 SELECT l.* FROM vm_app_ex_imputation l WHERE l.exercice = 2022 AND l.identifiant NOT IN (SELECT a.identifiant FROM affectations a);
+
+-- Liste des lignes exportables
+CREATE OR REPLACE VIEW VA_LIGNE_EXPORTABLE AS
+SELECT a.*,i.exercice,i.ldep_id
+FROM affectations a
+LEFT JOIN vm_app_ex_imputation i ON i.identifiant = a.imputation
+WHERE a.etat = 'MODI';

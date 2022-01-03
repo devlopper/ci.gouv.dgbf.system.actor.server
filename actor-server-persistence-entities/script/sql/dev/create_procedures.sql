@@ -144,18 +144,37 @@ END;
 
 CREATE OR REPLACE PROCEDURE P_EXPORTER_AFFECTATIONS(audit_acteur IN VARCHAR2,audit_fonctionalite IN VARCHAR2,audit_action IN VARCHAR2,audit_date IN DATE) AS
 BEGIN
-MERGE 
-    INTO SIIBC_MEA.ligne_de_depenses l 
-    USING SIIBC_ACTEUR.affectations a 
-    ON (l.ldep_id = a.identifiant AND a.etat = 'MODI') 
-    WHEN MATCHED THEN UPDATE SET
+	FOR l IN (SELECT l.* FROM VA_LIGNE_EXPORTABLE l)
+    LOOP
+        IF l.exercice = 2021 THEN
+            UPDATE ligne_de_depenses@dblink_elabo_bidf u SET
+            -- postes
+            u.fct_gc_id = l.gc,u.fct_agc_id = l.agc,u.fct_ord_id = l.ord,u.fct_aord_id = l.aord,u.fct_cf_id = l.cf,u.fct_acf_id = l.acf,u.fct_cpt_id = l.cpt,u.fct_acpt_id = l.acpt
+    		-- audit
+    		,u.etat = l.etat,u.date_etat = l.date_etat
+    		WHERE u.ldep_id = l.ldep_id;
+        ELSE
+            UPDATE ligne_de_depenses@dblink_elabo_bidf u SET
+            -- postes
+            u.fct_gc_id = l.gc,u.fct_agc_id = l.agc,u.fct_ord_id = l.ord,u.fct_aord_id = l.aord,u.fct_cf_id = l.cf,u.fct_acf_id = l.acf,u.fct_cpt_id = l.cpt,u.fct_acpt_id = l.acpt
+    		-- audit
+    		,u.etat = l.etat,u.date_etat = l.date_etat
+    		WHERE u.exo_num||u.ads_id||u.nat_id = l.identifiant;
+        END IF;
+    END LOOP;
+	
+	--MERGE 
+    --INTO ligne_de_depenses@dblink_elabo_bidf l 
+    --USING ACTEUR.affectations a
+    --ON (l.exo_num||l.ads_id||l.nat_id = a.identifiant AND a.etat = 'MODI') 
+    --WHEN MATCHED THEN UPDATE SET
     -- fonctions budg�taires
-    l.fct_gc_id = a.gc,l.fct_agc_id = a.agc
-    ,l.fct_ord_id = a.ord,l.fct_aord_id = a.aord
-    ,l.fct_cf_id = a.cf,l.fct_acf_id = a.acf
-    ,l.fct_cpt_id = a.cpt,l.fct_acpt_id = a.acpt
+    --l.fct_gc_id = a.gc,l.fct_agc_id = a.agc
+    --,l.fct_ord_id = a.ord,l.fct_aord_id = a.aord
+    --,l.fct_cf_id = a.cf,l.fct_acf_id = a.acf
+    --,l.fct_cpt_id = a.cpt,l.fct_acpt_id = a.acpt
     -- audit
-    ,l.etat = a.etat,l.date_etat = a.date_etat;
+    --,l.etat = a.etat,l.date_etat = a.date_etat;
     COMMIT;
 END;
 
