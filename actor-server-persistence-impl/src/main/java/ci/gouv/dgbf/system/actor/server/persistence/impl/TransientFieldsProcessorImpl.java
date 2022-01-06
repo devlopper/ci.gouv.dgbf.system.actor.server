@@ -61,6 +61,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedSco
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionRequestIdentifierRequestCodeIdentityScopeFunctionStringGrantedStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
@@ -441,6 +442,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		for(String fieldName : fieldsNames) {
 			if(RequestScopeFunction.FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING.equals(fieldName))
 				new RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader().readThenSet(requestScopeFunctions, null);
+			else if(RequestScopeFunction.FIELDS_REQUEST_IDENTIFIER_REQUEST_CODE_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING.equals(fieldName))
+				new RequestScopeFunctionRequestIdentifierRequestCodeIdentityScopeFunctionStringGrantedStringReader().readThenSet(requestScopeFunctions, null);
 			else
 				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}

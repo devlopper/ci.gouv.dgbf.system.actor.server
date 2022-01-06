@@ -32,6 +32,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	
 	@ManyToOne @JoinColumn(name = COLUMN_REQUEST) @NotNull private Request request;
 	@Transient private String requestIdentifier;
+	@Transient private String requestCode;
 	@ManyToOne @JoinColumn(name = COLUMN_SCOPE_FUNCTION) @NotNull private ScopeFunction scopeFunction;
 	@Transient private String scopeFunctionIdentifier;
 	@Transient private String scopeFunctionCode;
@@ -74,6 +75,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String FIELD_SCOPE_FUNCTION_STRING = "scopeFunctionString";
 	public static final String FIELD_GRANTED_STRING = "grantedString";
 	public static final String FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING = "requestIdentifierIdentityScopeFunctionStringGrantedString";
+	public static final String FIELDS_REQUEST_IDENTIFIER_REQUEST_CODE_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING = "requestIdentifierRequestCodeIdentityScopeFunctionStringGrantedString";
 	
 	public static final String TABLE_NAME = "DM_POSTE";
 	

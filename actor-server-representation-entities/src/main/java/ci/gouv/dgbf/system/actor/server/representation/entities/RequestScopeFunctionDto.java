@@ -15,6 +15,7 @@ public class RequestScopeFunctionDto extends AbstractIdentifiableSystemScalarStr
 	private static final long serialVersionUID = 1L;
 	
 	private String requestIdentifier;
+	private String requestCode;
 	private String scopeFunctionIdentifier;
 	
 	private ArrayList<String> scopeFunctionsIdentifiers;
