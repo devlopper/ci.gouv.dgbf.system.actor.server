@@ -88,7 +88,7 @@ BEGIN
             u.fct_gc_id = l.gc,u.fct_agc_id = l.agc,u.fct_ord_id = l.ord,u.fct_aord_id = l.aord,u.fct_cf_id = l.cf,u.fct_acf_id = l.acf,u.fct_cpt_id = l.cpt,u.fct_acpt_id = l.acpt
     		-- audit
     		,u.etat = l.etat,u.date_etat = l.date_etat
-    		WHERE u.exo_num||u.ads_id||u.nat_id = l.identifiant AND u.exo_num = l.exercice;
+    		WHERE u.ldep_id = l.ldep_id AND u.exo_num = l.exercice;
         END IF;
     END LOOP;
     

@@ -154,7 +154,8 @@ AS SELECT
     ,UPPER('FICHE DE RENSEIGNEMENT ET DE DEP�T DE SIGNATURE DES '||(CASE SUBSTR(p.code,1,1) WHEN 'G' THEN 'GESTIONNAIRES DE CR�DITS' WHEN 'O' THEN 'ORDONNATEURS' ELSE 'XXX' END)) AS "titre"
     ,g.libelle AS "type_utilisateur"
     ,ua.ua_code||' '||ua.ua_liblg AS "unite_administrative"
-    ,usb.usb_code||' '||usb.usb_liblg AS "USB"
+    --,usb.usb_code||' '||usb.usb_liblg AS "USB"
+    ,CASE WHEN ord.usb IS NULL THEN usb_domaine.usb_code||' '||usb_domaine.usb_liblg ELSE usb.usb_code||' '||usb.usb_liblg END AS "USB"
     ,d.photo AS "photo"
 FROM
     DM_POSTE dp
@@ -166,6 +167,7 @@ LEFT JOIN CA.UNITE_ADMINISTRATIVE ua ON 'UA'||ua.uuid = d.unite_administrative
 LEFT JOIN CA.SECTION_BUDGETAIRE s ON s.uuid = ua.ua_secb_id
 LEFT JOIN ACTEUR.service_ord ord ON ord.identifiant = p.domaine
 LEFT JOIN CPP.USB usb ON 'USB'||usb.uuid = ord.usb
+LEFT JOIN CPP.USB usb_domaine ON 'USB'||usb_domaine.uuid = p.domaine
 WHERE
     SUBSTR(p.code,1,1) IN ('G','O')
 ORDER BY
