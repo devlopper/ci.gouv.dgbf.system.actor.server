@@ -15,6 +15,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -61,6 +65,20 @@ import lombok.experimental.Accessors;
 	,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableImpl.class)
 	,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringImpl.class)
 	//,@AuditOverride(forClass = AbstractIdentifiableSystemScalarStringImpl.class)
+})
+@NamedStoredProcedureQueries(value = {
+	@NamedStoredProcedureQuery(
+		name = ScopeFunction.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT, 
+		procedureName = ScopeFunction.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT
+	)
+})
+@NamedQueries(value = {
+		@NamedQuery(name = ScopeFunction.QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER,query = 
+				"SELECT DISTINCT t.identifier FROM ScopeFunction t"
+				+ " JOIN Assignments a ON a.accountingHolder = t"
+				+ " JOIN ExecutionImputation i ON i = a.executionImputation"
+				+ " JOIN Function f ON f = t.function"
+				+ " WHERE f.code = :functionCode AND i.exercise = :exerciseYear AND i.activityIdentifier = :activityIdentifier")
 })
 //@Audited
 public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements MeaEntity,Serializable {
@@ -412,6 +430,10 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_CODE = "code_fonction";
 	public static final String CODE_SCRIPT_VARIABLE_NAME_FUNCTION_NAME = "libelle_fonction";
+	
+	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT = "PA_EXPORTER_POSTE";
+
+	public static final String QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER = "ScopeFunction.readDistinctIdentifierByFunctionCOdeByExerciseYearByActivityIdentifier";
 	
 	/**/
 	

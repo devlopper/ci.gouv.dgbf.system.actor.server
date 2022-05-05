@@ -57,6 +57,7 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 		model.setFinancialControllerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "C300000"));
 		Filter filter = new Filter();
 		filter.addField(AssignmentsQuerier.PARAMETER_NAME_SECTION_CODE,"327");
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_EXERCISE,2021);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {

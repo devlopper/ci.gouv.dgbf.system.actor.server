@@ -14,6 +14,9 @@ import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
+
+import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -153,6 +156,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	ScopeFunction readMaxCodeWhereCodeStartsWith(String string);
 	ScopeFunction readMaxCodeUsingSubstringWhereCodeStartsWith(String string);
 	Integer readMaxDocumentNumberByFunctionCode(String functionCode);
+	Integer readMaxDocumentNumber();
 	
 	Collection<Object[]> readFromViewByCodes(Collection<String> codes);
 	Collection<Object[]> readFromViewByCodes(String...codes);
@@ -172,6 +176,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	Collection<Object[]> readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress);
 	
 	Long countByScopeIdentifierByFunctionCode(String scopeIdentifier,String functionCode);
+	
+	void export(String actor,String functionality,String action,Date date,EntityManager entityManager);
 	
 	/**/
 	

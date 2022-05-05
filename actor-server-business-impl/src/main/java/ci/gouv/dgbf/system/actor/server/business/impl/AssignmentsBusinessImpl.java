@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -273,13 +274,25 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		if(CollectionHelper.isEmpty(collection))
 			return null;
 		Long t = System.currentTimeMillis();
-		Collection<Assignments> processables = collection.parallelStream().filter(assignments -> assignments.getExecutionImputation() != null).collect(Collectors.toList());		
-		if(processables.size() < collection.size()) {
+		Collection<Assignments> processables = collection.parallelStream().filter(assignments -> {
+			if(assignments.getExecutionImputation() == null){//There is no imputation found
+				LogHelper.logWarning(String.format("L'affections <<%s>> n'a pas de lien avec une ligne budgétaire", assignments.getIdentifier()), AssignmentsBusinessImpl.class);
+				return Boolean.FALSE;
+			}
+			if(!Boolean.TRUE.equals(overridable) // all scope function are already set
+					&& assignments.getCreditManagerHolder() != null && assignments.getCreditManagerAssistant() != null
+					&& assignments.getAuthorizingOfficerHolder() != null && assignments.getAuthorizingOfficerAssistant() != null
+					&& assignments.getFinancialControllerHolder() != null && assignments.getFinancialControllerAssistant() != null
+					&& assignments.getAccountingHolder() != null && assignments.getAccountingAssistant() != null)
+				return Boolean.FALSE;
+			return Boolean.TRUE;
+		}).collect(Collectors.toList());
+		/*if(processables.size() < collection.size()) {
 			LogHelper.logWarning(String.format("Les affections suivantes n'ont pas de lien avec des lignes budgétaires : <<%s>>", collection.parallelStream()
 					.filter(assignments -> assignments.getExecutionImputation() == null).map(x -> x.getIdentifier())
 					.collect(Collectors.toList()))
 					, AssignmentsBusinessImpl.class);
-		}
+		}*/
 		//LogHelper.logInfo(String.format("\tDerivation des valeurs de %s ligne(s) d'affectation(s)",processables.size()), AssignmentsBusinessImpl.class);
 		processables.forEach(assignments -> {
 			assignments.set__auditWho__(actorCode);
@@ -346,7 +359,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 					,assignments.getExecutionImputation().getSectionCode()
 					,assignments.getExecutionImputation().getManagerLocalityCode(), financialControllerServices, scopeFunctions));
 			if(assignments.getAccountingHolder() == null || Boolean.TRUE.equals(overridable))
-				assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(managerCode
+				assignments.setAccountingHolder(findAccountingServiceHolderScopeFunction(assignments,managerCode
 					,assignments.getExecutionImputation().getSectionCode()
 					,assignments.getExecutionImputation().getManagerLocalityCode(), accountingServices, scopeFunctions));
 		}
@@ -522,7 +535,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return null;
 	}
 	
-	private static ScopeFunction findAccountingServiceHolderScopeFunction(String managerCode,String sectionCode,String localityCode
+	private static ScopeFunction findAccountingServiceHolderScopeFunction(Assignments assignments,String managerCode,String sectionCode,String localityCode
 			,Collection<AccountingService> accountingServices,Collection<ScopeFunction> scopeFunctions) {
 		if(CollectionHelper.isEmpty(accountingServices))
 			return null;
@@ -540,20 +553,23 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 			}
 		}
 		
-		/*
-		for(AccountingService accountingService : accountingServices) {
-			if(Locality.CODE_SOUS_PREFECTURE_BINGERVILLE.equals(localityCode)) {
-				
-			}else {
-				if(StringHelper.isNotBlank(localityCode) && localityCode.equals(accountingService.getLocalityCode())) {
-					for(ScopeFunction scopeFunction : scopeFunctions)
-						if(scopeFunction.getScopeIdentifier().equals(accountingService.getIdentifier()))
-							return scopeFunction;
-					break;
-				}
-			}			
+		EntityManager entityManager = EntityManagerGetter.getInstance().get();
+		Object[] array = null;
+		try {
+			array = (Object[]) CollectionHelper.getFirst(entityManager.createNamedQuery(ExecutionImputation.QUERY_READ_EXERCISE_YEAR_AND_ACTIVITY_IDENTIFIER_BY_ASSIGNMENTS_IDENTIFIER)
+					.setParameter("assignmentsIdentifier", assignments.getIdentifier()).getResultList());
+		} catch (NoResultException exception) {}
+		
+		if(array != null) {
+			LogHelper.logInfo(String.format("Le poste comptable de %s de l'exercice %s sera deduit à partir de l'activité %s",assignments.getIdentifier(),array[0],array[1]), AssignmentsBusinessImpl.class);
+			try {
+				String identifier = entityManager.createNamedQuery(ScopeFunction.QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER, String.class)
+						.setParameter("functionCode", Function.CODE_ACCOUNTING_HOLDER).setParameter("exerciseYear", array[0]).setParameter("activityIdentifier", array[1]).getSingleResult();
+				if(StringHelper.isNotBlank(identifier))
+					return scopeFunctions.stream().filter(scopeFunction -> scopeFunction.getIdentifier().equals(identifier)).findFirst().get();
+			} catch (NoResultException exception) {}
 		}
-		*/
+		
 		return null;
 	}
 	
@@ -857,21 +873,35 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 	}
 	
 	public static TransactionResult importNewsAndDeriveValuesByReferencedIdentifiers(Collection<String> referencedIdentifiers,String actorCode,EntityManager entityManager) {
-		LogHelper.logInfo(String.format("Importation et dérivation des nouvelles lignes à partir des identifiants des lignes budgétaires", actorCode,referencedIdentifiers), AssignmentsBusinessImpl.class);
+		LogHelper.logInfo(String.format("Importation et dérivation des nouvelles lignes par <<%s>> à partir des identifiants des lignes budgétaires <<%s>>", actorCode,referencedIdentifiers), AssignmentsBusinessImpl.class);
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("referenced identifiers", referencedIdentifiers);
-		importNews(actorCode,entityManager);
+		//importNews(actorCode,entityManager);
 		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
 		@SuppressWarnings("unchecked")		
-		Collection<Object[]> arrays = entityManager.createQuery("SELECT t.executionImputation.referencedIdentifier,t.identifier FROM Assignments t WHERE t.executionImputation.referencedIdentifier"
-				+ " IN :referencedIdentifiers").setParameter("referencedIdentifiers", referencedIdentifiers).getResultList();		
-		Collection<String> referencedIdentifiersMapped = CollectionHelper.isEmpty(arrays) ? null : arrays.stream().map(array -> array[0].toString())
-				.collect(Collectors.toList());
+		Collection<Object[]> arrays = entityManager.createQuery("SELECT t.executionImputation.referencedIdentifier,t.identifier FROM Assignments t WHERE t.executionImputation.referencedIdentifier IN :referencedIdentifiers")
+			.setParameter("referencedIdentifiers", referencedIdentifiers).getResultList();		
+		Collection<String> referencedIdentifiersMapped = CollectionHelper.isEmpty(arrays) ? null : arrays.stream().map(array -> array[0].toString()).collect(Collectors.toList());
+		Collection<String> newIdentifiers = new ArrayList<>();
+		if(referencedIdentifiers.size() != CollectionHelper.getSize(referencedIdentifiersMapped)) {
+			for(String referencedIdentifier : referencedIdentifiers)
+				if(referencedIdentifiersMapped == null || !referencedIdentifiersMapped.contains(referencedIdentifier))
+					newIdentifiers.add(referencedIdentifier);
+		}
+		
+		LogHelper.logInfo(String.format("%s ligne(s) budgétaire(s) à importer : %s",newIdentifiers.size(),newIdentifiers),AssignmentsBusinessImpl.class);
+		if(newIdentifiers.size() > 0)
+			importNews(actorCode,entityManager);
+		
+		arrays = entityManager.createQuery("SELECT t.executionImputation.referencedIdentifier,t.identifier FROM Assignments t WHERE t.executionImputation.referencedIdentifier IN :referencedIdentifiers")
+				.setParameter("referencedIdentifiers", referencedIdentifiers).getResultList();		
+		referencedIdentifiersMapped = CollectionHelper.isEmpty(arrays) ? null : arrays.stream().map(array -> array[0].toString()).collect(Collectors.toList());
 		if(referencedIdentifiers.size() != CollectionHelper.getSize(referencedIdentifiersMapped)) {
 			for(String referencedIdentifier : referencedIdentifiers)
 				if(referencedIdentifiersMapped == null || !referencedIdentifiersMapped.contains(referencedIdentifier))
 					throwablesMessages.add(String.format("La ligne budgétaire identifiée par <<%s>> n'existe pas",referencedIdentifier));
 		}
 		throwablesMessages.throwIfNotEmpty();
+		//All are fine
 		return deriveValuesByIdentifiers(arrays.stream().map(array -> array[1].toString()).collect(Collectors.toList()), Boolean.TRUE, Boolean.TRUE, null, actorCode, entityManager);
 	}
 	

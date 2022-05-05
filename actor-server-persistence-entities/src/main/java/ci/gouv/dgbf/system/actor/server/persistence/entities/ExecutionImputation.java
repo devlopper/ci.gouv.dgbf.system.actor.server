@@ -8,6 +8,8 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
@@ -31,6 +33,10 @@ import lombok.experimental.Accessors;
 		name = ExecutionImputation.PROCEDURE_REFRESH_MATERIALIZED_VIEW, 
 		procedureName = ExecutionImputation.PROCEDURE_NAME_REFRESH_MATERIALIZED_VIEW
 	)
+})
+@NamedQueries(value = {
+		@NamedQuery(name = ExecutionImputation.QUERY_READ_EXERCISE_YEAR_AND_ACTIVITY_IDENTIFIER_BY_ASSIGNMENTS_IDENTIFIER,query = 
+				"SELECT t.exercise,t.activityIdentifier FROM ExecutionImputation t JOIN Assignments a ON a.executionImputation = t WHERE a.identifier = :assignmentsIdentifier")
 })
 public class ExecutionImputation extends AbstractImputation implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -427,4 +433,6 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	public static final String FUNCTION_FIELD_NAME_TYPE_HOLDER = "Holder";
 	public static final String FUNCTION_FIELD_NAME_TYPE_ASSISTANT = "Assistant";
 	public static final Collection<String> FUNCTIONS_FIELDS_NAMES_TYPES = List.of(FUNCTION_FIELD_NAME_TYPE_HOLDER,FUNCTION_FIELD_NAME_TYPE_ASSISTANT);
+	
+	public static final String QUERY_READ_EXERCISE_YEAR_AND_ACTIVITY_IDENTIFIER_BY_ASSIGNMENTS_IDENTIFIER = "ExecutionImputation.readExerciseYearAndActivityIdentifierByAssignmentsIdentifier";
 }

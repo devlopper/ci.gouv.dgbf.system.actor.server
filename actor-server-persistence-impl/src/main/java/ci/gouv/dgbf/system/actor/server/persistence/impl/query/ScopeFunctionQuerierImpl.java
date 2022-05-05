@@ -4,8 +4,12 @@ import static org.cyk.utility.persistence.query.Language.jpql;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -20,6 +24,8 @@ import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.audit.AuditCounter;
 import org.cyk.utility.persistence.server.audit.AuditReader;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutor;
+import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
@@ -412,6 +418,15 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	}
 	
 	@Override
+	public Integer readMaxDocumentNumber() {
+		try {
+			return EntityManagerGetter.getInstance().get().createQuery(String.format("SELECT MAX(t.documentNumber) FROM ScopeFunction t"), Integer.class).getSingleResult();
+		} catch (NoResultException exception) {
+			return null;
+		}
+	}
+	
+	@Override
 	public Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments) {
 		if(arguments == null)
 			arguments = new QueryExecutorArguments();
@@ -561,6 +576,14 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		return readActorsCodes(CollectionHelper.listOf(scopeFunctions));
 	}
 	
+	@Override
+	public void export(String actor, String functionality, String action, Date date,EntityManager entityManager) {
+		ProcedureExecutorArguments arguments = new ProcedureExecutorArguments();
+		arguments.setName(ScopeFunction.STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT);
+		arguments.setEntityManager(entityManager);
+		ProcedureExecutor.getInstance().execute(arguments);
+	}		
+
 	/**/
 	
 	@Override

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +20,13 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.__kernel__.time.TimeHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
@@ -90,7 +93,9 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	
 	@Override @Transactional
 	public TransactionResult createByScopeIdentifierByCategoryCode(String scopeIdentifier,String categoryCode,String name,String actorCode,Boolean throwOnExisting) {
-		return createByScopeIdentifierByCategoryCode(scopeIdentifier,categoryCode,name,actorCode,throwOnExisting,EntityManagerGetter.getInstance().get());
+		TransactionResult result = createByScopeIdentifierByCategoryCode(scopeIdentifier,categoryCode,name,actorCode,throwOnExisting,EntityManagerGetter.getInstance().get());
+		exportAsynchronously(actorCode);
+		return result;		
 	}
 	
 	public static void create(Collection<ScopeFunction> scopeFunctions, EntityManager entityManager) {
@@ -175,6 +180,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 	protected void __listenExecuteCreateBefore__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(scopeFunction, properties, function);
 		__listenExecuteCreateOrUpdateBefore__(scopeFunction);
+	}
+	
+	@Override
+	protected void __listenExecuteCreateAfter__(ScopeFunction scopeFunction, Properties properties,BusinessFunctionCreator function) {
+		super.__listenExecuteCreateAfter__(scopeFunction, properties, function);
 	}
 	
 	@Override
@@ -294,6 +304,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				//__persistence__.update(scopeFunction);
 			}
 		//throwablesMessages.throwIfNotEmpty();
+		return this;
+	}
+	
+	@Override
+	public BusinessServiceProvider<ScopeFunction> saveMany(Collection<ScopeFunction> scopeFunctions, Properties properties) {
+		super.saveMany(scopeFunctions, properties);
+		exportAsynchronously(scopeFunctions.iterator().next().get__auditWho__());
 		return this;
 	}
 	
@@ -449,7 +466,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		//String categoryType = StringUtils.substring(codePrefix,0,1);
 		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeUsingSubstringWhereCodeStartsWith(categoryType);
 		Integer	orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));		
-		Integer documentNumber = NumberHelper.isEqualToZero(count) ? null : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxDocumentNumberByFunctionCode(functionCode),1));
+		Integer documentNumber = NumberHelper.isEqualToZero(count) ? null : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxDocumentNumber(),1));
 		LogHelper.logInfo(String.format("%s|%s|%s Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
 				,orderNumber,documentNumber), ScopeFunctionBusinessImpl.class);
 		
@@ -682,6 +699,27 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		__inject__(NativeQueryStringExecutor.class).execute(new org.cyk.utility.persistence.query.NativeQueryStringExecutor.Arguments()
 				.addQueriesStrings("DELETE FROM POSTE"));
 		return this;
+	}
+	
+	@Override @Transactional
+	public void export(String actorCode) {
+		actorCode = ValueHelper.defaultToIfBlank(actorCode, EntityLifeCycleListener.AbstractImpl.DEFAULT_USER_NAME);
+		ScopeFunctionQuerier.getInstance().export(actorCode, "exportation", EntityLifeCycleListener.Event.UPDATE.getValue(), new Date(),EntityManagerGetter.getInstance().get());
+	}
+	
+	@Override
+	public void exportAsynchronously(String actorCode) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				TimeHelper.pause(1000l * 10);
+				try {
+					export(actorCode);
+				} catch (Exception exception) {
+					LogHelper.log(exception, ScopeFunctionBusinessImpl.class);
+				}
+			}		
+		}).start();
 	}
 	
 	@Override

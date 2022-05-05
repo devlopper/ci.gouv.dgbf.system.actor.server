@@ -52,6 +52,12 @@ public interface ScopeFunctionBusiness extends BusinessEntity<ScopeFunction> {
 	
 	void updateActorsCodesFromExternal();
 	
+	@Transactional
+	void export(String actorCode);
+	
+	@Transactional
+	void exportAsynchronously(String actorCode);
+	
 	String SAVE = "ScopeFunction.save";
 	String SAVE_NAME = "ScopeFunction.saveName";
 

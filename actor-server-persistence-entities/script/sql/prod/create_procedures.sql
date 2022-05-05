@@ -116,3 +116,54 @@ CREATE OR REPLACE PROCEDURE P_RAFFRAICHIR_VM_APP_PRIVILEGE IS
 BEGIN
     DBMS_MVIEW.REFRESH('VM_APP_PRIVILEGE', METHOD => 'C', ATOMIC_REFRESH => FALSE,PARALLELISM => 4);
 END;
+
+CREATE OR REPLACE PROCEDURE PA_EXPORTER_POSTE AS
+BEGIN
+	----insertion des fonctions GC
+	MERGE INTO fonction_execution@dblink_elabo_bidf A
+	USING (select A.identifiant, A.code, A.libelle,A.numero_document,substr(A.domaine,3) as ua, B.UA_SECB_ID, B.UA_LOC_ID, A.parent, A.fonction
+	from poste A
+	left outer join CA.unite_administrative B on substr(A.domaine,3)=B.uuid
+	where code not in (select fonc_code from fonction_execution@dblink_elabo_bidf)
+	and A.fonction='GC') B
+	ON (A.fonc_code = B.code)
+	WHEN NOT MATCHED THEN INSERT (A.fonc_id, A.FONC_CODE, A.FONC_LIBLG, A.FONC_TYPE, A.SEQUENCE_ACTEUR, A.SECB_ID, A.LOC_ID, A.ETAT, A.DATE_ETAT, A.CHAMP_ACTION, A.PROFIL_CODE)
+	VALUES (B.identifiant,B.code,B.libelle, substr(B.code,1,2),B.numero_document,B.ua_secb_id,B.ua_loc_id, 'NOUV',sysdate,B.ua,B.fonction);
+	commit;
+
+	----insertion des fonctions AGC
+	MERGE INTO fonction_execution@dblink_elabo_bidf A
+	USING (select A.identifiant, A.code, A.libelle,A.numero_document,substr(A.domaine,3) as ua, B.UA_SECB_ID, B.UA_LOC_ID, A.parent, A.fonction
+	from poste A
+	left outer join CA.unite_administrative B on substr(A.domaine,3)=B.uuid
+	where code not in (select fonc_code from fonction_execution@dblink_elabo_bidf)
+	and A.fonction='AGC') B
+	ON (A.fonc_code = B.code)
+	WHEN NOT MATCHED THEN INSERT (A.fonc_id, A.FONC_CODE, A.FONC_LIBLG, A.FONC_TYPE, A.SECB_ID, A.LOC_ID, A.ETAT, A.DATE_ETAT, A.CHAMP_ACTION, A.PROFIL_CODE, A.PARENT)
+	VALUES (B.identifiant,B.code,B.libelle, substr(B.code,1,2),B.ua_secb_id,B.ua_loc_id, 'NOUV',sysdate,B.ua,B.fonction,B.parent);
+	commit;
+
+	----insertion des fonctions ORD
+	MERGE INTO fonction_execution@dblink_elabo_bidf A
+	USING (select A.identifiant, A.code, A.libelle,A.numero_document,substr(A.domaine,4) as usb, B.USB_SECB_ID, substr(A.localite,9) localite, A.parent, A.fonction
+	from poste A
+	left outer join CPP.usb B on substr(A.domaine,4)=B.uuid
+	where code not in (select fonc_code from fonction_execution@dblink_elabo_bidf)
+	and A.fonction='OD') B
+	ON (A.fonc_code = B.code)
+	WHEN NOT MATCHED THEN INSERT (A.fonc_id, A.FONC_CODE, A.FONC_LIBLG, A.FONC_TYPE, A.SEQUENCE_ACTEUR, A.SECB_ID, A.LOC_ID, A.ETAT, A.DATE_ETAT, A.CHAMP_ACTION, A.PROFIL_CODE)
+	VALUES (B.identifiant,B.code,B.libelle, substr(B.code,1,2),B.numero_document,B.usb_secb_id,B.localite, 'NOUV',sysdate,B.usb,B.fonction);
+	commit;
+
+	------insertion des fonctions AORD   
+	MERGE INTO fonction_execution@dblink_elabo_bidf A
+   	USING (select A.identifiant, A.code, A.libelle,A.numero_document,substr(A.domaine,4) as usb, B.USB_SECB_ID, substr(A.localite,9) localite, A.parent, A.fonction
+	from poste A
+	left outer join CPP.usb B on substr(A.domaine,4)=B.uuid
+	where code not in (select fonc_code from fonction_execution@dblink_elabo_bidf)
+	and A.fonction='AOD') B
+   	ON (A.fonc_code = B.code)
+   	WHEN NOT MATCHED THEN INSERT (A.fonc_id, A.FONC_CODE, A.FONC_LIBLG, A.FONC_TYPE, A.SECB_ID, A.LOC_ID, A.ETAT, A.DATE_ETAT, A.CHAMP_ACTION, A.PROFIL_CODE, A.PARENT)
+   	VALUES (B.identifiant,B.code,B.libelle, substr(B.code,1,2),B.usb_secb_id,B.localite, 'NOUV',sysdate,B.usb,B.fonction,B.parent);
+   	commit;
+END;
