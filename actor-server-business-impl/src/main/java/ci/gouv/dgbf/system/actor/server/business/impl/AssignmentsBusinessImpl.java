@@ -923,6 +923,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				TimeHelper.pause(1000l * 2);
 				try {
 					export(actorCode);
 				} catch (Exception exception) {

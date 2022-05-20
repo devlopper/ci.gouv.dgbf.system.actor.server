@@ -712,7 +712,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				TimeHelper.pause(1000l * 10);
+				TimeHelper.pause(1000l * 5);
 				try {
 					export(actorCode);
 				} catch (Exception exception) {
