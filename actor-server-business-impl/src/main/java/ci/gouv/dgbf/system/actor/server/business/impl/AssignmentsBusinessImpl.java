@@ -561,15 +561,29 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		} catch (NoResultException exception) {}
 		
 		if(array != null) {
-			LogHelper.logInfo(String.format("Le poste comptable de %s de l'exercice %s sera deduit à partir de l'activité %s",assignments.getIdentifier(),array[0],array[1]), AssignmentsBusinessImpl.class);
+			LogHelper.logFine(String.format("Le poste comptable de %s de l'exercice %s sera deduit à partir de l'activité %s",assignments.getIdentifier(),array[0],array[1]), AssignmentsBusinessImpl.class);
 			try {
+				/*
 				String identifier = entityManager.createNamedQuery(ScopeFunction.QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER, String.class)
 						.setParameter("functionCode", Function.CODE_ACCOUNTING_HOLDER).setParameter("exerciseYear", array[0]).setParameter("activityIdentifier", array[1]).getSingleResult();
-				if(StringHelper.isNotBlank(identifier))
-					return scopeFunctions.stream().filter(scopeFunction -> scopeFunction.getIdentifier().equals(identifier)).findFirst().get();
-			} catch (NoResultException exception) {}
+				*/
+				Collection<String> codes = entityManager.createNamedQuery(ScopeFunction.QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER, String.class)
+						.setParameter("functionCode", Function.CODE_ACCOUNTING_HOLDER).setParameter("exerciseYear", array[0]).setParameter("activityIdentifier", array[1]).getResultList();
+				if(CollectionHelper.isEmpty(codes)) {
+					LogHelper.logSevere(String.format("No scopes functions codes found : Function code = %s , exercice = %s , activity identifier = %s", Function.CODE_ACCOUNTING_HOLDER,array[0],array[1]), AssignmentsBusinessImpl.class);
+				}else if(CollectionHelper.getSize(codes) > 1) {
+					LogHelper.logSevere(String.format("Too much scopes functions codes found : Function code = %s , exercice = %s , activity identifier = %s", Function.CODE_ACCOUNTING_HOLDER,array[0],array[1]), AssignmentsBusinessImpl.class);
+				}else {
+					String identifier = codes.iterator().next();
+					if(StringHelper.isBlank(identifier))
+						LogHelper.logSevere(String.format("Scopes function code is blank : Function code = %s , exercice = %s , activity identifier = %s", Function.CODE_ACCOUNTING_HOLDER,array[0],array[1]), AssignmentsBusinessImpl.class);
+					else
+						return scopeFunctions.stream().filter(scopeFunction -> scopeFunction.getIdentifier().equals(identifier)).findFirst().get();		
+				}
+			} catch (Exception exception) {
+				LogHelper.logSevere(String.format("%s : Function code = %s , exercice = %s , activity identifier = %s", exception.toString(),Function.CODE_ACCOUNTING_HOLDER,array[0],array[1]), AssignmentsBusinessImpl.class);
+			}
 		}
-		
 		return null;
 	}
 	

@@ -12,20 +12,21 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.business.TransactionResult;
-import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.business.server.EntityUpdater;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 
 import ci.gouv.dgbf.system.actor.server.business.api.ScopeTypeBusiness;
+import ci.gouv.dgbf.system.actor.server.persistence.api.ScopeTypePersistence;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeTypeQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 @ApplicationScoped
-public class ScopeTypeBusinessImpl extends AbstractSpecificBusinessImpl<ScopeType> implements ScopeTypeBusiness,Serializable {
+public class ScopeTypeBusinessImpl extends AbstractBusinessEntityImpl<ScopeType,ScopeTypePersistence> implements ScopeTypeBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 		
 	private static void set(ScopeType scopeType,String code, String name,Byte orderNumber,Boolean requestable,String actorCode) {
@@ -81,6 +82,6 @@ public class ScopeTypeBusinessImpl extends AbstractSpecificBusinessImpl<ScopeTyp
 		QueryExecutorArguments arguments = new QueryExecutorArguments().queryReadDynamic(ScopeType.class)
 				.filterIfNotNull(ScopeTypeQuerier.PARAMETER_NAME_REQUESTABLE,requestable)
 				.page(pageable, firstTupleIndex, numberOfTuples);
-		return EntityReader.getInstance().readMany(getEntityClass(), arguments);
+		return EntityReader.getInstance().readMany(ScopeType.class, arguments);
 	}
 }

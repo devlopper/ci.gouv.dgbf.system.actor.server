@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
-import org.cyk.utility.business.SpecificBusiness;
 import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.server.business.BusinessEntity;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
-public interface ScopeTypeBusiness extends SpecificBusiness<ScopeType> {
+public interface ScopeTypeBusiness extends BusinessEntity<ScopeType> {
 
 	String CREATE = "ScopeType.create";
 	@Transactional
