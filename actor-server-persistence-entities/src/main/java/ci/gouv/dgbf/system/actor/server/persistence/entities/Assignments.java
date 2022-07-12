@@ -92,6 +92,7 @@ public class Assignments extends AbstractIdentifiableSystemScalarStringAuditedIm
 	//@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name=COLUMN_EXECUTION_IMPUTATION) private ExecutionImputation executionImputation;
 	
+	@Transient private String budgetCategoryAsString;
 	@Transient private String sectionAsString;
 	@Transient private String budgetSpecializationUnitAsString;
 	@Transient private String actionAsString;

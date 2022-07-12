@@ -394,6 +394,12 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("i.exercise = :%1$s",AssignmentsQuerier.PARAMETER_NAME_EXERCISE));
 			filter.addField(AssignmentsQuerier.PARAMETER_NAME_EXERCISE, arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_EXERCISE));
 		}
+		
+		if(Boolean.TRUE.equals(isQueryExecutorArgumentsFilterHasFieldsWithPaths(arguments,AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER))) {
+			predicate.add(String.format("i.%s = :%s",ExecutionImputation.FIELD_BUDGET_CATEGORY_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER));
+			filter.addField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, arguments.getFilterFieldValue(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER));
+		}
+		
 		//	by identifier
 		for(String parameterName : new String[] {AssignmentsQuerier.PARAMETER_NAME_SECTION_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ADMINISTRATIVE_UNIT_IDENTIFIER
 				,AssignmentsQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,AssignmentsQuerier.PARAMETER_NAME_ACTION_IDENTIFIER

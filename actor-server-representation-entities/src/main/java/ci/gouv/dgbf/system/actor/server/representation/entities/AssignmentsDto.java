@@ -18,6 +18,7 @@ public class AssignmentsDto extends AbstractIdentifiableSystemScalarStringAudite
 	
 	/* Imputation */
 	
+	private String budgetCategoryAsString;
 	private String sectionAsString;
 	private String budgetSpecializationUnitAsString;
 	private String actionAsString;

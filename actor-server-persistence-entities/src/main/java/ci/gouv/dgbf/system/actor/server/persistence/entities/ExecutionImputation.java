@@ -8,6 +8,8 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
@@ -42,6 +44,11 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	private static final long serialVersionUID = 1L;
 	
 	@Column(name = COLUMN_EXERCISE) private Integer exercise;
+	
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_CATEGORY) private BudgetSpecializationUnit budgetCategory;
+	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER) private String budgetCategoryIdentifier;
+	@Column(name = COLUMN_BUDGET_CATEGORY_CODE) private String budgetCategoryCode;
+	@Column(name = COLUMN_BUDGET_CATEGORY_CODE_NAME) private String budgetCategoryCodeName;
 	
 	/*Gestionnaire de crédits*/
 	

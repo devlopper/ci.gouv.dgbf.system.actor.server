@@ -58,6 +58,19 @@ public class AssignmentsPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	@Test
+	public void readDynamic_filterByBudgetCategoryIdentifier(){
+		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));
+		queryExecutorArguments.addProcessableTransientFieldsNames(Assignments.FIELDS_ALL_STRINGS_CODES_ONLY);
+		queryExecutorArguments.addFilterFieldsValues(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,"CB1");
+		Collection<Assignments> collection = AssignmentsQuerier.getInstance().readMany(queryExecutorArguments);
+		assertThat(collection).isNotEmpty();
+		assertThat(collection.stream().map(x -> x.getEconomicNatureAsString()).collect(Collectors.toList())).containsExactlyInAnyOrder("64323000");
+		collection.forEach(x -> assertThat(x.getCreditManagerHolder()).isNull());
+		collection.forEach(x -> assertThat(x.getCreditManagerHolderAsString()).isNotNull());
+	}
+	
+	@Test
 	public void readDynamic_filterByActivityIdentifier_holdersAreNotNull(){
 		QueryExecutorArguments queryExecutorArguments = new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(AssignmentsQuerier.QUERY_IDENTIFIER_READ_DYNAMIC));

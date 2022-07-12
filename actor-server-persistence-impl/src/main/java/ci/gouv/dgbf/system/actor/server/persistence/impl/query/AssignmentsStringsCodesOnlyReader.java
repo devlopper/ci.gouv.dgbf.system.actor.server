@@ -15,7 +15,7 @@ public class AssignmentsStringsCodesOnlyReader extends AbstractAssignmentsReader
 	protected String getQueryValue() {
 		QueryStringBuilder.Arguments arguments = new QueryStringBuilder.Arguments();
 		arguments.getProjection(Boolean.TRUE).addFromTuple("t",Assignments.FIELD_IDENTIFIER);
-		arguments.getProjection(Boolean.TRUE).addFromTuple(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_SECTION_CODE
+		arguments.getProjection(Boolean.TRUE).addFromTuple(Assignments.FIELD_EXECUTION_IMPUTATION,ExecutionImputation.FIELD_BUDGET_CATEGORY_CODE,ExecutionImputation.FIELD_SECTION_CODE
 				,ExecutionImputation.FIELD_ADMINISTRATIVE_UNIT_CODE,ExecutionImputation.FIELD_BUDGET_SPECIALIZATION_UNIT_CODE,ExecutionImputation.FIELD_ACTION_CODE
 				,ExecutionImputation.FIELD_ACTIVITY_CODE,ExecutionImputation.FIELD_ECONOMIC_NATURE_CODE,ExecutionImputation.FIELD_EXPENDITURE_NATURE_CODE
 				,ExecutionImputation.FIELD_ACTIVITY_CATEGORY_CODE);
@@ -31,6 +31,7 @@ public class AssignmentsStringsCodesOnlyReader extends AbstractAssignmentsReader
 	@Override
 	protected void __set__(Assignments assignments, Object[] array) {
 		int i = 1;
+		assignments.setBudgetCategoryAsString((String) array[i++]);
 		assignments.setSectionAsString((String) array[i++]);
 		assignments.setAdministrativeUnitAsString((String) array[i++]);
 		assignments.setBudgetSpecializationUnitAsString((String) array[i++]);

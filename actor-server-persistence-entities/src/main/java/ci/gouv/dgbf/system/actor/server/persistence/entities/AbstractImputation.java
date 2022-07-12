@@ -22,7 +22,12 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	private static final long serialVersionUID = 1L;
 	
 	@Column(name = COLUMN_REFERENCED_IDENTIFIER) private String referencedIdentifier;
-	
+	/*
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_CATEGORY) private BudgetSpecializationUnit budgetCategory;
+	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER) private String budgetCategoryIdentifier;
+	@Column(name = COLUMN_BUDGET_CATEGORY_CODE) private String budgetCategoryCode;
+	@Column(name = COLUMN_BUDGET_CATEGORY_CODE_NAME) private String budgetCategoryCodeName;
+	*/
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) private Section section;
 	@Column(name = COLUMN_SECTION_IDENTIFIER) private String sectionIdentifier;
 	@Column(name = COLUMN_SECTION_CODE) private String sectionCode;
@@ -111,6 +116,10 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	}
 	
 	public static final String FIELD_REFERENCED_IDENTIFIER = "referencedIdentifier";
+	public static final String FIELD_BUDGET_CATEGORY = "budgetCategory";
+	public static final String FIELD_BUDGET_CATEGORY_IDENTIFIER = "budgetCategoryIdentifier";
+	public static final String FIELD_BUDGET_CATEGORY_CODE = "budgetCategoryCode";
+	public static final String FIELD_BUDGET_CATEGORY_CODE_NAME = "budgetCategoryCodeName";
 	public static final String FIELD_SECTION = "section";
 	public static final String FIELD_SECTION_IDENTIFIER = "sectionIdentifier";
 	public static final String FIELD_SECTION_CODE = "sectionCode";
@@ -155,6 +164,10 @@ public abstract class AbstractImputation extends AbstractIdentifiableSystemScala
 	/**/
 	
 	public static final String COLUMN_REFERENCED_IDENTIFIER = "LDEP_ID";
+	public static final String COLUMN_BUDGET_CATEGORY = "CATEGORIE_BUDGET";
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET_IDENTIFIANT";
+	public static final String COLUMN_BUDGET_CATEGORY_CODE = "CATEGORIE_BUDGET_CODE";
+	public static final String COLUMN_BUDGET_CATEGORY_CODE_NAME = "CATEGORIE_BUDGET_CODE_LIBELLE";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_SECTION_IDENTIFIER = "SECTION_IDENTIFIANT";
 	public static final String COLUMN_SECTION_CODE = "SECTION_CODE";
