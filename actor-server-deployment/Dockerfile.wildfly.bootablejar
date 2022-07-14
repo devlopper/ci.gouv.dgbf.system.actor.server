@@ -13,10 +13,11 @@ ENV ORACLE_USER '${env.SIIB_DB_USER}'
 ENV ORACLE_PASSWORD '${env.SIIB_DB_PASSWORD}'
 
 # -- SIGNLE SING ON SYSTEM : KEYCLOAK --
-ENV KEYCLOAK_REALM SIIBTEST
+ENV KEYCLOAK_REALM SIIB
+ENV KEYCLOAK_CLIENT admin-cli
 ENV cyk.variable.keycloak.enabled true
 ENV cyk.variable.keycloak.server.url http://10.3.4.60:8080/auth
-ENV cyk.variable.keycloak.realm.name SIIBTEST
+ENV cyk.variable.keycloak.realm.name SIIB
 ENV cyk.variable.keycloak.client.identifier admin-cli
 ENV cyk.variable.keycloak.client.secret ac0749e3-14f8-4a14-a6e1-4edfb9375e69
 ENV cyk.variable.keycloak.credential.username mic-acteur-api
