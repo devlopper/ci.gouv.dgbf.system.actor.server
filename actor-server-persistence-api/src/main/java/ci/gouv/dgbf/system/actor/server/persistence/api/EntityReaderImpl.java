@@ -14,6 +14,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ActorScopeRequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AdministrativeUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.BudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ClusterQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ExecutionImputationQuerier;
@@ -35,6 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActionQ
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeActivityQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeAdministrativeUnitQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetCategoryQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeBudgetSpecializationUnitQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeImputationQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeOfTypeSectionQuerier;
@@ -48,6 +50,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationFormAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
@@ -126,6 +129,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Section.class)))
 				return (T) SectionQuerier.getInstance().readOne(arguments);
 			
+			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, BudgetCategory.class)))
+				return (T) BudgetCategoryQuerier.getInstance().readOne(arguments);
+			
 			if(Boolean.TRUE.equals(QueryIdentifierBuilder.builtFrom(arguments, Function.class)))
 				return (T) FunctionQuerier.getInstance().readOne(arguments);
 			
@@ -167,6 +173,8 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 	public <T> Collection<T> readMany(Class<T> tupleClass, QueryExecutorArguments arguments) {
 		if(ScopeOfTypeSectionQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeSectionQuerier.getInstance().readMany(arguments);
+		if(ScopeOfTypeBudgetCategoryQuerier.isProcessable(arguments))
+			return (Collection<T>) ScopeOfTypeBudgetCategoryQuerier.getInstance().readMany(arguments);
 		if(ScopeOfTypeAdministrativeUnitQuerier.isProcessable(arguments))
 			return (Collection<T>) ScopeOfTypeAdministrativeUnitQuerier.getInstance().readMany(arguments);
 		if(ScopeOfTypeBudgetSpecializationUnitQuerier.isProcessable(arguments))
@@ -208,6 +216,9 @@ public class EntityReaderImpl extends org.cyk.utility.persistence.server.query.E
 		
 		if(Boolean.TRUE.equals(SectionQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) SectionQuerier.getInstance().readMany(arguments);
+		
+		if(Boolean.TRUE.equals(BudgetCategoryQuerier.getInstance().isOwner(arguments)))
+			return (Collection<T>) BudgetCategoryQuerier.getInstance().readMany(arguments);
 		
 		if(Boolean.TRUE.equals(ActivityCategoryQuerier.getInstance().isOwner(arguments)))
 			return (Collection<T>) ActivityCategoryQuerier.getInstance().readMany(arguments);

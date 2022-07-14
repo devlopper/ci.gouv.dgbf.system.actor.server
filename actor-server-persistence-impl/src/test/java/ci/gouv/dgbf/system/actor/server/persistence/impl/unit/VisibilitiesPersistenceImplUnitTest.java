@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.actor.server.persistence.impl.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,36 +29,44 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 	@Test
 	public void scopeTypes(){	
 		assertThat(EntityCounter.getInstance().count(ScopeType.class, new QueryExecutorArguments()
-				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)))).isEqualTo(7);
+				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC)))).isEqualTo(8);
 		
 		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))).stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly("SECTION","UA","USB","ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE");
+			.containsExactly("CATEGORIE_BUDGET","SECTION","UA","USB","ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE");
 		
 		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).setSortOrders(Map.of("code",SortOrder.ASCENDING)))
 				.stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly("ACTION","ACTIVITE","CATEGORIE_ACTIVITE","LOCALITE","SECTION","UA","USB");
+			.containsExactly("ACTION","ACTIVITE","CATEGORIE_ACTIVITE","CATEGORIE_BUDGET","LOCALITE","SECTION","UA","USB");
 		
 		assertThat(EntityReader.getInstance().readMany(ScopeType.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeTypeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)).setSortOrders(Map.of("code",SortOrder.DESCENDING)))
 				.stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly("USB","UA","SECTION","LOCALITE","CATEGORIE_ACTIVITE","ACTIVITE","ACTION");
+			.containsExactly("USB","UA","SECTION","LOCALITE","CATEGORIE_BUDGET","CATEGORIE_ACTIVITE","ACTIVITE","ACTION");
+	}
+	
+	@Test
+	public void scopes_budgetCategory(){
+		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
+				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,ScopeType.CODE_CATEGORIE_BUDGET)).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("cb01","cb02","cb03","cb04","cb05");
 	}
 	
 	@Test
 	public void scopes_section(){	
 		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"SECTION")).stream().map(x -> x.getCode()).collect(Collectors.toList()))
-			.containsExactly("s01","s02","s03","s04","s05","s10","s11");
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,ScopeType.CODE_SECTION)).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+			.containsExactly("s01","s02","s03","s04","s05","s10","s11","s12");
 	}
 	
 	@Test
 	public void scopes_administrativeUnit(){	
 		assertThat(EntityReader.getInstance().readMany(Scope.class, new QueryExecutorArguments()
 				.setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
-				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,"UA")).stream().map(x -> x.getCode()).collect(Collectors.toList()))
+				.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_TYPE_IDENTIFIER,ScopeType.CODE_UA)).stream().map(x -> x.getCode()).collect(Collectors.toList()))
 			.containsExactly("ua01","ua02","ua10");
 	}
 	
@@ -71,18 +80,37 @@ public class VisibilitiesPersistenceImplUnitTest extends AbstractUnitTestMemory 
 	}
 	
 	@Test
+	public void visible_budgetCategory_christian(){
+		Collection<Scope> scopes = EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, ScopeType.CODE_CATEGORIE_BUDGET)
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, "christian").addFilterField(ScopeQuerier.PARAMETER_NAME_VISIBLE, Boolean.TRUE));
+		assertThat(scopes).isNotEmpty();
+		assertThat(scopes.stream().map(s -> s.getIdentifier()).collect(Collectors.toList())).containsExactly("cb01");
+	}
+	
+	@Test
+	public void visible_section_christian(){
+		Collection<Scope> scopes = EntityReader.getInstance().readMany(Scope.class,new QueryExecutorArguments().setQuery(new Query().setIdentifier(ScopeQuerier.QUERY_IDENTIFIER_READ_DYNAMIC))
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_TYPE_CODE, ScopeType.CODE_SECTION)
+				.addFilterField(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, "christian").addFilterField(ScopeQuerier.PARAMETER_NAME_VISIBLE, Boolean.TRUE));
+		assertThat(scopes).isNotEmpty();
+		assertThat(scopes.stream().map(s -> s.getIdentifier()).collect(Collectors.toList())).containsExactly("s01","s02","s03","s04","s05","s10");
+	}
+	
+	@Test
 	public void sections(){
 		String typeCode = ScopeType.CODE_SECTION;
 		assertScopes(typeCode
 			, new Object[][] {{"s01",Boolean.TRUE},{"s02",Boolean.TRUE},{"s03",Boolean.TRUE},{"s04",Boolean.TRUE},{"s05",Boolean.TRUE},{"s10",Boolean.TRUE},{"s11",null}}
-			, new String[] {"s01","s02","s03","s04","s05","s10"}
-			, new String[] {"s11"}
-			, new Object[] {"s02",new String[] {"s02"}}
-			, new Object[] {"3",new String[] {"s03"}}
-			, new Object[][] { {"rffim_s01",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
-			, new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10"}} }
-			, new Object[][] { {"christian",new String[] {"s11"}} }
-			, new Object[][] { {"s01",new String[] {"christian","rffim_s01"} } });
+			, null//new String[] {"s01","s02","s03","s04","s05","s10"}
+			, null//new String[] {"s11"}
+			, null//new Object[] {"s02",new String[] {"s02"}}
+			, null//new Object[] {"3",new String[] {"s03"}}
+			, null//new Object[][] { {"rffim_s01",new Object[][] {{"s01",Boolean.TRUE},{"s02",null},{"s03",null},{"s04",null},{"s05",null},{"s10",null},{"s11",null}}} }
+			, null//new Object[][] { {"christian",new String[] {"s01","s02","s03","s04","s05","s10"}} }
+			, null//new Object[][] { {"christian",new String[] {"s11"}} }
+			, new Object[][] { {"s01",new String[] {"christian","rffim_s01"} }}
+			);
 	}
 	
 	@Test

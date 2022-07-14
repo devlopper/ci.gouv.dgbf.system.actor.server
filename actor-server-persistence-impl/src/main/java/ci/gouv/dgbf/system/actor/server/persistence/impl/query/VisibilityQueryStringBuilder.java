@@ -258,6 +258,7 @@ public interface VisibilityQueryStringBuilder {
 					isTypeCode(ScopeType.CODE_CATEGORIE_BUDGET),				
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,some)
+						,childVisible(klass,some,BudgetSpecializationUnit.class,BudgetSpecializationUnit.FIELD_CATEGORY)
 					)),negate)
 				));
 		}
@@ -421,7 +422,10 @@ public interface VisibilityQueryStringBuilder {
 						,from("ActorScope _as")
 						,"JOIN Scope child ON _as.scope = child"
 						,"JOIN "+tupleName+" "+variableName+" ON "+variableName+" = child"
-						,where(join(klass,klassVariableName,mainVariableName, some, "_as",variableName+"."+parentFieldName))
+						,where(and(
+								join(klass,klassVariableName,/*Actor.class.equals(klass) ? "" : */mainVariableName, some, "_as",variableName+"."+parentFieldName)
+								,visible("_as", null)
+								))
 					);
 		}
 		
@@ -542,7 +546,6 @@ public interface VisibilityQueryStringBuilder {
 				string = hasVisibleActivity(klass,klassVariableName,mainVariableName,some,negate);
 			else if(ScopeType.CODE_CATEGORIE_BUDGET.equals(typeCode))
 				string = hasVisibleBudgetCategory(klass,klassVariableName,mainVariableName,some,negate);
-			
 			if(StringHelper.isBlank(string))
 				throw new RuntimeException(String.format("Visible predicate of scope type <<%s>> not yet implemented", typeCode));
 			return string;
@@ -561,6 +564,9 @@ public interface VisibilityQueryStringBuilder {
 					/*Actor.class.equals(klass) ? null : */isTypeCode(klassVariableName,ScopeType.CODE_CATEGORIE_BUDGET),
 					notIfTrue(parenthesis(or(
 						selfVisible(klass,klassVariableName,mainVariableName,some)
+						,childVisible(klass,klassVariableName,mainVariableName,some,BudgetSpecializationUnit.class,BudgetSpecializationUnit.FIELD_CATEGORY)
+						//,childVisible(klass,klassVariableName,mainVariableName,some,Action.class,BudgetCategory.class)
+						//,childVisible(klass,klassVariableName,mainVariableName,some,Activity.class,BudgetCategory.class)
 					)),negate)
 				));
 		}

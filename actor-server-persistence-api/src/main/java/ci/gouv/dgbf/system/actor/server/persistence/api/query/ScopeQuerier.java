@@ -293,6 +293,8 @@ public interface ScopeQuerier extends Querier.CodableAndNamable<Scope> {
 			.buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_TYPE_IDENTIFIER);
 	Long countWhereCodeOrNameLikeByTypeIdentifier(QueryExecutorArguments arguments);
 	
+	Collection<Scope> readByTypeCodeByActorCode(String typeCode, String actorCode, Boolean visible,Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples,Boolean removeTypeCodeFromIdentifier);
+	
 	/**/
 	
 	public static abstract class AbstractImpl extends Querier.CodableAndNamable.AbstractImpl<Scope> implements ScopeQuerier,Serializable {

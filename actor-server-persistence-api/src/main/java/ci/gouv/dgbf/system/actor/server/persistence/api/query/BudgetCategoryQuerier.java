@@ -20,6 +20,7 @@ import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
 public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetCategory> {
 
@@ -60,9 +61,13 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 		public Collection<BudgetCategory> readVisiblesByActorCodeForUI(String actorCode/*,Boolean budgetSpecializationUnits,Boolean administrationUnits*/) {
 			if(StringHelper.isBlank(actorCode))
 				return null;
+			/*
 			Collection<Scope> scopes =  ScopeOfTypeBudgetCategoryQuerier.getInstance().readVisibleWhereFilter(new QueryExecutorArguments()
 					.setQueryFromIdentifier(ScopeOfTypeBudgetCategoryQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER)
 					.addFilterFieldsValues(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode));
+			*/
+			Collection<Scope> scopes = ScopeQuerier.getInstance().readByTypeCodeByActorCode(ScopeType.CODE_CATEGORIE_BUDGET, actorCode, Boolean.TRUE, Boolean.FALSE, null, null,null);
+			
 			//Collection<Scope> scopes =  QueryExecutor.getInstance().executeReadMany(Scope.class, ScopeOfTypeBudgetCategoryQuerier.QUERY_IDENTIFIER_READ_VISIBLE_WHERE_FILTER
 			//		,ScopeQuerier.PARAMETER_NAME_ACTOR_CODE, actorCode);
 			if(CollectionHelper.isEmpty(scopes))

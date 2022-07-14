@@ -67,6 +67,8 @@ public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> imple
 	@Override
 	public Collection<Scope> getByTypeCodeByActorCode(String typeCode, String actorCode, Boolean visible,Boolean pageable,Integer firstTupleIndex, Integer numberOfTuples
 			,Boolean removeTypeCodeFromIdentifier) {
+		return ScopeQuerier.getInstance().readByTypeCodeByActorCode(typeCode, actorCode, visible, pageable, firstTupleIndex, numberOfTuples, removeTypeCodeFromIdentifier);
+		/*
 		CodeExecutor.getInstance().throwExceptionIfNotExist(ScopeType.class, typeCode);
 		CodeExecutor.getInstance().throwExceptionIfNotExist(Actor.class, actorCode);
 		ThrowableHelper.throwIllegalArgumentExceptionIfNull("visilbe", visible);
@@ -93,6 +95,7 @@ public class ScopeBusinessImpl extends AbstractSpecificBusinessImpl<Scope> imple
 				scope.setIdentifier(StringUtils.substringAfter(scope.getIdentifier(), typeCode));
 			});
 		return scopes;
+		*/
 	}
 	
 	@Override

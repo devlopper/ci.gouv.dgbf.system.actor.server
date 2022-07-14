@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Section;
@@ -92,13 +93,21 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	
 	@Test
 	public void childVisible() {
+		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Actor.class,"tt","t",Boolean.TRUE,BudgetSpecializationUnit.class,BudgetSpecializationUnit.FIELD_CATEGORY))
+		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
+				+ "JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = child WHERE budgetSpecializationUnit.category = t AND _as.scope.identifier = :scopeIdentifier AND (_as.visible IS NULL OR _as.visible = true))");
+		
+		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,"t",null,null,BudgetSpecializationUnit.class,BudgetSpecializationUnit.FIELD_CATEGORY))
+		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
+				+ "JOIN BudgetSpecializationUnit budgetSpecializationUnit ON budgetSpecializationUnit = child WHERE budgetSpecializationUnit.category = t AND (_as.visible IS NULL OR _as.visible = true))");
+		
 		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,"t",null,null,AdministrativeUnit.class,Section.class))
 		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
-				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t)");
+				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t AND (_as.visible IS NULL OR _as.visible = true))");
 		
 		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible(Scope.class,"t",null,Boolean.TRUE,AdministrativeUnit.class,Section.class))
 		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
-				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t AND _as.actor.code = :actorCode)");
+				+ "JOIN AdministrativeUnit administrativeUnit ON administrativeUnit = child WHERE administrativeUnit.section = t AND _as.actor.code = :actorCode AND (_as.visible IS NULL OR _as.visible = true))");
 		
 		assertThat(VisibilityQueryStringBuilder.Predicate.childVisible((Boolean)null,null,AdministrativeUnit.class,AdministrativeUnit.FIELD_SECTION))
 		.isEqualTo("EXISTS(SELECT _as.identifier FROM ActorScope _as JOIN Scope child ON _as.scope = child "
@@ -150,6 +159,12 @@ public class VisibilityQueryStringBuilderUnitTest extends org.cyk.utility.test.A
 	public void scope_section_negate() {
 		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,null,true)).doesNotContain(":actorCode");
 		assertThat(VisibilityQueryStringBuilder.Predicate.scopeVisible(ScopeType.CODE_SECTION,"t",null,true,true)).contains(":actorCode");
+	}
+	
+	@Test
+	public void budgetariesCategories() {
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleBudgetCategory(Scope.class,"t",null,null,null)).doesNotContain(":actorCode");
+		assertThat(VisibilityQueryStringBuilder.Predicate.hasVisibleBudgetCategory(Scope.class,"t",null,true,null)).contains(":actorCode");
 	}
 	
 	@Test

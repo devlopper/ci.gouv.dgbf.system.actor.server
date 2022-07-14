@@ -9,23 +9,22 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Language;
 import org.cyk.utility.persistence.query.Language.Where;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.value.Value;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Action;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Activity;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.Imputation;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 
 public interface ScopeOfTypeBudgetCategoryQuerier extends ScopeOfTypeQuerier {
 
 	Class<?> CLASS = BudgetCategory.class;
-	String SCOPE_TYPE = ScopeType.CODE_SECTION;
+	String SCOPE_TYPE = ScopeType.CODE_CATEGORIE_BUDGET;
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = ScopeOfTypeQuerier.buildReadWhereFilter(CLASS);	
 	@Override
@@ -81,10 +80,9 @@ public interface ScopeOfTypeBudgetCategoryQuerier extends ScopeOfTypeQuerier {
 		public String buildQueryValueReadVisibleWhereFilterWherePredicateVisible(String parameterNameActorCode) {
 			return parenthesis(or(
 					ScopeQuerier.getPredicateHasBeenMarkedVisible(parameterNameActorCode)
-					,getPredicateHasVisibleChild(AdministrativeUnit.class,parameterNameActorCode)
 					,getPredicateHasVisibleChild(BudgetSpecializationUnit.class,parameterNameActorCode)
+					,getPredicateHasVisibleChild(Action.class,parameterNameActorCode)
 					,getPredicateHasVisibleChild(Activity.class,parameterNameActorCode)
-					,getPredicateHasVisibleChild(Imputation.class,parameterNameActorCode)
 				));
 		}
 		
