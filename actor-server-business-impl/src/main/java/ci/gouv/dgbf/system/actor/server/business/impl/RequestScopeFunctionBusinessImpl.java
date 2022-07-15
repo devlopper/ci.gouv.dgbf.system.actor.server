@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Schedule;
+import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
@@ -18,6 +19,7 @@ import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.mail.MailSender;
 import org.cyk.utility.persistence.EntityManagerGetter;
@@ -30,15 +32,28 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFuncti
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 
-@ApplicationScoped
+@Stateless
 public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<RequestScopeFunction, RequestScopeFunctionPersistence> implements RequestScopeFunctionBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Schedule(hour = "*",minute = "*/5",persistent = false)
+	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAutomatically() {
+		Collection<Object[]> arrays = EntityManagerGetter.getInstance().get().createNamedQuery(RequestScopeFunction.QUERY_READ_RELEASABLE).getResultList();
+		if(CollectionHelper.isEmpty(arrays))
+			return;
+		for(Object[] array : arrays)
+			try {
+				updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(ValueHelper.defaultToIfBlank((String)array[1],"SYSTEME"), (String)array[0]);
+			} catch (Exception exception) {
+				LogHelper.log(exception, getClass());
+			}
+	}
+	
 	@Override @Transactional
 	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scope functions identifiers", scopeFunctionsIdentifiers);
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actor code", actorCode);
-		TransactionResult result = new TransactionResult().setTupleName("poste accordé");
+		TransactionResult result = new TransactionResult().setName("Libération de poste").setTupleName("poste");
 		Integer count = RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode
 				,"LIBERATION",EntityLifeCycleListener.Event.UPDATE.getValue(),LocalDateTime.now(), EntityManagerGetter.getInstance().get());
 		result.incrementNumberOfUpdate(count == null ? 0l : count.longValue());

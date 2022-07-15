@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -27,6 +29,9 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
 		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONNALITE"))
 })
+@NamedQueries(value = {
+		@NamedQuery(name = RequestScopeFunction.QUERY_READ_RELEASABLE,query = "SELECT t.scopeFunction.identifier,r.releasedBy FROM RequestScopeFunction t JOIN ReleasableRequestScopeFunction r ON r.code = t.scopeFunction.code")
+})
 public class RequestScopeFunction extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -40,7 +45,6 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	@Transient private String functionCode;
 	@Column(name = COLUMN_REQUESTED) private Boolean requested;
 	@Column(name = COLUMN_GRANTED) private Boolean granted;
-	
 	
 	@Transient private String electronicMailAddress;
 	@Transient private String scopeFunctionString;
@@ -83,6 +87,8 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String COLUMN_SCOPE_FUNCTION = "POSTE";
 	public static final String COLUMN_REQUESTED = "DEMANDEE";
 	public static final String COLUMN_GRANTED = "ACCORDEE";
+	
+	public static final String QUERY_READ_RELEASABLE = "RequestScopeFunction.readReleasable";
 	
 	public static final String LABEL = "Poste";
 }
