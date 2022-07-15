@@ -46,4 +46,10 @@ public class MailTemplateUnitTest extends AbstractWeldUnitTest {
 		String text = FreeMarker.getRequestsSignaturesSpecimensMailMessage("Mr", "Komenan", "Christian",1);
 		assertThat(text).contains("Mr Komenan Christian").contains("ci joint votre spécimen de signature");
 	}
+	
+	@Test
+	public void getSignaturesSpecimensMailMessage(){
+		String text = FreeMarker.getRequestsScopesFunctionsReleasedMailMessage("Mr Komenan Christian", "G01 Gestionnaire de crédits DTI");
+		assertThat(text).contains("Mr Komenan Christian").contains("la fonction budgétaire <b>G01 Gestionnaire de crédits DTI</b> vous a été retirée");
+	}
 }

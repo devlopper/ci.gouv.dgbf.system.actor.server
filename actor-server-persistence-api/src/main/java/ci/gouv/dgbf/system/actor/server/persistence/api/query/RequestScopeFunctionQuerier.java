@@ -68,7 +68,13 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_COUNT_WHERE_GRANTED_IS_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class, "countWhereGrantedIsTrueByScopeFunctionsIdentifiers");
 	Long countWhereGrantedIsTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers);
+	/*
+	Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,EntityManager entityManager);
+	Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(EntityManager entityManager,String...scopeFunctionsIdentifiers);
 	
+	Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,EntityManager entityManager);
+	Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(EntityManager entityManager,String...scopeFunctionsIdentifiers);
+	*/
 	Integer updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,String auditActor,String auditFunctionality,String auditAction,LocalDateTime auditDate,EntityManager entityManager);
 	Integer updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(EntityManager entityManager,String auditActor,String auditFunctionality,String auditAction,LocalDateTime auditDate,String...scopeFunctionsIdentifiers);
 	

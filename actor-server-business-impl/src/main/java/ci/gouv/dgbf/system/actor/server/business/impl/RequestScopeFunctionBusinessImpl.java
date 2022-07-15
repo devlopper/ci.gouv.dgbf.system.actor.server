@@ -14,8 +14,10 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
@@ -53,10 +55,15 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, String actorCode) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scope functions identifiers", scopeFunctionsIdentifiers);
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actor code", actorCode);
+		//scopeFunctionsIdentifiers = RequestScopeFunctionQuerier.getInstance().readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,EntityManagerGetter.getInstance().get());
 		TransactionResult result = new TransactionResult().setName("Libération de poste").setTupleName("poste");
-		Integer count = RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode
-				,"LIBERATION",EntityLifeCycleListener.Event.UPDATE.getValue(),LocalDateTime.now(), EntityManagerGetter.getInstance().get());
-		result.incrementNumberOfUpdate(count == null ? 0l : count.longValue());
+		if(CollectionHelper.isNotEmpty(scopeFunctionsIdentifiers)) {
+			Integer count = RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode
+					,"LIBERATION",EntityLifeCycleListener.Event.UPDATE.getValue(),LocalDateTime.now(), EntityManagerGetter.getInstance().get());
+			result.incrementNumberOfUpdate(count == null ? 0l : count.longValue());
+			if(!Boolean.TRUE.equals(NumberHelper.compare(scopeFunctionsIdentifiers.size(), count, ComparisonOperator.EQ)))
+				throw new RuntimeException(String.format("Le nombre de poste à mettre à jour (%s) est différent au nombre mis à jour (%s)",scopeFunctionsIdentifiers.size(),count));
+		}
 		result.log(RequestScopeFunctionBusinessImpl.class);
 		return result;
 	}
@@ -65,6 +72,21 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,String... scopeFunctionsIdentifiers) {
 		return updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(ArrayHelper.isEmpty(scopeFunctionsIdentifiers) ? null : CollectionHelper.listOf(scopeFunctionsIdentifiers)
 				, actorCode);
+	}
+	
+	@Override
+	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(Collection<String> scopeFunctionsIdentifiers, String actorCode) {
+		TransactionResult transactionResult = updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode);
+		/*scopeFunctionsIdentifiers = RequestScopeFunctionQuerier.getInstance().readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,EntityManagerGetter.getInstance().get());
+		if(CollectionHelper.isNotEmpty(scopeFunctionsIdentifiers)) {
+			notifyScopeFunctionReleased(actorCode, actorCode, actorCode, actorCode, actorCode);
+		}*/
+		return transactionResult;
+	}
+	
+	@Override
+	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(String actorCode,String... scopeFunctionsIdentifiers) {
+		return updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(CollectionHelper.listOf(scopeFunctionsIdentifiers), actorCode);
 	}
 
 	@Override
@@ -125,4 +147,18 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 	public void notifySignatureSpecimen(String... identifiers) {
 		notifySignatureSpecimen(CollectionHelper.listOf(Boolean.TRUE,identifiers));
 	}
+	
+	/*private static void notifyScopeFunctionReleased(String civility,String firstName,String lastNames,String electronicMailAddress,String scopeFunctionCodeName) {
+		new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					String message = FreeMarker.getRequestsScopesFunctionsReleasedMailMessage(Identity.getNames(civility, firstName, lastNames), scopeFunctionCodeName);
+					MailSender.getInstance().send("SIGOBE - Retrait de fonction budgétaire", message, electronicMailAddress);
+				} catch (Exception exception) {
+					LogHelper.log(exception, getClass());
+				}
+			}
+		}).start();		
+	}*/
 }

@@ -19,7 +19,35 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFuncti
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 
 public class RequestScopeFunctionQuerierImpl extends RequestScopeFunctionQuerier.AbstractImpl {
-
+	/*
+	@Override
+	public Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, EntityManager entityManager) {
+		if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))
+			return null;
+		return entityManager.createNamedQuery(RequestScopeFunction.QUERY_READ_WHERE_GRANTED_IS_TRUE_BY_SCOPES_FUNCTIONS_IDENTIFIERS,String.class).setParameter("scopeFunctionsIdentifiers", scopeFunctionsIdentifiers).getResultList();
+	}
+	
+	@Override
+	public Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(EntityManager entityManager,String... scopeFunctionsIdentifiers) {
+		if(ArrayHelper.isEmpty(scopeFunctionsIdentifiers))
+			return null;
+		return readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(CollectionHelper.listOf(scopeFunctionsIdentifiers), entityManager);
+	}
+	
+	@Override
+	public Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, EntityManager entityManager) {
+		if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))
+			return null;
+		return entityManager.createNamedQuery(RequestScopeFunction.QUERY_READ_WHERE_GRANTED_IS_NULL_OR_FALSE_BY_SCOPES_FUNCTIONS_IDENTIFIERS,String.class).setParameter("scopeFunctionsIdentifiers", scopeFunctionsIdentifiers).getResultList();
+	}
+	
+	@Override
+	public Collection<String> readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(EntityManager entityManager,String... scopeFunctionsIdentifiers) {
+		if(ArrayHelper.isEmpty(scopeFunctionsIdentifiers))
+			return null;
+		return readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(CollectionHelper.listOf(scopeFunctionsIdentifiers), entityManager);
+	}
+	*/
 	@Override
 	public Integer updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,String auditActor,String auditFunctionality,String auditAction,LocalDateTime auditDate,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(scopeFunctionsIdentifiers))

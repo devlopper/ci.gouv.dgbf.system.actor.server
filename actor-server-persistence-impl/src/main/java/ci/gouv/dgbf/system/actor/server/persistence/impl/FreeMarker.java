@@ -117,6 +117,13 @@ public class FreeMarker {
 				, Map.of("names",Identity.getNames(actor),"username",actor.getCode(),"password",actor.getPassword()));
 	}
 	
+	public static String getRequestsScopesFunctionsReleasedMailMessage(String names,String scopeFunctionCodeName) {
+		Map<String,Object> map = new LinkedHashMap<>();
+		map.put("names",names);
+		map.put("scopeFunctionCodeName",scopeFunctionCodeName);
+		return StringGenerator.getInstance().generate(FreeMarker.getMailTemplate("requests_scopes_functions_released.ftlh"), map);
+	}
+	
 	/**/
 	
 	public static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_29);

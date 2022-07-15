@@ -1,0 +1,1 @@
+<p>${names}&nbsp;,la fonction budgétaire <b>${scopeFunctionCodeName}</b> vous a été retirée.</p>

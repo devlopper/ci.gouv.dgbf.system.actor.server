@@ -30,7 +30,9 @@ import lombok.experimental.Accessors;
 		,@AttributeOverride(name = RequestScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONNALITE"))
 })
 @NamedQueries(value = {
-		@NamedQuery(name = RequestScopeFunction.QUERY_READ_RELEASABLE,query = "SELECT t.scopeFunction.identifier,r.releasedBy FROM RequestScopeFunction t JOIN ReleasableRequestScopeFunction r ON r.code = t.scopeFunction.code")
+		/*@NamedQuery(name = RequestScopeFunction.QUERY_READ_WHERE_GRANTED_IS_TRUE_BY_SCOPES_FUNCTIONS_IDENTIFIERS,query = "SELECT t.identifier FROM RequestScopeFunction t WHERE t.granted = TRUE AND t.scopeFunction.identifier IN :scopeFunctionIdentifiers")
+		,@NamedQuery(name = RequestScopeFunction.QUERY_READ_WHERE_GRANTED_IS_NULL_OR_FALSE_BY_SCOPES_FUNCTIONS_IDENTIFIERS,query = "SELECT t.identifier FROM RequestScopeFunction t WHERE (t.granted = NULL OR t.granted = FALSE) AND t.scopeFunction.identifier IN :scopeFunctionIdentifiers")
+		,*/@NamedQuery(name = RequestScopeFunction.QUERY_READ_RELEASABLE,query = "SELECT t.scopeFunction.identifier,r.releasedBy FROM RequestScopeFunction t JOIN ReleasableRequestScopeFunction r ON r.code = t.scopeFunction.code")
 })
 public class RequestScopeFunction extends AbstractIdentifiableSystemScalarStringAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -88,6 +90,8 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String COLUMN_REQUESTED = "DEMANDEE";
 	public static final String COLUMN_GRANTED = "ACCORDEE";
 	
+	public static final String QUERY_READ_WHERE_GRANTED_IS_TRUE_BY_SCOPES_FUNCTIONS_IDENTIFIERS = "RequestScopeFunction.readWhereGrantedIsTrueByScopeFunctionIdentifiers";
+	public static final String QUERY_READ_WHERE_GRANTED_IS_NULL_OR_FALSE_BY_SCOPES_FUNCTIONS_IDENTIFIERS = "RequestScopeFunction.readWhereGrantedIsNullOrFalseByScopeFunctionIdentifiers";
 	public static final String QUERY_READ_RELEASABLE = "RequestScopeFunction.readReleasable";
 	
 	public static final String LABEL = "Poste";
