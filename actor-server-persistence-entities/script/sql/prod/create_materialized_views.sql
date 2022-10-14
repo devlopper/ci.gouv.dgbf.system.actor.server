@@ -466,6 +466,12 @@ WHERE
     AND localite_activite.uuid (+) = gestionnaire.ua_loc_id
     --AND ua.ua_secb_id IS NOT NULL
     --AND s.entitystatus = 'COMMITTED'
+    
+    --AND ((ld.fct_gc_id IS NULL) OR (SELECT COUNT(fe.sequence_acteur) FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_gc_id) = 0 OR (SELECT fe.sequence_acteur FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_gc_id) < 90000)
+    --AND ((ld.fct_ord_id IS NULL) OR (SELECT COUNT(fe.sequence_acteur) FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_ord_id) = 0 OR (SELECT fe.sequence_acteur FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_ord_id) < 90000)
+    --AND ((ld.fct_cf_id IS NULL) OR (SELECT COUNT(fe.sequence_acteur) FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_cf_id) = 0 OR (SELECT fe.sequence_acteur FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_cf_id) < 90000)
+    --AND ((ld.fct_cpt_id IS NULL) OR (SELECT COUNT(fe.sequence_acteur) FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_cpt_id) = 0 OR (SELECT fe.sequence_acteur FROM fonction_execution@dblink_elabo_bidf fe WHERE fe.fonc_code = ld.fct_cpt_id) < 90000)
+    
     ;
 ALTER TABLE VM_APP_EX_IMPUTATION ADD CONSTRAINT VM_APP_EX_IMPUTATION_PK PRIMARY KEY (IDENTIFIANT);
 CREATE INDEX VM_APP_EX_IMPUTATION_K_EXO ON VM_APP_EX_IMPUTATION (EXERCICE ASC);
