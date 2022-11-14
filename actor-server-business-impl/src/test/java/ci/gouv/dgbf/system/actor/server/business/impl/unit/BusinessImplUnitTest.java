@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.business.impl.AssignmentsBusinessImpl;
+import ci.gouv.dgbf.system.actor.server.business.impl.ScopeFunctionBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.AssignmentsQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
@@ -25,6 +26,20 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	@BeforeAll
 	public static void beforeAll() {
 		ApplicationScopeLifeCycleListener.INTEGRATION = Boolean.FALSE;
+	}
+	
+	@Test
+	public void createByScopeIdentifierByCategoryCode_G() {
+		assertThatCountIsEqualTo(ScopeFunction.class, 3l);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("DBE","G1", null,"test",null, entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 5l);
+		assertScopeFunction("G100001", "Gestionnaire de crédits DBE");
+		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE");
 	}
 	
 	@Test

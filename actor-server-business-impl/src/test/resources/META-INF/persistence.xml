@@ -67,6 +67,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -158,6 +159,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -255,6 +257,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -353,6 +356,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -450,6 +454,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -547,6 +552,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -644,6 +650,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -739,6 +746,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
@@ -837,6 +845,7 @@
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip</class>
+    	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ReleasableRequestScopeFunction</class>
     	
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.AuthorizingOfficerService</class>
     	<class>ci.gouv.dgbf.system.actor.server.persistence.entities.FinancialControllerService</class>
