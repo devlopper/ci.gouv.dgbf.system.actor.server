@@ -36,6 +36,7 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 	
 	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
+	String PARAMETER_NAME_SERVICE_GROUP_CODE = "serviceGroupCode";
 	
 	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_WITH_CODES_NAMES_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readByIdentifierWithCodesNamesForUI");
 	AdministrativeUnit readByIdentifierWithCodesNamesForUI(String identifier);
@@ -45,6 +46,9 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 	
 	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readBySectionIdentifierForUI");
 	Collection<AdministrativeUnit> readBySectionIdentifierForUI(String sectionIdentifier);
+	
+	String QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI = QueryIdentifierBuilder.getInstance().build(AdministrativeUnit.class, "readBySectionIdentifierByServiceGroupCodeStartsWithForUI");
+	Collection<AdministrativeUnit> readBySectionIdentifierByServiceGroupCodeStartsWithForUI(String sectionIdentifier,String serviceGroupCode);
 	
 	String QUERY_IDENTIFIER_COUNT_BY_SECTION_IDENTIFIER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER);
 	Long countBySectionIdentifier(String sectionIdentifier);
@@ -86,6 +90,8 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 				return readBySectionIdentifier((String)arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI))
 				return readBySectionIdentifierForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI))
+				return readBySectionIdentifierByServiceGroupCodeStartsWithForUI((String) arguments.getFilterFieldValue(PARAMETER_NAME_SECTION_IDENTIFIER),(String) arguments.getFilterFieldValue(PARAMETER_NAME_SERVICE_GROUP_CODE));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS))
 				return readBySectionsIdentifiers((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS_FOR_UI))
@@ -142,6 +148,12 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		public Collection<AdministrativeUnit> readBySectionIdentifierForUI(String sectionIdentifier) {
 			return QueryExecutor.getInstance().executeReadMany(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 					, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier);
+		}
+		
+		@Override
+		public Collection<AdministrativeUnit> readBySectionIdentifierByServiceGroupCodeStartsWithForUI(String sectionIdentifier,String serviceGroupCode) {
+			return QueryExecutor.getInstance().executeReadMany(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+					, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier,PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode+"%");
 		}
 		
 		@Override
@@ -216,6 +228,10 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 			
 			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_FOR_UI
 					, "SELECT t.identifier,t.code,t.name FROM AdministrativeUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" ORDER BY t.code ASC")
+				.setTupleFieldsNamesIndexesFromFieldsNames(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)
+			
+			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
+					, "SELECT t.identifier,t.code,t.name FROM AdministrativeUnit t WHERE t.section.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER+" AND t.serviceGroupCodeName LIKE :"+PARAMETER_NAME_SERVICE_GROUP_CODE+" ORDER BY t.code ASC")
 				.setTupleFieldsNamesIndexesFromFieldsNames(AdministrativeUnit.FIELD_IDENTIFIER,AdministrativeUnit.FIELD_CODE,AdministrativeUnit.FIELD_NAME)
 				
 			,Query.buildSelect(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTIONS_IDENTIFIERS

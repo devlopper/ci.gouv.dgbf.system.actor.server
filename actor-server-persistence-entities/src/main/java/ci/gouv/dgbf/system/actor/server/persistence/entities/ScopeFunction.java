@@ -440,6 +440,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String CATEGORY_CODE_G1 = "G1";
 	public static final String CATEGORY_NAME_G1 = "Gestionnaire de crédits";
 	
+	public static final String CATEGORY_CODE_G_EPN = "GE";
+	public static final String CATEGORY_NAME_G_EPN = "Gestionnaire de crédits EPN";
+	
 	public static final String CATEGORY_CODE_O2 = "O2";
 	public static final String CATEGORY_NAME_O2 = "Ordonnateur délégué";
 	

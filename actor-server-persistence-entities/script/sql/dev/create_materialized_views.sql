@@ -21,10 +21,14 @@ SELECT 'UA'||ua.uuid AS "IDENTIFIANT",ua.ua_code AS "CODE",ua.ua_liblg AS "LIBEL
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION"
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION_IDENTIFIANT"
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE s.secb_code||' '||s.secb_libelle END AS "SECTION_CODE_LIBELLE"
+-- Groupe de service
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.uuid END AS "GROUPE_SERVICE"
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.uuid END AS "GROUPE_SERVICE_IDENTIFIANT"
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.gsrv_code||' '||gs.gsrv_liblg END AS "GROUPE_SERVICE_CODE_LIBELLE"
 -- Localité
     ,CASE WHEN l.uuid IS NULL OR l.entitystatus <> 'COMMITTED' THEN NULL ELSE 'LOCALITE'||l.uuid END AS "LOCALITE"
-FROM SIIBC_CA.unite_administrative ua,SIIBC_CA.section_budgetaire s,SIIBC_CA.localite l
-WHERE s.uuid (+) = ua.ua_secb_id AND l.uuid (+) = ua.ua_loc_id;
+FROM SIIBC_CA.unite_administrative ua,SIIBC_CA.section_budgetaire s,SIIBC_CA.groupe_service gs,SIIBC_CA.localite l
+WHERE s.uuid (+) = ua.ua_secb_id AND gs.uuid (+) = ua.ua_gsrv_id AND l.uuid (+) = ua.ua_loc_id;
 ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_PK PRIMARY KEY (IDENTIFIANT);
 ALTER TABLE VM_APP_UNITE_ADMINISTRATIVE ADD CONSTRAINT VM_APP_UA_UK_CODE UNIQUE (CODE);
 CREATE INDEX VM_APP_UA_K_SECTION ON VM_APP_UNITE_ADMINISTRATIVE (SECTION ASC);
