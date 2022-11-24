@@ -372,6 +372,16 @@ CREATE INDEX VM_APP_DOMAINE_K_TYPE ON VM_APP_DOMAINE (TYPE ASC);
 -- Exécution - BIDF                                                                                                                                                  --
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Exercice
+DROP MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_EXERCICE;
+CREATE MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_EXERCICE
+TABLESPACE USERS
+REFRESH NEXT SYSDATE + 1/24 COMPLETE AS
+SELECT DISTINCT TO_CHAR(ld.exo_num) AS "IDENTIFIANT",TO_CHAR(ld.exo_num) AS "CODE",TO_CHAR(ld.exo_num) AS "LIBELLE"
+FROM ligne_de_depenses@dblink_elabo_bidf ld ORDER BY ld.exo_num DESC;
+ALTER TABLE VM_APP_EXERCICE ADD CONSTRAINT VM_APP_EXERCICE_PK PRIMARY KEY (IDENTIFIANT);
+CREATE INDEX VM_APP_EXERCICE_K_CODE ON VM_APP_EXERCICE (CODE DESC);
+
 -- Imputation Execution
 DROP MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_EX_IMPUTATION;
 CREATE MATERIALIZED VIEW "SIIBC_ACTEUR".VM_APP_EX_IMPUTATION
