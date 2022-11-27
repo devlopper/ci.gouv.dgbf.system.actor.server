@@ -144,7 +144,6 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					.set__auditWho__(scopeFunction.get__auditWho__());
 				if(StringHelper.isNotBlank(scopeFunction.getName()))
 					assistantScopeFunction.setName("Assistant "+scopeFunction.getName());
-				
 				allScopeFunctions.add(assistantScopeFunction);
 			}else if(Boolean.TRUE.equals(scopeFunction.getFunction().isCodeBelongsToExecutionAssisantsCodes())) {
 				if(StringHelper.isNotBlank(scopeFunction.getParentIdentifier())) {
@@ -163,7 +162,6 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		Collection<String> existingCodes = CodeExecutor.getInstance().getExisting(ScopeFunction.class, FieldHelper.readBusinessIdentifiersAsStrings(scopeFunctions));
 		if(CollectionHelper.isNotEmpty(existingCodes))
 			throw new RuntimeException("Les codes suivants existe déjà : "+existingCodes);
-		
 		org.cyk.utility.persistence.query.EntityCreator.getInstance().createMany(allScopeFunctions,entityManager);
 		//__persistence__.createMany(allScopeFunctions);
 		for(ScopeFunction scopeFunction : allScopeFunctions)
@@ -465,7 +463,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeWhereCodeStartsWith(codePrefix);
 		//String categoryType = StringUtils.substring(codePrefix,0,1);
 		//ScopeFunction scopeFunctionMax = StringHelper.isBlank(codePrefix) ? null : ScopeFunctionQuerier.getInstance().readMaxCodeUsingSubstringWhereCodeStartsWith(categoryType);
-		Integer	orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));		
+		Integer	orderNumber = NumberHelper.isEqualToZero(count) ? 0 : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxOrderNumberByFunctionCode(functionCode),1));	
 		Integer documentNumber = NumberHelper.isEqualToZero(count) ? null : NumberHelper.getInteger(NumberHelper.add(ScopeFunctionQuerier.getInstance().readMaxDocumentNumber(),1));
 		LogHelper.logInfo(String.format("%s|%s|%s Numéro d'ordre à partir de %s , numéro de document à partir de %s", scopeTypeCode,functionCode,codePrefix
 				,orderNumber,documentNumber), ScopeFunctionBusinessImpl.class);

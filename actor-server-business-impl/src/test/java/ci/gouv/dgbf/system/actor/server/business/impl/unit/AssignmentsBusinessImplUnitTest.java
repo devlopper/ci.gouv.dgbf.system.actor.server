@@ -43,6 +43,17 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
 		assertScopeFunction("G100001", "Gestionnaire de crédits DBE");
 		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE");
+		
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				entityManager.clear();
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("EPN",ScopeFunction.CATEGORY_CODE_G_EPN, null,"test",null, entityManager);
+			}
+		}.run();
+		assertThatCountIsEqualTo(ScopeFunction.class, 10l);
+		assertScopeFunction("GE00002", "Gestionnaire de crédits EPN");
+		assertScopeFunction("A1000020", "Assistant gestionnaire de crédits EPN");
 	}
 	
 	@Test
@@ -192,19 +203,5 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(assignments02.getAuthorizingOfficerAssistant()).as("aord").isNotNull();
 		assertThat(assignments02.getFinancialControllerHolder()).as("cf").isNotNull();
 		assertThat(assignments02.getFinancialControllerAssistant()).as("acf").isNotNull();
-	}
-	
-	@Test
-	public void createByScopeIdentifierByCategoryCode_G_EPN() {
-		assertThatCountIsEqualTo(ScopeFunction.class, 6l);
-		new Transaction.AbstractImpl() {
-			@Override
-			protected void __run__(EntityManager entityManager) {
-				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("EPN",ScopeFunction.CATEGORY_CODE_G_EPN, null,"test",null, entityManager);
-			}
-		}.run();
-		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
-		assertScopeFunction("GE00001", "Gestionnaire de crédits EPN");
-		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits EPN");
 	}
 }
