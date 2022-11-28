@@ -36,6 +36,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
 public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl implements Serializable {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Object[]> readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress) {
 		return EntityManagerGetter.getInstance().get().createQuery(
@@ -363,8 +364,11 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
 			Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
 			if(CollectionHelper.isNotEmpty(assistants))
-				scopeFunctionsHolders.forEach(x -> x.setChildrenCodesNames(assistants.stream().filter(c -> x.getIdentifier().equals(c.getParentIdentifier()))
-						.map(c -> c.toString()).collect(Collectors.toList())));
+				scopeFunctionsHolders.forEach(x -> {
+					x.setChildrenCodesNames(assistants.stream().filter(c -> x.getIdentifier().equals(c.getParentIdentifier())).map(c -> c.toString()).collect(Collectors.toList()));
+					if(StringHelper.isBlank(x.getBudgetCategoryAsString()))
+						x.setBudgetCategoryAsString("Budget Général");
+				});
 		}
 		Collection<ScopeFunction> scopeFunctionsAssistants = scopeFunctions.stream().filter(x -> Function.EXECUTION_ASSISTANTS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsAssistants)) {

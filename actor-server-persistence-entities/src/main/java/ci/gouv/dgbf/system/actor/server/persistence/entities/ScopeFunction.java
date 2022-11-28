@@ -100,6 +100,11 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Boolean isHolder;
 	
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@ManyToOne @JoinColumn(name = COLUMN_CATEGORY) /*@NotNull*/ private ScopeFunctionCategory category;
+	
+	@Transient private String budgetCategoryAsString;
+	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
 	@Transient private String localityAsString;
 	@Transient private String localityIdentifier;
@@ -353,19 +358,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 		return null;
 	}
 	
-	public static String getAssistantCategoryCodeFromHolderCategoryCode(String holderCategoryCode) {
-		if(StringHelper.isBlank(holderCategoryCode))
-			return null;
-		if(holderCategoryCode.startsWith("G"))
-			return CATEGORY_CODE_A1;
-		if(holderCategoryCode.startsWith("O"))
-			return CATEGORY_CODE_A2;
-		if(holderCategoryCode.startsWith("C"))
-			return CATEGORY_CODE_A3;
-		if(holderCategoryCode.startsWith("T"))
-			return CATEGORY_CODE_A4;
-		return null;
-	}
+	
 	
 	public static final String FIELD_SCOPE = "scope";
 	public static final String FIELD_SCOPE_AS_STRING = "scopeAsString";
@@ -376,6 +369,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_FUNCTION_AS_STRING = "functionAsString";
 	public static final String FIELD_IS_HOLDER = "isHolder";
+	
+	public static final String FIELD_CATEGORY = "category";
+	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
 	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
@@ -410,6 +406,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_CODE = "CODE";
 	public static final String COLUMN_NAME = "LIBELLE";
 	public static final String COLUMN_SCOPE = "DOMAINE";
+	public static final String COLUMN_CATEGORY = "CATEGORIE";
 	public static final String COLUMN_FUNCTION = "FONCTION";
 	public static final String COLUMN_LOCALITY = "LOCALITE";
 	public static final String COLUMN_NUMBER_OF_ACTOR = "NOMBRE_ACTEUR";
@@ -434,96 +431,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_EXPORT = "PA_EXPORTER_POSTE";
 
 	public static final String QUERY_READ_DISTINCT_IDENTIFIER_BY_FUNCTION_CODE_BY_EXERCISE_YEAR_BY_ACTIVITY_IDENTIFIER = "ScopeFunction.readDistinctIdentifierByFunctionCOdeByExerciseYearByActivityIdentifier";
-	
-	/**/
-	
-	public static final String CATEGORY_CODE_G1 = "G1";
-	public static final String CATEGORY_NAME_G1 = "Gestionnaire de crédits";
-	
-	public static final String CATEGORY_CODE_G_EPN = "GE";
-	public static final String CATEGORY_NAME_G_EPN = "Gestionnaire de crédits EPN";
-	
-	public static final String CATEGORY_CODE_O2 = "O2";
-	public static final String CATEGORY_NAME_O2 = "Ordonnateur délégué";
-	
-	public static final String CATEGORY_CODE_O3 = "O3";
-	public static final String CATEGORY_NAME_O3 = "Ordonnateur secondaire";
-	
-	public static final String CATEGORY_CODE_O9 = "O9";
-	public static final String CATEGORY_NAME_O9 = "Autre ordonnateur délégué";
-	//public static final String CATEGORY_NAME_O9 = "Ordonnateur autres Dépenses Centralisées";
-	
-	public static final String CATEGORY_CODE_C1 = "C1";
-	public static final String CATEGORY_NAME_C1 = "Contrôleur financier de section";
-	
-	public static final String CATEGORY_CODE_C2 = "C2";
-	public static final String CATEGORY_NAME_C2 = "Contrôleur financier régional";
-	
-	public static final String CATEGORY_CODE_C3 = "C3";
-	public static final String CATEGORY_NAME_C3 = "Contrôleur financier de projet";
-	
-	public static final String CATEGORY_CODE_T1 = "T1";
-	public static final String CATEGORY_NAME_T1 = "Payeur général";
-	
-	public static final String CATEGORY_CODE_T2 = "T2";
-	public static final String CATEGORY_NAME_T2 = "Payeur régional";
-	
-	public static final String CATEGORY_CODE_T3 = "T3";
-	public static final String CATEGORY_NAME_T3 = "Payeur à l'étranger";
-	
-	public static final String CATEGORY_CODE_T4 = "T4";
-	public static final String CATEGORY_NAME_T4 = "Trésorier général";
-	
-	public static final String CATEGORY_CODE_T5 = "T5";
-	public static final String CATEGORY_NAME_T5 = "Trésorier principal";
-	
-	public static final String CATEGORY_CODE_T6 = "T6";
-	public static final String CATEGORY_NAME_T6 = "Trésorier régional";
-	
-	public static final String CATEGORY_CODE_T8 = "T8";
-	public static final String CATEGORY_NAME_T8 = "Trésorier de projet";
-	
-	public static final String CATEGORY_CODE_T9 = "T9";
-	public static final String CATEGORY_NAME_T9 = "Recetteur général";
-	
-	public static final String CATEGORY_CODE_A1 = "A1";
-	public static final String CATEGORY_CODE_A2 = "A2";
-	public static final String CATEGORY_CODE_A3 = "A3";
-	public static final String CATEGORY_CODE_A4 = "A4";
-	
-	public static String getCategoryCodeFromCategoryName(String categoryName) {
-		if(CATEGORY_NAME_G1.equals(categoryName))
-			return CATEGORY_CODE_G1;
 		
-		if(CATEGORY_NAME_O2.equals(categoryName))
-			return CATEGORY_CODE_O2;
-		if(CATEGORY_NAME_O3.equals(categoryName))
-			return CATEGORY_CODE_O3;
-		
-		if(CATEGORY_NAME_C2.equals(categoryName))
-			return CATEGORY_CODE_C2;
-		if(CATEGORY_NAME_C3.equals(categoryName))
-			return CATEGORY_CODE_C3;
-		
-		if(CATEGORY_NAME_T1.equals(categoryName))
-			return CATEGORY_CODE_T1;
-		if(CATEGORY_NAME_T2.equals(categoryName))
-			return CATEGORY_CODE_T2;
-		if(CATEGORY_NAME_T3.equals(categoryName))
-			return CATEGORY_CODE_T3;
-		if(CATEGORY_NAME_T4.equals(categoryName))
-			return CATEGORY_CODE_T4;
-		if(CATEGORY_NAME_T5.equals(categoryName))
-			return CATEGORY_CODE_T5;
-		if(CATEGORY_NAME_T6.equals(categoryName))
-			return CATEGORY_CODE_T6;
-		if(CATEGORY_NAME_T8.equals(categoryName))
-			return CATEGORY_CODE_T8;
-		if(CATEGORY_NAME_T9.equals(categoryName))
-			return CATEGORY_CODE_T9;
-		return null;
-	}
-	
 	public static String getFunctionCodeFromCategoryCode(String categoryCode) {
 		if(StringHelper.isBlank(categoryCode))
 			return null;

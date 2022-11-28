@@ -17,6 +17,7 @@ import ci.gouv.dgbf.system.actor.server.business.impl.ScopeFunctionBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Assignments;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory;
 
 public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
@@ -41,19 +42,19 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
-		assertScopeFunction("G100001", "Gestionnaire de crédits DBE");
-		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE");
+		assertScopeFunction("G100001", "Gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_G1);
+		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_A1);
 		
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
 				entityManager.clear();
-				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("EPN",ScopeFunction.CATEGORY_CODE_G_EPN, null,"test",null, entityManager);
+				ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode("EPN",ScopeFunctionCategory.CODE_G6, null,"test",null, entityManager);
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 10l);
-		assertScopeFunction("GE00002", "Gestionnaire de crédits EPN");
-		assertScopeFunction("A1000020", "Assistant gestionnaire de crédits EPN");
+		assertScopeFunction("G600002", "Gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_G6);
+		assertScopeFunction("A1000020", "Assistant gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_A1);
 	}
 	
 	@Test

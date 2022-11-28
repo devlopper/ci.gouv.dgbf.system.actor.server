@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import org.cyk.utility.__kernel__.identifier.resource.ProxyGetter;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory;
 import ci.gouv.dgbf.system.actor.server.representation.entities.ScopeFunctionDto;
 
 @Path(ScopeFunctionRepresentation.PATH)
@@ -134,11 +134,11 @@ public interface ScopeFunctionRepresentation extends RepresentationEntity<ScopeF
 
 	String PARAMETER_CATEGORY_CODE = "code_categorie";
 	String DESCRIPTION_CATEGORY_CODE = "Code de la catégorie";
-	String EXAMPLE_CATEGORY_CODE = ScopeFunction.CATEGORY_CODE_G1;
+	String EXAMPLE_CATEGORY_CODE = ScopeFunctionCategory.CODE_G1;
 	
 	String PARAMETER_NAME = "libelle";
 	String DESCRIPTION_NAME = "Libelle du poste";
-	String EXAMPLE_NAME = ScopeFunction.CATEGORY_NAME_G1;
+	String EXAMPLE_NAME = ScopeFunctionCategory.NAME_G1;
 	
 	static ScopeFunctionRepresentation getProxy() {
 		return ProxyGetter.getInstance().get(ScopeFunctionRepresentation.class);

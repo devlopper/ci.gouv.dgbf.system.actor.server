@@ -20,7 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.representation.api.ActorRepresentation;
 import ci.gouv.dgbf.system.actor.server.representation.api.ScopeFunctionRepresentation;
@@ -48,9 +48,9 @@ public interface AssignmentsOpenAPI extends OpenAPI {
 			,@Parameter(description = ScopeFunctionRepresentation.DESCRIPTION_CATEGORY_CODE,example = ScopeType.CODE_UA,name = ScopeFunctionRepresentation.PARAMETER_CATEGORY_CODE
 			,allowEmptyValue = false,required = true
 			,schema = @Schema(enumeration = {
-					ScopeFunction.CATEGORY_CODE_G1					
-					,ScopeFunction.CATEGORY_CODE_O2,ScopeFunction.CATEGORY_CODE_O3,ScopeFunction.CATEGORY_CODE_O9					
-					,ScopeFunction.CATEGORY_CODE_C1,ScopeFunction.CATEGORY_CODE_C2,ScopeFunction.CATEGORY_CODE_C3
+					ScopeFunctionCategory.CODE_G1					
+					,ScopeFunctionCategory.CODE_O2,ScopeFunctionCategory.CODE_O3,ScopeFunctionCategory.CODE_O9					
+					,ScopeFunctionCategory.CODE_C1,ScopeFunctionCategory.CODE_C2,ScopeFunctionCategory.CODE_C3
 				}))
 			@QueryParam(ScopeFunctionRepresentation.PARAMETER_CATEGORY_CODE) String scopeTypeCode
 			

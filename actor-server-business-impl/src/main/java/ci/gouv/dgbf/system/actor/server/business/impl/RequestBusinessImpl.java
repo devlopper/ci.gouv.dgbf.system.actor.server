@@ -53,6 +53,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationForm
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -93,6 +94,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		if(Boolean.TRUE.equals(budgetariesScopeFunctionsIncludable) && RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
 			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
 				throw new RuntimeException("La fonction budgétaire est obligatoire");
+			
+			Collection<String> budgetCategoriesIdentifiers = request.getBudgetariesScopeFunctions().stream().map(x -> x.getCategory() == null ? BudgetCategory.IDENTIFIER_GENERAL : x.getCategory().getIdentifier()).collect(Collectors.toSet());
+			if(NumberHelper.isGreaterThanOne(CollectionHelper.getSize(budgetCategoriesIdentifiers)))
+				throw new RuntimeException("Les fonctions budgétaires doivent être de la même catégorie de budget");
+			
 			for(ScopeFunction budgetaryScopeFunction : request.getBudgetariesScopeFunctions()) {
 				if(Boolean.TRUE.equals(budgetaryScopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
 					if(NumberHelper.isGreaterThanZero(RequestScopeFunctionQuerier.getInstance()
@@ -103,7 +109,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
-	private void validateRecord(Request request,Boolean budgetariesScopeFunctionsIncludable) {
+	private static void validateRecord(Request request,Boolean budgetariesScopeFunctionsIncludable) {
 		validate(request,budgetariesScopeFunctionsIncludable);
 		if(Boolean.TRUE.equals(request.getIsAdministrator())) {
 			
@@ -120,7 +126,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			throw new RuntimeException(String.format("La demande codifiée %s a déja été rejetée",request.getCode()));
 	}
 	
-	private void setFields(Request request) {
+	private static void setFields(Request request) {
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 		Map<String,IdentificationAttribute> attributs = Request.computeFieldsNames(request.getType().getForm());
 		if(MapHelper.isNotEmpty(attributs)) {
@@ -135,7 +141,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		}
 	}
 	
-	private void saveBudgetariesScopeFunctions(Request request,EntityManager entityManager) {
+	private static void saveBudgetariesScopeFunctions(Request request,EntityManager entityManager) {
 		org.cyk.utility.persistence.query.EntitySaver.Arguments<RequestScopeFunction> requestScopeFunctionsSaverArguments =
 				new org.cyk.utility.persistence.query.EntitySaver.Arguments<RequestScopeFunction>().setEntityManager(entityManager);
 		requestScopeFunctionsSaverArguments.setExistingCollection(RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier())));
@@ -167,9 +173,48 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		org.cyk.utility.persistence.query.EntitySaver.getInstance().save(RequestScopeFunction.class, requestScopeFunctionsSaverArguments);
 	}
 	
+	public static void initialize(Request request,EntityManager entityManager) {
+		validate(request,Boolean.TRUE);
+		request.set__auditFunctionality__("Initialisation");
+		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
+		setFields(request);
+		if(StringHelper.isBlank(request.getCode())) {
+			Integer numberOfAttempts = 10;
+			do {
+				request.setCode("D"+TimeHelper.formatLocalDate(LocalDate.now(), "yyMMdd")+RandomHelper.getAlphabetic(2).toUpperCase()
+					+RandomHelper.getNumeric(2));
+				numberOfAttempts--;
+				if(Boolean.TRUE.equals(CodeExecutor.getInstance().exists(Request.class, request.getCode())))
+					LogHelper.logWarning(String.format("Le code de demande %s existe. Un nouveau code sera généré. Nombre de tentative(s) restante(s) %s", request.getCode()
+							,numberOfAttempts), RequestBusinessImpl.class);
+				else
+					break;
+			}while(numberOfAttempts > 0);
+		}
+		if(StringHelper.isBlank(request.getCode()))
+			new RuntimeException("Impossible de générer un code de demande");
+		if(StringHelper.isBlank(request.getIdentifier()))
+			request.setIdentifier(request.getCode());
+		//if(StringHelper.isBlank(request.getIdentifier()))
+		//	request.setIdentifier(IdentifiableSystem.generateRandomly());
+		
+		request.setCreationDate(LocalDateTime.now());
+		if(request.getActor() == null) {
+			request.setAccessToken(RandomHelper.getAlphanumeric(12));
+		}
+		
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+						.setCreatables(List.of(request))));
+		saveBudgetariesScopeFunctions(request,entityManager);
+
+		notifyInitialized(request);	
+	}
+	
 	@Override @Transactional
 	public void initialize(Request request) {
-		validate(request,Boolean.TRUE);
+		initialize(request, __inject__(EntityManager.class));
+		/*validate(request,Boolean.TRUE);
 		request.set__auditFunctionality__("Initialisation");
 		request.setStatus(EntityFinder.getInstance().find(RequestStatus.class, RequestStatus.CODE_INITIALIZED));
 		setFields(request);
@@ -203,11 +248,25 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 						.setCreatables(List.of(request))));
 		saveBudgetariesScopeFunctions(request,entityManager);
 
-		notifyInitialized(request);	
+		notifyInitialized(request);	*/
+	}
+	
+	public static void record(Request request,EntityManager entityManager) {
+		validateRecord(request,Boolean.TRUE);
+		if(StringHelper.isNotBlank(request.getElectronicMailAddress()))
+			request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
+		request.set__auditFunctionality__("Modification");
+		setFields(request);
+		saveBudgetariesScopeFunctions(request,entityManager);
+		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
+				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
+						.setUpdatables(List.of(request))));
 	}
 		
 	@Override @Transactional
 	public void record(Request request) {
+		record(request, __inject__(EntityManager.class));
+		/*
 		validateRecord(request,Boolean.TRUE);
 		if(StringHelper.isNotBlank(request.getElectronicMailAddress()))
 			request.setElectronicMailAddress(ActorBusiness.normalizeElectronicMailAddress(request.getElectronicMailAddress()));
@@ -218,6 +277,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		EntitySaver.getInstance().save(Request.class, new Arguments<Request>()
 				.setPersistenceArguments(new org.cyk.utility.persistence.query.EntitySaver.Arguments<Request>().setEntityManager(entityManager)
 						.setUpdatables(List.of(request))));
+						*/
 	}
 	
 	@Override @Transactional

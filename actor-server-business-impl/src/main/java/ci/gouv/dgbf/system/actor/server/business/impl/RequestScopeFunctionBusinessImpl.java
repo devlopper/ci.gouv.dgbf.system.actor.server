@@ -40,6 +40,7 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 
 	@Schedule(hour = "*",minute = "*/5",persistent = false)
 	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAutomatically() {
+		@SuppressWarnings("unchecked")
 		Collection<Object[]> arrays = EntityManagerGetter.getInstance().get().createNamedQuery(RequestScopeFunction.QUERY_READ_RELEASABLE).getResultList();
 		if(CollectionHelper.isEmpty(arrays))
 			return;
@@ -93,6 +94,7 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 	public void notifySignatureSpecimen(Collection<String> identifiers) {
 		if(CollectionHelper.isEmpty(identifiers))
 			throw new RuntimeException("Identifiants des postes demandés obligatoires");
+		@SuppressWarnings("unchecked")
 		Collection<Object[]> arrays = EntityManagerGetter.getInstance().get().createQuery("SELECT t.request.identifier,t.scopeFunction.identifier,t.scopeFunction.function.code,t.request.electronicMailAddress,t.scopeFunction.name"
 				+ ",t.request.type.creditManagerSignatureSpecimenReportIdentifier,t.request.type.authorizingOfficerSignatureSpecimenReportIdentifier FROM RequestScopeFunction t WHERE t.identifier IN :identifiers")
 				.setParameter("identifiers", identifiers).getResultList();

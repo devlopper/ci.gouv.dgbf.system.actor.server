@@ -104,11 +104,21 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.business.ser
 
 	/**/
 	
-	protected static void assertScopeFunction(String identifier,String expectedName) {
+	protected static void assertScopeFunction(String identifier,String expectedName,String expectedCategoryCode) {
 		ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, identifier);
 		assertThat(scopeFunction).as(String.format("Scope function %s exists",identifier)).isNotNull();
 		assertThat(scopeFunction.getCode()).isEqualTo(identifier);
 		assertThat(scopeFunction.getName()).isEqualTo(expectedName);
+		if(expectedCategoryCode == null) {
+			assertThat(scopeFunction.getCategory()).as("category").isNull();
+		}else {
+			assertThat(scopeFunction.getCategory()).as("category").isNotNull();
+			assertThat(scopeFunction.getCategory().getCode()).as("category code").isEqualTo(expectedCategoryCode);
+		}
+	}
+	
+	protected static void assertScopeFunction(String identifier,String expectedName) {
+		assertScopeFunction(identifier, expectedName, null);
 	}
 	
 	protected static void assertRequestDispatchSlipProcessingDateIsNull(String identifier,Boolean expectedValue) {

@@ -42,5 +42,8 @@ public class BudgetCategory extends AbstractIdentifiableSystemScalarStringIdenti
 		return code+" "+name;
 	}
 	
-	public static final String TABLE_NAME = "VM_APP_CAT_BUDGET";	
+	public static final String TABLE_NAME = "VM_APP_CAT_BUDGET";
+	
+	public static final String IDENTIFIER_GENERAL = "1";
+	public static final String IDENTIFIER_EPN = "6";
 }

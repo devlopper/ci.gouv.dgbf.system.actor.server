@@ -535,6 +535,7 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static ScopeFunction findAccountingServiceHolderScopeFunction(Assignments assignments,String managerCode,String sectionCode,String localityCode
 			,Collection<AccountingService> accountingServices,Collection<ScopeFunction> scopeFunctions) {
 		if(CollectionHelper.isEmpty(accountingServices))
@@ -886,12 +887,12 @@ public class AssignmentsBusinessImpl extends AbstractBusinessEntityImpl<Assignme
 		return transactionResult;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static TransactionResult importNewsAndDeriveValuesByReferencedIdentifiers(Collection<String> referencedIdentifiers,String actorCode,EntityManager entityManager) {
 		LogHelper.logInfo(String.format("Importation et dérivation des nouvelles lignes par <<%s>> à partir des identifiants des lignes budgétaires <<%s>>", actorCode,referencedIdentifiers), AssignmentsBusinessImpl.class);
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("referenced identifiers", referencedIdentifiers);
 		//importNews(actorCode,entityManager);
 		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
-		@SuppressWarnings("unchecked")		
 		Collection<Object[]> arrays = entityManager.createQuery("SELECT t.executionImputation.referencedIdentifier,t.identifier FROM Assignments t WHERE t.executionImputation.referencedIdentifier IN :referencedIdentifiers")
 			.setParameter("referencedIdentifiers", referencedIdentifiers).getResultList();		
 		Collection<String> referencedIdentifiersMapped = CollectionHelper.isEmpty(arrays) ? null : arrays.stream().map(array -> array[0].toString()).collect(Collectors.toList());

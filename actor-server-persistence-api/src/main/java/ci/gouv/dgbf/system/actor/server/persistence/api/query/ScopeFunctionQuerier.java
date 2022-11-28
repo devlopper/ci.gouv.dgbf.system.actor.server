@@ -289,7 +289,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 						, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
 						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_PARENT_IDENTIFIER,ScopeFunction.FIELD_SCOPE_AS_STRING
-						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING)
+						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_BUDGET_CATEGORY_AS_STRING)
 				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
 				
@@ -308,6 +308,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				From.ofTuple(ScopeFunction.class)
 				,"LEFT JOIN Scope scope ON scope = t.scope"
 				,"LEFT JOIN Function function ON function = t.function"
+				,"LEFT JOIN ScopeFunctionCategory category ON category = t.category"
+				,"LEFT JOIN BudgetCategory budgetCategory ON budgetCategory.identifier = category.budgetCategoryIdentifier"
 			);
 	}
 	
@@ -349,7 +351,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		return jpql(
 				select(				
 					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR,ScopeFunction.FIELD_PARENT_IDENTIFIER)
-					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION)
+					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION),"budgetCategory.name"
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()

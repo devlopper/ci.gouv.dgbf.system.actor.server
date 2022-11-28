@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Locality;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeTypeFunction;
 
@@ -81,7 +83,11 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 			if(NumberHelper.isGreaterThanZero(count))
 				throw new RuntimeException(String.format("Le domaine <<%s>> a déja %s <<%s>>.", scope,count,functionCode));	
 		}
-		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setCodePrefix(categoryCode).setName(name);		
+		ScopeFunctionCategory category = null;
+		try {
+			category = entityManager.createQuery("SELECT sfc FROM ScopeFunctionCategory sfc WHERE sfc.code = :categoryCode",ScopeFunctionCategory.class).setParameter("categoryCode", categoryCode).getSingleResult();
+		} catch (NoResultException e) {}
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setCodePrefix(categoryCode).setName(name).setCategory(category);		
 		scopeFunction.set__auditWho__(actorCode);
 		TransactionResult transactionResult = new TransactionResult().setName(String.format("création de %s | %s , %s",function.getName(),scopeTypeCode,scopeIdentifier))
 				.setTupleName(function.getName());
@@ -136,8 +142,13 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					allScopeFunctions = new ArrayList<>();
 				ScopeFunction assistantScopeFunction = new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE)
 						.setParent(scopeFunction)
-						.setCodePrefix(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
+						.setCodePrefix(ScopeFunctionCategory.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
 						.setName(scopeFunction.getName());
+				
+				try {
+					assistantScopeFunction.setCategory(entityManager.createQuery("SELECT sfc FROM ScopeFunctionCategory sfc WHERE sfc.code = :categoryCode",ScopeFunctionCategory.class).setParameter("categoryCode", assistantScopeFunction.getCodePrefix()).getSingleResult());
+				} catch (NoResultException e) {}
+				
 				assistantScopeFunction
 					.set__auditFunctionality__(scopeFunction.get__auditFunctionality__())
 					.set__auditWhat__(scopeFunction.get__auditWhat__())
@@ -269,7 +280,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 					allScopeFunctions = new ArrayList<>();
 				ScopeFunction assistantScopeFunction = new ScopeFunction().setScope(scopeFunction.getScope()).setFunction(assistant).setShared(Boolean.TRUE)
 						.setParent(scopeFunction)
-						.setCodePrefix(ScopeFunction.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
+						.setCodePrefix(ScopeFunctionCategory.getAssistantCategoryCodeFromHolderCategoryCode(scopeFunction.getCodePrefix()))
 						.setName(scopeFunction.getName());
 				if(StringHelper.isNotBlank(scopeFunction.getName()))
 					assistantScopeFunction.setName("Assistant "+scopeFunction.getName());
