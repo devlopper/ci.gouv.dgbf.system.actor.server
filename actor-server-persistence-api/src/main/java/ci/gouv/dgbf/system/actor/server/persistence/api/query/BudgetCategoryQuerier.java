@@ -1,5 +1,11 @@
 package ci.gouv.dgbf.system.actor.server.persistence.api.query;
 
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.From.from;
+import static org.cyk.utility.persistence.query.Language.Select.fields;
+import static org.cyk.utility.persistence.query.Language.Select.select;
+import static org.cyk.utility.persistence.query.Language.Where.where;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -41,6 +47,9 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 	String QUERY_IDENTIFIER_COUNT = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_ALL);
 	Long count();
 	
+	String QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI = QueryIdentifierBuilder.getInstance().build(BudgetCategory.class, "readByCodesForUI");
+	Collection<BudgetCategory> readByCodesForUI(Collection<String> codes);
+	
 	String QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI = QueryIdentifierBuilder.getInstance().build(BudgetCategory.class, "readVisiblesByActorCodeForUI");
 	Collection<BudgetCategory> readVisiblesByActorCodeForUI(String actorCode/*,Boolean budgetSpecializationUnits,Boolean administrationUnits*/);
 	
@@ -55,6 +64,12 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 		@Override
 		public Collection<BudgetCategory> readAllForUI() {
 			return QueryExecutor.getInstance().executeReadMany(BudgetCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI);
+		}
+		
+		@Override
+		public Collection<BudgetCategory> readByCodesForUI(Collection<String> codes) {
+			return QueryExecutor.getInstance().executeReadMany(BudgetCategory.class,new QueryExecutorArguments()
+					.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI).addFilterFieldsValues(PARAMETER_NAME_CODES,codes));
 		}
 		
 		@Override
@@ -87,6 +102,7 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 			return super.readOne(arguments);
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public Collection<BudgetCategory> readMany(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
@@ -95,6 +111,8 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 				return read();
 			if(QUERY_IDENTIFIER_READ_ALL_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readAllForUI();
+			if(QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+				return readByCodesForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_CODES));
 			if(QUERY_IDENTIFIER_READ_VISIBLES_BY_ACTOR_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 				return readVisiblesByActorCodeForUI((String) arguments.getFilterFieldValue(ScopeQuerier.PARAMETER_NAME_ACTOR_CODE));
 			return super.readMany(arguments);
@@ -128,6 +146,11 @@ public interface BudgetCategoryQuerier extends Querier.CodableAndNamable<BudgetC
 		QueryManager.getInstance().register(
 				Query.buildSelect(BudgetCategory.class, QUERY_IDENTIFIER_READ_ALL_FOR_UI, "SELECT t.identifier,t.code,t.name FROM BudgetCategory t ORDER BY t.code ASC")
 				.setTupleFieldsNamesIndexesFromFieldsNames(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
+				
+				,Query.buildSelect(BudgetCategory.class, QUERY_IDENTIFIER_READ_BY_CODES_FOR_UI
+						, jpql(select(fields("t",BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)),from("BudgetCategory t")
+								,where("t.code IN :"+PARAMETER_NAME_CODES)))
+					.setTupleFieldsNamesIndexesFromFieldsNames(BudgetCategory.FIELD_IDENTIFIER,BudgetCategory.FIELD_CODE,BudgetCategory.FIELD_NAME)
 		);		
 	}
 }

@@ -95,7 +95,11 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
 				throw new RuntimeException("La fonction budgétaire est obligatoire");
 			
-			Collection<String> budgetCategoriesIdentifiers = request.getBudgetariesScopeFunctions().stream().map(x -> x.getCategory() == null ? BudgetCategory.IDENTIFIER_GENERAL : x.getCategory().getIdentifier()).collect(Collectors.toSet());
+			BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
+			if(budgetCategoryGeneral == null)
+				throw new RuntimeException("La catégorie de budget, budget général, est introuvable");
+				
+			Collection<String> budgetCategoriesIdentifiers = request.getBudgetariesScopeFunctions().stream().map(x -> x.getCategory() == null ? budgetCategoryGeneral.getIdentifier() : x.getCategory().getBudgetCategoryIdentifier()).collect(Collectors.toSet());
 			if(NumberHelper.isGreaterThanOne(CollectionHelper.getSize(budgetCategoriesIdentifiers)))
 				throw new RuntimeException("Les fonctions budgétaires doivent être de la même catégorie de budget");
 			
