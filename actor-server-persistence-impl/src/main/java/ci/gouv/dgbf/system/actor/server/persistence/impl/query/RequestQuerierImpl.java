@@ -48,6 +48,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 
 public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object[] readForSendSignaturesSpecimensByElectronicMailAddress(String electronicMailAddress) {
 		return (Object[]) CollectionHelper.getFirst(EntityManagerGetter.getInstance().get().createQuery(String.format(
@@ -262,12 +263,16 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		}
 		IdentificationFormQuerier.AbstractImpl.setFields(request.getType().getForm(), null);
 		Collection<RequestScopeFunction> requestScopeFunctions = RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()));
+		
 		if(CollectionHelper.isNotEmpty(requestScopeFunctions)) {
 			request.setBudgetariesScopeFunctions(requestScopeFunctions.stream()
 				.filter(x -> x.getRequest().getIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getRequested()))
 				.map(x -> x.getScopeFunction())
 				.collect(Collectors.toList()));				
 		}
+		
+		ScopeFunctionQuerierImpl.setBudgetCategoryCodeAndAsString(request.getBudgetariesScopeFunctions());
+		
 		if(request.getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
 			request.setSection(request.getAdministrativeUnit().getSection());
 		}

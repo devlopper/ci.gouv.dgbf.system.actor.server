@@ -92,7 +92,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				throw new RuntimeException("Le mail du demandeur est obligatoire");
 		}
 		if(Boolean.TRUE.equals(budgetariesScopeFunctionsIncludable) && RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getCode())) {
-			if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
+			validateScopeFunctions(request.getBudgetariesScopeFunctions());
+			/*if(CollectionHelper.isEmpty(request.getBudgetariesScopeFunctions()))
 				throw new RuntimeException("La fonction budgétaire est obligatoire");
 			
 			BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
@@ -109,7 +110,29 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 							.countWhereGrantedIsTrueByScopeFunctionsIdentifiers(List.of(budgetaryScopeFunction.getIdentifier()))))
 						throw new RuntimeException(String.format("La fonction budgétaire %s n'est pas disponible", budgetaryScopeFunction.toString()));
 				}				
-			}
+			}*/
+		}
+	}
+	
+	private static void validateScopeFunctions(Collection<ScopeFunction> scopeFunctions) {
+		if(CollectionHelper.isEmpty(scopeFunctions))
+			throw new RuntimeException("La fonction budgétaire est obligatoire");
+		
+		BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
+		if(budgetCategoryGeneral == null)
+			throw new RuntimeException("La catégorie de budget, budget général, est introuvable");
+		
+		Collection<String> budgetCategoriesIdentifiers = scopeFunctions.stream().map(x -> x.getCategory() == null ? budgetCategoryGeneral.getIdentifier() : x.getCategory().getBudgetCategoryIdentifier()).collect(Collectors.toSet());
+		
+		if(NumberHelper.isGreaterThanOne(CollectionHelper.getSize(budgetCategoriesIdentifiers)))
+			throw new RuntimeException("Les fonctions budgétaires doivent être de la même catégorie de budget");
+		
+		for(ScopeFunction budgetaryScopeFunction : scopeFunctions) {
+			if(Boolean.TRUE.equals(budgetaryScopeFunction.getFunction().isCodeBelongsToExecutionHoldersCodes())) {
+				if(NumberHelper.isGreaterThanZero(RequestScopeFunctionQuerier.getInstance()
+						.countWhereGrantedIsTrueByScopeFunctionsIdentifiers(List.of(budgetaryScopeFunction.getIdentifier()))))
+					throw new RuntimeException(String.format("La fonction budgétaire %s n'est pas disponible", budgetaryScopeFunction.toString()));
+			}				
 		}
 	}
 	
@@ -424,6 +447,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 				.setIsThrowExceptionIfResultIsBlank(Boolean.TRUE)
 				).setAcceptationComment(acceptationComment).setReadPageURL(readPageURL);
 		request.set__auditWho__(auditActor);
+		
 		accept(request, RequestScopeFunctionQuerier.getInstance().readByRequestsIdentifiers(List.of(request.getIdentifier()))
 				, grantedBudgetariesScopeFunctionsIdentifiers == null ? null : grantedBudgetariesScopeFunctionsIdentifiers.stream()
 					.map(x -> EntityFinder.getInstance().find(ScopeFunction.class, x))
@@ -443,6 +467,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 		validateProcess(request);		
 		if(CollectionHelper.isEmpty(grantedBudgetariesScopeFunctions))
 			throw new RuntimeException("Veuillez accorder au moins une fonction budgétaire");
+		
+		validateScopeFunctions(grantedBudgetariesScopeFunctions);
 		
 		LogHelper.logInfo(String.format("%s fonction(s) budgétaire(s) accordée(s) : %s", grantedBudgetariesScopeFunctions.size(),grantedBudgetariesScopeFunctions.stream().map(x -> x.getCode())
 				.collect(Collectors.joining(","))), RequestBusinessImpl.class);

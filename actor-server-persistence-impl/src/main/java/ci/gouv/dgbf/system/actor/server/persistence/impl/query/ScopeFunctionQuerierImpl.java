@@ -368,7 +368,6 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return;
 		Collection<ScopeFunction> scopeFunctionsHolders = scopeFunctions.stream().filter(x -> Function.EXECUTION_HOLDERS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
-			BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
 			
 			Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
 			if(CollectionHelper.isNotEmpty(assistants)) {		
@@ -377,12 +376,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 				});
 			}
 			
-			scopeFunctionsHolders.forEach(x -> {
-				if(StringHelper.isBlank(x.getBudgetCategoryAsString()))
-					x.setBudgetCategoryAsString(budgetCategoryGeneral == null ? "Budget Général" : budgetCategoryGeneral.getName());
-				if(StringHelper.isBlank(x.getBudgetCategoryCode()))
-					x.setBudgetCategoryCode(BudgetCategory.CODE_GENERAL);
-			});
+			setBudgetCategoryCodeAndAsString(scopeFunctionsHolders);
+			
 		}
 		Collection<ScopeFunction> scopeFunctionsAssistants = scopeFunctions.stream().filter(x -> Function.EXECUTION_ASSISTANTS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsAssistants)) {
@@ -401,6 +396,16 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 				}
 			}					
 		}
+	}
+	
+	public static void setBudgetCategoryCodeAndAsString(Collection<ScopeFunction> scopeFunctions) {
+		BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
+		scopeFunctions.forEach(x -> {
+			if(StringHelper.isBlank(x.getBudgetCategoryAsString()))
+				x.setBudgetCategoryAsString(budgetCategoryGeneral == null ? "Budget Général" : budgetCategoryGeneral.getName());
+			if(StringHelper.isBlank(x.getBudgetCategoryCode()))
+				x.setBudgetCategoryCode(BudgetCategory.CODE_GENERAL);
+		});
 	}
 	
 	private void listenReadForUI(ScopeFunction scopeFunction) {

@@ -46,4 +46,6 @@ public class BudgetCategory extends AbstractIdentifiableSystemScalarStringIdenti
 	
 	public static final String CODE_GENERAL = "01";
 	public static final String CODE_EPN = "13";
+	
+	public static final String LABEL = "Catégorie budget";
 }

@@ -5,9 +5,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.test.business.server.Transaction;
+import org.jboss.arquillian.junit.InSequence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import ci.gouv.dgbf.system.actor.server.business.impl.RequestBusinessImpl;
 import ci.gouv.dgbf.system.actor.server.business.impl.integration.ApplicationScopeLifeCycleListener;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.AdministrativeUnit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestType;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
@@ -88,4 +91,16 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 		});
 		assertThatCountIsEqualTo(Request.class, 1l);
 	}
+	
+	@Test
+    public void accept_scopeFunctions_incomptatible_throwException() {
+		Assertions.assertThrows(Exception.class, () -> {
+			new Transaction.AbstractImpl() {
+				@Override
+				protected void __run__(EntityManager entityManager) {
+					RequestBusinessImpl.acceptByIdentifier("2", List.of("GDSIB","GCHUYOP"), null, null, "meliane", entityManager);
+				}
+			}.run();
+		}); 	
+    }
 }
