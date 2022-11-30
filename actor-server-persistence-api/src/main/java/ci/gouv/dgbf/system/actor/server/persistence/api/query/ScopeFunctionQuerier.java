@@ -49,6 +49,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String PARAMETER_NAME_SCOPE_TYPES_IDENTIFIERS = "scopeTypesIdentifiers";
 	String PARAMETER_NAME_FUNCTIONS_IDENTIFIERS = "functionsIdentifiers";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER = "functionIdentifier";
+	String PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER = "budgetCategoryIdentifier";
 	String PARAMETER_NAME_FUNCTIONS_CODES = "functionsCodes";
 	String PARAMETER_NAME_FUNCTION_CODE = "functionCode";
 	String PARAMETER_NAME_SCOPE_CODE_NAME = "scopeCodeName";
@@ -57,6 +58,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	//String PARAMETER_NAME_SCOPE_NAME = "scopeName";
 	String PARAMETER_NAME_FUNCTION_CODE_NULLABLE = PARAMETER_NAME_FUNCTION_CODE+"Nullable";
 	String PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_FUNCTION_IDENTIFIER+"Nullable";
+	String PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER_NULLABLE = PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER+"Nullable";
 	
 	String QUERY_IDENTIFIER_READ_ALL_WITH_REFERENCES_ONLY = Querier.buildIdentifier(ScopeFunction.class, "readAllWithReferencesOnly");	
 	Collection<ScopeFunction> readAllWithReferencesOnly(QueryExecutorArguments arguments);
@@ -289,7 +291,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_FILTER_FOR_UI
 						, getQueryValueReadWhereFilterForUI()).setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE
 						,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_SHARED_AS_STRING,ScopeFunction.FIELD_PARENT_IDENTIFIER,ScopeFunction.FIELD_SCOPE_AS_STRING
-						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_BUDGET_CATEGORY_AS_STRING)
+						,ScopeFunction.FIELD_FUNCTION_CODE,ScopeFunction.FIELD_FUNCTION_AS_STRING,ScopeFunction.FIELD_BUDGET_CATEGORY_AS_STRING,ScopeFunction.FIELD_BUDGET_CATEGORY_CODE)
 				
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_FILTER, getQueryValueCountWhereFilter())
 				
@@ -315,7 +317,8 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	static String getQueryValueReadWhereFilterWhere() {
 		return where(and(
-				String.format("(:%s = true OR t.function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
+				String.format("(:%s = true OR function.identifier = :%s)", PARAMETER_NAME_FUNCTION_IDENTIFIER_NULLABLE,PARAMETER_NAME_FUNCTION_IDENTIFIER)
+				,String.format("(:%s = true OR budgetCategory.identifier = :%s)", PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER_NULLABLE,PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER)
 				,like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
 				,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
 				
@@ -351,7 +354,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 		return jpql(
 				select(				
 					Select.fields("t",ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_NUMBER_OF_ACTOR,ScopeFunction.FIELD_PARENT_IDENTIFIER)
-					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION),"budgetCategory.name"
+					,Select.concatCodeName(ScopeFunction.FIELD_SCOPE),"function.code",Select.concatCodeName(ScopeFunction.FIELD_FUNCTION),"budgetCategory.name","budgetCategory.code"
 				)
 				,getQueryValueReadWhereFilterFrom()
 				,getQueryValueReadWhereFilterWhere()
@@ -360,7 +363,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	}
 	
 	static String getQueryValueCountWhereFilter() {
-		return jpql(select("COUNT(t.identifier)"),From.ofTuple(ScopeFunction.class),getQueryValueReadWhereFilterWhere());
+		return jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereFilterFrom(),getQueryValueReadWhereFilterWhere());
 	}
 	
 	static String getQueryValueReadWhereCodeOrNameLikeByFunctionCodeFromWhere() {

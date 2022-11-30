@@ -29,8 +29,10 @@ import org.cyk.utility.persistence.server.procedure.ProcedureExecutorArguments;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
+import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.ScopeFunctionQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
@@ -333,7 +335,11 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	private void prepareWhereFilter(QueryExecutorArguments arguments) {
 		Filter filter = new Filter();
 		filter.addFieldsEquals(arguments, PARAMETER_NAME_FUNCTION_IDENTIFIER);
-		filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_IDENTIFIER);			
+		filter.addFieldsNullable(arguments, PARAMETER_NAME_FUNCTION_IDENTIFIER);
+		
+		filter.addFieldsEquals(arguments, PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER);
+		filter.addFieldsNullable(arguments, PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER);
+		
 		filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		filter.addFieldContains(PARAMETER_NAME_FUNCTION_CODE, arguments);
@@ -362,13 +368,21 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return;
 		Collection<ScopeFunction> scopeFunctionsHolders = scopeFunctions.stream().filter(x -> Function.EXECUTION_HOLDERS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsHolders)) {
+			BudgetCategory budgetCategoryGeneral = __inject__(CodeExecutor.class).getOne(BudgetCategory.class, BudgetCategory.CODE_GENERAL);
+			
 			Collection<ScopeFunction> assistants = readCodesNamesByParentsIdentifiers(FieldHelper.readSystemIdentifiersAsStrings(scopeFunctionsHolders));
-			if(CollectionHelper.isNotEmpty(assistants))
+			if(CollectionHelper.isNotEmpty(assistants)) {		
 				scopeFunctionsHolders.forEach(x -> {
 					x.setChildrenCodesNames(assistants.stream().filter(c -> x.getIdentifier().equals(c.getParentIdentifier())).map(c -> c.toString()).collect(Collectors.toList()));
-					if(StringHelper.isBlank(x.getBudgetCategoryAsString()))
-						x.setBudgetCategoryAsString("Budget Général");
 				});
+			}
+			
+			scopeFunctionsHolders.forEach(x -> {
+				if(StringHelper.isBlank(x.getBudgetCategoryAsString()))
+					x.setBudgetCategoryAsString(budgetCategoryGeneral == null ? "Budget Général" : budgetCategoryGeneral.getName());
+				if(StringHelper.isBlank(x.getBudgetCategoryCode()))
+					x.setBudgetCategoryCode(BudgetCategory.CODE_GENERAL);
+			});
 		}
 		Collection<ScopeFunction> scopeFunctionsAssistants = scopeFunctions.stream().filter(x -> Function.EXECUTION_ASSISTANTS_CODES.contains(x.getFunctionCode())).collect(Collectors.toList());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsAssistants)) {

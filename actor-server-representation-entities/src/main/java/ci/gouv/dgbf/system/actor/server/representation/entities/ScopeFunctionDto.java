@@ -53,6 +53,7 @@ public class ScopeFunctionDto extends AbstractIdentifiableSystemScalarStringIden
 	private String assignmentToActorMessage;
 	
 	private String budgetCategoryAsString;
+	private String budgetCategoryCode;
 	/**/
 	
 	private String signatureSpecimenReadReportURIQuery;

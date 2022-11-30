@@ -103,6 +103,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@ManyToOne @JoinColumn(name = COLUMN_CATEGORY) /*@NotNull*/ private ScopeFunctionCategory category;
 	
 	@Transient private String budgetCategoryAsString;
+	@Transient private String budgetCategoryCode;
 	
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_LOCALITY) private Locality locality;
@@ -372,6 +373,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	public static final String FIELD_CATEGORY = "category";
 	public static final String FIELD_BUDGET_CATEGORY_AS_STRING = "budgetCategoryAsString";
+	public static final String FIELD_BUDGET_CATEGORY_CODE = "budgetCategoryCode";
 	
 	public static final String FIELD_LOCALITY = "locality";
 	public static final String FIELD_LOCALITY_AS_STRING = "localityAsString";
