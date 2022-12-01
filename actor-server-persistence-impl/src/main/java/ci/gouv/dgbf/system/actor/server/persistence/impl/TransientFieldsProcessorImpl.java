@@ -421,7 +421,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 				for(Request request : requests)
 					request.setGrantedBudgetariesScopeFunctions(
 							requestScopeFunctions.stream()
-							.filter(x -> x.getRequestIdentifier().equals(request.getIdentifier()))
+							.filter(x -> x.getRequestIdentifier().equals(request.getIdentifier()) && Boolean.TRUE.equals(x.getGranted()))
 							.map(x -> new ScopeFunction()
 									.setIdentifier(x.getScopeFunctionIdentifier())
 									.setCode(x.getScopeFunctionCode())
