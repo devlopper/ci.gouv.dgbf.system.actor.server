@@ -30,7 +30,7 @@ public class RequestScopeFunctionRepresentationImpl extends AbstractRepresentati
 					public TransactionResult transact() {
 						ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scope functions identifiers", scopeFunctionsIdentifiers);
 						ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actor code", actorCode);						
-						return __inject__(RequestScopeFunctionBusiness.class).updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers, actorCode);
+						return __inject__(RequestScopeFunctionBusiness.class).updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers, actorCode,Boolean.FALSE);
 					}
 				};
 			}

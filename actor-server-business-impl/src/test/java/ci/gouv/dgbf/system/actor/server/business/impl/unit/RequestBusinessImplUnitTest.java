@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.cyk.utility.__kernel__.random.RandomHelper;
+import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.server.query.executor.field.CodeExecutor;
 import org.cyk.utility.test.business.server.Transaction;
@@ -35,7 +36,8 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 	@Test
 	public void initialize() {
 		String code = RandomHelper.getAlphanumeric(5);
-		assertThatCountIsEqualTo(Request.class, 1l);
+		Long count = __inject__(EntityManagerGetter.class).get().createQuery("SELECT COUNT(t) FROM Request t",Long.class).getSingleResult();
+		assertThatCountIsEqualTo(Request.class, count);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
@@ -46,13 +48,14 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 				RequestBusinessImpl.initialize(request, entityManager);
 			}
 		}.run();
-		assertThatCountIsEqualTo(Request.class, 2l);
+		assertThatCountIsEqualTo(Request.class, count+1);
 	}
 	
 	@Test
 	public void initialize_scopeFunctions_comptatible() {
 		String code = RandomHelper.getAlphanumeric(5);
-		assertThatCountIsEqualTo(Request.class, 1l);
+		Long count = __inject__(EntityManagerGetter.class).get().createQuery("SELECT COUNT(t) FROM Request t",Long.class).getSingleResult();
+		assertThatCountIsEqualTo(Request.class, count);
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
@@ -65,13 +68,14 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 				RequestBusinessImpl.initialize(request, entityManager);
 			}
 		}.run();
-		assertThatCountIsEqualTo(Request.class, 2l);
+		assertThatCountIsEqualTo(Request.class, count+1);
 	}
 	
 	@Test
 	public void initialize_scopeFunctions_incomptatible_throwException() {
 		String code = RandomHelper.getAlphanumeric(5);
-		assertThatCountIsEqualTo(Request.class, 1l);
+		Long count = __inject__(EntityManagerGetter.class).get().createQuery("SELECT COUNT(t) FROM Request t",Long.class).getSingleResult();
+		assertThatCountIsEqualTo(Request.class, count);
 		Assertions.assertThrows(Exception.class, () -> {
 			new Transaction.AbstractImpl() {
 				@Override
@@ -86,7 +90,7 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 				}
 			}.run();
 		});
-		assertThatCountIsEqualTo(Request.class, 1l);
+		assertThatCountIsEqualTo(Request.class, count);
 	}
 	
 	@Test
@@ -100,4 +104,16 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 			}.run();
 		}); 	
     }
+	
+	@Test
+	public void havingDispatchSlipSent_processAllRequest_processingDateShouldBeNotNull() {
+		assertRequestDispatchSlipProcessingDateIsNull("1", Boolean.TRUE);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				RequestBusinessImpl.acceptByIdentifier("1", List.of("GDTI"), null, null, null, entityManager);
+			}
+		}.run();
+		assertRequestDispatchSlipProcessingDateIsNull("1", Boolean.FALSE);
+	}
 }

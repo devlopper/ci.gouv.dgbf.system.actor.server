@@ -46,14 +46,14 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 			return;
 		for(Object[] array : arrays)
 			try {
-				updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(ValueHelper.defaultToIfBlank((String)array[1],"SYSTEME"), (String)array[0]);
+				updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(ValueHelper.defaultToIfBlank((String)array[1],"SYSTEME"), Boolean.TRUE, (String)array[0]);
 			} catch (Exception exception) {
 				LogHelper.log(exception, getClass());
 			}
 	}
 	
 	@Override @Transactional
-	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, String actorCode) {
+	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers, String actorCode, Boolean ignoreCount) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("scope functions identifiers", scopeFunctionsIdentifiers);
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("actor code", actorCode);
 		//scopeFunctionsIdentifiers = RequestScopeFunctionQuerier.getInstance().readScopesFunctionsIdentifiersWhereGrantedIsTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,EntityManagerGetter.getInstance().get());
@@ -62,7 +62,7 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 			Integer count = RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode
 					,"LIBERATION",EntityLifeCycleListener.Event.UPDATE.getValue(),LocalDateTime.now(), EntityManagerGetter.getInstance().get());
 			result.incrementNumberOfUpdate(count == null ? 0l : count.longValue());
-			if(!Boolean.TRUE.equals(NumberHelper.compare(scopeFunctionsIdentifiers.size(), count, ComparisonOperator.EQ)))
+			if(!Boolean.TRUE.equals(NumberHelper.compare(scopeFunctionsIdentifiers.size(), count, ComparisonOperator.EQ)) && (ignoreCount == null || !ignoreCount))
 				throw new RuntimeException(String.format("Le nombre de poste à mettre à jour (%s) est différent au nombre mis à jour (%s)",scopeFunctionsIdentifiers.size(),count));
 		}
 		result.log(RequestScopeFunctionBusinessImpl.class);
@@ -70,14 +70,14 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 	}
 
 	@Override @Transactional
-	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,String... scopeFunctionsIdentifiers) {
+	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,Boolean ignoreCount,String... scopeFunctionsIdentifiers) {
 		return updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(ArrayHelper.isEmpty(scopeFunctionsIdentifiers) ? null : CollectionHelper.listOf(scopeFunctionsIdentifiers)
-				, actorCode);
+				, actorCode,ignoreCount);
 	}
 	
 	@Override
 	public TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(Collection<String> scopeFunctionsIdentifiers, String actorCode) {
-		TransactionResult transactionResult = updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode);
+		TransactionResult transactionResult = updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode,Boolean.TRUE);
 		/*scopeFunctionsIdentifiers = RequestScopeFunctionQuerier.getInstance().readScopesFunctionsIdentifiersWhereGrantedIsNullOrFalseByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,EntityManagerGetter.getInstance().get());
 		if(CollectionHelper.isNotEmpty(scopeFunctionsIdentifiers)) {
 			notifyScopeFunctionReleased(actorCode, actorCode, actorCode, actorCode, actorCode);

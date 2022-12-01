@@ -13,10 +13,10 @@ public interface RequestScopeFunctionBusiness extends BusinessEntity<RequestScop
 
 	String UPDATE_GRANTED_TO_FALSE_WHERE_TRUE_BY_SCOPE_FUNCTIONS_IDENTIFIERS = "RequestScopeFunction.updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers";
 	@Transactional
-	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,String actorCode);
+	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(Collection<String> scopeFunctionsIdentifiers,String actorCode,Boolean ignoreCount);
 	
 	@Transactional
-	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,String...scopeFunctionsIdentifiers);
+	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(String actorCode,Boolean ignoreCount,String...scopeFunctionsIdentifiers);
 	
 	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(Collection<String> scopeFunctionsIdentifiers,String actorCode);
 	TransactionResult updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAndNotify(String actorCode,String...scopeFunctionsIdentifiers);

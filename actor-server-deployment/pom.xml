@@ -181,6 +181,8 @@
 				<swagger.json>/api/swagger.json</swagger.json>
 				
 				<cyk.variable.system.uri.host>mic-acteur-api</cyk.variable.system.uri.host>
+				
+				<wildfly.bootable.hollow>true</wildfly.bootable.hollow>
 			</properties>
 		</profile>
 		
