@@ -65,7 +65,8 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 			if(!Boolean.TRUE.equals(NumberHelper.compare(scopeFunctionsIdentifiers.size(), count, ComparisonOperator.EQ)) && (ignoreCount == null || !ignoreCount))
 				throw new RuntimeException(String.format("Le nombre de poste à mettre à jour (%s) est différent au nombre mis à jour (%s)",scopeFunctionsIdentifiers.size(),count));
 		}
-		result.log(RequestScopeFunctionBusinessImpl.class);
+		if(ignoreCount == null || !ignoreCount)
+			result.log(RequestScopeFunctionBusinessImpl.class);
 		return result;
 	}
 
