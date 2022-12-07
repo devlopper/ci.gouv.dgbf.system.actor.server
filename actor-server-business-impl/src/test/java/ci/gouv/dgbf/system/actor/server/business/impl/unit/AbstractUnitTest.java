@@ -104,7 +104,7 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.business.ser
 
 	/**/
 	
-	protected static void assertScopeFunction(String identifier,String expectedName,String expectedCategoryCode) {
+	protected static void assertScopeFunction(String identifier,String expectedName,String expectedCategoryCode,String expectedBudgetCategoryIdentifier) {
 		ScopeFunction scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, identifier);
 		assertThat(scopeFunction).as(String.format("Scope function %s exists",identifier)).isNotNull();
 		assertThat(scopeFunction.getCode()).isEqualTo(identifier);
@@ -115,10 +115,16 @@ public abstract class AbstractUnitTest extends org.cyk.utility.test.business.ser
 			assertThat(scopeFunction.getCategory()).as("category").isNotNull();
 			assertThat(scopeFunction.getCategory().getCode()).as("category code").isEqualTo(expectedCategoryCode);
 		}
+		
+		if(expectedBudgetCategoryIdentifier == null) {
+			assertThat(scopeFunction.getBudgetCategoryIdentifier()).as("budget category identifier").isNull();
+		}else {
+			assertThat(scopeFunction.getBudgetCategoryIdentifier()).as("budget category identifier").isEqualTo(expectedBudgetCategoryIdentifier);
+		}
 	}
 	
 	protected static void assertScopeFunction(String identifier,String expectedName) {
-		assertScopeFunction(identifier, expectedName, null);
+		assertScopeFunction(identifier, expectedName, null,null);
 	}
 	
 	protected static void assertRequestDispatchSlipProcessingDateIsNull(String identifier,Boolean expectedValue) {

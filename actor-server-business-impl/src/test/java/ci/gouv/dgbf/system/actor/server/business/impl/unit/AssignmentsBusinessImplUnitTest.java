@@ -42,8 +42,8 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 8l);
-		assertScopeFunction("G100001", "Gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_G1);
-		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_A1);
+		assertScopeFunction("G100001", "Gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_G1,"BUD_GEN");
+		assertScopeFunction("A1000010", "Assistant gestionnaire de crédits DBE",ScopeFunctionCategory.CODE_A1,"BUD_GEN");
 		
 		new Transaction.AbstractImpl() {
 			@Override
@@ -53,8 +53,8 @@ public class AssignmentsBusinessImplUnitTest extends AbstractUnitTestMemory {
 			}
 		}.run();
 		assertThatCountIsEqualTo(ScopeFunction.class, 10l);
-		assertScopeFunction("G600002", "Gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_G6);
-		assertScopeFunction("A1000020", "Assistant gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_A1);
+		assertScopeFunction("G600002", "Gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_G6,"BUD_EPN");
+		assertScopeFunction("A1000020", "Assistant gestionnaire de crédits EPN",ScopeFunctionCategory.CODE_A1,"BUD_EPN");
 	}
 	
 	@Test

@@ -137,6 +137,9 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	
 	@NotAudited @Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
 	
+	@NotAudited @Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER)
+	private String budgetCategoryIdentifier;
+	
 	@NotAudited @Column(name = "ETAT") private String __mea_statut__;
 	@NotAudited @Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;
 	
@@ -392,6 +395,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String FIELD_DOCUMENT_NUMBER = "documentNumber";
 	public static final String FIELD_ORDER_NUMBER = "orderNumber";
 	public static final String FIELD_CODIFICATION_DATE = "codificationDate";
+	public static final String FIELD_BUDGET_CATEGORY_IDENTIFIER = "budgetCategoryIdentifier";
 	
 	public static final String FIELD_REQUESTED = "requested";
 	public static final String FIELD_REQUESTED_AS_STRING = "requestedAsString";
@@ -418,6 +422,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	public static final String COLUMN_DOCUMENT_NUMBER = "NUMERO_DOCUMENT";
 	public static final String COLUMN_ORDER_NUMBER = "NUMERO_ORDRE";
 	public static final String COLUMN_CODIFICATION_DATE = "DATE_CODIFICATION";
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET";
 	
 	public static final String COLUMN___AUDIT_WHO__ = "AUDIT_ACTEUR";
 	public static final String COLUMN___AUDIT_FUNCTIONALITY__ = "AUDIT_FONCTIONALITE";

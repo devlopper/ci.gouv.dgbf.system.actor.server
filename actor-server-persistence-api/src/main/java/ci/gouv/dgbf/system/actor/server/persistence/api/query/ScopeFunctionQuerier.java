@@ -311,7 +311,7 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,"LEFT JOIN Scope scope ON scope = t.scope"
 				,"LEFT JOIN Function function ON function = t.function"
 				,"LEFT JOIN ScopeFunctionCategory category ON category = t.category"
-				,"LEFT JOIN BudgetCategory budgetCategory ON budgetCategory.identifier = category.budgetCategoryIdentifier"
+				,"LEFT JOIN BudgetCategory budgetCategory ON budgetCategory.identifier = t.budgetCategoryIdentifier"
 			);
 	}
 	

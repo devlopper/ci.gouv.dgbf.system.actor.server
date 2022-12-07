@@ -87,7 +87,10 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		try {
 			category = entityManager.createQuery("SELECT sfc FROM ScopeFunctionCategory sfc WHERE sfc.code = :categoryCode",ScopeFunctionCategory.class).setParameter("categoryCode", categoryCode).getSingleResult();
 		} catch (NoResultException e) {}
-		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setCodePrefix(categoryCode).setName(name).setCategory(category);		
+		System.out.println("ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode() ::: "+category);
+		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setCodePrefix(categoryCode).setName(name).setCategory(category);
+		if(scopeFunction.getCategory() != null)
+			scopeFunction.setBudgetCategoryIdentifier(scopeFunction.getCategory().getBudgetCategoryIdentifier());		
 		scopeFunction.set__auditWho__(actorCode);
 		TransactionResult transactionResult = new TransactionResult().setName(String.format("création de %s | %s , %s",function.getName(),scopeTypeCode,scopeIdentifier))
 				.setTupleName(function.getName());
@@ -148,6 +151,12 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 				try {
 					assistantScopeFunction.setCategory(entityManager.createQuery("SELECT sfc FROM ScopeFunctionCategory sfc WHERE sfc.code = :categoryCode",ScopeFunctionCategory.class).setParameter("categoryCode", assistantScopeFunction.getCodePrefix()).getSingleResult());
 				} catch (NoResultException e) {}
+				
+				if(scopeFunction.getCategory() != null)
+					assistantScopeFunction.setBudgetCategoryIdentifier(scopeFunction.getCategory().getBudgetCategoryIdentifier());	
+				
+				if(assistantScopeFunction.getBudgetCategoryIdentifier() == null && assistantScopeFunction.getCategory() != null)
+					assistantScopeFunction.setBudgetCategoryIdentifier(assistantScopeFunction.getCategory().getBudgetCategoryIdentifier());	
 				
 				assistantScopeFunction
 					.set__auditFunctionality__(scopeFunction.get__auditFunctionality__())
