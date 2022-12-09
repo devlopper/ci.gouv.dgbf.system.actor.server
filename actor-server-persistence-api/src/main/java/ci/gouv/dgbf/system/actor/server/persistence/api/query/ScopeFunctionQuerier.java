@@ -91,6 +91,9 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionCodeForUI");
 	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeForUI(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER_FOR_UI = Querier.buildIdentifier(ScopeFunction.class, "readByScopeIdentifierByFunctionCodeByBudgetCategoryIdentifierForUI");
+	Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeByBudgetCategoryIdentifierForUI(QueryExecutorArguments arguments);
+	
 	String QUERY_IDENTIFIER_READ_WHERE_CODIFICATION_DATE_IS_NULL_BY_SCOPE_TYPES_IDENTIFIERS_BY_FUNCTIONS_IDENTIFIERS = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers");
 	Collection<ScopeFunction> readWhereCodificationDateIsNullByScopeTypesIdentifiersByFunctionsIdentifiers(Collection<String> scopeTypesIdentifiers,Collection<String> functionsIdentifiers);
 	
@@ -211,6 +214,11 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 							,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_CODE))
 					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
 				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER_FOR_UI
+						, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.code = :%s AND t.budgetCategoryIdentifier = :%s ORDER BY t.code ASC"
+						,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_CODE,PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER))
+						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)	
+					
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_IDENTIFIER
 					, String.format("SELECT t.identifier,t.code,t.name FROM ScopeFunction t WHERE t.scope.identifier = :%s AND t.function.identifier = :%s ORDER BY t.code ASC"
 							,PARAMETER_NAME_SCOPE_IDENTIFIER,PARAMETER_NAME_FUNCTION_IDENTIFIER))

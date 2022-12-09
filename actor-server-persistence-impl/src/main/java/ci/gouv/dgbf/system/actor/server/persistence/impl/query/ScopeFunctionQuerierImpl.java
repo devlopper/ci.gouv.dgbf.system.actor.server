@@ -77,6 +77,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return readWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
 			return readByScopeIdentifierByFunctionCodeForUI(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER_FOR_UI.equals(arguments.getQuery().getIdentifier()))
+			return readByScopeIdentifierByFunctionCodeByBudgetCategoryIdentifierForUI(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
 			return readByFunctionIdentifierByBudgetSpecializationUnitIdentifier(arguments);
 		return super.readMany(arguments);
@@ -174,6 +176,22 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return null;
 		Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI
 				,PARAMETER_NAME_SCOPE_IDENTIFIER,scopeIdentifier,PARAMETER_NAME_FUNCTION_CODE,functionCode);
+		return scopeFunctions;
+	}
+	
+	@Override
+	public Collection<ScopeFunction> readByScopeIdentifierByFunctionCodeByBudgetCategoryIdentifierForUI(QueryExecutorArguments arguments) {
+		String scopeIdentifier = (String)arguments.getFilterFieldValue(PARAMETER_NAME_SCOPE_IDENTIFIER);
+		if(StringHelper.isBlank(scopeIdentifier))
+			return null;
+		String functionCode = (String)arguments.getFilterFieldValue(PARAMETER_NAME_FUNCTION_CODE);
+		if(StringHelper.isBlank(functionCode))
+			return null;
+		String budgetCategoryIdentifier = (String)arguments.getFilterFieldValue(PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER);
+		if(StringHelper.isBlank(budgetCategoryIdentifier))
+			return null;
+		Collection<ScopeFunction> scopeFunctions = QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER_FOR_UI
+				,PARAMETER_NAME_SCOPE_IDENTIFIER,scopeIdentifier,PARAMETER_NAME_FUNCTION_CODE,functionCode,PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,budgetCategoryIdentifier);
 		return scopeFunctions;
 	}
 	
