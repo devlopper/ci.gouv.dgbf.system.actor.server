@@ -39,6 +39,8 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 	private static void validate(RequestDispatchSlip requestDispatchSlip,Boolean requestsValidatable) {
 		if(requestDispatchSlip == null)
 			throw new RuntimeException("Le bordereau est obligatoire");
+		if(StringHelper.isBlank(requestDispatchSlip.getBudgetCategoryIdentifier()))
+			throw new RuntimeException("La catégorie de budget du bordereau est obligatoire");
 		if(requestDispatchSlip.getSection() == null)
 			throw new RuntimeException("La section du bordereau est obligatoire");
 		if(requestDispatchSlip.getFunction() == null)
@@ -75,7 +77,7 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		}		
 	}
 	
-	private String generateCode(RequestDispatchSlip requestDispatchSlip) {
+	private static String generateCode(RequestDispatchSlip requestDispatchSlip) {
 		StringBuilder stringBuilder = new StringBuilder("B");
 		stringBuilder.append(requestDispatchSlip.getFunction().getCode());
 		stringBuilder.append(requestDispatchSlip.getSection().getCode());		
@@ -84,8 +86,46 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 		return stringBuilder.toString();
 	}
 	
+	public static void record(RequestDispatchSlip requestDispatchSlip,EntityManager entityManager) {
+		validate(requestDispatchSlip,Boolean.TRUE);
+		if(requestDispatchSlip.getProcessingDate() != null)
+			throw new RuntimeException("Impossible de modifier le bordereau car il a déja été traité");
+		if(requestDispatchSlip.getSendingDate() != null)
+			throw new RuntimeException("Impossible de modifier le bordereau car il a déja été transmis");
+		if(requestDispatchSlip.getIdentifier() == null) {
+			requestDispatchSlip.set__auditFunctionality__("Création bordereau");
+			//if(StringHelper.isBlank(requestDispatchSlip.getCode()))
+			//	requestDispatchSlip.setCode(String.format("%s%s%s","B","2021",RandomHelper.getAlphanumeric(5).toUpperCase()));
+			if(StringHelper.isBlank(requestDispatchSlip.getName()))
+				requestDispatchSlip.setName(String.format("Bordereau de demandes de %s de la section %s",requestDispatchSlip.getFunction().getName()
+						,requestDispatchSlip.getSection().getCode()));
+			requestDispatchSlip.setCreationDate(LocalDateTime.now());
+			if(StringHelper.isBlank(requestDispatchSlip.getCode()))
+				requestDispatchSlip.setCode(generateCode(requestDispatchSlip));
+			EntityCreator.getInstance().createOne(requestDispatchSlip,entityManager);
+			//entityManager.persist(requestDispatchSlip);
+			updateDispatchSlip(requestDispatchSlip, entityManager);
+		}else {
+			requestDispatchSlip.set__auditFunctionality__("Modification bordereau");
+			Collection<Request> requests = RequestQuerier.getInstance().readByDispatchSlipIdentifier(requestDispatchSlip.getIdentifier());
+			if(CollectionHelper.isEmpty(requests)) {
+				updateDispatchSlip(requestDispatchSlip, entityManager);
+			}else {
+				for(Request request : requests)
+					if(!requestDispatchSlip.getRequests().contains(request)) {
+						request.setDispatchSlip(null);
+						entityManager.merge(request);
+					}
+				updateDispatchSlip(requestDispatchSlip, entityManager);
+			}
+			entityManager.merge(requestDispatchSlip);
+		}		
+	}
+	
 	@Override @Transactional
 	public void record(RequestDispatchSlip requestDispatchSlip) {
+		record(requestDispatchSlip, EntityManagerGetter.getInstance().get());
+		/*
 		validate(requestDispatchSlip,Boolean.TRUE);
 		if(requestDispatchSlip.getProcessingDate() != null)
 			throw new RuntimeException("Impossible de modifier le bordereau car il a déja été traité");
@@ -119,10 +159,11 @@ public class RequestDispatchSlipBusinessImpl extends AbstractBusinessEntityImpl<
 				updateDispatchSlip(requestDispatchSlip, entityManager);
 			}
 			entityManager.merge(requestDispatchSlip);
-		}		
+		}
+		*/
 	}
 	
-	private void updateDispatchSlip(RequestDispatchSlip requestDispatchSlip,EntityManager entityManager) {
+	private static void updateDispatchSlip(RequestDispatchSlip requestDispatchSlip,EntityManager entityManager) {
 		for(Request request : requestDispatchSlip.getRequests()) {
 			if(request.getDispatchSlip() != null && request.getDispatchSlip().equals(requestDispatchSlip))
 				continue;

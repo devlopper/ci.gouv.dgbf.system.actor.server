@@ -480,6 +480,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			String search = ValueHelper.defaultToIfBlank((String) arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH),"");
 			filter.addField(RequestDispatchSlipQuerier.PARAMETER_NAME_SEARCH, LikeStringValueBuilder.getInstance().build(search, null, null));
 		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGETS_CATEGORIES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.budgetCategoryIdentifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGETS_CATEGORIES_IDENTIFIERS));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGETS_CATEGORIES_IDENTIFIERS, arguments);
+		}
+		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER) != null) {
+			predicate.add(String.format("t.budgetCategoryIdentifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER));
+			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, arguments);
+		}
+		
 		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.section.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTIONS_IDENTIFIERS, arguments);
@@ -488,6 +497,7 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.section.identifier = :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
 		}
+		
 		if(arguments.getFilterFieldValue(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("t.function.identifier IN :%s", RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestDispatchSlipQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);

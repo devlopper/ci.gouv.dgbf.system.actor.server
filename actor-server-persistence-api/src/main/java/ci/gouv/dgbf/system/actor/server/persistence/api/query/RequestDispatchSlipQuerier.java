@@ -30,11 +30,16 @@ import org.cyk.utility.persistence.query.QueryName;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Function;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 
 public interface RequestDispatchSlipQuerier extends Querier {
 
+	String PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER = "budgetCategoryIdentifier";
+	String PARAMETER_NAME_BUDGETS_CATEGORIES_IDENTIFIERS = "budgetCategoryIdentifiers";
+	String PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER_NULLABLE = PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER+"Nullable";
+	
 	String PARAMETER_NAME_SECTION_IDENTIFIER = "sectionIdentifier";
 	String PARAMETER_NAME_SECTIONS_IDENTIFIERS = "sectionsIdentifiers";
 	String PARAMETER_NAME_SECTION_IDENTIFIER_NULLABLE = PARAMETER_NAME_SECTION_IDENTIFIER+"Nullable";
@@ -143,6 +148,9 @@ public interface RequestDispatchSlipQuerier extends Querier {
 			if(requestDispatchSlip == null)
 				return;
 			
+			//if(StringHelper.isBlank(requestDispatchSlip.getBudgetCategoryAsString()) && requestDispatchSlip.getSection() != null)
+			//	requestDispatchSlip.setSectionAsString(requestDispatchSlip.getSection().toString());
+			
 			if(StringHelper.isBlank(requestDispatchSlip.getSectionAsString()) && requestDispatchSlip.getSection() != null)
 				requestDispatchSlip.setSectionAsString(requestDispatchSlip.getSection().toString());
 			
@@ -221,7 +229,8 @@ public interface RequestDispatchSlipQuerier extends Querier {
 			Filter filter = new Filter();
 			filter.addFieldsNullable(arguments,PARAMETER_NAME_PROCESSING_DATE_IS_NULL,PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL
 					,PARAMETER_NAME_SENDING_DATE_IS_NULL,PARAMETER_NAME_SENDING_DATE_IS_NOT_NULL
-					,PARAMETER_NAME_SECTION_IDENTIFIER,PARAMETER_NAME_FUNCTION_IDENTIFIER);
+					,PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,PARAMETER_NAME_SECTION_IDENTIFIER,PARAMETER_NAME_FUNCTION_IDENTIFIER);
+			filter.addFieldEquals(PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_SECTION_IDENTIFIER, arguments);
 			filter.addFieldEquals(PARAMETER_NAME_FUNCTION_IDENTIFIER, arguments);
 			arguments.setFilter(filter);
@@ -257,7 +266,7 @@ public interface RequestDispatchSlipQuerier extends Querier {
 						,Query.FIELD_VALUE,jpql(select(
 								fields("t",RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
 										,RequestDispatchSlip.FIELD_CREATION_DATE,RequestDispatchSlip.FIELD_SENDING_DATE,RequestDispatchSlip.FIELD_PROCESSING_DATE)
-								,concatCodeName("s"),fields("f",Function.FIELD_NAME)
+								,concatCodeName("s"),fields("f",Function.FIELD_NAME),fields("bc",BudgetCategory.FIELD_NAME)
 								)
 								,getReadWhereFilterFromWhere(),getOrderBy())
 						).setTupleFieldsNamesIndexesFromFieldsNames(RequestDispatchSlip.FIELD_IDENTIFIER,RequestDispatchSlip.FIELD_CODE,RequestDispatchSlip.FIELD_NAME
@@ -272,6 +281,7 @@ public interface RequestDispatchSlipQuerier extends Querier {
 	static String getReadWhereFilterFromWhere() {
 		return jpql(
 				"FROM RequestDispatchSlip t"
+				,"LEFT JOIN BudgetCategory bc ON bc.identifier = t.budgetCategoryIdentifier"
 				,"LEFT JOIN Section s ON s = t.section"
 				,"LEFT JOIN Function f ON f = t.function"
 				,getReadWhereFilterWhere()
@@ -291,6 +301,8 @@ public interface RequestDispatchSlipQuerier extends Querier {
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NULL_NULLABLE),"t.processingDate IS NULL"))
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_PROCESSING_DATE_IS_NOT_NULL_NULLABLE),"t.processingDate IS NOT NULL"))
 				
+				/* Budget category */
+				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER_NULLABLE),"bc.identifier = :"+PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER))
 				/* Section */
 				,parenthesis(or(String.format(":%s = true", PARAMETER_NAME_SECTION_IDENTIFIER_NULLABLE),"s.identifier = :"+PARAMETER_NAME_SECTION_IDENTIFIER))
 				/* Function */

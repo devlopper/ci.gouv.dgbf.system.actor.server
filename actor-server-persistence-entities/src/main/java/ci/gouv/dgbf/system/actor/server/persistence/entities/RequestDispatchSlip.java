@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl;
@@ -32,6 +33,9 @@ import lombok.experimental.Accessors;
 public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringIdentifiableBusinessStringNamableAuditedImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@Transient private BudgetCategory budgetCategory;
+	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER,nullable = false) @NotBlank private String budgetCategoryIdentifier;
+	@Transient private String budgetCategoryAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_SECTION) @NotNull private Section section;
 	@Transient private String sectionAsString;
 	@ManyToOne @JoinColumn(name = COLUMN_FUNCTION) @NotNull private Function function;
@@ -86,6 +90,7 @@ public class RequestDispatchSlip extends AbstractIdentifiableSystemScalarStringI
 	
 	public static final String TABLE_NAME = "DM_BORDEREAU";
 	
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET";
 	public static final String COLUMN_SECTION = "SECTION";
 	public static final String COLUMN_FUNCTION = "FONCTION";
 	public static final String COLUMN_CREATION_DATE = "DATE_CREATION";

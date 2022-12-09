@@ -72,7 +72,7 @@ public class RequestBusinessIT extends AbstractBusinessInMemoryIT {
     
     @Test @InSequence(5)
     public void requestDispatchSlip_record() {
-    	RequestDispatchSlip requestDispatchSlip = new RequestDispatchSlip().setCode("b1")
+    	RequestDispatchSlip requestDispatchSlip = new RequestDispatchSlip().setCode("b1").setBudgetCategoryIdentifier("1")
     			.setSection(EntityFinder.getInstance().find(Section.class, "327")).setFunction(EntityFinder.getInstance().find(Function.class, "AGC"));
     	requestDispatchSlip.setRequests(List.of(
     			EntityFinder.getInstance().find(Request.class, "3").setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "1")))
