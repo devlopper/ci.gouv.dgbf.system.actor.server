@@ -47,6 +47,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	@Transient private String functionCode;
 	@Column(name = COLUMN_REQUESTED) private Boolean requested;
 	@Column(name = COLUMN_GRANTED) private Boolean granted;
+	@Transient private String budgetCategoryCode;
 	
 	@Transient private String electronicMailAddress;
 	@Transient private String scopeFunctionString;
@@ -77,6 +78,7 @@ public class RequestScopeFunction extends AbstractIdentifiableSystemScalarString
 	public static final String FIELD_FUNCTION_CODE = "functionCode";
 	public static final String FIELD_REQUESTED = "requested";
 	public static final String FIELD_GRANTED = "granted";
+	public static final String FIELD_BUDGET_CATEGORY_CODE = "budgetCategoryCode";
 	public static final String FIELD_ELECTRONIC_MAIL_ADDRESS = "electronicMailAddress";
 	public static final String FIELD_SCOPE_FUNCTION_STRING = "scopeFunctionString";
 	public static final String FIELD_GRANTED_STRING = "grantedString";

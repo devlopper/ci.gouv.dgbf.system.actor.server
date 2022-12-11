@@ -34,6 +34,8 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	@Column(name = COLUMN_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String signatureSpecimenReportIdentifier;
 	@Column(name = COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String creditManagerSignatureSpecimenReportIdentifier;
 	@Column(name = COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER) private String authorizingOfficerSignatureSpecimenReportIdentifier;
+	@Column(name = COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_EPN_REPORT_IDENTIFIER) private String creditManagerSignatureSpecimenEpnReportIdentifier;
+	@Column(name = COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_EPN_REPORT_IDENTIFIER) private String authorizingOfficerSignatureSpecimenEpnReportIdentifier;
 	@Column(name = COLUMN_AUTHENTICATION_REQUIRED) private Boolean authenticationRequired;
 	@Transient private String authenticationRequiredAsString;
 	@Column(name = COLUMN_NOTIFIABLE_BY_EMAIL) private Boolean notifiableByEmail;
@@ -75,6 +77,8 @@ public class RequestType extends AbstractIdentifiableSystemScalarStringIdentifia
 	public static final String COLUMN_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_ID";
 	public static final String COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_GC_ID";
 	public static final String COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_SIGNATURE_ORD_ID";
+	public static final String COLUMN_CREDIT_MANAGER_SIGNATURE_SPECIMEN_EPN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_GC_EPN_ID";
+	public static final String COLUMN_AUTHORIZING_OFFICER_SIGNATURE_SPECIMEN_EPN_REPORT_IDENTIFIER = "ETAT_SPECIMEN_ORD_EPN_ID";
 	public static final String COLUMN_AUTHENTICATION_REQUIRED = "AUTHENTIFICATION_REQUISE";
 	public static final String COLUMN_NOTIFIABLE_BY_EMAIL = "NOTIFIABLE_PAR_EMAIL";
 	

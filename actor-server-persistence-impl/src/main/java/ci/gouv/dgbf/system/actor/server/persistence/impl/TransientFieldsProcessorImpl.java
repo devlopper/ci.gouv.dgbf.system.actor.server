@@ -427,6 +427,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 									.setCode(x.getScopeFunctionCode())
 									.setName(x.getScopeFunctionName())
 									.setFunction(StringHelper.isBlank(x.getFunctionCode()) ? null : new Function().setCode(x.getFunctionCode()))
+									.setBudgetCategoryCode(x.getBudgetCategoryCode())
 							)
 							.collect(Collectors.toList())
 							);

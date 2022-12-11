@@ -102,6 +102,7 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@ManyToOne @JoinColumn(name = COLUMN_CATEGORY) /*@NotNull*/ private ScopeFunctionCategory category;
 	
+	@NotAudited @Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER) private String budgetCategoryIdentifier;
 	@Transient private String budgetCategoryAsString;
 	@Transient private String budgetCategoryCode;
 	
@@ -136,9 +137,6 @@ public class ScopeFunction extends AbstractIdentifiableSystemScalarStringIdentif
 	@Transient private Collection<String> childrenCodesNames;
 	
 	@NotAudited @Column(name = COLUMN_CODIFICATION_DATE) private LocalDateTime codificationDate;
-	
-	@NotAudited @Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER)
-	private String budgetCategoryIdentifier;
 	
 	@NotAudited @Column(name = "ETAT") private String __mea_statut__;
 	@NotAudited @Column(name = "DATE_ETAT") private LocalDateTime __mea_date_statut__;

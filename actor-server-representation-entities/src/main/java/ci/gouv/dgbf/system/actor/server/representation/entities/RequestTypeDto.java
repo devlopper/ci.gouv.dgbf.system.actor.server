@@ -18,6 +18,8 @@ public class RequestTypeDto extends AbstractIdentifiableSystemScalarStringIdenti
 	private String signatureSpecimenReportIdentifier;
 	private String creditManagerSignatureSpecimenReportIdentifier;
 	private String authorizingOfficerSignatureSpecimenReportIdentifier;
+	private String creditManagerSignatureSpecimenEpnReportIdentifier;
+	private String authorizingOfficerSignatureSpecimenEpnReportIdentifier;
 	private Boolean authenticationRequired;
 	private String formAsString;
 	private String authenticationRequiredAsString;
