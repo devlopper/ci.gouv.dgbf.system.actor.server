@@ -15,5 +15,5 @@ SET commit_message="actor server using bootable publishing %timestamp%"
 echo #### %commit_message%
 git add .
 git commit --all -m %commit_message%
-REM git push -u origin %1:%2
-git push -u mic-acteur-api %1:%2
+git push -u origin %1:%2
+git push mic-acteur-api %1:%2
