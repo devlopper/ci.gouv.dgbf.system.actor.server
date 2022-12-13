@@ -65,6 +65,9 @@ public class ScopeFunctionCategory extends AbstractIdentifiableSystemScalarStrin
 	public static final String NAME_O9 = "Autre ordonnateur délégué";
 	//public static final String NAME_O9 = "Ordonnateur autres Dépenses Centralisées";
 	
+	public static final String CODE_O7 = "O7";
+	public static final String NAME_O7 = "Ordonnateur des EPN";
+	
 	public static final String CODE_C1 = "C1";
 	public static final String NAME_C1 = "Contrôleur financier de section";
 	
@@ -73,6 +76,9 @@ public class ScopeFunctionCategory extends AbstractIdentifiableSystemScalarStrin
 	
 	public static final String CODE_C3 = "C3";
 	public static final String NAME_C3 = "Contrôleur financier de projet";
+	
+	public static final String CODE_C4 = "C4";
+	public static final String NAME_C4 = "Contrôleur Budgétaire";
 	
 	public static final String CODE_T1 = "T1";
 	public static final String NAME_T1 = "Payeur général";
@@ -91,6 +97,9 @@ public class ScopeFunctionCategory extends AbstractIdentifiableSystemScalarStrin
 	
 	public static final String CODE_T6 = "T6";
 	public static final String NAME_T6 = "Trésorier régional";
+	
+	public static final String CODE_T7 = "T7";
+	public static final String NAME_T7 = "Agence Comptable";
 	
 	public static final String CODE_T8 = "T8";
 	public static final String NAME_T8 = "Trésorier de projet";
