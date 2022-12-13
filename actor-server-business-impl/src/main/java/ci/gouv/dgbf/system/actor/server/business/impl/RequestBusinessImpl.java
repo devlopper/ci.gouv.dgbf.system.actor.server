@@ -634,7 +634,7 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	private static void setReadPageURL(Request request) {
 		if(StringHelper.isBlank(request.getReadPageURL()))
 			request.setReadPageURL(ValueHelper.defaultToIfBlank(ConfigurationHelper.getValueAsString(FreeMarker.VARIABLE_NAME_REQUEST_READ_PAGE_URL)
-					, "http://siib"+("test".equals(ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT")) ? "test" : "")+".dgbf.ci/acteur/public/request/read.jsf"));
+					, "http://"+("default".equals(ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT")) ? "" : ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT")+"-")+"siib.dgbf.ci/acteur/public/request/read.jsf"));
 	}
 	
 	private static void notifyAccessToken(Request request) {

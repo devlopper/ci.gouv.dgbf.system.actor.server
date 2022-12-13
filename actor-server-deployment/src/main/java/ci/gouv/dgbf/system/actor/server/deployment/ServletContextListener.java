@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebListener;
 
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.variable.VariableHelper;
 import org.cyk.utility.__kernel__.variable.VariableName;
 import org.cyk.utility.mail.MailSender;
@@ -42,5 +43,21 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOGGABLE = Boolean.TRUE;
 		//org.cyk.utility.persistence.server.QueryExecutor.AbstractImpl.LOG_LEVEL = java.util.logging.Level.INFO;
 		//ClientManager.AbstractImpl.LOGGING_LEVEL = Level.INFO;
+		
+		String environment = ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT");
+		
+		LogHelper.logInfo(String.format("   ###   Environement   ###   ", environment), getClass());
+		
+		if("dev".equals(environment)) {
+			VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.94.11:8001/jasperserver/");
+		}else if("preproduction".equals(environment)) {
+			
+		}else if("debug".equals(environment)) {
+			
+		}else {
+			VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.4.24:8080/jasperserver/");
+		}
+		
+		LogHelper.logInfo(String.format("   ###   Jasper   ###   ", VariableHelper.read(VariableName.JASPER_SERVER_URL)), getClass());
 	}
 }
