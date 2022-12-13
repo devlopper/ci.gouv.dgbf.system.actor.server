@@ -11,7 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorScopeRequest;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
 
-public class ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader extends AbstractActorScopeRequestReaderImpl implements Serializable {
+public class ActorScopReqActorAsStrngScopTypAsStrngScopAsStrngGrtdAndGrtdAsStrngReader extends AbstractActorScopeRequestReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {

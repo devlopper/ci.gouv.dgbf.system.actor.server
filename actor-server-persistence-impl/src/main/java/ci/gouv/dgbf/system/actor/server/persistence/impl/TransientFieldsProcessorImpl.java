@@ -42,7 +42,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProflReqActr
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorRegNumberNamesMailAddressAdmtvFuncCvtyIdentGrpAdmtvUnitSecReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopReqActorAsStrngScopTypAsStrngScopAsStrngGrtdAndGrtdAsStrngReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsAccountingTresorIdentifiersReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AssignmentsHoldersReader;
@@ -61,15 +61,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedSco
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestIsCMHIsAOHIsFCHIsAHReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionRequestIdentifierRequestCodeIdentityScopeFunctionStringGrantedStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ReqScopFuncReqIdentifierReqCodIdentityScopFuncStrgGrtdStrgReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ReqSecAsCodAdmtvUnitAsCodStatusCrtionDatProcesngDatAsStrngsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ReqSecAsCodeAdmtvUnitAsCodTypStatusCreationDateAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateAsStringsReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ReqSecAsCodAdmtvUnitTypStatusCrtionDatPrsngDatAsStrgsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeTypeRequestableAndRequestableAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ScopeVisiblesReader;
@@ -178,7 +178,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			if(ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
 				new ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader().readThenSet(actorScopeRequests, null);
 			else if(ActorScopeRequest.FIELDS_ACTOR_AS_STRING_SCOPE_TYPE_AS_STRING_SCOPE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
-				new ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader().readThenSet(actorScopeRequests, null);
+				new ActorScopReqActorAsStrngScopTypAsStrngScopAsStrngGrtdAndGrtdAsStrngReader().readThenSet(actorScopeRequests, null);
 		}
 	}
 	
@@ -348,11 +348,11 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
 				new RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateAsStringsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
-				new RequestSectionAsCodeAdministrativeUnitTypeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+				new ReqSecAsCodAdmtvUnitTypStatusCrtionDatPrsngDatAsStrgsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_AS_STRINGS.equals(fieldName))
-				new RequestSectionAsCodeAdministrativeUnitAsCodeTypeStatusCreationDateAsStringsReader().readThenSet(requests, null);
+				new ReqSecAsCodeAdmtvUnitAsCodTypStatusCreationDateAsStringsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SECTION_AS_CODE_ADMINISTRATIVE_UNIT_AS_CODE_TYPE_STATUS_CREATION_DATE_PROCESSING_DATE_AS_STRINGS.equals(fieldName))
-				new RequestSectionAsCodeAdministrativeUnitAsCodeStatusCreationDateProcessingDateAsStringsReader().readThenSet(requests, null);
+				new ReqSecAsCodAdmtvUnitAsCodStatusCrtionDatProcesngDatAsStrngsReader().readThenSet(requests, null);
 			else if(Request.FIELDS_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestScopeFunctionsCodesReader().readThenSet(requests, null);
 			else if(Request.FIELDS_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
@@ -444,7 +444,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			if(RequestScopeFunction.FIELDS_REQUEST_IDENTIFIER_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING.equals(fieldName))
 				new RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader().readThenSet(requestScopeFunctions, null);
 			else if(RequestScopeFunction.FIELDS_REQUEST_IDENTIFIER_REQUEST_CODE_IDENTITY_SCOPE_FUNCTION_STRING_GRANTED_STRING.equals(fieldName))
-				new RequestScopeFunctionRequestIdentifierRequestCodeIdentityScopeFunctionStringGrantedStringReader().readThenSet(requestScopeFunctions, null);
+				new ReqScopFuncReqIdentifierReqCodIdentityScopFuncStrgGrtdStrgReader().readThenSet(requestScopeFunctions, null);
 			else
 				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}
