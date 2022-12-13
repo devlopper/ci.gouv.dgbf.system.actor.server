@@ -25,7 +25,7 @@ ENV cyk.variable.keycloak.credential.password mic-@cteur-@pi@2O2o
 
 # -- REPORT SERVER : JASPER --
 ENV cyk.variable.jasper.server.enabled=true
-#ENV cyk.variable.jasper.server.url=http://10.3.4.24:8080/jasperserver/
+ENV cyk.variable.jasper.server.url=http://10.3.4.24:8080/jasperserver/
 ENV cyk.variable.jasper.server.credential.username=jasperadmin
 ENV cyk.variable.jasper.server.credential.password=jasperadmin
 

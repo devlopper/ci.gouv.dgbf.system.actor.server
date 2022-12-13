@@ -46,7 +46,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		
 		String environment = ConfigurationHelper.getValueAsString("SIIB_ENVIRONMENT");
 		
-		LogHelper.logInfo(String.format("   ###   Environement   ###   ", environment), getClass());
+		LogHelper.logInfo(String.format("   ###   Environement   ### : %s", environment), getClass());
 		
 		if("dev".equals(environment)) {
 			VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.94.11:8001/jasperserver/");
@@ -58,6 +58,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 			VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.4.24:8080/jasperserver/");
 		}
 		
-		LogHelper.logInfo(String.format("   ###   Jasper   ###   ", VariableHelper.read(VariableName.JASPER_SERVER_URL)), getClass());
+		LogHelper.logInfo(String.format("   ###   Jasper   ### : %s", VariableHelper.read(VariableName.JASPER_SERVER_URL)), getClass());
 	}
 }
