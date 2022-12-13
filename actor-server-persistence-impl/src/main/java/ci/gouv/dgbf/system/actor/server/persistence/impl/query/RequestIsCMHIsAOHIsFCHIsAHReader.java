@@ -10,7 +10,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class RequestIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader extends AbstractRequestReaderImpl implements Serializable {
+public class RequestIsCMHIsAOHIsFCHIsAHReader extends AbstractRequestReaderImpl implements Serializable {
 
 	@Override
 	protected QueryStringBuilder.Arguments instantiateQueryStringBuilderArguments() {

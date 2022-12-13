@@ -11,7 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 
-public class RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader extends RequestScopeFunctionsCodesReader implements Serializable {
+public class RequestScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader extends RequestScopeFunctionsCodesReader implements Serializable {
 
 	@Override
 	protected void __set__(Request request, Object[] array) {
