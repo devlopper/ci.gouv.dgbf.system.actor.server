@@ -9,7 +9,7 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 
-public class ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader extends AbstractActorReaderImpl implements Serializable {
+public class ActorCodeFirstNameLastNamesMailSecAdmtvUnitAdmtvFncReader extends AbstractActorReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {

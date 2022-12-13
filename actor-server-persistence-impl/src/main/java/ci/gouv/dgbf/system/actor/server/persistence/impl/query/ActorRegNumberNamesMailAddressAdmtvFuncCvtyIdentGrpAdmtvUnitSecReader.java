@@ -11,7 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Civility;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentityGroup;
 
-public class ActorRegistrationNumberFirstNameLastNamesElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSectionReader extends AbstractActorReaderImpl implements Serializable {
+public class ActorRegNumberNamesMailAddressAdmtvFuncCvtyIdentGrpAdmtvUnitSecReader extends AbstractActorReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {

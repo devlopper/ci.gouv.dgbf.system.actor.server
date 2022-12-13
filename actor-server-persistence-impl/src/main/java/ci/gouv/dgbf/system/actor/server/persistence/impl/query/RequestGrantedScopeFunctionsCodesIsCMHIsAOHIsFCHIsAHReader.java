@@ -7,12 +7,12 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder.Argume
 
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 
-public class RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader extends RequestGrantedScopeFunctionsCodesReader implements Serializable {
+public class RequestGrantedScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader extends RequestGrantedScopeFunctionsCodesReader implements Serializable {
 
 	@Override
 	protected Arguments instantiateQueryStringBuilderArguments() {
 		QueryStringBuilder.Arguments arguments =  super.instantiateQueryStringBuilderArguments();
-		RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader
+		RequestScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader
 			.prepareQueryStringBuilderArguments(arguments);
 		return arguments;
 	}
@@ -20,7 +20,7 @@ public class RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizing
 	@Override
 	protected void __set__(Request request, Object[] array) {
 		super.__set__(request, array);
-		RequestScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader
+		RequestScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader
 			.setIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolder(request, array);
 	}
 }

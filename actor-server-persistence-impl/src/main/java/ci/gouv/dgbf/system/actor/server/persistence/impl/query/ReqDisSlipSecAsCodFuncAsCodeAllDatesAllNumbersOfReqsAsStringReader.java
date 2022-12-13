@@ -9,7 +9,7 @@ import org.cyk.utility.persistence.server.query.string.QueryStringBuilder;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestStatus;
 
-public class RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsStringReader extends AbstractRequestDispatchSlipReaderImpl implements Serializable {
+public class ReqDisSlipSecAsCodFuncAsCodeAllDatesAllNumbersOfReqsAsStringReader extends AbstractRequestDispatchSlipReaderImpl implements Serializable {
 
 	@Override
 	protected QueryStringBuilder.Arguments instantiateQueryStringBuilderArguments() {

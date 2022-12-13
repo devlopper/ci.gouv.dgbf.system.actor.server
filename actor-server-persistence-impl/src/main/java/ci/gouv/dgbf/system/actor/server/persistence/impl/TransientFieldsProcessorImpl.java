@@ -32,15 +32,15 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.Scope;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunction;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionAudit;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeType;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesMailSecAdmtvUnitAdmtvFncReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeFirstNameLastNamesSectionAdministrativeUnitReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorCodeNamesElectronicMailAddressReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfileRequestActorAsStringProfileAsStringGrantedAndGrantedAsStringReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProflReqActrAsStrgPrflTypAsStrgProfilAsStrgGrtdAndGrtdAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorProfilesCodesReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorRegistrationNumberFirstNameLastNamesElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSectionReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorRegNumberNamesMailAddressAdmtvFuncCvtyIdentGrpAdmtvUnitSecReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeAsStringGrantedAndGrantedAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ActorScopeRequestActorAsStringScopeTypeAsStringScopeAsStringGrantedAndGrantedAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.AdministrativeUnitLocalitiesNativeReader;
@@ -54,10 +54,10 @@ import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileRequestabl
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ProfileTypeAsStringsReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipCodeReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipNumberOfRequestsReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsStringReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.ReqDisSlipSecAsCodFuncAsCodeAllDatesAllNumbersOfReqsAsStringReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestDispatchSlipSectionFunctionReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestFirstNameAndLastNamesReader;
-import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader;
+import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestGrantedScopeFunctionsCodesReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestIsCMHIsAOHIsFCHIsAHReader;
 import ci.gouv.dgbf.system.actor.server.persistence.impl.query.RequestScopeFunctionRequestIdentifierIdentityScopeFunctionStringGrantedStringReader;
@@ -157,7 +157,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	public void processActors(Collection<Actor> actors,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
 			if(Actor.FIELDS_REGISTRATION_NUMBER_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_ADMINISTRATIVE_FUNCTION_CIVILITY_IDENTITY_GROUP_ADMINISTRATIVE_UNIT_SECTION.equals(fieldName))
-				new ActorRegistrationNumberFirstNameLastNamesElectronicMailAddressAdministrativeFunctionCivilityIdentityGroupAdministrativeUnitSectionReader().readThenSet(actors, null);
+				new ActorRegNumberNamesMailAddressAdmtvFuncCvtyIdentGrpAdmtvUnitSecReader().readThenSet(actors, null);
 			else if(Actor.FIELD_PROFILES_CODES.equals(fieldName))
 				new ActorProfilesCodesReader().readThenSet(actors, null);
 			else if(Actor.FIELDS_CODE_NAMES_ELECTRONIC_MAIL_ADDRESS.equals(fieldName))
@@ -169,7 +169,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			else if(Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION.equals(fieldName))
 				new ActorCodeFirstNameLastNamesSectionAdministrativeUnitAdministrativeFunctionReader().readThenSet(actors, null);
 			else if(Actor.FIELDS_CODE_FIRST_NAME_LAST_NAMES_ELECTRONIC_MAIL_ADDRESS_SECTION_ADMINISTRATIVE_UNIT_ADMINISTRATIVE_FUNCTION.equals(fieldName))
-				new ActorCodeFirstNameLastNamesElectronicMailAddressSectionAdministrativeUnitAdministrativeFunctionReader().readThenSet(actors, null);
+				new ActorCodeFirstNameLastNamesMailSecAdmtvUnitAdmtvFncReader().readThenSet(actors, null);
 		}
 	}
 	
@@ -187,7 +187,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			if(ActorProfileRequest.FIELDS_ACTOR_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
 				new ActorProfileRequestActorAsStringProfileAsStringGrantedAndGrantedAsStringReader().readThenSet(actorProfileRequests, null);
 			else if(ActorProfileRequest.FIELDS_ACTOR_AS_STRING_PROFILE_TYPE_AS_STRING_PROFILE_AS_STRING_GRANTED_AND_GRANTED_AS_STRING.equals(fieldName))
-				new ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsStringReader().readThenSet(actorProfileRequests, null);
+				new ActorProflReqActrAsStrgPrflTypAsStrgProfilAsStrgGrtdAndGrtdAsStringReader().readThenSet(actorProfileRequests, null);
 		}
 	}
 	
@@ -366,7 +366,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES.equals(fieldName))
 				new RequestGrantedScopeFunctionsCodesReader().readThenSet(requests, null);
 			else if(Request.FIELDS_GRANTED_SCOPE_FUNCTIONS_CODES_IS_CREDIT_MANAGER_HOLDER_IS_AUTHORIZING_OFFICER_HOLDER_IS_FINANCIAL_CONTROLLER_HOLDER_IS_ACCOUNTING_HOLDER.equals(fieldName))
-				new RequestGrantedScopeFunctionsCodesIsCreditManagerHolderIsAuthorizingOfficerHolderIsFinancialControllerHolderIsAccountingHolderReader().readThenSet(requests, null);
+				new RequestGrantedScopeFunctionsCodesIsCMHIsAOHIsFCHIsAHReader().readThenSet(requests, null);
 			else if(Request.FIELD_HAS_GRANTED_HOLDER_SCOPE_FUNCTION.equals(fieldName)) {
 				Collection<Object[]> arrays = new ReaderByCollection.AbstractImpl<String, Object[]>() {
 					protected Collection<Object[]> __read__(Collection<String> values) {
@@ -457,7 +457,7 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 			else if(RequestDispatchSlip.FIELDS_SECTION_FUNCTION.equals(fieldName))
 				new RequestDispatchSlipSectionFunctionReader().readThenSet(requestDispatchSlips, null);
 			else if(RequestDispatchSlip.FIELDS_SECTION_AS_CODE_FUNCTION_AS_CODE_ALL_DATES_ALL_NUMBERS_OF_REQUESTS_AS_STRING.equals(fieldName))
-				new RequestDispatchSlipSectionAsCodeFunctionAsCodeAllDatesAllNumbersOfRequestsAsStringReader().readThenSet(requestDispatchSlips, null);
+				new ReqDisSlipSecAsCodFuncAsCodeAllDatesAllNumbersOfReqsAsStringReader().readThenSet(requestDispatchSlips, null);
 			else
 				logFieldNameHasNotBeenSet(RequestDispatchSlip.class, fieldName);
 		}

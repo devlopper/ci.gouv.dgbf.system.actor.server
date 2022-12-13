@@ -11,7 +11,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.ActorProfileRequest
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.ProfileType;
 
-public class ActorProfileRequestActorAsStringProfileTypeAsStringProfileAsStringGrantedAndGrantedAsStringReader extends AbstractActorProfileRequestReaderImpl implements Serializable {
+public class ActorProflReqActrAsStrgPrflTypAsStrgProfilAsStrgGrtdAndGrtdAsStringReader extends AbstractActorProfileRequestReaderImpl implements Serializable {
 
 	@Override
 	protected String getQueryValue() {
