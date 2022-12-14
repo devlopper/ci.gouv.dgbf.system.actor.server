@@ -34,7 +34,7 @@ public class RequestBusinessIT extends AbstractBusinessInMemoryIT {
     public void request_initialize() {
     	for(Integer index = 1; index <= 7; index++) {
     		String identifier = index.toString();
-    		Request request = new Request().setCode(identifier);
+    		Request request = new Request().setCode(identifier).setBudgetCategoryIdentifier("1");
         	request.setType(CodeExecutor.getInstance().getOne(RequestType.class, RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES)).setElectronicMailAddress("m"+identifier+"@mail.com");
         	request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "1")));
         	request.setAdministrativeUnit(EntityFinder.getInstance().find(AdministrativeUnit.class, "13010222"));

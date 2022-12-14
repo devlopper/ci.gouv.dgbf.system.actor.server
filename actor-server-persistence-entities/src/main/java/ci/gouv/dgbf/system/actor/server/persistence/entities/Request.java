@@ -38,10 +38,10 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
 @Entity @Table(name=Request.TABLE_NAME)
 @AttributeOverrides(value= {
-		@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
-		,@AttributeOverride(name = ScopeFunction.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
+		@AttributeOverride(name = Request.FIELD___AUDIT_WHO__,column = @Column(name="AUDIT_ACTEUR"))
+		,@AttributeOverride(name = Request.FIELD___AUDIT_WHAT__,column = @Column(name="AUDIT_ACTION"))
+		,@AttributeOverride(name = Request.FIELD___AUDIT_WHEN__,column = @Column(name="AUDIT_DATE"))
+		,@AttributeOverride(name = Request.FIELD___AUDIT_FUNCTIONALITY__,column = @Column(name="AUDIT_FONCTIONALITE"))
 })
 @NamedStoredProcedureQueries(value = {
 		@NamedStoredProcedureQuery(
@@ -53,6 +53,10 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	private static final long serialVersionUID = 1L;
 	
 	/* Initialization */
+	
+	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER,nullable = false) @NotNull private String budgetCategoryIdentifier;
+	@Transient private BudgetCategory budgetCategory;
+	@Transient private String budgetCategoryAsString;
 	
 	@ManyToOne @JoinColumn(name = COLUMN_TYPE) @NotNull private RequestType type;
 	@Transient private String typeAsString;
@@ -336,6 +340,7 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";
 	
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET";
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
 	public static final String COLUMN_TYPE = "TYPE";
 	public static final String COLUMN_STATUS = "STATUT";

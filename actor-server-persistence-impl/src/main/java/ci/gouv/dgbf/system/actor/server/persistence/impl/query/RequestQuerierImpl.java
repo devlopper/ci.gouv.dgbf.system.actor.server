@@ -39,6 +39,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.IdentificationForm
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -276,6 +277,8 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		if(request.getType() != null && RequestType.IDENTIFIER_DEMANDE_POSTES_BUDGETAIRES.equals(request.getType().getIdentifier())) {
 			request.setSection(request.getAdministrativeUnit().getSection());
 		}
+		if(request.getBudgetCategory() == null && StringHelper.isNotBlank(request.getBudgetCategoryIdentifier()))
+			request.setBudgetCategory(EntityFinder.getInstance().find(BudgetCategory.class, request.getBudgetCategoryIdentifier()));
 		return request;
 	}
 	

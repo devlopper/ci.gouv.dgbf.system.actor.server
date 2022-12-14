@@ -80,6 +80,8 @@ public class RequestBusinessImpl extends AbstractBusinessEntityImpl<Request, Req
 	private static void validate(Request request,Boolean budgetariesScopeFunctionsIncludable) {
 		if(request == null)
 			throw new RuntimeException("La demande est obligatoire");
+		if(StringHelper.isBlank(request.getBudgetCategoryIdentifier()))
+			throw new RuntimeException("La catégorie de budget de la demande est obligatoire");
 		if(request.getType() == null)
 			throw new RuntimeException("Le type de demande est obligatoire");
 		if(request.getType().getForm() == null)

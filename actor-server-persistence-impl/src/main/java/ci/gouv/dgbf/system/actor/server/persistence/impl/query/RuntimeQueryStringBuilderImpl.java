@@ -547,10 +547,15 @@ public class RuntimeQueryStringBuilderImpl extends org.cyk.utility.persistence.s
 			predicate.add(String.format("t.dispatchSlip.identifier IN :%s", RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_DISPATCH_SLIP_IDENTIFIERS, arguments);
 		}
-		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS) != null) {
+		/*if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS) != null) {
 			predicate.add(String.format("EXISTS(SELECT c.identifier FROM RequestScopeFunction c LEFT JOIN ScopeFunctionCategory sfc ON sfc = c.scopeFunction.category LEFT JOIN BudgetCategory bc ON bc.identifier = sfc.budgetCategoryIdentifier WHERE c.request = t AND bc.identifier IN :%s)", RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS, arguments);
+		}*/
+		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS) != null) {
+			predicate.add(String.format("t.budgetCategoryIdentifier IN :%s", RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS));
+			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_BUDGET_CATEGORIES_IDENTIFIERS, arguments);
 		}
+		
 		if(arguments.getFilterFieldValue(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS) != null) {
 			predicate.add(String.format("EXISTS(SELECT c.identifier FROM RequestScopeFunction c WHERE c.request = t AND c.scopeFunction.function.identifier IN :%s)", RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS));
 			filter.addFieldsFrom(RequestQuerier.PARAMETER_NAME_FUNCTIONS_IDENTIFIERS, arguments);

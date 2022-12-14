@@ -45,7 +45,7 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				Request request = new Request().setCode(code);
+				Request request = new Request().setCode(code).setBudgetCategoryIdentifier("1");
 	        	request.setType(CodeExecutor.getInstance().getOne(RequestType.class, RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES)).setElectronicMailAddress("m@mail.com");
 	        	request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "GDSIB")));
 	        	request.setAdministrativeUnit(EntityFinder.getInstance().find(AdministrativeUnit.class, "DSIB"));
@@ -63,7 +63,7 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				Request request = new Request().setCode(code);
+				Request request = new Request().setCode(code).setBudgetCategoryIdentifier("1");
 	        	request.setType(CodeExecutor.getInstance().getOne(RequestType.class, RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES)).setElectronicMailAddress("m@mail.com");
 	        	request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "GDSIB")
 	        			,EntityFinder.getInstance().find(ScopeFunction.class, "GDBE")
@@ -84,7 +84,7 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 			new Transaction.AbstractImpl() {
 				@Override
 				protected void __run__(EntityManager entityManager) {
-					Request request = new Request().setCode(code);
+					Request request = new Request().setCode(code).setBudgetCategoryIdentifier("1");
 		        	request.setType(CodeExecutor.getInstance().getOne(RequestType.class, RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES)).setElectronicMailAddress("m@mail.com");
 		        	request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "GDSIB")
 		        			,EntityFinder.getInstance().find(ScopeFunction.class, "GCHUYOP")
@@ -129,7 +129,7 @@ public class RequestBusinessImplUnitTest extends AbstractUnitTestMemory {
 		new Transaction.AbstractImpl() {
 			@Override
 			protected void __run__(EntityManager entityManager) {
-				Request request = new Request().setCode(requestCode);
+				Request request = new Request().setCode(requestCode).setBudgetCategoryIdentifier("1");
 	        	request.setType(CodeExecutor.getInstance().getOne(RequestType.class, RequestType.CODE_DEMANDE_POSTES_BUDGETAIRES)).setElectronicMailAddress("m@mail.com");
 	        	request.setBudgetariesScopeFunctions(List.of(EntityFinder.getInstance().find(ScopeFunction.class, "GDSIB")));
 	        	request.setAdministrativeUnit(EntityFinder.getInstance().find(AdministrativeUnit.class, "DSIB"));

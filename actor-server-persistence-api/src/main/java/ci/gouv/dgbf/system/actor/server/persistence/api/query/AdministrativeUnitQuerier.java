@@ -152,8 +152,9 @@ public interface AdministrativeUnitQuerier extends Querier.CodableAndNamable<Adm
 		
 		@Override
 		public Collection<AdministrativeUnit> readBySectionIdentifierByServiceGroupCodeStartsWithForUI(String sectionIdentifier,String serviceGroupCode) {
+			serviceGroupCode = (StringHelper.isEmpty(serviceGroupCode) ? "%" : serviceGroupCode)+"%";
 			return QueryExecutor.getInstance().executeReadMany(AdministrativeUnit.class, QUERY_IDENTIFIER_READ_BY_SECTION_IDENTIFIER_BY_SERVICE_GROUP_CODE_STARTS_WITH_FOR_UI
-					, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier,PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode+"%");
+					, PARAMETER_NAME_SECTION_IDENTIFIER,sectionIdentifier,PARAMETER_NAME_SERVICE_GROUP_CODE,serviceGroupCode);
 		}
 		
 		@Override

@@ -15,6 +15,9 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private static final long serialVersionUID = 1L;
 
 	/* Initialization */
+	private BudgetCategoryDto budgetCategory;
+	private String budgetCategoryIdentifier;
+	private String budgetCategoryAsString;
 	
 	private RequestTypeDto type;
 	private String typeAsString;
