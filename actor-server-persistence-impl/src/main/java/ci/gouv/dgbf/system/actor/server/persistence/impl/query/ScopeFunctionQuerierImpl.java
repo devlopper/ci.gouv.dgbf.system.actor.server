@@ -73,6 +73,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return readByParentsIdentifiersForUI((Collection<String>) arguments.getFilterFieldValue(PARAMETER_NAME_PARENTS_IDENTIFIERS));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 			return readWhereCodeOrNameLikeByFunctionCode(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+			return readWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
 			return readWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_BY_SCOPE_IDENTIFIER_BY_FUNCTION_CODE_FOR_UI.equals(arguments.getQuery().getIdentifier()))
@@ -98,6 +100,8 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 			return countByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE.equals(arguments.getQuery().getIdentifier()))
 			return countWhereCodeOrNameLikeByFunctionCode(arguments);
+		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER.equals(arguments.getQuery().getIdentifier()))
+			return countWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES.equals(arguments.getQuery().getIdentifier()))
 			return countWhereCodeOrNameLikeByFunctionsCodes(arguments);
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_BY_PARENTS_IDENTIFIERS.equals(arguments.getQuery().getIdentifier()))
@@ -296,11 +300,40 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 		return QueryExecutor.getInstance().executeCount(arguments);
 	}
 	
+	@Override
+	public Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER);
+		prepareWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(arguments);
+		return QueryExecutor.getInstance().executeReadMany(ScopeFunction.class, arguments);
+	}
+	
+	@Override
+	public Long countWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER);
+		prepareWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(arguments);
+		return QueryExecutor.getInstance().executeCount(arguments);
+	}
+	
 	protected void prepareWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments) {
 		Filter filter = new Filter();
 		filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
+		arguments.setFilter(filter);
+	}
+	
+	protected void prepareWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(QueryExecutorArguments arguments) {
+		Filter filter = new Filter();
+		filter.addFieldContains(PARAMETER_NAME_CODE, arguments);
+		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
+		filter.addFieldEquals(PARAMETER_NAME_FUNCTION_CODE, arguments);
+		filter.addFieldEquals(PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER, arguments);
 		arguments.setFilter(filter);
 	}
 	

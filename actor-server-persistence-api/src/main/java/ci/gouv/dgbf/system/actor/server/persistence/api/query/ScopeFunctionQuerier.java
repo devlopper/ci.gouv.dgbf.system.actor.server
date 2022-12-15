@@ -114,6 +114,12 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE);
 	Long countWhereCodeOrNameLikeByFunctionCode(QueryExecutorArguments arguments);
 	
+	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier");
+	Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER = QueryIdentifierBuilder.getInstance().buildCountFrom(QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER);
+	Long countWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier(QueryExecutorArguments arguments);
+	
 	String QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES = Querier.buildIdentifier(ScopeFunction.class, "readWhereCodeOrNameLikeByFunctionsCodes");
 	Collection<ScopeFunction> readWhereCodeOrNameLikeByFunctionsCodes(QueryExecutorArguments arguments);
 	
@@ -281,6 +287,13 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE
 						, getQueryValueCountWhereCodeOrNameLikeByFunctionCode())
 				
+				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER
+						, getQueryValueReadWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier())
+						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
+				
+				,Query.buildCount(QUERY_IDENTIFIER_COUNT_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTION_CODE_BY_BUDGET_CATEGORY_IDENTIFIER
+						, getQueryValueCountWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier())
+				
 				,Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_WHERE_CODE_OR_NAME_LIKE_BY_FUNCTIONS_CODES
 						, getQueryValueReadWhereCodeOrNameLikeByFunctionsCodes())
 						.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
@@ -394,6 +407,29 @@ public interface ScopeFunctionQuerier extends Querier.CodableAndNamable<ScopeFun
 	
 	static String getQueryValueCountWhereCodeOrNameLikeByFunctionCode() {
 		return jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereCodeOrNameLikeByFunctionCodeFromWhere());
+	}
+	
+	static String getQueryValueReadWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifierFromWhere() {
+		return jpql(
+				from("ScopeFunction t")
+				,where(and(
+					parenthesis(or(
+						like("t", ScopeFunction.FIELD_CODE, PARAMETER_NAME_CODE)
+						,like("t", ScopeFunction.FIELD_NAME, PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)
+					))
+					,"t.function.code = :"+PARAMETER_NAME_FUNCTION_CODE
+					,"t.budgetCategoryIdentifier = :"+PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER
+				))
+			);
+	}
+	
+	static String getQueryValueReadWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier() {
+		return jpql(select("t.identifier","t.code","t.name"),getQueryValueReadWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifierFromWhere(),order("t.code ASC"));
+	}
+	
+	
+	static String getQueryValueCountWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifier() {
+		return jpql(select("COUNT(t.identifier)"),getQueryValueReadWhereCodeOrNameLikeByFunctionCodeByBudgetCategoryIdentifierFromWhere());
 	}
 	
 	static String getQueryValueReadWhereCodeOrNameLikeByFunctionsCodesFromWhere() {
