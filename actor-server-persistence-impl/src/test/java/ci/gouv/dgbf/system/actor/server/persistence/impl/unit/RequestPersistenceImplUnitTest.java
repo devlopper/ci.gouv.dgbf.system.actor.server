@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestDispatchSlipQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
+import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestStatusQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestDispatchSlip;
@@ -28,6 +29,13 @@ public class RequestPersistenceImplUnitTest extends AbstractUnitTestMemory {
 	@Override
 	protected String getPersistenceUnitName() {
 		return "requests";
+	}
+	
+	@Test
+	public void requestScopeFunction_readByIdentifierForRequestEdit() {
+		RequestScopeFunction requestScopeFunction = EntityReader.getInstance().readOne(RequestScopeFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(RequestScopeFunctionQuerier.QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT)
+				.addFilterField(RequestQuerier.PARAMETER_NAME_IDENTIFIER,"1"));
+		assertThat(requestScopeFunction).isNotNull();
 	}
 	
 	@Test

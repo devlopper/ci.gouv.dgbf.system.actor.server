@@ -38,6 +38,10 @@ public interface RequestScopeFunctionQuerier extends Querier {
 	String PARAMETER_NAME_GRANTED = "granted";
 	String PARAMETER_NAME_SEARCH = "search";
 	
+	String QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class
+			, "readByIdentifierForRequestEdit");
+	RequestScopeFunction readByIdentifierForRequestEdit(String identifier);
+	
 	String QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIER_BY_SCOPE_FUNCTIONS_IDENTIFIER = QueryIdentifierBuilder.getInstance().build(RequestScopeFunction.class
 			, "readByRequestIdentifierByScopeFunctionIdentifier");
 	RequestScopeFunction readByRequestIdentifierByScopeFunctionIdentifier(String requestIdentifier,String scopeFunctionIdentifier);
@@ -92,6 +96,8 @@ public interface RequestScopeFunctionQuerier extends Querier {
 		public RequestScopeFunction readOne(QueryExecutorArguments arguments) {
 			if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
 				return DynamicOneExecutor.getInstance().read(RequestScopeFunction.class,arguments.setQuery(null));
+			if(arguments.getQuery().getIdentifier().equals(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT))
+				return readByIdentifierForRequestEdit((String)arguments.getFilterFieldValue(PARAMETER_NAME_IDENTIFIER));
 			throw new RuntimeException(arguments.getQuery().getIdentifier()+" cannot be processed");
 		}
 		
@@ -116,6 +122,14 @@ public interface RequestScopeFunctionQuerier extends Querier {
 			Collection<RequestScopeFunction> requestFunctions = QueryExecutor.getInstance().executeReadMany(RequestScopeFunction.class
 					, QUERY_IDENTIFIER_READ_BY_REQUESTS_IDENTIFIERS,PARAMETER_NAME_REQUESTS_IDENTIFIERS,requestsIdentifiers);
 			return requestFunctions;
+		}
+		
+		@Override
+		public RequestScopeFunction readByIdentifierForRequestEdit(String identifier) {
+			if(StringHelper.isBlank(identifier))
+				return null;
+			return QueryExecutor.getInstance().executeReadOne(RequestScopeFunction.class, new QueryExecutorArguments().setQueryFromIdentifier(QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT)
+				.addFilterFieldsValues(PARAMETER_NAME_IDENTIFIER,identifier));
 		}
 		
 		@Override
@@ -266,6 +280,10 @@ public interface RequestScopeFunctionQuerier extends Querier {
 					,Query.FIELD_VALUE,jpql("SELECT t","FROM RequestScopeFunction t","WHERE t.request.identifier = :"+PARAMETER_NAME_REQUEST_IDENTIFIER
 							+" AND t.scopeFunction.identifier = :"+PARAMETER_NAME_SCOPE_FUNCTION_IDENTIFIER))
 			
+			,Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_BY_IDENTIFIER_FOR_REQUEST_EDIT
+					,Query.FIELD_TUPLE_CLASS,RequestScopeFunction.class,Query.FIELD_RESULT_CLASS,RequestScopeFunction.class
+					,Query.FIELD_VALUE,jpql("SELECT t.identifier,t.request.identifier,t.scopeFunction.identifier","FROM RequestScopeFunction t","WHERE t.identifier = :"+PARAMETER_NAME_IDENTIFIER))
+					.setTupleFieldsNamesIndexesFromFieldsNames(RequestScopeFunction.FIELD_IDENTIFIER,RequestScopeFunction.FIELD_REQUEST_IDENTIFIER,RequestScopeFunction.FIELD_SCOPE_FUNCTION_IDENTIFIER)
 		);
 	}
 }
