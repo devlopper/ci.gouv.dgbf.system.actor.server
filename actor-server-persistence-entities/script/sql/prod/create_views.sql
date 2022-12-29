@@ -221,7 +221,7 @@ WHERE l.exercice = 2021 AND l.ldep_id NOT IN (SELECT a.identifiant FROM affectat
 UNION
 SELECT l.*,CASE WHEN ld.etat = 'PRCH' THEN l.etat ELSE ld.etat END AS "ETAT_BIDF"
 FROM vm_app_ex_imputation l LEFT JOIN ligne_de_depenses@dblink_elabo_bidf ld ON ld.ldep_id = l.ldep_id AND ld.exo_num = l.exercice
-WHERE l.exercice = 2022 AND l.identifiant NOT IN (SELECT a.identifiant FROM affectations a);
+WHERE l.exercice >= 2022 AND l.identifiant NOT IN (SELECT a.identifiant FROM affectations a);
 
 -- Liste des lignes exportables
 CREATE OR REPLACE VIEW VA_LIGNE_EXPORTABLE AS

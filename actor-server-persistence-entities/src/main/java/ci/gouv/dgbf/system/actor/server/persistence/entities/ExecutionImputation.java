@@ -45,7 +45,7 @@ public class ExecutionImputation extends AbstractImputation implements Serializa
 	
 	@Column(name = COLUMN_EXERCISE) private Integer exercise;
 	
-	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_CATEGORY) private BudgetSpecializationUnit budgetCategory;
+	@ManyToOne @JoinColumn(name = COLUMN_BUDGET_CATEGORY) private BudgetCategory budgetCategory;
 	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER) private String budgetCategoryIdentifier;
 	@Column(name = COLUMN_BUDGET_CATEGORY_CODE) private String budgetCategoryCode;
 	@Column(name = COLUMN_BUDGET_CATEGORY_CODE_NAME) private String budgetCategoryCodeName;

@@ -87,7 +87,7 @@ public class ScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<ScopeF
 		try {
 			category = entityManager.createQuery("SELECT sfc FROM ScopeFunctionCategory sfc WHERE sfc.code = :categoryCode",ScopeFunctionCategory.class).setParameter("categoryCode", categoryCode).getSingleResult();
 		} catch (NoResultException e) {}
-		System.out.println("ScopeFunctionBusinessImpl.createByScopeIdentifierByCategoryCode() ::: "+category);
+		
 		ScopeFunction scopeFunction = new ScopeFunction().setScope(scope).setFunction(function).setCodePrefix(categoryCode).setName(name).setCategory(category);
 		if(scopeFunction.getCategory() != null)
 			scopeFunction.setBudgetCategoryIdentifier(scopeFunction.getCategory().getBudgetCategoryIdentifier());		

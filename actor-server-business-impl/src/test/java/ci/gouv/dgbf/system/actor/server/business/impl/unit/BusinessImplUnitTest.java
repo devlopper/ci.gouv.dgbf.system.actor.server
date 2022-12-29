@@ -70,5 +70,29 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(instance.getFinancialControllerAssistant()).isNotNull();
 	}
 	
+	@Test
+	public void applyModel_doOverride() {
+		Assignments instance = EntityFinder.getInstance().find(Assignments.class, "override0");
+		assertThat(instance).isNotNull();
+		assertThat(instance.getFinancialControllerHolder()).isNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNull();
+		Assignments model = new Assignments();
+		model.setFinancialControllerHolder(EntityFinder.getInstance().find(ScopeFunction.class, "C300000"));
+		Filter filter = new Filter();
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_BUDGET_CATEGORY_IDENTIFIER,"CB01");
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_SECTION_CODE,"328");
+		filter.addField(AssignmentsQuerier.PARAMETER_NAME_EXERCISE,2021);
+		new Transaction.AbstractImpl() {
+			@Override
+			protected void __run__(EntityManager entityManager) {
+				AssignmentsBusinessImpl.applyModel(model, filter, List.of(Assignments.FIELD_CREDIT_MANAGER_HOLDER), null, entityManager);
+			}
+		}.run();
+		instance = EntityFinder.getInstance().find(Assignments.class, "override0");
+		assertThat(instance).isNotNull();
+		assertThat(instance.getFinancialControllerHolder()).isNotNull();
+		assertThat(instance.getFinancialControllerAssistant()).isNotNull();
+	}
+	
 	/**/
 }
