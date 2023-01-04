@@ -670,15 +670,15 @@ public class ScopeFunctionQuerierImpl extends ScopeFunctionQuerier.AbstractImpl 
 	public static void initialize() {
 		QueryManager.getInstance().register(
 				Query.buildSelect(ScopeFunction.class, QUERY_IDENTIFIER_READ_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
-						, jpql("SELECT sf.identifier,sf.code,sf.name",getReadByBudgetSpecializationUnitsIdentifiersFromWhere(),"ORDER BY sf.code ASC"))
-					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME)
+						, jpql("SELECT sf.identifier,sf.code,sf.name,bc.code",getReadByBudgetSpecializationUnitsIdentifiersFromWhere(),"ORDER BY sf.code ASC"))
+					.setTupleFieldsNamesIndexesFromFieldsNames(ScopeFunction.FIELD_IDENTIFIER,ScopeFunction.FIELD_CODE,ScopeFunction.FIELD_NAME,ScopeFunction.FIELD_BUDGET_CATEGORY_CODE)
 				,Query.buildCount(QUERY_IDENTIFIER_COUNT_BY_FUNCTION_IDENTIFIER_BY_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
 						, jpql("SELECT COUNT(sf.identifier)",getReadByBudgetSpecializationUnitsIdentifiersFromWhere()))
 			);
 	}
 	
 	private static String getReadByBudgetSpecializationUnitsIdentifiersFromWhere() {
-		return jpql("FROM ScopeFunction sf"
+		return jpql("FROM ScopeFunction sf LEFT JOIN BudgetCategory bc ON bc.identifier = sf."+ScopeFunction.FIELD_BUDGET_CATEGORY_IDENTIFIER
 				,String.format("WHERE sf.function.identifier = :%1$s AND (sf.scope.identifier = :%2$s "
 						+ "OR EXISTS(SELECT t FROM AuthorizingOfficerService t WHERE t.identifier = sf.scope.identifier AND t.budgetSpecializationUnit.identifier = :%2$s))"
 						,PARAMETER_NAME_FUNCTION_IDENTIFIER,PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER));
