@@ -40,6 +40,7 @@ import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.api.query.RequestScopeFunctionQuerier;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Actor;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory;
+import ci.gouv.dgbf.system.actor.server.persistence.entities.Country;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.IdentificationAttribute;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Identity;
 import ci.gouv.dgbf.system.actor.server.persistence.entities.Request;
@@ -142,6 +143,15 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		request.setAuthenticationRequired(request.getType().getAuthenticationRequired());
 		request.setIdentifier(null);
 		request.setCode(null);
+		try {
+			request.setCountry(EntityManagerGetter.getInstance().get().createQuery("SELECT t FROM Country t WHERE t.code = :code", Country.class)
+					.setParameter("code", Country.CODE_COTE_IVOIRE)
+				.getSingleResult());
+			if(request.getCountry() != null)
+				request.setCountryIdentifier(request.getCountry().getIdentifier());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return request;
 	}
 	
@@ -241,6 +251,12 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 			}
 		}
 		
+		if(StringHelper.isNotBlank(request.getCountryIdentifier())) {
+			Country country = EntityFinder.getInstance().find(Country.class, request.getCountryIdentifier());
+			if(country != null)
+				request.setCountryAsString(country.getName());
+		}
+		
 		if(request.getActOfAppointmentSignatureDate() != null) {
 			request.setActOfAppointmentSignatureDateAsTimestamp(request.getActOfAppointmentSignatureDate().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
 			request.setActOfAppointmentSignatureDateAsString(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH)
@@ -279,6 +295,8 @@ public class RequestQuerierImpl extends RequestQuerier.AbstractImpl {
 		}
 		if(request.getBudgetCategory() == null && StringHelper.isNotBlank(request.getBudgetCategoryIdentifier()))
 			request.setBudgetCategory(EntityFinder.getInstance().find(BudgetCategory.class, request.getBudgetCategoryIdentifier()));
+		if(request.getCountry() == null && StringHelper.isNotBlank(request.getCountryIdentifier()))
+			request.setCountry(EntityFinder.getInstance().find(Country.class, request.getCountryIdentifier()));
 		return request;
 	}
 	

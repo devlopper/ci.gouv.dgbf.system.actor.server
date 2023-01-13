@@ -19,6 +19,10 @@ public class RequestDto extends AbstractIdentifiableSystemScalarStringIdentifiab
 	private String budgetCategoryIdentifier;
 	private String budgetCategoryAsString;
 	
+	private String countryIdentifier;
+	private CountryDto country;
+	private String countryAsString;
+	
 	private RequestTypeDto type;
 	private String typeAsString;
 	private RequestStatusDto status;

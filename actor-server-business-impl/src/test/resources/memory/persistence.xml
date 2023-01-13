@@ -12,6 +12,7 @@
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Scope</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.ScopeFunctionElectronicMailAddressRequest</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Exercise</class>
+		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Country</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.Section</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetSpecializationUnit</class>
 		<class>ci.gouv.dgbf.system.actor.server.persistence.entities.BudgetCategory</class>

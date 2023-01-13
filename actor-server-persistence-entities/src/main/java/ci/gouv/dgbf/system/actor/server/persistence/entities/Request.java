@@ -54,6 +54,10 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	
 	/* Initialization */
 	
+	@Column(name = COLUMN_COUNTRY_IDENTIFIER) private String countryIdentifier;
+	@Transient private Country country;
+	@Transient private String countryAsString;
+	
 	@Column(name = COLUMN_BUDGET_CATEGORY_IDENTIFIER,nullable = false) @NotNull private String budgetCategoryIdentifier;
 	@Transient private BudgetCategory budgetCategory;
 	@Transient private String budgetCategoryAsString;
@@ -250,6 +254,8 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 		}
 	}
 	
+	public static final String FIELD_COUNTRY = "country";
+	public static final String FIELD_COUNTRY_IDENTIFIER = "countryIdentifier";
 	public static final String FIELD_TYPE = "type";
 	public static final String FIELD_TYPE_AS_STRING = "typeAsString";
 	public static final String FIELD_STATUS = "status";
@@ -340,8 +346,9 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 	public static final String TABLE_NAME = "DM_DEMANDE";
 	public static final String STORED_PROCEDURE_QUERY_PROCEDURE_NAME_CREATE_USERS = "CREATION_ACTEUR";
 	
-	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET";
 	public static final String COLUMN_IDENTIFIER = "IDENTIFIANT";
+	public static final String COLUMN_COUNTRY_IDENTIFIER = "PAYS";
+	public static final String COLUMN_BUDGET_CATEGORY_IDENTIFIER = "CATEGORIE_BUDGET";
 	public static final String COLUMN_TYPE = "TYPE";
 	public static final String COLUMN_STATUS = "STATUT";
 	public static final String COLUMN_ACCOUNT_CREATION_DATE = "DATE_CREATION_COMPTE";
@@ -390,4 +397,6 @@ public class Request extends AbstractIdentifiableSystemScalarStringIdentifiableB
 		if(CollectionHelper.isNotEmpty(names))
 			COLUMNS_FIELDS_NAMES.addAll(names);
 	}
+	
+	
 }

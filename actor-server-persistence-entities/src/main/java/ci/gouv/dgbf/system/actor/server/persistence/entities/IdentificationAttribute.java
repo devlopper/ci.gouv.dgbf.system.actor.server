@@ -57,6 +57,7 @@ public class IdentificationAttribute extends AbstractIdentifiableSystemScalarStr
 	
 	/**/
 	
+	public static final String CODE_COUNTRY = "PAYS";
 	public static final String CODE_REGISTRATION_NUMBER = "MATRICULE";
 	public static final String CODE_GROUP = "GROUPE";
 	public static final String CODE_POSTAL_BOX_ADDRESS = "ADRESSE_BOITE_POSTALE";
