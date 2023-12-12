@@ -1,0 +1,16 @@
+set cyk.variable.jasper.server.credential.password=jasperadmin
+set cyk.variable.jasper.server.credential.username=jasperadmin
+set cyk.variable.jasper.server.enabled=true
+set cyk.variable.jasper.server.url=http://localhost:9080/jasperserver/
+set cyk.variable.keycloak.client.identifier=admin-cli
+set cyk.variable.keycloak.client.secret=507a939d-e9a0-4501-bf76-b6ae4ba60b78
+set cyk.variable.keycloak.credential.password=mic-@cteur-@pi@2O2o
+set cyk.variable.keycloak.credential.username=mic-acteur-api
+set cyk.variable.keycloak.server.url=http://localhost:8230/auth
+set KEYCLOAK_CLIENT=admin-cli
+set KEYCLOAK_REALM=SIIB
+set ORACLE_DATASOURCE=actor/server
+set ORACLE_PASSWORD=acteur
+set ORACLE_URL=jdbc:oracle:thin:@localhost:1521:XE
+set ORACLE_USER=SIIBC_Acteur
+set user.timezone=Europe/Paris

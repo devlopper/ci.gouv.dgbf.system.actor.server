@@ -231,13 +231,23 @@ LEFT JOIN vm_app_ex_imputation i ON i.identifiant = a.imputation
 WHERE a.etat = 'MODI';
 
 -------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE VIEW VA_DERN_ASSIGN_FONC_EXE AS
+SELECT
+   fonction_code AS "CODE",
+   MIN(date_debut) KEEP (DENSE_RANK FIRST ORDER BY date_debut DESC) AS "ASSIGNE_LE"       ,
+   MIN(date_fin) keep (DENSE_RANK FIRST ORDER BY date_debut DESC) AS "LIBERE_LE",
+   MIN(login) keep (DENSE_RANK FIRST ORDER BY date_debut DESC) AS "NOM_UTILISATEUR"
+FROM UT_BIDF_TAMP.fonction_et_utilisateur_all@dblink_elabo_bidf
+WHERE fonction_code NOT LIKE 'A%' AND fonction_code NOT LIKE 'B%'
+GROUP BY fonction_code
+ORDER BY fonction_code;
+COMMENT ON TABLE VA_DERN_ASSIGN_FONC_EXE IS 'Liste des dernieres assignations de fonctions';
 
 CREATE OR REPLACE VIEW VA_POSTE_LIBERE_EN_EXECUTION AS
-SELECT fonction_code AS "CODE",CAST('SYSTEME_EXECUTION'AS VARCHAR2(255)) AS "LIBERE_PAR",MAX(date_fin) AS "LIBERE_LE"
-FROM fonction_et_utilisateur@dblink_elabo_bidf
-WHERE fonction_code NOT LIKE 'A%' AND fonction_code NOT LIKE 'B%' AND date_fin is not null
-GROUP BY fonction_code
-ORDER BY MAX(date_fin) DESC;
+SELECT CODE,ASSIGNE_LE,LIBERE_LE,NOM_UTILISATEUR,CAST('SYSTEME_EXECUTION'AS VARCHAR2(255)) AS "LIBERE_PAR"
+FROM VA_DERN_ASSIGN_FONC_EXE
+WHERE libere_le is not null AND libere_le < SYSDATE;
+COMMENT ON TABLE VA_POSTE_LIBERE_EN_EXECUTION IS 'Liste des postes libérés en exécution';
 
 CREATE OR REPLACE VIEW VA_POSTE_LIBRE_EXECUTION AS
 SELECT p."IDENTIFIANT",p."CODE",p."LIBELLE",p."NOMBRE_ACTEUR",p."FONCTION",p."DOMAINE",p."PARENT",p."LOCALITE",p."ACTIVITE",p."NUMERO_DOCUMENT",p."DATE_CODIFICATION",p."NUMERO_ORDRE",p."AUDIT_ACTEUR",p."AUDIT_ACTION",p."AUDIT_DATE",p."AUDIT_FONCTIONALITE",p."ETAT",p."DATE_ETAT",p."CODE_FONCTION_SIB",p."NOMS_UTILISATEURS"

@@ -21,11 +21,15 @@ SELECT 'UA'||ua.uuid AS "IDENTIFIANT",ua.ua_code AS "CODE",ua.ua_liblg AS "LIBEL
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION"
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE 'SECTION'||s.uuid END AS "SECTION_IDENTIFIANT"
     ,CASE WHEN s.uuid IS NULL OR s.entitystatus <> 'COMMITTED' THEN NULL ELSE s.secb_code||' '||s.secb_libelle END AS "SECTION_CODE_LIBELLE"
+-- Groupe de service
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.uuid END AS "GROUPE_SERVICE"
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.uuid END AS "GROUPE_SERVICE_IDENTIFIANT"
+    ,CASE WHEN gs.uuid IS NULL OR gs.entitystatus <> 'COMMITTED' THEN NULL ELSE gs.gsrv_code||' '||gs.gsrv_liblg END AS "GROUPE_SERVICE_CODE_LIBELLE"
 -- Localité
     ,CASE WHEN l.uuid IS NULL OR l.entitystatus <> 'COMMITTED' THEN NULL ELSE 'LOCALITE'||l.uuid END AS "LOCALITE"
-FROM CA.unite_administrative ua,CA.section_budgetaire s,CA.localite l
+FROM CA.unite_administrative ua,CA.section_budgetaire s,CA.groupe_service gs,CA.localite l
 WHERE 
-    s.uuid (+) = ua.ua_secb_id AND l.uuid (+) = ua.ua_loc_id
+    s.uuid (+) = ua.ua_secb_id AND gs.uuid (+) = ua.ua_gsrv_id AND l.uuid (+) = ua.ua_loc_id
     --AND s.entitystatus = 'COMMITTED'
     --AND g.uuid = s.gouv_id 
     --AND g.gouv_statut = 'ENABLED' 
@@ -484,6 +488,7 @@ WHERE
     AND l.uuid (+) = ua.ua_loc_id
     AND localite_gestionnaire.uuid (+) = adp.loc_id
     AND localite_activite.uuid (+) = gestionnaire.ua_loc_id
+    AND ld.exo_num >= 2022
     --AND ua.ua_secb_id IS NOT NULL
     --AND s.entitystatus = 'COMMITTED'
     
@@ -507,15 +512,3 @@ CREATE INDEX VM_APP_EX_IMPUTATION_K_ACTV ON VM_APP_EX_IMPUTATION (ACTIVITE ASC);
 CREATE INDEX VM_APP_EX_IMPUTATION_K_ACTV_CL ON VM_APP_EX_IMPUTATION (ACTIVITE_CODE_LIBELLE ASC);
 CREATE INDEX VM_APP_EX_IMPUTATION_K_NEC ON VM_APP_EX_IMPUTATION (NATURE_ECONOMIQUE ASC);
 CREATE INDEX VM_APP_EX_IMPUTATION_K_NEC_CL ON VM_APP_EX_IMPUTATION (NATURE_ECONOMIQUE_CODE_LIBELLE ASC);
-
--- Mapping Ancien et Nouveau codes 2021
-DROP MATERIALIZED VIEW VMT_AFF_IMP_LIEN;
-CREATE MATERIALIZED VIEW VMT_AFF_IMP_LIEN
-TABLESPACE USERS REFRESH NEXT SYSDATE + 1/24 COMPLETE AS
-SELECT a.identifiant,SUBSTR(i.activite,LENGTH('ACTIVITE')+1)||i.nature_economique AS "ANCIEN",i.exercice||SUBSTR(i.activite,LENGTH('ACTIVITE')+1)||i.nature_economique AS "NOUVEAU"
-FROM AFFECTATIONS a
-JOIN VM_APP_EX_IMPUTATION i ON i.ldep_id = a.identifiant
-WHERE i.exercice = 2021;
-ALTER TABLE VMT_AFF_IMP_LIEN ADD CONSTRAINT VMT_AFF_IMP_LIEN_PK PRIMARY KEY (IDENTIFIANT);
-CREATE INDEX VMT_AFF_IMP_LIEN_K_ANCIEN ON VMT_AFF_IMP_LIEN (ANCIEN ASC);
-CREATE INDEX VMT_AFF_IMP_LIEN_K_NOUVEAU ON VMT_AFF_IMP_LIEN (NOUVEAU ASC);

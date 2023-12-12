@@ -14,10 +14,8 @@ import javax.transaction.Transactional;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.file.FileType;
 import org.cyk.utility.__kernel__.log.LogHelper;
-import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.object.__static__.persistence.EntityLifeCycleListener;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
@@ -38,10 +36,12 @@ import ci.gouv.dgbf.system.actor.server.persistence.entities.RequestScopeFunctio
 public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl<RequestScopeFunction, RequestScopeFunctionPersistence> implements RequestScopeFunctionBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Schedule(hour = "*",minute = "*/5",persistent = false)
+	//@Schedule(hour = "*",minute = "*/5",persistent = false)
+	@Schedule(hour = "*", minute = "*/5",persistent = false, info = "Every 5 minutes timer")
 	public void updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAutomatically() {
 		@SuppressWarnings("unchecked")
 		Collection<Object[]> arrays = EntityManagerGetter.getInstance().get().createNamedQuery(RequestScopeFunction.QUERY_READ_RELEASABLE).getResultList();
+		//System.out.println("RequestScopeFunctionBusinessImpl.updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiersAutomatically() ########################## : "+CollectionHelper.getSize(arrays));
 		if(CollectionHelper.isEmpty(arrays))
 			return;
 		for(Object[] array : arrays)
@@ -62,8 +62,11 @@ public class RequestScopeFunctionBusinessImpl extends AbstractBusinessEntityImpl
 			Integer count = RequestScopeFunctionQuerier.getInstance().updateGrantedToFalseWhereTrueByScopeFunctionsIdentifiers(scopeFunctionsIdentifiers,actorCode
 					,"LIBERATION",EntityLifeCycleListener.Event.UPDATE.getValue(),LocalDateTime.now(), EntityManagerGetter.getInstance().get());
 			result.incrementNumberOfUpdate(count == null ? 0l : count.longValue());
+			// Some scope function has many request so this rule is not required anymore
+			/*
 			if(!Boolean.TRUE.equals(NumberHelper.compare(scopeFunctionsIdentifiers.size(), count, ComparisonOperator.EQ)) && (ignoreCount == null || !ignoreCount))
 				throw new RuntimeException(String.format("Le nombre de poste à mettre à jour (%s) est différent au nombre mis à jour (%s)",scopeFunctionsIdentifiers.size(),count));
+			*/
 		}
 		if(ignoreCount == null || !ignoreCount)
 			result.log(RequestScopeFunctionBusinessImpl.class);
