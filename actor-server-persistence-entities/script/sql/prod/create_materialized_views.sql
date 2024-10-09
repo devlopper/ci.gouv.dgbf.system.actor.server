@@ -390,7 +390,7 @@ CREATE INDEX VM_APP_PAYS_K_CODE ON VM_APP_PAYS (CODE DESC);
 -- Imputation Execution
 DROP MATERIALIZED VIEW "ACTEUR".VM_APP_EX_IMPUTATION;
 CREATE MATERIALIZED VIEW "ACTEUR".VM_APP_EX_IMPUTATION
-TABLESPACE USERS
+TABLESPACE TS_ELA_DATA
 -- REFRESH ON COMMIT
 REFRESH NEXT SYSDATE + 1/24 COMPLETE AS
 SELECT
@@ -488,7 +488,7 @@ WHERE
     AND l.uuid (+) = ua.ua_loc_id
     AND localite_gestionnaire.uuid (+) = adp.loc_id
     AND localite_activite.uuid (+) = gestionnaire.ua_loc_id
-    AND ld.exo_num >= 2022
+    AND ld.exo_num >= 2023
     --AND ua.ua_secb_id IS NOT NULL
     --AND s.entitystatus = 'COMMITTED'
     
