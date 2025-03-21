@@ -1,0 +1,13 @@
+Publishing with time stamp : v0.0.0-202312181457 
+The push refers to repository [10.3.4.18:5000/mic-acteur-api]
+a127e747b8ba: Preparing
+1b54682ced05: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+13f0b213c32d: Layer already exists
+f1b5933fe4b5: Layer already exists
+a127e747b8ba: Pushed
+1b54682ced05: Pushed
+v0.0.0-202312181457: digest: sha256:3c06951936c30315c44e659c6201f43504c0ffe1f95dbb6a2aed4e3a976563b1 size: 1377

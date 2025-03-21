@@ -31,9 +31,9 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_PORT, 587);
 		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_REQUIRED, Boolean.TRUE);
 		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_SECURED_CONNECTION_REQUIRED, Boolean.TRUE);
-		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_IDENTIFIER, "6a3a9070-bd49-4d2d-a0fd-7e881a7b0e6a");
-		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_SECRET, "6a3a9070-bd49-4d2d-a0fd-7e881a7b0e6a");		
-		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_FROM, "no-reply@sigobe.dgbf.ci");
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_IDENTIFIER, "69c53c2f-2e24-4a0c-bc41-2a6c026d4c01");
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_AUTHENTICATION_CREDENTIALS_USER_SECRET, "69c53c2f-2e24-4a0c-bc41-2a6c026d4c01");		
+		VariableHelper.write(VariableName.PROTOCOL_SIMPLE_MAIL_TRANSFER_FROM, "info@dgbf.ci");
 		
 		KeycloakClientGetter.AbstractImpl.CONNECTION_POOL_SIZE = 100;
 		//ClientManager.AbstractImpl.LOGGING_LEVEL = Level.INFO;
@@ -49,7 +49,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		LogHelper.logInfo(String.format("   ###   Environement   ### : %s", environment), getClass());
 		
 		if("dev".equals(environment)) {
-			VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.94.11:8001/jasperserver/");
+			//VariableHelper.write(VariableName.JASPER_SERVER_URL, "http://10.3.94.11:8001/jasperserver/");
 		}else if("preproduction".equals(environment)) {
 			
 		}else if("debug".equals(environment)) {

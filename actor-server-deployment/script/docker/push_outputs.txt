@@ -1,13 +1,31 @@
-Publishing with time stamp : v0.0.0-202312181457 
+Publishing with time stamp : v0.0.0-0320251437 
 The push refers to repository [10.3.4.18:5000/mic-acteur-api]
-a127e747b8ba: Preparing
-1b54682ced05: Preparing
+Deploying with time stamp : v0.0.0-0320251437 
+Publishing with time stamp : v0.0.0-202503211442 
+The push refers to repository [dcr.dgbf.ci/mic-acteur-api]
+Publishing with time stamp : v0.0.0-202503211453 
+The push refers to repository [dcr.dgbf.ci/mic-acteur-api]
+aa9541d62abf: Preparing
+fc9abccac015: Preparing
 13f0b213c32d: Preparing
 849cb74592b3: Preparing
 f1b5933fe4b5: Preparing
 849cb74592b3: Layer already exists
-13f0b213c32d: Layer already exists
 f1b5933fe4b5: Layer already exists
-a127e747b8ba: Pushed
-1b54682ced05: Pushed
-v0.0.0-202312181457: digest: sha256:3c06951936c30315c44e659c6201f43504c0ffe1f95dbb6a2aed4e3a976563b1 size: 1377
+13f0b213c32d: Layer already exists
+aa9541d62abf: Pushed
+fc9abccac015: Pushed
+v0.0.0-202503211453: digest: sha256:c46643119d5986443f35001779b39d72612e722c000a37877661ab72a0d9915d size: 1377
+Publishing with time stamp : v0.0.0-202503211518 
+The push refers to repository [dcr.dgbf.ci/mic-acteur-api]
+647e5de09c3b: Preparing
+5bd83509073b: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+647e5de09c3b: Pushed
+5bd83509073b: Pushed
+v0.0.0-202503211518: digest: sha256:7ace6f6c0a9228a2f6590e220011a9badc03ba20d4eea2b175be49fe7ee80d65 size: 1377

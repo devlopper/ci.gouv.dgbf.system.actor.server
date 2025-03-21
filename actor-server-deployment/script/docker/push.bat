@@ -11,9 +11,9 @@ set mytime=%mytime: =0%
 
 SET timestamp=v0.0.0-%mydate%%mytime%
 echo Publishing with time stamp : %timestamp% >> push_outputs.txt
-docker tag mic-acteur-api 10.3.4.18:5000/mic-acteur-api:%timestamp% >> push_outputs.txt
-docker push 10.3.4.18:5000/mic-acteur-api:%timestamp% >> push_outputs.txt
+docker tag mic-acteur-api dcr.dgbf.ci/mic-acteur-api:%timestamp% >> push_outputs.txt
+docker push dcr.dgbf.ci/mic-acteur-api:%timestamp% >> push_outputs.txt
 
 REM push under latest
-call docker tag mic-acteur-api 10.3.4.18:5000/mic-acteur-api
-call docker push 10.3.4.18:5000/mic-acteur-api
+call docker tag mic-acteur-api dcr.dgbf.ci/mic-acteur-api
+call docker push dcr.dgbf.ci/mic-acteur-api
